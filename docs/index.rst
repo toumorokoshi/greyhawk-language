@@ -6,10 +6,16 @@
 Welcome to Murasaki's documentation!
 ====================================
 
+Murasaki is a programming language spec. Currrently there are no plans
+to implement Murasaki as a real language, and it is a work in
+progress.
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
+
+   principles
 
 
 
