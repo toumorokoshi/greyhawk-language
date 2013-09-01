@@ -15,8 +15,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   principles
-
+   objectives
+   interfaces
+   inheritance
+   style
 
 
 Indices and tables

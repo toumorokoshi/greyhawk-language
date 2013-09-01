@@ -17,7 +17,7 @@ An example is here::
         bool GreaterThan(cls other):
             return this.compareTo(other) <= 1
 
-So a class can implement an interface, and receive associate methods for free:
+So a class can implement an interface, and receive associated methods for free::
 
     class Version implements Comparable:
 
