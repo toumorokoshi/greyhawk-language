@@ -12,17 +12,18 @@ int yywrap()
         return 1;
 } 
   
-int main()
+main()
 {
         yyparse();
 } 
 
 %}
 
-%token NONZERO_DIGIT
+%token NONZERO_DIGIT INVALID_CHARACTER
 
 %%
 
-nonzero_digit : NONZERO_DIGIT
-
+nonzero_digit : NONZERO_DIGIT | 
+                NONZERO_DIGIT nonzero_digit 
+    { printf("Testing...\n"); } ;
 %%
