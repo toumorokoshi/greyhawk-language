@@ -19,6 +19,12 @@ Contents:
    interfaces
    inheritance
    style
+   dependencymanagement
+   grammar
+   importing
+   keywords
+   loops
+   todo
 
 
 Indices and tables

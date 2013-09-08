@@ -18,7 +18,7 @@ One idiomatic way of doing things
 ---------------------------------
 
 With readability in mind comes standardization. Humans are good at
-understanding patterns, and Murasaki relies on that strength by
+recognizing patterns, and Murasaki relies on that strength by
 ensuring that there is only one idiomatic way of performing a
 particular function.
 
