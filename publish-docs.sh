@@ -2,7 +2,7 @@
 # $ easy_install -U sphinx
 make html
 git checkout gh-pages
-mv docs_build/* .
+mv docs_build/html/* .
 git add .
 git commit -am "build $(date)"
 git push origin gh-pages
