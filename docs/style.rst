@@ -26,3 +26,10 @@ TODO: find a better way to distinguish between variable vs method
 * Method -> public method (upper camel-case results in a public method)
 * _Method -> protected method (upper camel-case results + leading underscore)
 * __Method -> private method (upper camel-case results + double leading underscore)
+
+Constants
+---------
+
+Anything with ALL_CAPS and underscores is always a constant::
+
+    int8 ALL_CAPS = 5

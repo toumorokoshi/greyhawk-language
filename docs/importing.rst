@@ -10,3 +10,8 @@ Importing modules in Murasaki work as follows::
 
   a.b.Foo()
   e.Foo()
+
+Package/Namespace names are always in all lowercase. No underscores, dashes, or special characters are allowed::
+
+    json
+    configparser

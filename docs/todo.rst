@@ -7,3 +7,12 @@ Todo List
         body
     let VAL = EXPR:
         body
+
+
+
+Permutations of each should be distinguishable:
+
+* public, protected, private (# of underscores)
+* method, variable
+* class, interface (maybe not at this point)
+* static/nonstatic (probably no need)
