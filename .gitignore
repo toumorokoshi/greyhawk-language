@@ -1,1 +1,5 @@
 *~
+parser/murasaki.tab.*
+lex.yy.c
+a.out
+docs_build/

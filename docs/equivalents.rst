@@ -22,3 +22,14 @@ has the side effect of making it easier to see where a define was set::
            this whole method would get optimized away */
         if conf.DEBUG:
             stdout.print("We're in debug mode!")
+
+Since null methods are optimized as well in a production build, you
+could easily create remove all debug logging message calls by wrapping
+it in a method which only runs anything when the debug variable is
+set::
+
+    class ExtendedLog extends Log:
+
+        def DebugLog(String message):
+            if conf.DEBUG:
+                Debug(message)
