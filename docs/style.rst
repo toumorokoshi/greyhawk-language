@@ -27,6 +27,13 @@ TODO: find a better way to distinguish between variable vs method
 * _Method -> protected method (upper camel-case results + leading underscore)
 * __Method -> private method (upper camel-case results + double leading underscore)
 
+Class Naming
+------------
+
+Classes types have brackets around them:
+
+    <ConfigFactory>
+
 Constants
 ---------
 
