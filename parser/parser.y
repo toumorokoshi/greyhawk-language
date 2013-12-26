@@ -63,7 +63,10 @@ stmt : var_decl
      | func_decl
 ;
 
-block : TINDENT stmts TUNINDENT { $$ = $2; } ;
+block : 
+  TINDENT stmts TUNINDENT { $$ = $2; } |
+| TINDENT stmts { $$ = $2; }
+;
 
 var_decl : ident ident TDECLARE expr { $$ = new NVariableDeclaration(*$1, *$2, $4); }
 ;

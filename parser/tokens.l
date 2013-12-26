@@ -12,9 +12,7 @@ extern "C" int yywrap() { }
 %}
 
   /* start state for parsing indentation */
-%x indent 
-  /* normal state for all else? */
-%s normal 
+%x indent
 
 %%
   /* 
@@ -24,27 +22,24 @@ extern "C" int yywrap() { }
   */
 <indent>" "            { printf("A line can not start with spaces! only tabs denote indentation.\n"); yyterminate(); }
 
-<indent>"\t"           { current_line_indent++; }
-<indent>.              { 
+<indent>[\t]           { current_line_indent++; }
+<indent>.              {
   unput(*yytext);
    if (current_line_indent > indent_level) {
      indent_level++;
-     printf("Indented!");
      return TOKEN(TINDENT);
    } else if (current_line_indent < indent_level) {
      indent_level--;
      return TOKEN(TUNINDENT);
-   } else {
-     BEGIN normal;
    }
+   BEGIN(INITIAL);
  }
 
   /* regular logic */
-<normal>"\n"           { current_line_indent = 0; BEGIN indent; }
-
-[[:alpha:]_][[:alnum:]_]*    SAVE_TOKEN; printf("identifier %s found!\n", yytext); return TIDENTIFIER;
-[[:digit:]]+\.[[:digit]]*    SAVE_TOKEN; return TDOUBLE;
-[[:digit]]+                  SAVE_TOKEN; return TINTEGER;
+<INITIAL>"\n"           { current_line_indent = 0; BEGIN(indent); }
+[[:alpha:]_][[:alnum:]_]*    SAVE_TOKEN; return TIDENTIFIER;
+[[:digit:]]+\.[[:digit:]]*    SAVE_TOKEN; return TDOUBLE;
+[[:digit:]]+                  SAVE_TOKEN; return TINTEGER;
 "="                          return TOKEN(TEQUAL);
 "=="                   return TOKEN(TCEQ);
 "!="                   return TOKEN(TCNE);
@@ -63,6 +58,6 @@ extern "C" int yywrap() { }
 "*"                    return TOKEN(TMUL);
 "/"                    return TOKEN(TDIV);
 " "                    ; /* spaces are null operators */
-.                      printf("Unknown token!\n"); yyterminate();
+.                      printf("Unknown token %s! \n", yytext); yyterminate();
 
 %%
