@@ -5,7 +5,7 @@
 #define SAVE_TOKEN yylval.string = new std::string(yytext, yyleng)
 #define TOKEN(t) (yylval.token = t)
 extern "C" int yywrap() { }
-
+ 
  int current_line_indent = 0; /* indentation of current line */
  int indent_level = 0; /* indentation level passed to the parser */
 
@@ -29,6 +29,7 @@ extern "C" int yywrap() { }
   unput(*yytext);
    if (current_line_indent > indent_level) {
      indent_level++;
+     printf("Indented!");
      return TOKEN(TINDENT);
    } else if (current_line_indent < indent_level) {
      indent_level--;
@@ -41,10 +42,10 @@ extern "C" int yywrap() { }
   /* regular logic */
 <normal>"\n"           { current_line_indent = 0; BEGIN indent; }
 
-[[:alpha:]_][[:alnum:]_]* SAVE_TOKEN; return TIDENTIFIER;
-[[:digit:]]+\.[[:digit]]*         SAVE_TOKEN; return TDOUBLE;
-[[:digit]]+                 SAVE_TOKEN; return TINTEGER;
-"="                    return TOKEN(TEQUAL);
+[[:alpha:]_][[:alnum:]_]*    SAVE_TOKEN; printf("identifier %s found!\n", yytext); return TIDENTIFIER;
+[[:digit:]]+\.[[:digit]]*    SAVE_TOKEN; return TDOUBLE;
+[[:digit]]+                  SAVE_TOKEN; return TINTEGER;
+"="                          return TOKEN(TEQUAL);
 "=="                   return TOKEN(TCEQ);
 "!="                   return TOKEN(TCNE);
 "<"                    return TOKEN(TCLT);
