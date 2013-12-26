@@ -1,0 +1,2 @@
+int32 DoMath(int32 a):
+    x := a * 5 + 3

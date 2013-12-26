@@ -1,9 +1,10 @@
 %{
+  #include <cstdio>
   #include "node.h"
   NBlock *programBlock; // top level block
 
   extern int yylex();
-  void yyerror(const char *s) { printf("Error: %s\n", s); }
+  void yyerror(const char *s) { std::printf("Error: %s\n", s); }
 %}
 
 // different node type
@@ -14,6 +15,7 @@
   NStatement *stmt;
   NIdentifier *ident;
   NVariableDeclaration *var_decl;
+  NVariableDeclaration *var_assignment_decl;
   std::vector<NVariableDeclaration*> *varvec;
   std::vector<NExpression*> *exprvec;
   std::string *string;
@@ -39,7 +41,7 @@
 %type <varvec> func_decl_args
 %type <exprvec> call_args
 %type <block> program stmts block
-%type <stmt> stmt var_decl func_decl
+%type <stmt> stmt var_decl var_assignment_decl func_decl
 %type <token> comparison
 
  // operator precedence
@@ -61,7 +63,7 @@ stmt : var_decl
      | func_decl
 ;
 
-block : IDENT stmts UNINDENT { $$ = $2; } ;
+block : TINDENT stmts TUNINDENT { $$ = $2; } ;
 
 var_decl : ident ident TDECLARE expr { $$ = new NVariableDeclaration(*$1, *$2, $4); }
 ;
@@ -70,18 +72,18 @@ var_decl : ident ident TDECLARE expr { $$ = new NVariableDeclaration(*$1, *$2, $
 // Foo foo
 // Foo foo = Foo()
 var_assignment_decl : 
-  ident ident { $$ = new NVariableDeclaration(*$1, *$); }
-| ident ident TEQUAL eqpr { $$ = new NVariableDeclaration(*$1, *$2, *$4); }
+  ident ident { $$ = new NVariableDeclaration(*$1, *$2); }
+| ident ident TEQUAL expr { $$ = new NVariableDeclaration(*$1, *$2, $4); }
 ;
 
-func_decl : ident ident TLPAREN func_decl_args TRPAREN COLON block 
+func_decl : ident ident TLPAREN func_decl_args TRPAREN TCOLON block 
             { $$ = new NFunctionDeclaration(*$1, *$2, *$4, *$7); delete $4; }
 ;
 
 func_decl_args : 
   { $$ = new VariableList(); } // no args
 | var_assignment_decl { $$ = new VariableList(); $$->push_back($<var_decl>1); }
-| func_decl_arcs TCOMMA var_assignment_decl { $1->push_back($<var_decl>3); }
+| func_decl_args TCOMMA var_assignment_decl { $1->push_back($<var_decl>3); }
 ;
 
 ident : TIDENTIFIER { $$ = new NIdentifier(*$1); delete $1; }

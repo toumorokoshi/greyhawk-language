@@ -6,18 +6,22 @@
 #define TOKEN(t) (yylval.token = t)
 extern "C" int yywrap() { }
 
- int current_line_indent = 0; // indentation of current line
- int indent_level = 0; // indentation level passed to the parser
+ int current_line_indent = 0; /* indentation of current line */
+ int indent_level = 0; /* indentation level passed to the parser */
 
 %}
 
-%x indent // start state for parsing indentation
-%s normal // normal state for all else?
+  /* start state for parsing indentation */
+%x indent 
+  /* normal state for all else? */
+%s normal 
 
 %%
-// logic to handle indentation
-// based off of code here: 
-// http://stackoverflow.com/questions/1413204/how-to-use-indentation-as-block-delimiters-with-bison-and-flex
+  /* 
+   logic to handle indentation
+   based off of code here: 
+   http://stackoverflow.com/questions/1413204/how-to-use-indentation-as-block-delimiters-with-bison-and-flex 
+  */
 <indent>" "            { printf("A line can not start with spaces! only tabs denote indentation.\n"); yyterminate(); }
 
 <indent>"\t"           { current_line_indent++; }
@@ -34,12 +38,12 @@ extern "C" int yywrap() { }
    }
  }
 
-// regular logic 
+  /* regular logic */
 <normal>"\n"           { current_line_indent = 0; BEGIN indent; }
 
-[a-zA-Z_][a-ZA-Z0-9_]* SAVE_TOKEN; return TIDENTIFIER;
-[0-9]+\.[0-9]*         SAVE_TOKEN; return TDOUBLE;
-[0-9]+                 SAVE_TOKEN; return TINTEGER;
+[[:alpha:]_][[:alnum:]_]* SAVE_TOKEN; return TIDENTIFIER;
+[[:digit:]]+\.[[:digit]]*         SAVE_TOKEN; return TDOUBLE;
+[[:digit]]+                 SAVE_TOKEN; return TINTEGER;
 "="                    return TOKEN(TEQUAL);
 "=="                   return TOKEN(TCEQ);
 "!="                   return TOKEN(TCNE);
@@ -57,7 +61,7 @@ extern "C" int yywrap() { }
 "-"                    return TOKEN(TMINUS);
 "*"                    return TOKEN(TMUL);
 "/"                    return TOKEN(TDIV);
-" "                    ; // spaces are null operators
+" "                    ; /* spaces are null operators */
 .                      printf("Unknown token!\n"); yyterminate();
 
 %%
