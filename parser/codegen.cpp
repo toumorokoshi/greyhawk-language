@@ -1,13 +1,4 @@
-#include "llvm/Analysis/Verifier.h"
-#include "llvm/IR/DerivedTypes.h"
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/LLVMContext.h"
-#include "llvm/IR/Module.h"
-#include <cctype>
-#include <cstdio>
-#include <map>
-#include <string>
-#include <vector>
+#include "codegen.h"
 #include "node.h"
 #include "build/parser.hpp"
 
@@ -109,10 +100,28 @@ Value* NVariableDeclaration::codeGen(CodeGenContext& context) {
 }
 
 Value *NFunctionDeclaration::codeGen(CodeGenContext& context) {
-  vector<const Type*> argTypes;
-  VariableList::const_iterator it;
 
-  for (it = arguments.begin(); it != arguments.end(); it++) {
-    argTypes.push_back(typeOf((**int).type));
-  }
+	vector<const Type*> argTypes;
+	VariableList::const_iterator it;
+
+	for (it = arguments.begin(); it != arguments.end(); it++) {
+		argTypes.push_back(typeOf((**it).type));
+	}
+
+	FunctionType *ftype = FunctionType::get(typeOf(type), argTypes, false);
+	Function *function = Function::Create(ftype, GlobalValue::InternalLinkage, id.name.c_str(), context.module);
+	BasicBlock *bblock = BasicBlock::Create(getGlobalContext(), "entry", function, 0);
+
+	context.pushBlock(bblock);
+
+	for (it = arguments.begin(); it != arguments.end(); it++) {
+		(**it).codeGen(context);
+	}
+	
+	block.codeGen(context);
+	ReturnInst::Create(getGlobalContext(), bblock);
+
+	context.popBlock();
+	std::cout << "Creating function: " << id.name << std::endl;
+	return function;
 }
