@@ -1,2 +1,2 @@
-int32 DoMath(int32 a):
-	int32 x := a * 5
+int DoMath(int a):
+	int x := a * 5

@@ -107,8 +107,8 @@ expr :
 ;
 
 call_args :
-  { $$ = new ExpressionsList(); }
-| expr { $$ = new ExpressionsList(); $$->push_back($1); }
+  { $$ = new ExpressionList(); }
+| expr { $$ = new ExpressionList(); $$->push_back($1); }
 | call_args TCOMMA expr { $1->push_back($3); }
 ;
 
