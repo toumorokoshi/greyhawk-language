@@ -1,27 +1,10 @@
 #include <stack>
 #include <typeinfo>
-#include <cctype>
-#include <cstdio>
-#include <map>
-#include <string>
-#include <vector>
-#include <llvm/Function.h>
-#include <llvm/Type.h>
+#include <llvm/Analysis/Verifier.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
-#include <llvm/PassManager.h>
-#include <llvm/Instructions.h>
-#include <llvm/CallingConv.h>
-#include <llvm/Bitcode/ReaderWriter.h>
-#include <llvm/Analysis/Verifier.h>
-#include <llvm/Assembly/PrintModulePass.h>
-#include <llvm/Support/IRBuilder.h>
-#include <llvm/Target/TargetSelect.h>
-#include <llvm/ExecutionEngine/GenericValue.h>
-#include <llvm/ExecutionEngine/JIT.h>
-#include <llvm/Support/raw_ostream.h>
 
 using namespace llvm;
 
