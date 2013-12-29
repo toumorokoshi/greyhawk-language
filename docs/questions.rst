@@ -125,3 +125,20 @@ Switch/Case
 ===========
 
 Switch/Case statements should have no falling through (only evaluate the matching statement)
+
+simple concurrency constructs
+=============================
+
+Io has an interesting construct that makes build concurrent
+applications very simple. Since each invocation is actually a message,
+it allows the easy conversion of a synchronous process with an
+synchronous process:
+
+    // synchronous
+    Object name
+
+    // asynchronous with future value returned (placeholder which gets replaced by the real thing)
+    Object @name
+
+    // asynchronous with no return value
+    Object @@name
