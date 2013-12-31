@@ -142,3 +142,14 @@ synchronous process:
 
     // asynchronous with no return value
     Object @@name
+
+
+Determining methods with no side effects (purely functional?)
+=============================================================
+
+I've been bitten by this before, where I've used methods with side
+effects and it gave me issues because I wasn't aware it had side
+effects down the road. Maybe there's a way to express that?
+
+D does this with the 'pure' keyword. It would be cool to analyze pure functions at compile time, 
+and allow the 'pure' attribute to be explicitely added in situations where it is deemed necessary.
