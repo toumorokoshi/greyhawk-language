@@ -22,7 +22,7 @@ public:
     CodeGenContext() { module = new Module("main", getGlobalContext()); }
     
     void generateCode(NBlock& root);
-    GenericValue runCode();
+    void runCode();
     std::map<std::string, Value*>& locals() { return blocks.top()->locals; }
     BasicBlock *currentBlock() { return blocks.top()->block; }
     void pushBlock(BasicBlock *block) { blocks.push(new CodeGenBlock()); blocks.top()->block = block; }

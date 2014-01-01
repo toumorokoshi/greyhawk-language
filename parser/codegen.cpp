@@ -21,6 +21,10 @@ static Type *typeOf(const NIdentifier& type)
 
 Value* ErrorV(const char *str) { printf("Error: %s\n", str); return 0; }
 
+Value *Node::codeGen(CodeGenContext& context) {
+  return NULL;
+}
+
 Value* NDouble::codeGen(CodeGenContext& context) {
   std::cout << "Creating double: " << value << std::endl;
   return ConstantFP::get(getGlobalContext(), APFloat(value));
@@ -136,4 +140,41 @@ Value *NFunctionDeclaration::codeGen(CodeGenContext& context) {
 	context.popBlock();
 	std::cout << "Creating function: " << id.name << std::endl;
 	return function;
+}
+
+// CodeGenContext methods 
+void CodeGenContext::generateCode(NBlock& root)
+{
+	std::cout << "Generating code...\n";
+	
+	/* Create the top level interpreter function to call as entry */
+  std::vector<Type*> argTypes;
+	FunctionType *ftype = FunctionType::get(Builder.getVoidTy(), makeArrayRef(argTypes), false);
+	mainFunction = Function::Create(ftype, GlobalValue::InternalLinkage, "main", module);
+	BasicBlock *bblock = BasicBlock::Create(getGlobalContext(), "entry", mainFunction, 0);
+	
+	/* Push a new variable/block context */
+	pushBlock(bblock);
+	root.codeGen(*this); /* emit bytecode for the toplevel block */
+	ReturnInst::Create(getGlobalContext(), bblock);
+	popBlock();
+	
+	/* Print the bytecode in a human-readable format 
+	   to see if our program compiled properly
+	 */
+	std::cout << "Code is generated.\n";
+	PassManager pm;
+  module->dump();
+	// pm.add(createPrintModulePass());
+	//pm.run(*module);
+}
+
+/* Executes the AST by running the main function */
+void CodeGenContext::runCode() {
+	/* std::cout << "Running code...\n";
+	ExecutionEngine *ee = ExecutionEngine::create(module, false);
+  std::vector<GenericValue> noargs;
+	GenericValue v = ee->runFunction(mainFunction, noargs);
+	std::cout << "Code was run.\n";
+	return v; */
 }
