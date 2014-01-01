@@ -7,7 +7,19 @@ using namespace llvm;
 static IRBuilder<> Builder(getGlobalContext());
 static std::map<std::string, Value*> NamedValues;
 
-Value* ErrorV(const char *str) { Error(*str); return 0; }
+/* Returns an LLVM type based on the identifier */
+static Type *typeOf(const NIdentifier& type) 
+{
+	if (type.name.compare("int") == 0) {
+		return Type::getInt64Ty(getGlobalContext());
+	}
+	else if (type.name.compare("double") == 0) {
+		return Type::getDoubleTy(getGlobalContext());
+	}
+	return Type::getVoidTy(getGlobalContext());
+}
+
+Value* ErrorV(const char *str) { printf("Error: %s\n", str); return 0; }
 
 Value* NDouble::codeGen(CodeGenContext& context) {
   std::cout << "Creating double: " << value << std::endl;
@@ -25,7 +37,7 @@ Value* NIdentifier::codeGen(CodeGenContext& context) {
       std::cerr << "undeclared variable " << name << std::endl;
       return ErrorV("undeclared variable referenced!!");
   }
-  return new LoadInst(context.local()[name], "", false, context.currentBlock());
+  return new LoadInst(context.locals()[name], "", false, context.currentBlock());
 }
 
 Value* NMethodCall::codeGen(CodeGenContext& context) {
@@ -53,8 +65,8 @@ Value* NMethodCall::codeGen(CodeGenContext& context) {
 
 Value* NBinaryOperator::codeGen(CodeGenContext& context) {
   std::cout << "Creating binary operation " << op << std::endl;
-  Value* l = lhs->codeGen();
-  Value* r = rhs->codeGen();
+  Value* l = lhs.codeGen(context);
+  Value* r = rhs.codeGen(context);
   switch(op) {
   case TPLUS:  return Builder.CreateFAdd(l, r, "addtmp");
   case TMINUS: return Builder.CreateFSub(l, r, "subtmp");
@@ -90,25 +102,25 @@ Value* NExpressionStatement::codeGen(CodeGenContext& context) {
 
 Value* NVariableDeclaration::codeGen(CodeGenContext& context) {
   std::cout << "Creating variable declaration " << type.name << " " << id.name << std::endl;
-  AllocaInst* alloc = Builder.CreateAlloca(typeOf(type), id.name.c_str());
+  AllocaInst* alloc = Builder.CreateAlloca(typeOf(type), id.codeGen(context));
   context.locals()[id.name] = alloc;
   if (assignmentExpr != NULL) {
     NAssignment assignment(id, *assignmentExpr);
     assignment.codeGen(context);
   }
-  return alloc
+  return alloc;
 }
 
 Value *NFunctionDeclaration::codeGen(CodeGenContext& context) {
 
-	vector<const Type*> argTypes;
+  std::vector<llvm::Type*> argTypes;
 	VariableList::const_iterator it;
 
 	for (it = arguments.begin(); it != arguments.end(); it++) {
 		argTypes.push_back(typeOf((**it).type));
 	}
 
-	FunctionType *ftype = FunctionType::get(typeOf(type), argTypes, false);
+	FunctionType *ftype = FunctionType::get(typeOf(type), llvm::makeArrayRef(argTypes), false);
 	Function *function = Function::Create(ftype, GlobalValue::InternalLinkage, id.name.c_str(), context.module);
 	BasicBlock *bblock = BasicBlock::Create(getGlobalContext(), "entry", function, 0);
 

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <llvm/Value.h>
+#include "llvm.h"
 
 class CodeGenContext;
 class NStatement;
@@ -14,7 +14,7 @@ typedef std::vector<NVariableDeclaration*> VariableList;
 class Node {
  public:
   virtual ~Node() {}
-  virtual llvm::Value* codeGen(CodeGenContext& context) { }
+  virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 
 class NExpression : public Node {
@@ -59,7 +59,7 @@ class NBinaryOperator : public NExpression {
   int op;
   NExpression& lhs;
   NExpression& rhs;
-  NBinaryOperator(NExpression& lhs, int op, NExpression rhs) : 
+  NBinaryOperator(NExpression& lhs, int op, NExpression& rhs) : 
     lhs(lhs), rhs(rhs), op(op) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
 };
