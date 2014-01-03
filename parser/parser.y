@@ -25,7 +25,7 @@
 /* terminal tokens */
 
 // identifiers/constants
-%token <string> TIDENTIFIER TINTEGER TDOUBLE
+%token <string> TIDENTIFIER TINTEGER TDOUBLE TRETURN
 // comparison tokens 
 %token <token> TCEQ TCNE TCLT TCLE TCGT TCGE TEQUAL
 // method/function related tokens
@@ -59,8 +59,10 @@ stmts : stmt { $$ = new NBlock(); $$->statements.push_back($<stmt>1); }
       | stmts stmt { $1->statements.push_back($<stmt>2); }
 ;
 
-stmt : var_decl
-     | func_decl
+stmt : 
+  var_decl
+| func_decl
+| expr
 ;
 
 block : 
@@ -104,6 +106,7 @@ expr :
 | numeric
 | expr comparison expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
 | TLPAREN expr TRPAREN { $$ = $2; }
+| TRETURN expr { $$ = $2; }
 ;
 
 call_args :

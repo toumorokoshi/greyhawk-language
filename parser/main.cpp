@@ -6,10 +6,10 @@ extern int yyparse();
 
 int main(int argc, char **argv) {
   yyparse();
-  std::cout << programBlock << std::endl;
 
   CodeGenContext context;
-  context.generateCode(*programBlock);
-  context.runCode();
+  // context.generateCode(*programBlock);
+  // context.runCode();
+  context.printAST(*programBlock);
   return 0;
 }

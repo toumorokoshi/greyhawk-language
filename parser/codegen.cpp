@@ -109,6 +109,7 @@ Value* NVariableDeclaration::codeGen(CodeGenContext& context) {
   AllocaInst* alloc = Builder.CreateAlloca(typeOf(type), id.codeGen(context));
   context.locals()[id.name] = alloc;
   if (assignmentExpr != NULL) {
+    std::cout << "Expression is null!" << std::endl;
     NAssignment assignment(id, *assignmentExpr);
     assignment.codeGen(context);
   }
@@ -131,9 +132,9 @@ Value *NFunctionDeclaration::codeGen(CodeGenContext& context) {
 	context.pushBlock(bblock);
 
 	for (it = arguments.begin(); it != arguments.end(); it++) {
-		(**it).codeGen(context);
+    (**it).codeGen(context);
 	}
-	
+
 	block.codeGen(context);
 	ReturnInst::Create(getGlobalContext(), bblock);
 
@@ -177,4 +178,8 @@ void CodeGenContext::runCode() {
 	GenericValue v = ee->runFunction(mainFunction, noargs);
 	std::cout << "Code was run.\n";
 	return v; */
+}
+
+void CodeGenContext::printAST(NBlock& root) {
+  root.printAST(0);
 }

@@ -37,9 +37,10 @@
 
   /* regular logic */
 <INITIAL>"\n"           { current_line_indent = 0; BEGIN(indent); }
+"return"                     return TOKEN(TRETURN);
 [[:alpha:]_][[:alnum:]_]*    SAVE_TOKEN; return TIDENTIFIER;
-[[:digit:]]+\.[[:digit:]]*    SAVE_TOKEN; return TDOUBLE;
-[[:digit:]]+                  SAVE_TOKEN; return TINTEGER;
+[[:digit:]]+\.[[:digit:]]*   SAVE_TOKEN; return TDOUBLE;
+[[:digit:]]+                 SAVE_TOKEN; return TINTEGER;
 "="                          return TOKEN(TEQUAL);
 "=="                   return TOKEN(TCEQ);
 "!="                   return TOKEN(TCNE);

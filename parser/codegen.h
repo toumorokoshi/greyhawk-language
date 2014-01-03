@@ -22,6 +22,7 @@ public:
     CodeGenContext() { module = new Module("main", getGlobalContext()); }
     
     void generateCode(NBlock& root);
+    void printAST(NBlock& root);
     void runCode();
     std::map<std::string, Value*>& locals() { return blocks.top()->locals; }
     BasicBlock *currentBlock() { return blocks.top()->block; }
