@@ -31,7 +31,7 @@ Value* NDouble::codeGen(CodeGenContext& context) {
 }
 
 Value* NInteger::codeGen(CodeGenContext& context) {
-  std::cout << "Creating integer (double for now): " << value << std::endl;
+  std::cout << "Creating integer: " << value << std::endl;
   return ConstantInt::get(getGlobalContext(), APInt(64, value, true));
 }
 
@@ -39,7 +39,7 @@ Value* NIdentifier::codeGen(CodeGenContext& context) {
   std::cout << "Creating identifier reference: " << name << std::endl;
   if(context.locals().find(name) == context.locals().end()) {
       std::cerr << "undeclared variable " << name << std::endl;
-      return ErrorV("undeclared variable referenced!!");
+      return NULL;
   }
   return new LoadInst(context.locals()[name], "", false, context.currentBlock());
 }
@@ -72,9 +72,9 @@ Value* NBinaryOperator::codeGen(CodeGenContext& context) {
   Value* l = lhs.codeGen(context);
   Value* r = rhs.codeGen(context);
   switch(op) {
-  case TPLUS:  return Builder.CreateFAdd(l, r, "addtmp");
-  case TMINUS: return Builder.CreateFSub(l, r, "subtmp");
-  case TMUL:   return Builder.CreateFMul(l, r, "multmp");
+  case TPLUS:  return Builder.CreateAdd(l, r, "addtmp");
+  case TMINUS: return Builder.CreateSub(l, r, "subtmp");
+  case TMUL:   return Builder.CreateMul(l, r, "multmp");
   case TDIV:   return Builder.CreateFDiv(l, r, "divtmp");
   default:     return ErrorV("invalid binary operator!");
   }
