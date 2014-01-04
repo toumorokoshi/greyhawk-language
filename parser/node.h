@@ -108,6 +108,7 @@ class NVariableDeclaration : public NStatement {
     type(type), id(id), assignmentExpr(assignmentExpr)  { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
+  virtual void printAST(int); 
 };
 
 class NFunctionDeclaration : public NStatement {
@@ -120,4 +121,5 @@ class NFunctionDeclaration : public NStatement {
     type(type), id(id), arguments(arguments), block(block) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
+  virtual void printAST(int); 
 };

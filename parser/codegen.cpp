@@ -105,7 +105,7 @@ Value* NExpressionStatement::codeGen(CodeGenContext& context) {
 }
 
 Value* NVariableDeclaration::codeGen(CodeGenContext& context) {
-  std::cout << "Creating variable declaration " << type.name << " " << id.name << std::endl;
+  std::cout << nodeName() << std::endl;
   AllocaInst* alloc = Builder.CreateAlloca(typeOf(type), id.codeGen(context));
   context.locals()[id.name] = alloc;
   if (assignmentExpr != NULL) {
