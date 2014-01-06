@@ -106,7 +106,8 @@ expr :
 | numeric
 | expr comparison expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
 | TLPAREN expr TRPAREN { $$ = $2; }
-| TRETURN expr { $$ = $2; }
+| TRETURN expr { $$ = new NReturn($2); }
+| TRETURN { $$ = new NReturn(); }
 ;
 
 call_args :

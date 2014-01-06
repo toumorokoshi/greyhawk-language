@@ -99,6 +99,14 @@ Value* NBlock::codeGen(CodeGenContext& context) {
   return last;
 }
 
+Value* NReturn::codeGen(CodeGenContext& context) {
+  if (returnExpr != NULL) {
+    return Builder.CreateRet(returnExpr->codeGen(context));
+  } else {
+    return Builder.CreateRetVoid();
+  }
+}
+
 Value* NExpressionStatement::codeGen(CodeGenContext& context) {
   std::cout << "Generating code for " << typeid(expression).name() << std::endl;
   return expression.codeGen(context);
@@ -109,7 +117,6 @@ Value* NVariableDeclaration::codeGen(CodeGenContext& context) {
   AllocaInst* alloc = Builder.CreateAlloca(typeOf(type), id.codeGen(context));
   context.locals()[id.name] = alloc;
   if (assignmentExpr != NULL) {
-    std::cout << "Expression is null!" << std::endl;
     NAssignment assignment(id, *assignmentExpr);
     assignment.codeGen(context);
   }

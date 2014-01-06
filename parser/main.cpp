@@ -8,8 +8,8 @@ int main(int argc, char **argv) {
   yyparse();
 
   CodeGenContext context;
-  // context.generateCode(*programBlock);
-  // context.runCode();
   context.printAST(*programBlock);
+  context.generateCode(*programBlock);
+  // context.runCode();
   return 0;
 }

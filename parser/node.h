@@ -70,6 +70,7 @@ class NBinaryOperator : public NExpression {
     lhs(lhs), rhs(rhs), op(op) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
+  virtual void printAST(int);
 };
 
 class NAssignment : public NExpression {
@@ -79,6 +80,16 @@ class NAssignment : public NExpression {
   NAssignment(NIdentifier& lhs, NExpression& rhs) : lhs(lhs), rhs(rhs) {}
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
+};
+
+class NReturn: public NExpression {
+ public:
+  NExpression* returnExpr;
+  NReturn(NExpression* returnExpr) : returnExpr(returnExpr) {}
+  NReturn() : returnExpr(NULL) {}
+  virtual llvm::Value* codeGen(CodeGenContext& context);
+  virtual std::string nodeName();
+  virtual void printAST(int); 
 };
 
 class NBlock : public NExpression {
