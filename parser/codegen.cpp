@@ -85,6 +85,7 @@ Value* NAssignment::codeGen(CodeGenContext& context) {
   if (context.locals().find(lhs.name) == context.locals().end()) {
     return ErrorV("Undeclared variable");
   }
+  std::cout << "Object is: " << context.locals()[lhs.name]->getType()->getTypeID() << std::endl;
   return Builder.CreateStore(rhs.codeGen(context), context.locals()[lhs.name], false);
 }
 
@@ -114,7 +115,7 @@ Value* NExpressionStatement::codeGen(CodeGenContext& context) {
 
 Value* NVariableDeclaration::codeGen(CodeGenContext& context) {
   std::cout << nodeName() << std::endl;
-  AllocaInst* alloc = Builder.CreateAlloca(typeOf(type), id.codeGen(context));
+  AllocaInst* alloc = Builder.CreateAlloca(typeOf(type), id.codeGen(context), id.name);
   context.locals()[id.name] = alloc;
   if (assignmentExpr != NULL) {
     NAssignment assignment(id, *assignmentExpr);
