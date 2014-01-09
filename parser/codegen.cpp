@@ -140,9 +140,14 @@ Value *NFunctionDeclaration::codeGen(CodeGenContext& context) {
   Builder.SetInsertPoint(bblock);
 	context.pushBlock(bblock);
 
-	for (it = arguments.begin(); it != arguments.end(); it++) {
-    (**it).codeGen(context);
-	}
+  // Set names for all arguments.
+  unsigned i = 0;
+  for (Function::arg_iterator AI = function->arg_begin(); i != arguments.size(); ++AI, ++i) {
+    AI->setName(arguments[i]->id.name);
+    
+    // Add arguments to variable symbol table.
+    context.locals()[arguments[i]->id.name] = AI;
+  }
 
 	block.codeGen(context);
 	// ReturnInst::Create(getGlobalContext(), bblock);
