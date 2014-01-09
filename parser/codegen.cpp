@@ -6,6 +6,7 @@ using namespace llvm;
 
 static IRBuilder<> Builder(getGlobalContext());
 static std::map<std::string, Value*> NamedValues;
+static raw_os_ostream debug_os_ostream(std::cout);
 
 /* Returns an LLVM type based on the identifier */
 static Type *typeOf(const NIdentifier& type) 
@@ -136,7 +137,7 @@ Value *NFunctionDeclaration::codeGen(CodeGenContext& context) {
 	FunctionType *ftype = FunctionType::get(typeOf(type), llvm::makeArrayRef(argTypes), false);
 	Function *function = Function::Create(ftype, GlobalValue::InternalLinkage, id.name.c_str(), context.module);
 	BasicBlock *bblock = BasicBlock::Create(getGlobalContext(), "entry", function, 0);
-
+  Builder.SetInsertPoint(bblock);
 	context.pushBlock(bblock);
 
 	for (it = arguments.begin(); it != arguments.end(); it++) {
@@ -144,7 +145,7 @@ Value *NFunctionDeclaration::codeGen(CodeGenContext& context) {
 	}
 
 	block.codeGen(context);
-	ReturnInst::Create(getGlobalContext(), bblock);
+	// ReturnInst::Create(getGlobalContext(), bblock);
 
 	context.popBlock();
 	std::cout << "Creating function: " << id.name << std::endl;
