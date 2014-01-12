@@ -1,3 +1,3 @@
 int DoMath(int a):
-	int x := 6
+	int x := a * 6
 	return x

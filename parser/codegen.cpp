@@ -42,7 +42,8 @@ Value* NIdentifier::codeGen(CodeGenContext& context) {
       std::cerr << "undeclared variable " << name << std::endl;
       return NULL;
   }
-  return new LoadInst(context.locals()[name], "", false, context.currentBlock());
+  context.locals()[name]->print(debug_os_ostream);
+  return Builder.CreateLoad(context.locals()[name], false);
 }
 
 Value* NMethodCall::codeGen(CodeGenContext& context) {
@@ -71,7 +72,9 @@ Value* NMethodCall::codeGen(CodeGenContext& context) {
 Value* NBinaryOperator::codeGen(CodeGenContext& context) {
   std::cout << "Creating binary operation " << op << std::endl;
   Value* l = lhs.codeGen(context);
+  l->print(debug_os_ostream);
   Value* r = rhs.codeGen(context);
+  r->print(debug_os_ostream);
   switch(op) {
   case TPLUS:  return Builder.CreateAdd(l, r, "addtmp");
   case TMINUS: return Builder.CreateSub(l, r, "subtmp");
