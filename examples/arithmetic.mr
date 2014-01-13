@@ -1,3 +1,6 @@
-int DoMath(int a):
-	int x := a * 6
+void main():
+	DoMath(5, 6)
+
+int DoMath(int a, int b):
+	int x := a * b + 5
 	return x

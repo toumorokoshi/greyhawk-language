@@ -5,7 +5,6 @@
 using namespace llvm;
 
 static IRBuilder<> Builder(getGlobalContext());
-static std::map<std::string, Value*> NamedValues;
 static raw_os_ostream debug_os_ostream(std::cout);
 
 /* Returns an LLVM type based on the identifier */
@@ -39,8 +38,8 @@ Value* NInteger::codeGen(CodeGenContext& context) {
 Value* NIdentifier::codeGen(CodeGenContext& context) {
   std::cout << "Creating identifier reference: " << name << std::endl;
   if(context.locals().find(name) == context.locals().end()) {
-      std::cerr << "undeclared variable " << name << std::endl;
-      return NULL;
+    std::cerr << "undeclared variable " << name << std::endl;
+    return NULL;
   }
   context.locals()[name]->print(debug_os_ostream);
   return Builder.CreateLoad(context.locals()[name], false);
@@ -106,7 +105,9 @@ Value* NBlock::codeGen(CodeGenContext& context) {
 
 Value* NReturn::codeGen(CodeGenContext& context) {
   if (returnExpr != NULL) {
-    return Builder.CreateRet(returnExpr->codeGen(context));
+    Value* returnValue = returnExpr->codeGen(context);
+    returnValue->print(debug_os_ostream);
+    return Builder.CreateRet(returnValue);
   } else {
     return Builder.CreateRetVoid();
   }
@@ -128,7 +129,7 @@ Value* NVariableDeclaration::codeGen(CodeGenContext& context) {
   return alloc;
 }
 
-Value *NFunctionDeclaration::codeGen(CodeGenContext& context) {
+Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
 
   std::vector<llvm::Type*> argTypes;
 	VariableList::const_iterator it;
@@ -138,7 +139,7 @@ Value *NFunctionDeclaration::codeGen(CodeGenContext& context) {
 	}
 
 	FunctionType *ftype = FunctionType::get(typeOf(type), llvm::makeArrayRef(argTypes), false);
-	Function *function = Function::Create(ftype, GlobalValue::InternalLinkage, id.name.c_str(), context.module);
+	Function *function = Function::Create(ftype, Function::ExternalLinkage, id.name.c_str(), context.module);
 	BasicBlock *bblock = BasicBlock::Create(getGlobalContext(), "entry", function, 0);
   Builder.SetInsertPoint(bblock);
 	context.pushBlock(bblock);
@@ -149,7 +150,9 @@ Value *NFunctionDeclaration::codeGen(CodeGenContext& context) {
     AI->setName(arguments[i]->id.name);
     
     // Add arguments to variable symbol table.
-    context.locals()[arguments[i]->id.name] = AI;
+    Value* allocation = arguments[i]->codeGen(context);
+    Builder.CreateStore(AI, allocation);
+    context.locals()[arguments[i]->id.name] = allocation;
   }
 
 	block.codeGen(context);
