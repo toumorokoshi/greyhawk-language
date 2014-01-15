@@ -1,6 +1,7 @@
 #include <stack>
 #include <typeinfo>
 #include <cstdio>
+#include <cstring>
 #include "llvm.h"
 
 using namespace llvm;
@@ -15,9 +16,9 @@ public:
 
 class CodeGenContext {
     std::stack<CodeGenBlock *> blocks;
-    Function *mainFunction;
 
 public:
+    Function *mainFunction;
     Module *module;
     CodeGenContext() { module = new Module("main", getGlobalContext()); }
     

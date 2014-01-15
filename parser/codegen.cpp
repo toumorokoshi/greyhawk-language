@@ -6,6 +6,7 @@ using namespace llvm;
 
 static IRBuilder<> Builder(getGlobalContext());
 static raw_os_ostream debug_os_ostream(std::cout);
+// any value can have debug info printed with:  <Value*>->print(debug_os_ostream);
 
 /* Returns an LLVM type based on the identifier */
 static Type *typeOf(const NIdentifier& type) 
@@ -41,7 +42,6 @@ Value* NIdentifier::codeGen(CodeGenContext& context) {
     std::cerr << "undeclared variable " << name << std::endl;
     return NULL;
   }
-  context.locals()[name]->print(debug_os_ostream);
   return Builder.CreateLoad(context.locals()[name], false);
 }
 
@@ -71,9 +71,7 @@ Value* NMethodCall::codeGen(CodeGenContext& context) {
 Value* NBinaryOperator::codeGen(CodeGenContext& context) {
   std::cout << "Creating binary operation " << op << std::endl;
   Value* l = lhs.codeGen(context);
-  l->print(debug_os_ostream);
   Value* r = rhs.codeGen(context);
-  r->print(debug_os_ostream);
   switch(op) {
   case TPLUS:  return Builder.CreateAdd(l, r, "addtmp");
   case TMINUS: return Builder.CreateSub(l, r, "subtmp");
@@ -106,7 +104,6 @@ Value* NBlock::codeGen(CodeGenContext& context) {
 Value* NReturn::codeGen(CodeGenContext& context) {
   if (returnExpr != NULL) {
     Value* returnValue = returnExpr->codeGen(context);
-    returnValue->print(debug_os_ostream);
     return Builder.CreateRet(returnValue);
   } else {
     return Builder.CreateRetVoid();
@@ -141,6 +138,12 @@ Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
 	FunctionType *ftype = FunctionType::get(typeOf(type), llvm::makeArrayRef(argTypes), false);
 	Function *function = Function::Create(ftype, Function::ExternalLinkage, id.name.c_str(), context.module);
 	BasicBlock *bblock = BasicBlock::Create(getGlobalContext(), "entry", function, 0);
+
+  // if the main function, we set main function to that
+  if (std::strcmp(id.name.c_str(), "main") == 0) {
+    context.mainFunction = function;
+  }
+      
   Builder.SetInsertPoint(bblock);
 	context.pushBlock(bblock);
 
@@ -169,16 +172,8 @@ void CodeGenContext::generateCode(NBlock& root)
 	std::cout << "Generating code...\n";
 	
 	/* Create the top level interpreter function to call as entry */
-  std::vector<Type*> argTypes;
-	FunctionType *ftype = FunctionType::get(Builder.getVoidTy(), makeArrayRef(argTypes), false);
-	mainFunction = Function::Create(ftype, GlobalValue::InternalLinkage, "main", module);
-	BasicBlock *bblock = BasicBlock::Create(getGlobalContext(), "entry", mainFunction, 0);
-	
-	/* Push a new variable/block context */
-	pushBlock(bblock);
+  
 	root.codeGen(*this); /* emit bytecode for the toplevel block */
-	ReturnInst::Create(getGlobalContext(), bblock);
-	popBlock();
 	
 	/* Print the bytecode in a human-readable format 
 	   to see if our program compiled properly
