@@ -19,8 +19,12 @@ class CodeGenContext {
 
 public:
     Function *mainFunction;
+    FunctionPassManager *fpm; // optimizer for function code
     Module *module;
-    CodeGenContext() { module = new Module("main", getGlobalContext()); }
+    CodeGenContext() { 
+      module = new Module("main", getGlobalContext()); 
+      fpm = createFPM(module);
+    }
     
     void generateCode(NBlock& root);
     void printAST(NBlock& root);
@@ -29,4 +33,15 @@ public:
     BasicBlock *currentBlock() { return blocks.top()->block; }
     void pushBlock(BasicBlock *block) { blocks.push(new CodeGenBlock()); blocks.top()->block = block; }
     void popBlock() { CodeGenBlock *top = blocks.top(); blocks.pop(); delete top; }
+
+    FunctionPassManager* createFPM(Module* module) {
+      FunctionPassManager* fpm = new FunctionPassManager(module);
+      fpm->add(createBasicAliasAnalysisPass());
+      fpm->add(createInstructionCombiningPass());
+      fpm->add(createReassociatePass());
+      fpm->add(createGVNPass());
+      fpm->add(createCFGSimplificationPass());
+      fpm->doInitialization();
+      return fpm;
+    }
 };
