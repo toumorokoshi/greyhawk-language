@@ -103,7 +103,7 @@ class NBlock : public NExpression {
 };
 
 
-class NConditional : public NExpression {
+class NConditional : public NStatement {
 public:
   NExpression* condition;
   NBlock* ifBlock;

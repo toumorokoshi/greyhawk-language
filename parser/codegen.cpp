@@ -16,7 +16,9 @@ static Type *typeOf(const NIdentifier& type)
 	}
 	else if (type.name.compare("double") == 0) {
 		return Type::getDoubleTy(getGlobalContext());
-	}
+	} else if (type.name.compare("bool") == 0) {
+    return Type::getInt1Ty(getGlobalContext());
+  }
 	return Type::getVoidTy(getGlobalContext());
 }
 
@@ -76,6 +78,8 @@ Value* NBinaryOperator::codeGen(CodeGenContext& context) {
   case TMINUS: return Builder.CreateSub(l, r, "subtmp");
   case TMUL:   return Builder.CreateMul(l, r, "multmp");
   case TDIV:   return Builder.CreateFDiv(l, r, "divtmp");
+  case TCEQ:   return Builder.CreateFCmpOEQ(l, r, "eqtmp");
+  case TCNE:   return Builder.CreateFCmpONE(l, r, "neqtmp");
   default:     return ErrorV("invalid binary operator!");
   }
 }
@@ -120,6 +124,7 @@ Value* NConditional::codeGen(CodeGenContext& context) {
   Builder.CreateBr(mergeBasicBlock);
   // we re-assign thenBasicBlock, because it could have been modified by the inner code
   thenBasicBlock = Builder.GetInsertBlock();
+	context.popBlock();
  
   /* ELSE BLOCK */
   function->getBasicBlockList().push_back(elseBasicBlock);
@@ -181,8 +186,7 @@ Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
 
   Builder.SetInsertPoint(bblock);
 	context.pushBlock(bblock);
-
-  // Set names for all arguments.
+ // Set names for all arguments.
   unsigned i = 0;
   for (Function::arg_iterator AI = function->arg_begin(); i != arguments.size(); ++AI, ++i) {
     AI->setName(arguments[i]->id.name);

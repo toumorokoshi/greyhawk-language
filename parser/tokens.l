@@ -45,8 +45,8 @@
 [[:alpha:]_][[:alnum:]_]*    SAVE_TOKEN; return TIDENTIFIER;
 [[:digit:]]+\.[[:digit:]]*   SAVE_TOKEN; return TDOUBLE;
 [[:digit:]]+                 SAVE_TOKEN; return TINTEGER;
-"="                          return TOKEN(TEQUAL);
 "=="                   return TOKEN(TCEQ);
+"="                    return TOKEN(TEQUAL);
 "!="                   return TOKEN(TCNE);
 "<"                    return TOKEN(TCLT);
 "<="                   return TOKEN(TCLE);

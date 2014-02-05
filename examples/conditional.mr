@@ -1,5 +1,8 @@
-int TestIfElse():
-	return 1
+int TestIfElse(bool x):
+	if x == true:
+		return 1
+	else:
+		return 2
 
 void main():
-	TestIfElse()
+	TestIfElse(true)

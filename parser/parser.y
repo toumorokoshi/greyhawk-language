@@ -47,7 +47,7 @@
 %type <varvec> func_decl_args
 %type <exprvec> call_args
 %type <block> program statements module_statements block
-%type <statement> module_statement statement var_decl var_assignment_decl func_decl
+%type <statement> module_statement statement var_decl var_assignment_decl func_decl conditional
 %type <token> comparison
 
  // operator precedence
@@ -79,6 +79,7 @@ statements :
 statement : 
   var_decl
 | method_call { $$ = new NExpressionStatement($1); }
+| conditional
 | TRETURN expr { $$ = new NReturn($2); }
 | TRETURN { $$ = new NReturn(); }
 ;
@@ -121,6 +122,10 @@ method_call:
   ident TLPAREN call_args TRPAREN { $$ = new NMethodCall(*$1, *$3); delete $3; }
 ;
 
+conditional:
+  TIF expr TCOLON block TELSE TCOLON block { $$ = new NConditional($2, $4, $7); }
+;
+
 expr : 
   ident TEQUAL expr { $$ = new NAssignment(*$<ident>1, *$3); }
 | ident { $<ident>$ = $1; }
@@ -128,7 +133,8 @@ expr :
 | method_call
 | expr comparison expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
 | TLPAREN expr TRPAREN { $$ = $2; }
-  // | TIF expr TCOLON block TELSE TCOLON block { $$ = new NConditional($2, $4, $7); }
+| TTRUE { $$ = new NBoolean(true); }
+| TFALSE { $$ = new NBoolean(false); }
 ;
 
 call_args :
