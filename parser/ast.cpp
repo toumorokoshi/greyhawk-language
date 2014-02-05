@@ -1,7 +1,7 @@
 // ast methods
 #include <cstdio>
 #include <sstream>
-#include "node.h"
+#include "node.hpp"
 
 using namespace std;
 
@@ -23,6 +23,10 @@ string NIdentifier::nodeName() {
   return output.str();
 }
 
+string NBoolean::nodeName() {
+  return value ? "Boolean: true" : "Boolean: false";
+}
+
 string NMethodCall::nodeName() { return "Method Call"; }
 
 string NBinaryOperator::nodeName() { 
@@ -36,6 +40,8 @@ string NAssignment::nodeName() { return "Assignment"; }
 string NReturn::nodeName() { return "Return"; }
 
 string NBlock::nodeName() { return "Block"; }
+
+string NConditional::nodeName() { return "If Statement"; }
 
 string NExpressionStatement::nodeName() { return "Expression"; }
 
@@ -69,6 +75,16 @@ void NBlock::printAST(int indentation) {
   for (StatementList::const_iterator it = statements.begin(); it != statements.end(); it++) {
     (**it).printAST(indentation);
   }
+  indentation--;
+}
+
+void NConditional::printAST(int indentation) {
+  Node::printAST(indentation);
+  // print if statements
+  indentation++;
+  condition->printAST(indentation);
+  ifBlock->printAST(indentation);
+  elseBlock->printAST(indentation);
   indentation--;
 }
 

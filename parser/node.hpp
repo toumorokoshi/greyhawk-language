@@ -50,6 +50,14 @@ class NIdentifier : public NExpression {
   virtual std::string nodeName();
 };
 
+class NBoolean : public NExpression {
+ public:
+  bool value;
+  NBoolean(bool value) : value(value) { }
+  virtual llvm::Value* codeGen(CodeGenContext& context);
+  virtual std::string nodeName();
+};
+
 class NMethodCall : public NExpression {
  public:
   const NIdentifier& id;
@@ -96,6 +104,19 @@ class NBlock : public NExpression {
  public:
   StatementList statements;
   NBlock() { }
+  virtual llvm::Value* codeGen(CodeGenContext& context);
+  virtual std::string nodeName();
+  virtual void printAST(int); 
+};
+
+
+class NConditional : public NExpression {
+public:
+  NExpression* condition;
+  NBlock* ifBlock;
+  NBlock* elseBlock;
+  NConditional(NExpression* condition, NBlock* ifBlock, NBlock *elseBlock) : 
+    condition(condition), ifBlock(ifBlock), elseBlock(elseBlock) {}
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
   virtual void printAST(int); 

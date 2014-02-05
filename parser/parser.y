@@ -1,6 +1,6 @@
 %{
   #include <cstdio>
-  #include "node.h"
+  #include "node.hpp"
   NBlock *programBlock; // top level block
 
   extern int yylex();
@@ -30,10 +30,14 @@
 %token <token> TCEQ TCNE TCLT TCLE TCGT TCGE TEQUAL
 // method/function related tokens
 %token <token> TLPAREN TRPAREN TCOMMA TDOT TCOLON TINDENT TUNINDENT
+ // control flow tokens
+%token <token> TIF TELSE
  // assignment-related tokens 
 %token <token> TDECLARE
 // operator-related tokens
 %token <token> TPLUS TMINUS TMUL TDIV
+ // constants
+%token <token> TTRUE TFALSE
 
 // non-terminal tokens
 %type <ident> ident
@@ -62,11 +66,10 @@ stmts : stmt { $$ = new NBlock(); $$->statements.push_back($<stmt>1); }
 stmt : 
   var_decl
 | func_decl
-| expr
 ;
 
 block : 
-  TINDENT stmts TUNINDENT { $$ = $2; } |
+  TINDENT stmts TUNINDENT { $$ = $2; }
 | TINDENT stmts { $$ = $2; }
 ;
 
@@ -108,6 +111,7 @@ expr :
 | TLPAREN expr TRPAREN { $$ = $2; }
 | TRETURN expr { $$ = new NReturn($2); }
 | TRETURN { $$ = new NReturn(); }
+| TIF expr TCOLON block TELSE TCOLON block { $$ = new NConditional($2, $4, $7); }
 ;
 
 call_args :

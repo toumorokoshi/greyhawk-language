@@ -1,6 +1,6 @@
 %{
 #include <string.h>
-#include "node.h"
+#include "node.hpp"
 #include "parser.hpp"
 #define SAVE_TOKEN yylval.string = new std::string(yytext, yyleng)
 #define TOKEN(t) (yylval.token = t)
@@ -37,6 +37,10 @@
 
   /* regular logic */
 <INITIAL>"\n"           { current_line_indent = 0; BEGIN(indent); }
+"if"                         return TOKEN(TIF);
+"else"                       return TOKEN(TELSE);
+"true"                       return TOKEN(TTRUE);
+"false"                      return TOKEN(TFALSE);
 "return"                     return TOKEN(TRETURN);
 [[:alpha:]_][[:alnum:]_]*    SAVE_TOKEN; return TIDENTIFIER;
 [[:digit:]]+\.[[:digit:]]*   SAVE_TOKEN; return TDOUBLE;

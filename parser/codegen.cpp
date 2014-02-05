@@ -1,5 +1,5 @@
 #include "codegen.h"
-#include "node.h"
+#include "node.hpp"
 #include "build/parser.hpp"
 
 using namespace llvm;
@@ -39,6 +39,10 @@ Value* NIdentifier::codeGen(CodeGenContext& context) {
     return NULL;
   }
   return Builder.CreateLoad(context.locals()[name], false);
+}
+
+Value* NBoolean::codeGen(CodeGenContext& context) {
+  return value ? Builder.getTrue() : Builder.getFalse();
 }
 
 Value* NMethodCall::codeGen(CodeGenContext& context) {
@@ -90,6 +94,48 @@ Value* NBlock::codeGen(CodeGenContext& context) {
     last = (**it).codeGen(context);
   }
   return last;
+}
+
+Value* NConditional::codeGen(CodeGenContext& context) {
+  // first, we get the value of the result
+  Value* conditionResult = condition->codeGen(context);
+  Function* function = Builder.GetInsertBlock()->getParent();
+  
+  // then, we generate the LLVM blocks for each of the branches
+  BasicBlock* thenBasicBlock = BasicBlock::Create(getGlobalContext(), "then", function);
+  // we don't add the function context to else/merge until later, to keep the right order
+  BasicBlock* elseBasicBlock = BasicBlock::Create(getGlobalContext(), "else");
+  BasicBlock* mergeBasicBlock = BasicBlock::Create(getGlobalContext(), "merge");
+
+  // and we create an instruction to branch them all
+  Builder.CreateCondBr(conditionResult, thenBasicBlock, elseBasicBlock);
+
+  // now we fill in each of the blocks
+
+  /* THEN BLOCK */
+  Builder.SetInsertPoint(thenBasicBlock);
+  context.pushBlock(thenBasicBlock);
+  Value* thenReturnValue = ifBlock->codeGen(context);
+  // we always add a mergeBasicBlock at the end, to end up there.
+  Builder.CreateBr(mergeBasicBlock);
+  // we re-assign thenBasicBlock, because it could have been modified by the inner code
+  thenBasicBlock = Builder.GetInsertBlock();
+ 
+  /* ELSE BLOCK */
+  function->getBasicBlockList().push_back(elseBasicBlock);
+  Builder.SetInsertPoint(elseBasicBlock);
+  context.pushBlock(elseBasicBlock);
+  Value* elseReturnValue = elseBlock->codeGen(context);
+  Builder.CreateBr(mergeBasicBlock);
+  elseBasicBlock = Builder.GetInsertBlock();
+
+  /* MERGE BLOCK */
+  function->getBasicBlockList().push_back(mergeBasicBlock);
+  Builder.SetInsertPoint(mergeBasicBlock);
+  PHINode *phiNode = Builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), 2, "iftemp");
+  phiNode->addIncoming(thenReturnValue, thenBasicBlock);
+  phiNode->addIncoming(elseReturnValue, elseBasicBlock);
+  return phiNode;
 }
 
 Value* NReturn::codeGen(CodeGenContext& context) {

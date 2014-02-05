@@ -1,0 +1,5 @@
+int TestIfElse(int x):
+	return 1
+
+void main():
+	TestIfElse()
