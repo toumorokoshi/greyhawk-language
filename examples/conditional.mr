@@ -1,4 +1,4 @@
-int TestIfElse(int x):
+int TestIfElse():
 	return 1
 
 void main():

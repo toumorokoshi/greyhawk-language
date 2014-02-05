@@ -20,9 +20,12 @@ class Node {
   virtual void printAST(int); 
 };
 
+// Expressions are nodes that always return a value, the value of the
+// result of the expression.
 class NExpression : public Node {
 };
 
+// Statements do not necessarily return a value
 class NStatement : public Node {
 };
 
@@ -90,16 +93,6 @@ class NAssignment : public NExpression {
   virtual std::string nodeName();
 };
 
-class NReturn: public NExpression {
- public:
-  NExpression* returnExpr;
-  NReturn(NExpression* returnExpr) : returnExpr(returnExpr) {}
-  NReturn() : returnExpr(NULL) {}
-  virtual llvm::Value* codeGen(CodeGenContext& context);
-  virtual std::string nodeName();
-  virtual void printAST(int); 
-};
-
 class NBlock : public NExpression {
  public:
   StatementList statements;
@@ -122,10 +115,21 @@ public:
   virtual void printAST(int); 
 };
 
+class NReturn: public NStatement {
+ public:
+  NExpression* returnExpr;
+  NReturn(NExpression* returnExpr) : returnExpr(returnExpr) {}
+  NReturn() : returnExpr(NULL) {}
+  virtual llvm::Value* codeGen(CodeGenContext& context);
+  virtual std::string nodeName();
+  virtual void printAST(int); 
+};
+
+
 class NExpressionStatement : public NStatement {
  public:
-  NExpression& expression;
-  NExpressionStatement(NExpression& expression) : expression(expression) { }
+  NExpression* expression;
+  NExpressionStatement(NExpression* expression) : expression(expression) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
 };

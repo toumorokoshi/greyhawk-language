@@ -12,7 +12,7 @@
   Node *node;
   NBlock *block;
   NExpression *expr;
-  NStatement *stmt;
+  NStatement *statement;
   NIdentifier *ident;
   NVariableDeclaration *var_decl;
   NVariableDeclaration *var_assignment_decl;
@@ -21,6 +21,8 @@
   std::string *string;
   int token;
 }
+
+%error-verbose
 
 /* terminal tokens */
 
@@ -41,11 +43,11 @@
 
 // non-terminal tokens
 %type <ident> ident
-%type <expr> numeric expr
+%type <expr> numeric expr method_call
 %type <varvec> func_decl_args
 %type <exprvec> call_args
-%type <block> program stmts block
-%type <stmt> stmt var_decl var_assignment_decl func_decl
+%type <block> program statements module_statements block
+%type <statement> module_statement statement var_decl var_assignment_decl func_decl
 %type <token> comparison
 
  // operator precedence
@@ -56,21 +58,34 @@
 
 %%
 
-program : stmts { programBlock = $1; }
+program : 
+  module_statements { programBlock = $1; }
 ;
 
-stmts : stmt { $$ = new NBlock(); $$->statements.push_back($<stmt>1); }
-      | stmts stmt { $1->statements.push_back($<stmt>2); }
+module_statements: 
+  module_statement { $$ = new NBlock(); $$->statements.push_back($<statement>1); }
+| module_statements module_statement { $1->statements.push_back($<statement>2); }
 ;
 
-stmt : 
+module_statement: 
+  func_decl
+;
+
+statements : 
+  statement { $$ = new NBlock(); $$->statements.push_back($<statement>1); }
+| statements statement { $1->statements.push_back($<statement>2); }
+;
+
+statement : 
   var_decl
-| func_decl
+| method_call { $$ = new NExpressionStatement($1); }
+| TRETURN expr { $$ = new NReturn($2); }
+| TRETURN { $$ = new NReturn(); }
 ;
 
 block : 
-  TINDENT stmts TUNINDENT { $$ = $2; }
-| TINDENT stmts { $$ = $2; }
+  TINDENT statements TUNINDENT { $$ = $2; }
+| TINDENT statements { $$ = $2; }
 ;
 
 var_decl : ident ident TDECLARE expr { $$ = new NVariableDeclaration(*$1, *$2, $4); }
@@ -102,16 +117,18 @@ numeric :
 | TDOUBLE { $$ = new NDouble(atof($1->c_str())); delete $1; } 
 ;
 
+method_call: 
+  ident TLPAREN call_args TRPAREN { $$ = new NMethodCall(*$1, *$3); delete $3; }
+;
+
 expr : 
   ident TEQUAL expr { $$ = new NAssignment(*$<ident>1, *$3); }
-| ident TLPAREN call_args TRPAREN { $$ = new NMethodCall(*$1, *$3); delete $3; }
 | ident { $<ident>$ = $1; }
 | numeric
+| method_call
 | expr comparison expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
 | TLPAREN expr TRPAREN { $$ = $2; }
-| TRETURN expr { $$ = new NReturn($2); }
-| TRETURN { $$ = new NReturn(); }
-| TIF expr TCOLON block TELSE TCOLON block { $$ = new NConditional($2, $4, $7); }
+  // | TIF expr TCOLON block TELSE TCOLON block { $$ = new NConditional($2, $4, $7); }
 ;
 
 call_args :

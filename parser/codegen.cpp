@@ -148,7 +148,7 @@ Value* NReturn::codeGen(CodeGenContext& context) {
 }
 
 Value* NExpressionStatement::codeGen(CodeGenContext& context) {
-  return expression.codeGen(context);
+  return expression->codeGen(context);
 }
 
 Value* NVariableDeclaration::codeGen(CodeGenContext& context) {

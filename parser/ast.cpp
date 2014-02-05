@@ -62,7 +62,7 @@ void Node::printAST(int indentation) {
 }
 
 void NReturn::printAST(int indentation) {
-  NExpression::printAST(indentation);
+  NStatement::printAST(indentation);
   indentation++;
   returnExpr->printAST(indentation);
   indentation--;
