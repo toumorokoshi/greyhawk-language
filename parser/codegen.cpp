@@ -136,11 +136,9 @@ Value* NConditional::codeGen(CodeGenContext& context) {
 
   /* MERGE BLOCK */
   function->getBasicBlockList().push_back(mergeBasicBlock);
+  context.pushBlock(mergeBasicBlock);
   Builder.SetInsertPoint(mergeBasicBlock);
-  PHINode *phiNode = Builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), 2, "iftemp");
-  phiNode->addIncoming(thenReturnValue, thenBasicBlock);
-  phiNode->addIncoming(elseReturnValue, elseBasicBlock);
-  return phiNode;
+  return mergeBasicBlock;
 }
 
 Value* NReturn::codeGen(CodeGenContext& context) {

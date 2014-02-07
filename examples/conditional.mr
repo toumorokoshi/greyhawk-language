@@ -1,8 +1,10 @@
 int TestIfElse(bool x):
 	if x == true:
-		return 1
+		int i := 5
+		return i
 	else:
 		return 2
 
 void main():
 	TestIfElse(true)
+	TestIfElse(false)

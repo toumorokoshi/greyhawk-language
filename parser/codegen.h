@@ -39,7 +39,9 @@ public:
       fpm->add(createInstructionCombiningPass());
       fpm->add(createReassociatePass());
       fpm->add(createGVNPass());
-      fpm->add(createCFGSimplificationPass());
+      // CFGSimplificationPass, for whatever reason, eliminates conditional branches.
+      // look into NConditional to see why this is so...
+      /* fpm->add(createCFGSimplificationPass()); */
       fpm->doInitialization();
       return fpm;
     }
