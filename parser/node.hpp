@@ -3,13 +3,52 @@
 #include "llvm.h"
 
 class CodeGenContext;
-class NStatement;
+
+// nodes in the syntax tree
+class Node;
+
+// expressions + subclasses
 class NExpression;
+class NInteger;
+class NDouble;
+class NIdentifier;
+class NBoolean;
+class NMethodCall;
+class NBinaryOperator;
+class NAssignment;
+class NBlock;
+
+// statements + subclasses
+class NStatement;
+class NConditional;
+class NReturn;
+class NExpressionDeclaration;
 class NVariableDeclaration;
+class NFunctionDeclaration;
 
 typedef std::vector<NStatement*> StatementList;
 typedef std::vector<NExpression*> ExpressionList;
 typedef std::vector<NVariableDeclaration*> VariableList;
+
+
+class Visitor {
+public:
+  virtual void Visit(Node *n) = 0;
+  virtual void Visit(NExpression* n) = 0;
+  virtual void Visit(NDouble *n) = 0;
+  virtual void Visit(NIdentifier *n) = 0;
+  virtual void Visit(NBoolean *n) = 0;
+  virtual void Visit(NMethodCall *n) = 0;
+  virtual void Visit(NBinaryOperator *n) = 0;
+  virtual void Visit(NAssignment *n) = 0;
+  virtual void Visit(NBlock *n) = 0;
+  virtual void Visit(NStatement *n) = 0;
+  virtual void Visit(NConditional *n) = 0;
+  virtual void Visit(NReturn *n) = 0;
+  virtual void Visit(NExpressionDeclaration *n) = 0;
+  virtual void Visit(NVariableDeclaration *n) = 0;
+  virtual void Visit(NFunctionDeclaration *n) = 0;
+};
 
 class Node {
  public:
@@ -20,13 +59,13 @@ class Node {
   virtual void printAST(int); 
 };
 
-// Expressions are nodes that always return a value, the value of the
-// result of the expression.
-class NExpression : public Node {
-};
+/*******************************************/
+/*             EXPRESSIONS                 */
 
-// Statements do not necessarily return a value
-class NStatement : public Node {
+// expressions are nodes that always return a value, the value of the
+// evaluated result of the expression.
+
+class NExpression : public Node {
 };
 
 class NInteger : public NExpression {
@@ -102,6 +141,12 @@ class NBlock : public NExpression {
   virtual void printAST(int); 
 };
 
+/*******************************************/
+/*             STATEMENTS                  */
+
+// Statements do not necessarily return a value
+class NStatement : public Node {
+};
 
 class NConditional : public NStatement {
 public:
