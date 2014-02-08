@@ -29,7 +29,7 @@
 // identifiers/constants
 %token <string> TIDENTIFIER TINTEGER TDOUBLE TRETURN
 // comparison tokens 
-%token <token> TCEQ TCNE TCLT TCLE TCGT TCGE TEQUAL
+%token <token> TCEQ TCNE TCLT TCLE TCGT TCGE TEQUAL TIS
 // method/function related tokens
 %token <token> TLPAREN TRPAREN TCOMMA TDOT TCOLON TINDENT TUNINDENT
  // control flow tokens
@@ -154,6 +154,7 @@ comparison :
 | TMINUS 
 | TMUL 
 | TDIV
+| TIS
 ;
 
 %%

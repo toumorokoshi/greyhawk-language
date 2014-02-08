@@ -37,6 +37,7 @@
 
   /* regular logic */
 <INITIAL>"\n"           { current_line_indent = 0; BEGIN(indent); }
+"is"                         return TOKEN(TIS);
 "if"                         return TOKEN(TIF);
 "else"                       return TOKEN(TELSE);
 "true"                       return TOKEN(TTRUE);

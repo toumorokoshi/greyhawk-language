@@ -80,6 +80,7 @@ Value* NBinaryOperator::codeGen(CodeGenContext& context) {
   case TDIV:   return Builder.CreateFDiv(l, r, "divtmp");
   case TCEQ:   return Builder.CreateFCmpOEQ(l, r, "eqtmp");
   case TCNE:   return Builder.CreateFCmpONE(l, r, "neqtmp");
+  case TIS:   return Builder.CreateICmpEQ(l, r, "istmp");
   default:     return ErrorV("invalid binary operator!");
   }
 }
@@ -119,7 +120,7 @@ Value* NConditional::codeGen(CodeGenContext& context) {
   /* THEN BLOCK */
   Builder.SetInsertPoint(thenBasicBlock);
   context.pushBlock(thenBasicBlock);
-  Value* thenReturnValue = ifBlock->codeGen(context);
+  ifBlock->codeGen(context);
   // we always add a mergeBasicBlock at the end, to end up there.
   Builder.CreateBr(mergeBasicBlock);
   // we re-assign thenBasicBlock, because it could have been modified by the inner code
@@ -130,7 +131,7 @@ Value* NConditional::codeGen(CodeGenContext& context) {
   function->getBasicBlockList().push_back(elseBasicBlock);
   Builder.SetInsertPoint(elseBasicBlock);
   context.pushBlock(elseBasicBlock);
-  Value* elseReturnValue = elseBlock->codeGen(context);
+  elseBlock->codeGen(context);
   Builder.CreateBr(mergeBasicBlock);
   elseBasicBlock = Builder.GetInsertBlock();
 
@@ -199,7 +200,6 @@ Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
   if (!ReturnInst::classof(lastStatement)) {
       Builder.CreateRetVoid();
   }
-	// ReturnInst::Create(getGlobalContext(), bblock);
 
 	context.popBlock();
   context.fpm->run(*function);
