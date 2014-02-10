@@ -123,7 +123,7 @@ method_call:
 ;
 
 conditional:
-  TIF expr TCOLON block TELSE TCOLON block { $$ = new NConditional($2, $4, $7); }
+  TIF expr TCOLON block TELSE TCOLON block { $$ = new NConditional(*$2, *$4, *$7); }
 ;
 
 expr : 

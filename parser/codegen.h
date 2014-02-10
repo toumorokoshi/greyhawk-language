@@ -35,10 +35,10 @@ public:
 
     FunctionPassManager* createFPM(Module* module) {
       FunctionPassManager* fpm = new FunctionPassManager(module);
-      /* fpm->add(createBasicAliasAnalysisPass());
+      fpm->add(createBasicAliasAnalysisPass());
       fpm->add(createInstructionCombiningPass());
       fpm->add(createReassociatePass());
-      fpm->add(createGVNPass()); */
+      fpm->add(createGVNPass());
       // CFGSimplificationPass, for whatever reason, eliminates conditional branches.
       // look into NConditional to see why this is so...
       /* fpm->add(createCFGSimplificationPass()); */

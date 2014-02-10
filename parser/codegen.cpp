@@ -103,7 +103,7 @@ Value* NBlock::codeGen(CodeGenContext& context) {
 
 Value* NConditional::codeGen(CodeGenContext& context) {
   // first, we get the value of the result
-  Value* conditionResult = condition->codeGen(context);
+  Value* conditionResult = condition.codeGen(context);
   Function* function = Builder.GetInsertBlock()->getParent();
   
   // then, we generate the LLVM blocks for each of the branches
@@ -120,7 +120,7 @@ Value* NConditional::codeGen(CodeGenContext& context) {
   /* THEN BLOCK */
   Builder.SetInsertPoint(thenBasicBlock);
   context.pushBlock(thenBasicBlock);
-  ifBlock->codeGen(context);
+  ifBlock.codeGen(context);
   // we always add a mergeBasicBlock at the end, to end up there.
   Builder.CreateBr(mergeBasicBlock);
   // we re-assign thenBasicBlock, because it could have been modified by the inner code
@@ -131,7 +131,7 @@ Value* NConditional::codeGen(CodeGenContext& context) {
   function->getBasicBlockList().push_back(elseBasicBlock);
   Builder.SetInsertPoint(elseBasicBlock);
   context.pushBlock(elseBasicBlock);
-  elseBlock->codeGen(context);
+  elseBlock.codeGen(context);
   Builder.CreateBr(mergeBasicBlock);
   elseBasicBlock = Builder.GetInsertBlock();
 
@@ -143,12 +143,8 @@ Value* NConditional::codeGen(CodeGenContext& context) {
 }
 
 Value* NReturn::codeGen(CodeGenContext& context) {
-  if (returnExpr != NULL) {
-    Value* returnValue = returnExpr->codeGen(context);
+    Value* returnValue = returnExpr.codeGen(context);
     return Builder.CreateRet(returnValue);
-  } else {
-    return Builder.CreateRetVoid();
-  }
 }
 
 Value* NExpressionStatement::codeGen(CodeGenContext& context) {
@@ -233,5 +229,4 @@ void CodeGenContext::runCode() {
 }
 
 void CodeGenContext::printAST(NBlock& root) {
-  root.printAST(0);
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <yaml-cpp/yaml.h>
 #include "llvm.h"
 
 class CodeGenContext;
@@ -11,6 +12,7 @@ class Node;
 class NExpression;
 class NInteger;
 class NDouble;
+class NVoid;
 class NIdentifier;
 class NBoolean;
 class NMethodCall;
@@ -33,21 +35,21 @@ typedef std::vector<NVariableDeclaration*> VariableList;
 
 class Visitor {
 public:
-  virtual void Visit(Node *n) = 0;
-  virtual void Visit(NExpression* n) = 0;
-  virtual void Visit(NDouble *n) = 0;
-  virtual void Visit(NIdentifier *n) = 0;
-  virtual void Visit(NBoolean *n) = 0;
-  virtual void Visit(NMethodCall *n) = 0;
-  virtual void Visit(NBinaryOperator *n) = 0;
-  virtual void Visit(NAssignment *n) = 0;
-  virtual void Visit(NBlock *n) = 0;
-  virtual void Visit(NStatement *n) = 0;
-  virtual void Visit(NConditional *n) = 0;
-  virtual void Visit(NReturn *n) = 0;
-  virtual void Visit(NExpressionDeclaration *n) = 0;
-  virtual void Visit(NVariableDeclaration *n) = 0;
-  virtual void Visit(NFunctionDeclaration *n) = 0;
+  virtual void visit(Node *n) = 0;
+  virtual void visit(NExpression* n) = 0;
+  virtual void visit(NDouble *n) = 0;
+  virtual void visit(NIdentifier *n) = 0;
+  virtual void visit(NBoolean *n) = 0;
+  virtual void visit(NMethodCall *n) = 0;
+  virtual void visit(NBinaryOperator *n) = 0;
+  virtual void visit(NAssignment *n) = 0;
+  virtual void visit(NBlock *n) = 0;
+  virtual void visit(NStatement *n) = 0;
+  virtual void visit(NConditional *n) = 0;
+  virtual void visit(NReturn *n) = 0;
+  virtual void visit(NExpressionDeclaration *n) = 0;
+  virtual void visit(NVariableDeclaration *n) = 0;
+  virtual void visit(NFunctionDeclaration *n) = 0;
 };
 
 class Node {
@@ -56,7 +58,7 @@ class Node {
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
   // print the AST for this and all child nodes, at the particular indentation
-  virtual void printAST(int); 
+  virtual void acceptVisitor(class Visitor &v);
 };
 
 /*******************************************/
@@ -74,6 +76,7 @@ class NInteger : public NExpression {
   NInteger(long long value) : value(value) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
+  virtual void acceptVisitor(class Visitor &v);
 };
 
 class NDouble : public NExpression {
@@ -82,6 +85,7 @@ class NDouble : public NExpression {
   NDouble(double value) : value(value) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
+  virtual void acceptVisitor(class Visitor &v);
 };
 
 class NIdentifier : public NExpression {
@@ -90,6 +94,7 @@ class NIdentifier : public NExpression {
   NIdentifier(const std::string& name) : name(name) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
+  virtual void acceptVisitor(class Visitor &v);
 };
 
 class NBoolean : public NExpression {
@@ -98,6 +103,7 @@ class NBoolean : public NExpression {
   NBoolean(bool value) : value(value) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
+  virtual void acceptVisitor(class Visitor &v);
 };
 
 class NMethodCall : public NExpression {
@@ -109,6 +115,7 @@ class NMethodCall : public NExpression {
   NMethodCall(const NIdentifier& id) :  id(id) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
+  virtual void acceptVisitor(class Visitor &v);
 };
 
 class NBinaryOperator : public NExpression {
@@ -120,7 +127,6 @@ class NBinaryOperator : public NExpression {
     lhs(lhs), rhs(rhs), op(op) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
-  virtual void printAST(int);
 };
 
 class NAssignment : public NExpression {
@@ -138,7 +144,6 @@ class NBlock : public NExpression {
   NBlock() { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
-  virtual void printAST(int); 
 };
 
 /*******************************************/
@@ -150,24 +155,21 @@ class NStatement : public Node {
 
 class NConditional : public NStatement {
 public:
-  NExpression* condition;
-  NBlock* ifBlock;
-  NBlock* elseBlock;
-  NConditional(NExpression* condition, NBlock* ifBlock, NBlock *elseBlock) : 
+  NExpression& condition;
+  NBlock& ifBlock;
+  NBlock& elseBlock;
+  NConditional(NExpression& condition, NBlock& ifBlock, NBlock &elseBlock) : 
     condition(condition), ifBlock(ifBlock), elseBlock(elseBlock) {}
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
-  virtual void printAST(int); 
 };
 
 class NReturn: public NStatement {
  public:
-  NExpression* returnExpr;
-  NReturn(NExpression* returnExpr) : returnExpr(returnExpr) {}
-  NReturn() : returnExpr(NULL) {}
+  NExpression& returnExpr;
+  NReturn(NExpression& returnExpr) : returnExpr(returnExpr) {}
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
-  virtual void printAST(int); 
 };
 
 
@@ -189,7 +191,6 @@ class NVariableDeclaration : public NStatement {
     type(type), id(id), assignmentExpr(assignmentExpr)  { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
-  virtual void printAST(int); 
 };
 
 class NFunctionDeclaration : public NStatement {
@@ -202,5 +203,4 @@ class NFunctionDeclaration : public NStatement {
     type(type), id(id), arguments(arguments), block(block) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
-  virtual void printAST(int); 
 };
