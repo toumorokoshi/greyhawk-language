@@ -78,10 +78,10 @@ statements :
 
 statement : 
   var_decl
-| method_call { $$ = new NExpressionStatement($1); }
+| method_call { $$ = new NExpressionStatement(*$1); }
 | conditional
-| TRETURN expr { $$ = new NReturn($2); }
-| TRETURN { $$ = new NReturn(); }
+| TRETURN expr { $$ = new NReturn(*$2); }
+| TRETURN { $$ = new NReturn(*(new NVoid())); }
 ;
 
 block : 

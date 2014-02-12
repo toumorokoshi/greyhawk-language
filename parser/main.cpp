@@ -1,5 +1,6 @@
 #include <iostream>
 #include "codegen.h"
+#include "codegenerator.hpp"
 #include "node.hpp"
 extern NBlock* programBlock;
 extern int yyparse();
@@ -7,9 +8,9 @@ extern int yyparse();
 int main(int argc, char **argv) {
   yyparse();
 
-  CodeGenContext context;
+  CodeGenerator generator;
   // context.printAST(*programBlock);
-  context.generateCode(*programBlock);
+  generator.generateCode(*programBlock);
   // context.runCode();
   return 0;
 }

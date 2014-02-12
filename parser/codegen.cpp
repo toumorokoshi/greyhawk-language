@@ -22,7 +22,7 @@ static Type *typeOf(const NIdentifier& type)
 	return Type::getVoidTy(getGlobalContext());
 }
 
-Value* ErrorV(const char *str) { printf("Error: %s\n", str); return 0; }
+Value* ErrorVV(const char *str) { printf("Error: %s\n", str); return 0; }
 
 Value *Node::codeGen(CodeGenContext& context) {
   return NULL;
@@ -52,12 +52,12 @@ Value* NMethodCall::codeGen(CodeGenContext& context) {
   // check if the function exists in the current context
   Function *function = context.module->getFunction(id.name.c_str());
   if (function == NULL) {
-    return ErrorV("Unknown Function referenced!");
+    return ErrorVV("Unknown Function referenced!");
   }
 
   // check for argument mismatch
   if (function->arg_size() != arguments.size()) {
-    return ErrorV("Incorrect number of arguments passed!");
+    return ErrorVV("Incorrect number of arguments passed!");
   }
 
   std::vector<Value*> args;
@@ -81,13 +81,13 @@ Value* NBinaryOperator::codeGen(CodeGenContext& context) {
   case TCEQ:   return Builder.CreateFCmpOEQ(l, r, "eqtmp");
   case TCNE:   return Builder.CreateFCmpONE(l, r, "neqtmp");
   case TIS:   return Builder.CreateICmpEQ(l, r, "istmp");
-  default:     return ErrorV("invalid binary operator!");
+  default:     return ErrorVV("invalid binary operator!");
   }
 }
 
 Value* NAssignment::codeGen(CodeGenContext& context) {
   if (context.locals().find(lhs.name) == context.locals().end()) {
-    return ErrorV("Undeclared variable");
+    return ErrorVV("Undeclared variable");
   }
   return Builder.CreateStore(rhs.codeGen(context), context.locals()[lhs.name], false);
 }
@@ -148,7 +148,7 @@ Value* NReturn::codeGen(CodeGenContext& context) {
 }
 
 Value* NExpressionStatement::codeGen(CodeGenContext& context) {
-  return expression->codeGen(context);
+  return expression.codeGen(context);
 }
 
 Value* NVariableDeclaration::codeGen(CodeGenContext& context) {

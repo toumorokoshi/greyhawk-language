@@ -3,6 +3,10 @@
 #include <yaml-cpp/yaml.h>
 #include "llvm.h"
 
+#ifndef NODE_HPP
+
+#define NODE_HPP
+
 class CodeGenContext;
 
 // nodes in the syntax tree
@@ -33,32 +37,11 @@ typedef std::vector<NExpression*> ExpressionList;
 typedef std::vector<NVariableDeclaration*> VariableList;
 
 
-class Visitor {
-public:
-  virtual void visit(Node *n) = 0;
-  virtual void visit(NExpression* n) = 0;
-  virtual void visit(NDouble *n) = 0;
-  virtual void visit(NIdentifier *n) = 0;
-  virtual void visit(NBoolean *n) = 0;
-  virtual void visit(NMethodCall *n) = 0;
-  virtual void visit(NBinaryOperator *n) = 0;
-  virtual void visit(NAssignment *n) = 0;
-  virtual void visit(NBlock *n) = 0;
-  virtual void visit(NStatement *n) = 0;
-  virtual void visit(NConditional *n) = 0;
-  virtual void visit(NReturn *n) = 0;
-  virtual void visit(NExpressionDeclaration *n) = 0;
-  virtual void visit(NVariableDeclaration *n) = 0;
-  virtual void visit(NFunctionDeclaration *n) = 0;
-};
-
 class Node {
  public:
   virtual ~Node() {}
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
-  // print the AST for this and all child nodes, at the particular indentation
-  virtual void acceptVisitor(class Visitor &v);
 };
 
 /*******************************************/
@@ -76,7 +59,6 @@ class NInteger : public NExpression {
   NInteger(long long value) : value(value) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
-  virtual void acceptVisitor(class Visitor &v);
 };
 
 class NDouble : public NExpression {
@@ -85,7 +67,11 @@ class NDouble : public NExpression {
   NDouble(double value) : value(value) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
-  virtual void acceptVisitor(class Visitor &v);
+};
+
+class NVoid : public NExpression {
+public:
+  NVoid() {}
 };
 
 class NIdentifier : public NExpression {
@@ -94,7 +80,6 @@ class NIdentifier : public NExpression {
   NIdentifier(const std::string& name) : name(name) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
-  virtual void acceptVisitor(class Visitor &v);
 };
 
 class NBoolean : public NExpression {
@@ -103,7 +88,6 @@ class NBoolean : public NExpression {
   NBoolean(bool value) : value(value) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
-  virtual void acceptVisitor(class Visitor &v);
 };
 
 class NMethodCall : public NExpression {
@@ -115,7 +99,6 @@ class NMethodCall : public NExpression {
   NMethodCall(const NIdentifier& id) :  id(id) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
-  virtual void acceptVisitor(class Visitor &v);
 };
 
 class NBinaryOperator : public NExpression {
@@ -175,8 +158,8 @@ class NReturn: public NStatement {
 
 class NExpressionStatement : public NStatement {
  public:
-  NExpression* expression;
-  NExpressionStatement(NExpression* expression) : expression(expression) { }
+  NExpression& expression;
+  NExpressionStatement(NExpression& expression) : expression(expression) { }
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
 };
@@ -204,3 +187,5 @@ class NFunctionDeclaration : public NStatement {
   virtual llvm::Value* codeGen(CodeGenContext& context);
   virtual std::string nodeName();
 };
+
+#endif
