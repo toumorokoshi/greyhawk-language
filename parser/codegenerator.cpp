@@ -5,12 +5,15 @@
 using namespace llvm;
 
 Value* ErrorV(const char *str) { printf("Error: %s\n", str); return 0; }
+static raw_os_ostream debug_os_ostream(std::cout);
+// any value can have debug info printed with:  <Value*>->print(debug_os_ostream);
 
 #define debug(s) std::cout << s << std::endl;
 
 /* Returns an LLVM type based on the identifier */
 static Type *typeOf(const NIdentifier& type) 
 {
+  debug("generating typeof...");
 	if (type.name.compare("int") == 0) {
 		return Type::getInt64Ty(getGlobalContext());
 	}
@@ -24,16 +27,17 @@ static Type *typeOf(const NIdentifier& type)
 
 // utils
 bool CodeGenerator::variableExistsInContext(std::string name) {
-  return getContext().locals.find(name) != getContext().locals.end();
+  debug("variable exists in context...");
+  return getContext().locals.count(name) != 0;
 }
 
-BlockContext CodeGenerator::getContext() {
-  return blockContexts[builder.GetInsertBlock()];
+BlockContext& CodeGenerator::getContext() {
+  return *(blockContexts[builder.GetInsertBlock()]);
 }
 
 void CodeGenerator::setInsertPoint(BasicBlock* insertBlock) {
   if (blockContexts.find(insertBlock) == blockContexts.end()) {
-    blockContexts[insertBlock] = *(new BlockContext());
+    blockContexts[insertBlock] = new BlockContext();
   }
   builder.SetInsertPoint(insertBlock);
 }
@@ -45,36 +49,45 @@ void CodeGenerator::generateCode(NBlock& root) {
 
 // generator code
 
-Value* CodeGenerator::generate(Node& node) {
+Value* CodeGenerator::generate(Node& n) {
+  debug("ERROR! Core node class doesn't not have definition, and resulting in core node..");
   return NULL;
 }
 
 Value* CodeGenerator::generate(NExpression& n) {
   if (typeid(n) == typeid(NIdentifier)) {
     return generate(static_cast<NIdentifier&>(n));
+
+  } else if (typeid(n) == typeid(NInteger)) {
+    return generate(static_cast<NInteger&>(n));
+
+
   } else if (typeid(n) == typeid(NDouble)) {
     return generate(static_cast<NDouble&>(n));
+
   } else if (typeid(n) == typeid(NVoid)) {
     return generate(static_cast<NVoid&>(n));
+
   } else if (typeid(n) == typeid(NBoolean)) {
     return generate(static_cast<NBoolean&>(n));
+
   } else if (typeid(n) == typeid(NMethodCall)) {
     return generate(static_cast<NMethodCall&>(n));
+
   } else if (typeid(n) == typeid(NBinaryOperator)) {
     return generate(static_cast<NBinaryOperator&>(n));
+
   } else if (typeid(n) == typeid(NAssignment)) {
     return generate(static_cast<NAssignment&>(n));
+
   } else if (typeid(n) == typeid(NBlock)) {
     return generate(static_cast<NBlock&>(n));
   }
   return NULL;
 }
 
-Value* CodeGenerator::generate(NIdentifier& nIdentifier) {
-  if(!variableExistsInContext(nIdentifier.name)) {
-    return NULL;
-  }
-  return builder.CreateLoad(getContext().locals[nIdentifier.name], false);
+Value* CodeGenerator::generate(NInteger& n) {
+  return ConstantInt::get(getGlobalContext(), APInt(64, n.value, false));
 }
 
 Value* CodeGenerator::generate(NDouble& nDouble) {
@@ -87,6 +100,15 @@ Value* CodeGenerator::generate(NVoid& n) {
 
 Value* CodeGenerator::generate(NBoolean& nBoolean) {
   return nBoolean.value ? builder.getTrue() : builder.getFalse();
+}
+
+Value* CodeGenerator::generate(NIdentifier& nIdentifier) {
+  debug("Generating identifier...");
+  debug(nIdentifier.name);
+  if(!variableExistsInContext(nIdentifier.name)) {
+    return NULL;
+  }
+  return builder.CreateLoad(getContext().locals[nIdentifier.name], false);
 }
 
 Value* CodeGenerator::generate(NMethodCall& nMethodCall) {
@@ -144,6 +166,7 @@ Value* CodeGenerator::generate(NBlock& nblock) {
 
 Value* CodeGenerator::generate(NStatement& n) {
   debug("dynamically determining statement");
+
   if (typeid(n) == typeid(NConditional)) {
     debug("NConditional");
     return generate(static_cast<NConditional&>(n));
@@ -151,6 +174,11 @@ Value* CodeGenerator::generate(NStatement& n) {
   } else if (typeid(n) == typeid(NReturn)) {
     debug("NReturn");
     return generate(static_cast<NReturn&>(n));
+
+  } else if (typeid(n) == typeid(NExpressionStatement)) {
+    debug("NExpressionDeclaration");
+    return generate(static_cast<NExpressionStatement&>(n));
+
 
   } else if (typeid(n) == typeid(NVariableDeclaration)) {
     debug("NVariableDeclaration");
@@ -165,20 +193,25 @@ Value* CodeGenerator::generate(NStatement& n) {
 
 Value* CodeGenerator::generate(NConditional& n) {
   // first, we get the value of the result
+  debug("generating NConditional...");
   Value* conditionResult = generate(n.condition);
   Function* function = builder.GetInsertBlock()->getParent();
   
+  debug("  creating basic blocks...");
   // then, we generate the LLVM blocks for each of the branches
   BasicBlock* thenBasicBlock = BasicBlock::Create(getGlobalContext(), "then", function);
   // we don't add the function context to else/merge until later, to keep the right order
   BasicBlock* elseBasicBlock = BasicBlock::Create(getGlobalContext(), "else");
   BasicBlock* mergeBasicBlock = BasicBlock::Create(getGlobalContext(), "merge");
 
+  debug("  creating condition...");
   // and we create an instruction to branch them all
   builder.CreateCondBr(conditionResult, thenBasicBlock, elseBasicBlock);
 
   // now we fill in each of the blocks
 
+  debug("  generating then...");
+  // and we create an instruction to branch them all
   /* THEN BLOCK */
   setInsertPoint(thenBasicBlock);
   generate(n.ifBlock);
@@ -187,6 +220,7 @@ Value* CodeGenerator::generate(NConditional& n) {
   // we re-assign thenBasicBlock, because it could have been modified by the inner code
   thenBasicBlock = builder.GetInsertBlock();
  
+  debug("  generating else...");
   /* ELSE BLOCK */
   function->getBasicBlockList().push_back(elseBasicBlock);
   setInsertPoint(elseBasicBlock);
@@ -194,6 +228,7 @@ Value* CodeGenerator::generate(NConditional& n) {
   builder.CreateBr(mergeBasicBlock);
   elseBasicBlock = builder.GetInsertBlock();
 
+  debug("  generating merge...");
   /* MERGE BLOCK */
   function->getBasicBlockList().push_back(mergeBasicBlock);
   setInsertPoint(mergeBasicBlock);
@@ -201,8 +236,10 @@ Value* CodeGenerator::generate(NConditional& n) {
 }
 
 Value* CodeGenerator::generate(NReturn& n) {
-    Value* returnValue = generate(n.returnExpr);
-    return builder.CreateRet(returnValue);
+  debug("generating return...");
+  Value* returnValue = generate(n.returnExpr);
+  debug(returnValue);
+  return builder.CreateRet(returnValue);
 }
 
 Value* CodeGenerator::generate(NExpressionStatement& n) {
@@ -210,9 +247,11 @@ Value* CodeGenerator::generate(NExpressionStatement& n) {
 }
 
 Value* CodeGenerator::generate(NVariableDeclaration& n) {
+  debug("Generating NVariableDeclaration");
   AllocaInst* alloc = builder.CreateAlloca(typeOf(n.type), generate(n.id), n.id.name);
   getContext().locals[n.id.name] = alloc;
   if (n.assignmentExpr != NULL) {
+    debug("generating assignment");
     NAssignment assignment(n.id, *(n.assignmentExpr));
     generate(assignment);
   }
@@ -221,6 +260,7 @@ Value* CodeGenerator::generate(NVariableDeclaration& n) {
 
 Value* CodeGenerator::generate(NFunctionDeclaration& n) {
   debug("Generating NFunctionDeclaration...");
+  debug(n.id.name);
 
   std::vector<llvm::Type*> argTypes;
 	VariableList::const_iterator it;
@@ -249,7 +289,6 @@ Value* CodeGenerator::generate(NFunctionDeclaration& n) {
     AI->setName(n.arguments[i]->id.name);
     
     // Add arguments to variable symbol table.
-    debug(n.arguments[i]->id.name);
     Value* allocation = generate(*(n.arguments[i]));
     builder.CreateStore(AI, allocation);
     getContext().locals[n.arguments[i]->id.name] = allocation;

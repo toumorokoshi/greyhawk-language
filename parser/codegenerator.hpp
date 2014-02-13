@@ -12,11 +12,19 @@ typedef std::map<std::string, Value*> LocalsMap;
 
 class BlockContext {
 public:
-  std::map<std::string, Value*> locals;
+  LocalsMap locals;
   BlockContext() {}
 };
 
-typedef std::map<BasicBlock*, BlockContext> BlockContextMap;
+class BlockStack {
+public:
+  void push(BasicBlock*);
+  BasicBlock* pop();
+private:
+  std::vector<BasicBlock*> _stack;
+};
+
+typedef std::map<BasicBlock*, BlockContext*> BlockContextMap;
 
 class CodeGenerator {
 public:
@@ -38,16 +46,17 @@ private:
  
   // utils
   bool variableExistsInContext(std::string);
-  BlockContext getContext();
+  BlockContext& getContext();
   void setInsertPoint(BasicBlock*);
 
   // value configuration
   Value* generate(Node& n);
   Value* generate(NExpression& n);
-  Value* generate(NIdentifier& n);
+  Value* generate(NInteger& n);
   Value* generate(NDouble& n);
   Value* generate(NVoid& n);
   Value* generate(NBoolean& n);
+  Value* generate(NIdentifier& n);
   Value* generate(NMethodCall& n);
   Value* generate(NBinaryOperator& n);
   Value* generate(NAssignment& n);

@@ -28,7 +28,7 @@ class NBlock;
 class NStatement;
 class NConditional;
 class NReturn;
-class NExpressionDeclaration;
+class NExpressionStatement;
 class NVariableDeclaration;
 class NFunctionDeclaration;
 
