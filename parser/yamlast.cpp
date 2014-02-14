@@ -1,0 +1,176 @@
+#include "yamlast.hpp"
+#include "build/parser.hpp"
+#include <cstdio>
+
+
+YAML::Node* YamlParseError(const char *str) { printf("Error: %s\n", str); return 0; }
+
+YAML::Node* YamlAST::generateTree(NBlock& n) {
+  YAML::Node* root = new YAML::Node();
+  (*root)["main"]["block"] = *generate(n);
+  return root;
+}
+
+YAML::Node* YamlAST::generate(NExpression& n) {
+  if (typeid(n) == typeid(NIdentifier)) {
+    return generate(static_cast<NIdentifier&>(n));
+
+  } else if (typeid(n) == typeid(NInteger)) {
+    return generate(static_cast<NInteger&>(n));
+
+
+  } else if (typeid(n) == typeid(NDouble)) {
+    return generate(static_cast<NDouble&>(n));
+
+  } else if (typeid(n) == typeid(NVoid)) {
+    return generate(static_cast<NVoid&>(n));
+
+  } else if (typeid(n) == typeid(NBoolean)) {
+    return generate(static_cast<NBoolean&>(n));
+
+  } else if (typeid(n) == typeid(NMethodCall)) {
+    return generate(static_cast<NMethodCall&>(n));
+
+  } else if (typeid(n) == typeid(NBinaryOperator)) {
+    return generate(static_cast<NBinaryOperator&>(n));
+
+  } else if (typeid(n) == typeid(NAssignment)) {
+    return generate(static_cast<NAssignment&>(n));
+
+  } else if (typeid(n) == typeid(NBlock)) {
+    return generate(static_cast<NBlock&>(n));
+  }
+  return NULL;
+}
+
+YAML::Node* YamlAST::generate(NInteger& n) {
+  YAML::Node* root = new YAML::Node();
+  (*root) = n.value;
+  return root;
+}
+
+YAML::Node* YamlAST::generate(NDouble& n) {
+  YAML::Node* root = new YAML::Node();
+  (*root) = n.value;
+  return root;
+}
+
+YAML::Node* YamlAST::generate(NVoid& n) {
+  YAML::Node* root = new YAML::Node();
+  (*root) = "null";
+  return root;
+}
+
+YAML::Node* YamlAST::generate(NBoolean& n) {
+  YAML::Node* root = new YAML::Node();
+  (*root) = n.value;
+  return root;
+}
+
+YAML::Node* YamlAST::generate(NIdentifier& n) {
+  YAML::Node* root = new YAML::Node();
+  (*root) = n.name.c_str();
+  return root;
+}
+
+
+
+YAML::Node* YamlAST::generate(NMethodCall& n) {
+  YAML::Node* root = new YAML::Node();
+  (*root)["call"]["name"] = n.id.name.c_str();
+  for (unsigned i = 0, e = n.arguments.size(); i != e; ++i) {
+    (*root)["call"]["arguments"].push_back(*generate(*n.arguments[i]));
+  }
+  return root;
+}
+
+YAML::Node* YamlAST::generate(NBinaryOperator& n) {
+  YAML::Node* root = new YAML::Node();
+  std::string symbol;
+  switch(n.op) {
+  case TPLUS:  symbol = "+"; break;
+  case TMINUS: symbol = "-"; break;
+  case TMUL:   symbol = "*"; break;
+  case TDIV:   symbol = "/"; break;
+  case TCEQ:   symbol = "=="; break;
+  case TCNE:   symbol = "!="; break;
+  case TIS:    symbol = "is"; break;
+  default:     return YamlParseError("invalid binary operator!");
+  }
+  (*root)["binary_operator"]["operator"] = symbol;
+  (*root)["binary_operator"]["left"] = *generate(n.lhs);
+  (*root)["binary_operator"]["right"] = *generate(n.rhs);
+  return root;
+}
+
+YAML::Node* YamlAST::generate(NAssignment& n) {
+  YAML::Node* root = new YAML::Node();
+  (*root) = "assignment";
+  return root;
+}
+
+YAML::Node* YamlAST::generate(NBlock& n) {
+  YAML::Node* root = new YAML::Node();
+  for (StatementList::iterator it = n.statements.begin(); it != n.statements.end(); it++) {
+    root->push_back(*generate(**it));
+  }
+  return root;
+}
+
+YAML::Node* YamlAST::generate(NStatement& n) {
+
+  if (typeid(n) == typeid(NConditional)) {
+    return generate(static_cast<NConditional&>(n));
+
+  } else if (typeid(n) == typeid(NReturn)) {
+    return generate(static_cast<NReturn&>(n));
+
+  } else if (typeid(n) == typeid(NExpressionStatement)) {
+    return generate(static_cast<NExpressionStatement&>(n));
+
+
+  } else if (typeid(n) == typeid(NVariableDeclaration)) {
+    return generate(static_cast<NVariableDeclaration&>(n));
+
+  } else if (typeid(n) == typeid(NFunctionDeclaration)) {
+    return generate(static_cast<NFunctionDeclaration&>(n));
+  }
+  return NULL;
+}
+
+YAML::Node* YamlAST::generate(NConditional& n) {
+  YAML::Node* yaml = new YAML::Node();
+  (*yaml)["conditional"]["condition_expression"] = *generate(n.condition);
+  (*yaml)["conditional"]["then"] = *generate(n.ifBlock);
+  (*yaml)["conditional"]["else"] = *generate(n.elseBlock);
+ return yaml;
+}
+
+YAML::Node* YamlAST::generate(NReturn& n) {
+  YAML::Node* yaml = new YAML::Node();
+  (*yaml)["return"] = *generate(n.returnExpr);
+  return yaml;
+}
+
+YAML::Node* YamlAST::generate(NExpressionStatement& n) {
+  YAML::Node* yaml = new YAML::Node();
+  (*yaml)["expression_statement"] = *generate(n.expression);
+  return yaml;
+}
+
+YAML::Node* YamlAST::generate(NVariableDeclaration& n) {
+  YAML::Node* yaml = new YAML::Node();
+  (*yaml)["variable_declaration"]["type"] = *generate(n.type);
+  (*yaml)["variable_declaration"]["name"] = *generate(n.id);
+  if (n.assignmentExpr != NULL) {
+    (*yaml)["variable_declaration"]["assignment"] = *generate(*n.assignmentExpr);
+  }
+  return yaml;
+}
+
+YAML::Node* YamlAST::generate(NFunctionDeclaration& n) {
+  YAML::Node* yaml = new YAML::Node();
+  (*yaml)["function_declaration"]["name"] = n.id.name.c_str();
+  (*yaml)["function_declaration"]["body"] = *(generate(n.block));
+  return yaml;
+}

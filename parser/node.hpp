@@ -82,11 +82,11 @@ class NBoolean : public NExpression {
 
 class NMethodCall : public NExpression {
  public:
-  const NIdentifier& id;
+  NIdentifier& id;
   ExpressionList arguments;
-  NMethodCall(const NIdentifier& id, ExpressionList& arguments) : 
+  NMethodCall(NIdentifier& id, ExpressionList& arguments) : 
     id(id), arguments(arguments) { }
-  NMethodCall(const NIdentifier& id) :  id(id) { }
+  NMethodCall(NIdentifier& id) :  id(id) { }
 };
 
 class NBinaryOperator : public NExpression {
@@ -142,21 +142,21 @@ class NExpressionStatement : public NStatement {
 
 class NVariableDeclaration : public NStatement {
  public:
-  const NIdentifier& type;
+  NIdentifier& type;
   NIdentifier& id;
   NExpression *assignmentExpr;
-  NVariableDeclaration(const NIdentifier& type, NIdentifier& id) : type(type), id(id) { }
-  NVariableDeclaration(const NIdentifier& type, NIdentifier& id, NExpression *assignmentExpr) : 
+  NVariableDeclaration(NIdentifier& type, NIdentifier& id) : type(type), id(id) { }
+  NVariableDeclaration(NIdentifier& type, NIdentifier& id, NExpression *assignmentExpr) : 
     type(type), id(id), assignmentExpr(assignmentExpr)  { }
 };
 
 class NFunctionDeclaration : public NStatement {
  public:
-  const NIdentifier& type;
-  const NIdentifier& id;
+  NIdentifier& type;
+  NIdentifier& id;
   VariableList arguments;
   NBlock& block;
-  NFunctionDeclaration(const NIdentifier& type, const NIdentifier& id, const VariableList& arguments, NBlock& block) :
+  NFunctionDeclaration(NIdentifier& type, NIdentifier& id, VariableList& arguments, NBlock& block) :
     type(type), id(id), arguments(arguments), block(block) { }
 };
 

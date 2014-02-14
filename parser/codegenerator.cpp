@@ -11,7 +11,7 @@ static raw_os_ostream debug_os_ostream(std::cout);
 #define debug(s) std::cout << s << std::endl;
 
 /* Returns an LLVM type based on the identifier */
-static Type *typeOf(const NIdentifier& type) 
+static Type *typeOf(NIdentifier& type) 
 {
   debug("generating typeof...");
 	if (type.name.compare("int") == 0) {
