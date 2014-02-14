@@ -149,7 +149,7 @@ Value* CodeGenerator::generate(NBinaryOperator& n) {
 }
 
 Value* CodeGenerator::generate(NAssignment& n) {
-  if (variableExistsInContext(n.lhs.name)) {
+  if (!variableExistsInContext(n.lhs.name)) {
     return ErrorV("Undeclared variable");
   }
   return builder.CreateStore(generate(n.rhs), getContext().locals[n.lhs.name], false);
