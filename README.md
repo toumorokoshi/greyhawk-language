@@ -19,3 +19,5 @@ The Compiler uses the following:
 
 * llvm as the intermediary layer for the compiler
 * yaml-cpp to output the syntax tree in a human-readable format
+* boost, for:
+  * the command line parser
