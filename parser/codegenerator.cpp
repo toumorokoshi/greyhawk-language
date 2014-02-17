@@ -8,7 +8,8 @@ Value* ErrorV(const char *str) { printf("Error: %s\n", str); return 0; }
 static raw_os_ostream debug_os_ostream(std::cout);
 // any value can have debug info printed with:  <Value*>->print(debug_os_ostream);
 
-#define debug(s) std::cout << s << std::endl;
+// #define debug(s) std::cout << s << std::endl;
+#define debug(s);
 
 /* Returns an LLVM type based on the identifier */
 static Type *typeOf(NIdentifier& type) 
@@ -28,6 +29,7 @@ static Type *typeOf(NIdentifier& type)
 // utils
 bool CodeGenerator::variableExistsInContext(std::string name) {
   debug("variable exists in context...");
+  debug(name);
   return getContext().locals.count(name) != 0;
 }
 
@@ -55,38 +57,51 @@ Value* CodeGenerator::generate(Node& n) {
 }
 
 Value* CodeGenerator::generate(NExpression& n) {
+  debug("dynamically determining expression");
+  
   if (typeid(n) == typeid(NIdentifier)) {
+    debug("NIdentifier");
     return generate(static_cast<NIdentifier&>(n));
 
   } else if (typeid(n) == typeid(NInteger)) {
+    debug("NInteger");
     return generate(static_cast<NInteger&>(n));
 
-
   } else if (typeid(n) == typeid(NDouble)) {
+    debug("NDouble");
     return generate(static_cast<NDouble&>(n));
 
   } else if (typeid(n) == typeid(NVoid)) {
+    debug("NVoid");
     return generate(static_cast<NVoid&>(n));
 
   } else if (typeid(n) == typeid(NBoolean)) {
+    debug("NBoolean");
     return generate(static_cast<NBoolean&>(n));
 
   } else if (typeid(n) == typeid(NMethodCall)) {
+    debug("NMethodCall");
     return generate(static_cast<NMethodCall&>(n));
 
   } else if (typeid(n) == typeid(NBinaryOperator)) {
+    debug("NBinaryOperator");
     return generate(static_cast<NBinaryOperator&>(n));
 
   } else if (typeid(n) == typeid(NAssignment)) {
+    debug("NAssignment");
     return generate(static_cast<NAssignment&>(n));
 
   } else if (typeid(n) == typeid(NBlock)) {
+    debug("NBlock");
     return generate(static_cast<NBlock&>(n));
   }
-  return NULL;
+
+  debug("can't determine expression!");
+  return ErrorV("Unable to dynamically determine expression!");
 }
 
 Value* CodeGenerator::generate(NInteger& n) {
+  debug("generating integer...");
   return ConstantInt::get(getGlobalContext(), APInt(64, n.value, false));
 }
 
@@ -152,6 +167,7 @@ Value* CodeGenerator::generate(NAssignment& n) {
   if (!variableExistsInContext(n.lhs.name)) {
     return ErrorV("Undeclared variable");
   }
+  debug("loading store...");
   return builder.CreateStore(generate(n.rhs), getContext().locals[n.lhs.name], false);
 }
 

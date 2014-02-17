@@ -1,5 +1,4 @@
 #include "node.hpp"
-#include "build/parser.hpp"
 #include "yaml-cpp/yaml.h"
 
 class YamlAST {
@@ -11,7 +10,7 @@ private:
   YAML::Node* root;
 
   // value configuration
-//   YAML::Node* generate(Node& n);
+   YAML::Node* generate(Node& n);
    YAML::Node* generate(NExpression& n);
    YAML::Node* generate(NInteger& n);
    YAML::Node* generate(NDouble& n);

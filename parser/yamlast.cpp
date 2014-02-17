@@ -5,10 +5,15 @@
 
 YAML::Node* YamlParseError(const char *str) { printf("Error: %s\n", str); return 0; }
 
+
 YAML::Node* YamlAST::generateTree(NBlock& n) {
   YAML::Node* root = new YAML::Node();
   (*root)["main"]["block"] = *generate(n);
   return root;
+}
+
+YAML::Node* YamlAST::generate(Node& n) {
+  return YamlParseError("type resulted to default node type.");
 }
 
 YAML::Node* YamlAST::generate(NExpression& n) {
@@ -40,7 +45,7 @@ YAML::Node* YamlAST::generate(NExpression& n) {
   } else if (typeid(n) == typeid(NBlock)) {
     return generate(static_cast<NBlock&>(n));
   }
-  return NULL;
+  return YamlParseError("Unable to find type for expression node!");
 }
 
 YAML::Node* YamlAST::generate(NInteger& n) {
@@ -135,7 +140,7 @@ YAML::Node* YamlAST::generate(NStatement& n) {
   } else if (typeid(n) == typeid(NFunctionDeclaration)) {
     return generate(static_cast<NFunctionDeclaration&>(n));
   }
-  return NULL;
+  return YamlParseError("Unable to find type for statement node!");
 }
 
 YAML::Node* YamlAST::generate(NConditional& n) {
@@ -171,6 +176,9 @@ YAML::Node* YamlAST::generate(NVariableDeclaration& n) {
 YAML::Node* YamlAST::generate(NFunctionDeclaration& n) {
   YAML::Node* yaml = new YAML::Node();
   (*yaml)["function_declaration"]["name"] = n.id.name.c_str();
+  for (unsigned i = 0, e = n.arguments.size(); i != e; ++i) {
+    (*yaml)["function_declaration"]["arguments"].push_back(*generate(*n.arguments[i]));
+  }
   (*yaml)["function_declaration"]["body"] = *(generate(n.block));
   return yaml;
 }

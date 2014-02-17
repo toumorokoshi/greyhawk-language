@@ -71,6 +71,19 @@ module_statement:
   func_decl
 ;
 
+func_decl : ident ident TLPAREN func_decl_args TRPAREN TCOLON block 
+            { $$ = new NFunctionDeclaration(*$1, *$2, *$4, *$7); delete $4; }
+;
+
+ident : TIDENTIFIER { $$ = new NIdentifier(*$1); delete $1; }
+;
+
+func_decl_args : 
+  { $$ = new VariableList(); } // no args
+| var_assignment_decl { $$ = new VariableList(); $$->push_back($<var_decl>1); }
+| func_decl_args TCOMMA var_assignment_decl { $1->push_back($<var_decl>3); }
+;
+
 statements : 
   statement { $$ = new NBlock(); $$->statements.push_back($<statement>1); }
 | statements statement { $1->statements.push_back($<statement>2); }
@@ -98,19 +111,6 @@ var_decl : ident ident TDECLARE expr { $$ = new NVariableDeclaration(*$1, *$2, $
 var_assignment_decl : 
   ident ident { $$ = new NVariableDeclaration(*$1, *$2); }
 | ident ident TEQUAL expr { $$ = new NVariableDeclaration(*$1, *$2, $4); }
-;
-
-func_decl : ident ident TLPAREN func_decl_args TRPAREN TCOLON block 
-            { $$ = new NFunctionDeclaration(*$1, *$2, *$4, *$7); delete $4; }
-;
-
-func_decl_args : 
-  { $$ = new VariableList(); } // no args
-| var_assignment_decl { $$ = new VariableList(); $$->push_back($<var_decl>1); }
-| func_decl_args TCOMMA var_assignment_decl { $1->push_back($<var_decl>3); }
-;
-
-ident : TIDENTIFIER { $$ = new NIdentifier(*$1); delete $1; }
 ;
 
 numeric : 

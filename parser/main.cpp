@@ -28,8 +28,8 @@ CommandLineArguments& getArguments(int argc, char*argv[]) {
   po::options_description desc("Options");
   desc.add_options()
     ("help", "Print help message")
-    ("llvm", po::value<bool>(&(args->llvm)), "print llvm IR code")
-    ("ast", po::value<bool>(&(args->ast)), "print the ast")
+    ("llvm", "print llvm IR code")
+    ("ast", "print the ast")
     ("file_name", po::value<std::string>()->required(), "path to the file to compile");
 
   po::variables_map vm;
@@ -41,24 +41,22 @@ CommandLineArguments& getArguments(int argc, char*argv[]) {
               .run()
               , vm);
     args->file_name = vm["file_name"].as<std::string>();
+    args->ast = vm.count("ast") > 0;
     return *args;
   } catch (po::error& e) {
     std::cerr << "ERROR: " << e.what() << std::endl;
     std::cerr << desc << std::endl;
+    exit(1);
   }
 }
 
 
 int main(int argc, char *argv[]) {
-  std::cout << "starting..." << std::endl;
   CommandLineArguments& args = getArguments(argc, argv);
   // set yyin before yyparse
-  std::cout << args.file_name << std::endl;
-  std::cout << "loading file..." << std::endl;
   yyin = fopen(args.file_name.c_str(), "r");
   yyparse();
 
-  std::cout << "processing..." << std::endl;
   if (args.ast) {
     YamlAST astGenerator;
     YAML::Node* tree = astGenerator.generateTree(*programBlock);

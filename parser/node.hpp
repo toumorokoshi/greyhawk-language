@@ -145,7 +145,7 @@ class NVariableDeclaration : public NStatement {
   NIdentifier& type;
   NIdentifier& id;
   NExpression *assignmentExpr;
-  NVariableDeclaration(NIdentifier& type, NIdentifier& id) : type(type), id(id) { }
+  NVariableDeclaration(NIdentifier& type, NIdentifier& id) : type(type), id(id), assignmentExpr(NULL) { }
   NVariableDeclaration(NIdentifier& type, NIdentifier& id, NExpression *assignmentExpr) : 
     type(type), id(id), assignmentExpr(assignmentExpr)  { }
 };
