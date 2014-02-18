@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+[ -f ./parser/murasaki ] || ./bin/build
+python tests/test.py

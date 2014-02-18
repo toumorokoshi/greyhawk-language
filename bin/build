@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# build murasaki parser
+cd parser
+make

@@ -1,0 +1,35 @@
+
+main:
+  block:
+    - function_declaration:
+        name: DoMath
+        arguments:
+          - variable_declaration:
+              type: int
+              name: a
+          - variable_declaration:
+              type: int
+              name: b
+        body:
+          - variable_declaration:
+              type: int
+              name: x
+              assignment:
+                binary_operator:
+                  operator: "*"
+                  left: a
+                  right:
+                    binary_operator:
+                      operator: +
+                      left: b
+                      right: 5
+          - return: x
+    - function_declaration:
+        name: main
+        body:
+          - expression_statement:
+              call:
+                name: DoMath
+                arguments:
+                  - 5
+                  - 6
