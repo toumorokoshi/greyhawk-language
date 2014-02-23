@@ -1,7 +1,7 @@
 Compiling
 =========
 
-The 'murasaki build' command build files. There are some options associated with it:
+The 'greyhawk build' command build files. There are some options associated with it:
 
 target
 ------

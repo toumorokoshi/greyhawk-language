@@ -1,7 +1,7 @@
 Equivalents
 ===========
 
-This page outlines equivalents of concepts in one language in Murasaki.
+This page outlines equivalents of concepts in one language in Greyhawk.
 
 Preprocessor directives and constants
 -------------------------------------
@@ -11,7 +11,7 @@ efficient. By providing definitions that are injected into the code
 before they are compile, it allows for one less variable that needs to
 be referenced in a location in memory, instead of on runtime.
 
-murasaki handles this by offering a 'production' build target that
+Greyhawk handles this by offering a 'production' build target that
 optimizes constants as if they were preprocessor directives. This also
 has the side effect of making it easier to see where a define was set::
 

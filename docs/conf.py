@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Murasaki documentation build configuration file, created by
+# Greyhawk documentation build configuration file, created by
 # sphinx-quickstart on Sat Sep  7 16:52:36 2013.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -28,7 +28,7 @@ import sys, os
 extensions = ['sphinx.ext.todo']
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['murasaki_templates']
+templates_path = ['greyhawk_templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Murasaki'
+project = u'Greyhawk'
 copyright = u'2013, Yusuke Tsutsumi'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -123,7 +123,7 @@ html_theme = 'default'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['murasaki_static']
+html_static_path = ['greyhawk_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -167,7 +167,7 @@ html_static_path = ['murasaki_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Murasakidoc'
+htmlhelp_basename = 'Greyhounddoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -186,7 +186,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Murasaki.tex', u'Murasaki Documentation',
+  ('index', 'Greyhawk.tex', u'Greyhawk Documentation',
    u'Yusuke Tsutsumi', 'manual'),
 ]
 
@@ -216,7 +216,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'murasaki', u'Murasaki Documentation',
+    ('index', 'greyhawk', u'Greyhawk Documentation',
      [u'Yusuke Tsutsumi'], 1)
 ]
 
@@ -230,8 +230,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Murasaki', u'Murasaki Documentation',
-   u'Yusuke Tsutsumi', 'Murasaki', 'One line description of project.',
+  ('index', 'Greyhawk', u'Greyhawk Documentation',
+   u'Yusuke Tsutsumi', 'Greyhawk', 'One line description of project.',
    'Miscellaneous'),
 ]
 

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-# build murasaki parser
+# build greyhawk parser
 cd parser
 make

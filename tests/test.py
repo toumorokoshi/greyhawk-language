@@ -1,5 +1,5 @@
 """
-A test suite for murasaki.
+A test suite for Greyhawk.
 
 tests to see if the AST and LLVM output are identical. if not, it'll
 start diffing and asking if you the changes are acceptable.
@@ -10,7 +10,7 @@ import shlex
 import subprocess
 import difflib
 
-EXECUTABLE = os.path.join(os.curdir, 'parser', 'murasaki')
+EXECUTABLE = os.path.join(os.curdir, 'parser', 'greyhawk')
 EXAMPLES_DIRECTORY = os.path.join(os.curdir, 'examples')
 # specifically test-related
 TEST_DIR = os.path.join(os.curdir, 'tests')

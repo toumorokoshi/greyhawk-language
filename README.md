@@ -1,7 +1,7 @@
-Murasaki Language
+Greyhawk Language
 =================
 
-Murasaki Language is a playground for a language that has the syntax I would like to use.
+Greyhawk Language is a playground for a language that has the syntax I would like to use.
 
 Installation
 ------------
