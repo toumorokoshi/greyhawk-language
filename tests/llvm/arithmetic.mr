@@ -1,0 +1,15 @@
+; ModuleID = 'main'
+
+define i64 @DoMath(i64 %a, i64 %b) {
+entry:
+  %addtmp = add i64 %b, 5
+  %multmp = mul i64 %addtmp, %a
+  ret i64 %multmp
+}
+
+define void @main() {
+entry:
+  %calltmp = call i64 @DoMath(i64 5, i64 6)
+  ret void
+}
+

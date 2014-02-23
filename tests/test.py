@@ -4,6 +4,7 @@ A test suite for murasaki.
 tests to see if the AST and LLVM output are identical. if not, it'll
 start diffing and asking if you the changes are acceptable.
 """
+import argparse
 import os
 import shlex
 import subprocess
@@ -40,6 +41,10 @@ TEST_FILE_TYPES = {
     }
 }
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-p", "--prompt", help="Instead of failing, prompt to see if content should be overwritten", action="store_true")
+args = parser.parse_args()
+
 errors = []
 tests = 0
 for f in filter(lambda x: x.endswith('mr'), os.listdir(EXAMPLES_DIRECTORY)):
@@ -54,8 +59,9 @@ for f in filter(lambda x: x.endswith('mr'), os.listdir(EXAMPLES_DIRECTORY)):
         output_file = os.path.join(test_file_type['test_directory'], f)
         overwrite = False
         if not os.path.exists(output_file):
-            overwrite = get_yes_or_no(OUTPUT_DOESNT_EXIST.format(type=test_type,
-                                                                 file=output_file))
+            if args.prompt:
+                overwrite = get_yes_or_no(OUTPUT_DOESNT_EXIST.format(type=test_type,
+                                                                     file=output_file))
         else:
             with open(output_file, 'r') as fh:
                 desired_output = fh.read()
@@ -63,7 +69,7 @@ for f in filter(lambda x: x.endswith('mr'), os.listdir(EXAMPLES_DIRECTORY)):
                     for line in difflib.context_diff(output.split('\n'), desired_output.split('\n'),
                                                      "Current Output", "Desired Output"):
                         print(line)
-                    overwrite = get_yes_or_no(OUTPUT_CHANGED)
+                    overwrite = get_yes_or_no(OUTPUT_CHANGED) if args.prompt else False
                 else:
                     continue
         if overwrite:
@@ -83,4 +89,4 @@ if errors:
     print("{0} tests failed!".format(len(errors)))
     exit(1)
 else:
-    print("{0} tests passed!".format(tests))
+    print("{0} files passed!".format(tests))
