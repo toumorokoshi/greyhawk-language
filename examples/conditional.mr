@@ -1,4 +1,4 @@
-int TestIfElse(bool x):
+int TestIfElse(x bool):
 	if x is true:
 		int i := 5
 		return i

@@ -1,13 +1,13 @@
-.. Murasaki documentation master file, created by
+.. Greyhawk documentation master file, created by
    sphinx-quickstart on Sat Sep  7 16:52:36 2013.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Murasaki's documentation!
+Welcome to Greyhawk's documentation!
 ====================================
 
-Murasaki is a programming language spec. Currrently there are no plans
-to implement Murasaki as a real language, and it is a work in
+Greyhawk is a programming language spec. Currently there are no realistic plans
+to implement Greyhawk as a real language, and it is a work in
 progress.
 
 Contents:

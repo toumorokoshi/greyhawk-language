@@ -84,7 +84,7 @@ class NMethodCall : public NExpression {
  public:
   NIdentifier& id;
   ExpressionList arguments;
-  NMethodCall(NIdentifier& id, ExpressionList& arguments) : 
+  NMethodCall(NIdentifier& id, ExpressionList& arguments) :
     id(id), arguments(arguments) { }
   NMethodCall(NIdentifier& id) :  id(id) { }
 };
@@ -94,7 +94,7 @@ class NBinaryOperator : public NExpression {
   int op;
   NExpression& lhs;
   NExpression& rhs;
-  NBinaryOperator(NExpression& lhs, int op, NExpression& rhs) : 
+  NBinaryOperator(NExpression& lhs, int op, NExpression& rhs) :
     lhs(lhs), rhs(rhs), op(op) { }
 };
 
@@ -123,7 +123,7 @@ public:
   NExpression& condition;
   NBlock& ifBlock;
   NBlock& elseBlock;
-  NConditional(NExpression& condition, NBlock& ifBlock, NBlock &elseBlock) : 
+  NConditional(NExpression& condition, NBlock& ifBlock, NBlock &elseBlock) :
     condition(condition), ifBlock(ifBlock), elseBlock(elseBlock) {}
 };
 
@@ -145,8 +145,8 @@ class NVariableDeclaration : public NStatement {
   NIdentifier& type;
   NIdentifier& id;
   NExpression *assignmentExpr;
-  NVariableDeclaration(NIdentifier& type, NIdentifier& id) : type(type), id(id), assignmentExpr(NULL) { }
-  NVariableDeclaration(NIdentifier& type, NIdentifier& id, NExpression *assignmentExpr) : 
+  NVariableDeclaration(NIdentifier& id, NIdentifier& type) : type(type), id(id), assignmentExpr(NULL) { }
+  NVariableDeclaration(NIdentifier& id, NIdentifier& type, NExpression *assignmentExpr) :
     type(type), id(id), assignmentExpr(assignmentExpr)  { }
 };
 

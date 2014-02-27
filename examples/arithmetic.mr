@@ -1,5 +1,5 @@
-int DoMath(int a, int b):
-	int x := a * b + 5
+int DoMath(a int, b int):
+	x int := a * b + 5
 	return x
 
 void main():
