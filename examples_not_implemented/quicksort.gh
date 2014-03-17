@@ -1,0 +1,4 @@
+[] quicksort(pivot, list):
+	quicksort . (e for e in list if e < pivot) ++
+  [pivot] ++
+  quicksort . (e for e in list if e > pivot)
