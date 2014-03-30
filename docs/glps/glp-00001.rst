@@ -4,6 +4,9 @@ GLP-00001: List Comprehensions
 :author: Yusuke Tsutsumi
 :created_date: 2014-03-29
 :updated_date: 2014-03-29
+:approval: approved
+:approvers: yusuke
+:status: unimplemented
 
 -----------------------
 Proposed Implementation
