@@ -1,0 +1,53 @@
+==============================
+GLP-00001: List Comprehensions
+==============================
+:author: Yusuke Tsutsumi
+:created_date: 2014-03-29
+:updated_date: 2014-03-29
+
+-----------------------
+Proposed Implementation
+-----------------------
+
+List comprehensions is a great way to show a conversion of one list to
+another. The proposed implementation is::
+
+    list.map(f).filter(g)
+    list.filter((x) -> x != 0).map((x) -> x + 1)
+
+---------------------------------
+Implementation in other languages
+---------------------------------
+
+Python::
+
+  (f(x) for x in my_list if condition)
+
+Python chooses this over using functional method directly (such as map/filter) due to clarity.
+
+Scala::
+
+  list.map(f).filter(condition)
+  list.filter((x: Int) => x != 0).map((x: Int) => x + 1)
+
+Haskell::
+
+  [ f(x) | x <- list, x != 0 ]
+
+------------------
+Further Discussion
+------------------
+
+Although it is true that the Python syntax is more legible, it does
+not allow easy changes between list comprehensions and generator
+functions. Python does this through the distinction between "[" and
+"(", but it seems like this is an easy distinction to miss
+syntactically and legibility is not worth potential ambiguity.
+
+Making the methods functions instead makes it easy to switch out
+generator versions of these methods::
+
+    list.gmap(f).gfilter(g)
+
+With no difficulty whatsoever. This can be done for any functional
+method, not just map and filter.
