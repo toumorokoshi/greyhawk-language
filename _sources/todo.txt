@@ -16,3 +16,6 @@ Permutations of each should be distinguishable:
 * method, variable
 * class, interface (maybe not at this point)
 * static/nonstatic (probably no need)
+
+
+Docstrings exist, and work like python. Only included in debug builds.

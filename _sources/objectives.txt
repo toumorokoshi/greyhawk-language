@@ -42,3 +42,12 @@ to ensure that any 'style' deviations from standard Murasaki code result in:
 
 1. A Syntax error
 2. A change in behaviour in the code.
+
+Everything is Permitted
+-----------------------
+
+Some languages have said they restrict behaviour because programmers
+will use it improperly. Greyhawk should not share that
+sentiment. Everything is permitted. There may be one idiomatic way of
+doing it, but restricting behaviour based off of an alleged clumsiness
+restricts a language in unnescessary ways.

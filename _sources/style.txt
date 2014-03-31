@@ -27,6 +27,18 @@ TODO: find a better way to distinguish between variable vs method
 * _Method -> protected method (upper camel-case results + leading underscore)
 * __Method -> private method (upper camel-case results + double leading underscore)
 
+This probably won't work in it's current form:
+
+* protected -> public method modification breaks interface (because of losing the underscore)
+* renaming variables is a pain
+
+Class Naming
+------------
+
+Classes types have brackets around them:
+
+    <ConfigFactory>
+
 Constants
 ---------
 

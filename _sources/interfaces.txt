@@ -33,7 +33,7 @@ So a class can implement an interface, and receive associated methods for free::
                 return major - other.major
             return minor - other.minor
 
-    void main:
+    int8 main:
         v1 := Version()
         v2 := Version(1, 1)
         TestUtils.Assert(v2.LessThan(v1), true)
