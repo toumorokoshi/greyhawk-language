@@ -8,7 +8,7 @@
     
     <title>Language Objectives &mdash; Greyhawk 0.1 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -24,10 +24,17 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Greyhawk 0.1 documentation" href="index.html" />
-    <link rel="next" title="Interfaces" href="interfaces.html" />
-    <link rel="prev" title="Welcome to Greyhawk’s documentation!" href="index.html" /> 
+    <link rel="next" title="Project Status" href="status.html" />
+    <link rel="prev" title="Welcome to Greyhawk’s documentation!" href="index.html" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
   </head>
   <body>
+
     <div class="related">
       <h3>Navigation</h3>
       <ul>
@@ -35,7 +42,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="interfaces.html" title="Interfaces"
+          <a href="status.html" title="Project Status"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to Greyhawk’s documentation!"
@@ -51,38 +58,43 @@
             
   <div class="section" id="language-objectives">
 <h1>Language Objectives<a class="headerlink" href="#language-objectives" title="Permalink to this headline">¶</a></h1>
-<p>Murasaki is driven by a set of objectives that determine the choices made for the language.</p>
+<p>Greyhawk is driven by a set of objectives that determine the choices made for the language.</p>
 <div class="section" id="readibility-is-first-priority">
 <h2>Readibility is first priority<a class="headerlink" href="#readibility-is-first-priority" title="Permalink to this headline">¶</a></h2>
 <p>Terse, hard to read code is a symptom of &#8216;black-box&#8217; programs and
 libraries, or components that can only be modified by a select few due
 to their complex nature or the methodology by which it was written.</p>
-<p>It is a goal of Murasaki that anyone with a decent amount of
+<p>It is a goal of Greyhawk that anyone with a decent amount of
 experience with the language can understand what another person&#8217;s code
-is doing.</p>
+is doing. This is not always possible, it can be made more likely with
+taking advantages of symbols and syntax that is more standard and
+expressive.</p>
 </div>
 <div class="section" id="one-idiomatic-way-of-doing-things">
 <h2>One idiomatic way of doing things<a class="headerlink" href="#one-idiomatic-way-of-doing-things" title="Permalink to this headline">¶</a></h2>
 <p>With readability in mind comes standardization. Humans are good at
-recognizing patterns, and Murasaki relies on that strength by
-ensuring that there is only one idiomatic way of performing a
-particular function.</p>
+recognizing patterns, and Greyhawk relies on that strength by ensuring
+that there is only one idiomatic way of performing a particular
+function, and making tha idiomatic way easier than any other method.</p>
 </div>
 <div class="section" id="everything-follows-convention">
 <h2>Everything follows convention<a class="headerlink" href="#everything-follows-convention" title="Permalink to this headline">¶</a></h2>
 <p>Special keywords and syntax can cause confusion and ambiguity to
-someone not familiar with these deviations. Murasaki attempts to
-minimize that by ensuring that all methods follow a standard.</p>
+someone not familiar with these deviations (Such as python2&#8217;s &#8216;print&#8217;
+and &#8216;assert&#8217; being effectively methods that do not need arguments
+passed in parentheses). Greyhawk attempts to minimize that by ensuring
+that all methods follow a standard.</p>
 </div>
 <div class="section" id="style-does-not-exist">
 <h2>&#8216;Style&#8217; does not exist<a class="headerlink" href="#style-does-not-exist" title="Permalink to this headline">¶</a></h2>
 <p>Most languages allow a lot of freedom when it comes to coding style, choices like:</p>
 <ul class="simple">
-<li>spaces vs tabs in python, or other languages</li>
+<li>spaces vs tabs in python</li>
+<li>free spacing and indentation in most bracket-based languages</li>
 <li>underscores or casing in variable naming</li>
 </ul>
-<p>Cause large differences between code look and feel. Murasaki attempts
-to ensure that any &#8216;style&#8217; deviations from standard Murasaki code result in:</p>
+<p>Cause large differences between code look and feel. Greyhawk attempts
+to ensure that any &#8216;style&#8217; deviations from standard Greyhawk code result in:</p>
 <ol class="arabic simple">
 <li>A Syntax error</li>
 <li>A change in behaviour in the code.</li>
@@ -120,13 +132,8 @@ restricts a language in unnescessary ways.</p>
   <p class="topless"><a href="index.html"
                         title="previous chapter">Welcome to Greyhawk&#8217;s documentation!</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="interfaces.html"
-                        title="next chapter">Interfaces</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/objectives.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
+  <p class="topless"><a href="status.html"
+                        title="next chapter">Project Status</a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -151,7 +158,7 @@ restricts a language in unnescessary ways.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="interfaces.html" title="Interfaces"
+          <a href="status.html" title="Project Status"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to Greyhawk’s documentation!"

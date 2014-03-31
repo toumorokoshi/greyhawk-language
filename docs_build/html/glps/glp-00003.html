@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>GLP-00003: Adapters &mdash; Greyhawk 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Greyhawk 0.1 documentation" href="../index.html" />
+    <link rel="prev" title="GLP-00002: Lambdas" href="glp-00002.html" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head>
+  <body>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="glp-00002.html" title="GLP-00002: Lambdas"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="glp-00003-adapters">
+<h1>GLP-00003: Adapters<a class="headerlink" href="#glp-00003-adapters" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Yusuke Tsutsumi</td>
+</tr>
+<tr class="field-even field"><th class="field-name">created_date:</th><td class="field-body">2014-03-30</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">updated_date:</th><td class="field-body">2014-03-30</td>
+</tr>
+<tr class="field-even field"><th class="field-name">approval:</th><td class="field-body">approved</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">approvers:</th><td class="field-body">yusuke</td>
+</tr>
+<tr class="field-even field"><th class="field-name">status:</th><td class="field-body">unimplemented</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="proposed-implementation">
+<h2>Proposed Implementation<a class="headerlink" href="#proposed-implementation" title="Permalink to this headline">¶</a></h2>
+<p>Adapters solve the problem where:</p>
+<ul class="simple">
+<li>a developer cannot modify an existing class (due to backwards compatibility or lack of access)</li>
+<li>a developer needs the class to adhere to a new interface</li>
+</ul>
+<p>More information can be found in the further discussion section.</p>
+<p>The problem is solved by effectively allowing a construct which
+substitutes in methods for said existing class when the method is
+called for the designated interface.</p>
+<p>Clojure calls these &#8216;protocols&#8217;. It seems like the word &#8216;adapter&#8217; is more fitting:</p>
+<div class="highlight-python"><div class="highlight"><pre>class OldBillClass
+
+  int bill()
+    ...
+
+interface ^Invoice
+  bool charge()
+
+
+adapt (OldBillClass, ^Invoice)
+
+  bool charge()
+    return bill() != 0
+
+operateOnInvoice(oldBillClass)
+</pre></div>
+</div>
+</div>
+<div class="section" id="implementation-in-other-languages">
+<h2>Implementation in other languages<a class="headerlink" href="#implementation-in-other-languages" title="Permalink to this headline">¶</a></h2>
+<p>Clojure:</p>
+<div class="highlight-python"><div class="highlight"><pre>(extend com.widgetco.Order
+  Fulfillment
+  {:invoice (fn [this]
+              ... return an invoice based on an Order ... )
+   :manifest (fn [this]
+           ... return a manifest based on an Order ... )})
+</pre></div>
+</div>
+<p>is probably one of the only  languages with a native implementation to
+this problem. Others will probably have  to run their class through an
+adapter class, such as this example in Java:</p>
+<div class="highlight-python"><div class="highlight"><pre>public class BillToInvoiceAdapter implements Invoice {
+  public BillToInvoiceAdapter(Bill b) { this.b = b; }
+  public charge() { return b.bill() != 0; }
+}
+
+operateOnInvoice(BillToInvoiceAdapter(b));
+</pre></div>
+</div>
+</div>
+<div class="section" id="further-discussion">
+<h2>Further Discussion<a class="headerlink" href="#further-discussion" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.ibm.com/developerworks/library/j-clojure-protocols/">This article</a>
+from Stuart Sierra decribes the need for an adapter perfectly.</p>
+<p>One of the biggest weaknesses of classes is it&#8217;s rigidity: By
+providing an explicit explanation of your contract, it then becomes an
+immovable anchor from which one cannot deviate. In order for the data
+contained inside it to be free to change, one must choose to go
+through the ordeal of modifying all of it&#8217;s consumers (typically an
+unreasonable task). adapters give a way out of that, providing the
+most direct interface possible without modifying the base class in any
+way.</p>
+<p>Ultimately, however, classes in this fashion may not even be the right
+way to go. If there was some other way to describe data formatting in
+a concrete fashion but still allow it to be maleable, a language could
+live without such a tedious middleman.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">GLP-00003: Adapters</a><ul>
+<li><a class="reference internal" href="#proposed-implementation">Proposed Implementation</a></li>
+<li><a class="reference internal" href="#implementation-in-other-languages">Implementation in other languages</a></li>
+<li><a class="reference internal" href="#further-discussion">Further Discussion</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="glp-00002.html"
+                        title="previous chapter">GLP-00002: Lambdas</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="glp-00002.html" title="GLP-00002: Lambdas"
+             >previous</a> |</li>
+        <li><a href="../index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Yusuke Tsutsumi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

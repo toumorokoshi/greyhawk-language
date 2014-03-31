@@ -8,7 +8,7 @@
     
     <title>Project Status &mdash; Greyhawk 0.1 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -23,15 +23,30 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Greyhawk 0.1 documentation" href="index.html" /> 
+    <link rel="top" title="Greyhawk 0.1 documentation" href="index.html" />
+    <link rel="next" title="Interfaces" href="interfaces.html" />
+    <link rel="prev" title="Language Objectives" href="objectives.html" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
   </head>
   <body>
+
     <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="interfaces.html" title="Interfaces"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="objectives.html" title="Language Objectives"
+             accesskey="P">previous</a> |</li>
         <li><a href="index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -53,6 +68,45 @@
 <li>dependency management</li>
 </ul>
 </div>
+<div class="section" id="other-todos">
+<h2>Other Todos<a class="headerlink" href="#other-todos" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">differentiate between interfaces + classes with style?</p>
+</li>
+<li><dl class="first docutils">
+<dt>maybe add in a &#8216;let/with&#8217; expression?</dt>
+<dd><dl class="first last docutils">
+<dt>with EXPR as VAL:</dt>
+<dd><p class="first last">body</p>
+</dd>
+<dt>let VAL = EXPR:</dt>
+<dd><p class="first last">body</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Permutations of each should be distinguishable:</p>
+<ul class="simple">
+<li>public, protected, private (# of underscores)</li>
+<li>method, variable</li>
+<li>class, interface (maybe not at this point)</li>
+<li>static/nonstatic (probably no need)</li>
+</ul>
+<p>Available symbols:</p>
+<ul class="simple">
+<li>^: interface?</li>
+<li>!: not used</li>
+<li>|: not used</li>
+<li>&#64;: not used. asynchronous request?</li>
+<li>$: not used</li>
+<li>&amp;: not used</li>
+<li>#: not used</li>
+<li>?: used as the</li>
+</ul>
+<p>Docstrings exist, and work like python. Only included in debug builds.</p>
+</div>
 </div>
 
 
@@ -65,15 +119,17 @@
   <ul>
 <li><a class="reference internal" href="#">Project Status</a><ul>
 <li><a class="reference internal" href="#todo">ToDo</a></li>
+<li><a class="reference internal" href="#other-todos">Other Todos</a></li>
 </ul>
 </li>
 </ul>
 
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/status.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="objectives.html"
+                        title="previous chapter">Language Objectives</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="interfaces.html"
+                        title="next chapter">Interfaces</a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -97,6 +153,12 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="interfaces.html" title="Interfaces"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="objectives.html" title="Language Objectives"
+             >previous</a> |</li>
         <li><a href="index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
