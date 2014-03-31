@@ -10,12 +10,21 @@ Greyhawk is a programming language spec. Currently there are no realistic plans
 to implement Greyhawk as a real language, and it is a work in
 progress.
 
-Contents:
+
+The Basics:
 
 .. toctree::
    :maxdepth: 2
 
    objectives
+   status
+   inspirations
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
    interfaces
    inheritance
    style
@@ -24,8 +33,14 @@ Contents:
    importing
    keywords
    loops
-   todo
 
+GLPs (Greyhawk Language Proposals):
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   glps/*
 
 Indices and tables
 ==================
