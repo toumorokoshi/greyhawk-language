@@ -1,0 +1,88 @@
+===================
+GLP-00003: Adapters
+===================
+:author: Yusuke Tsutsumi
+:created_date: 2014-03-30
+:updated_date: 2014-03-30
+:approval: approved
+:approvers: yusuke
+:status: unimplemented
+
+-----------------------
+Proposed Implementation
+-----------------------
+
+Adapters solve the problem where:
+
+* a developer cannot modify an existing class (due to backwards compatibility or lack of access)
+* a developer needs the class to adhere to a new interface
+
+More information can be found in the further discussion section.
+
+The problem is solved by effectively allowing a construct which
+substitutes in methods for said existing class when the method is
+called for the designated interface.
+
+Clojure calls these 'protocols'. It seems like the word 'adapter' is more fitting::
+
+  class OldBillClass
+
+    int bill()
+      ...
+
+  interface ^Invoice
+    bool charge()
+
+
+  adapt (OldBillClass, ^Invoice)
+
+    bool charge()
+      return bill() != 0
+
+  operateOnInvoice(oldBillClass)
+
+---------------------------------
+Implementation in other languages
+---------------------------------
+
+Clojure::
+
+    (extend com.widgetco.Order
+      Fulfillment
+      {:invoice (fn [this]
+                  ... return an invoice based on an Order ... )
+       :manifest (fn [this]
+               ... return a manifest based on an Order ... )})
+
+is probably one of the only  languages with a native implementation to
+this problem. Others will probably have  to run their class through an
+adapter class, such as this example in Java::
+
+  public class BillToInvoiceAdapter implements Invoice {
+    public BillToInvoiceAdapter(Bill b) { this.b = b; }
+    public charge() { return b.bill() != 0; }
+  }
+
+  operateOnInvoice(BillToInvoiceAdapter(b));
+
+------------------
+Further Discussion
+------------------
+
+`This article
+<http://www.ibm.com/developerworks/library/j-clojure-protocols/>`_
+from Stuart Sierra decribes the need for an adapter perfectly.
+
+One of the biggest weaknesses of classes is it's rigidity: By
+providing an explicit explanation of your contract, it then becomes an
+immovable anchor from which one cannot deviate. In order for the data
+contained inside it to be free to change, one must choose to go
+through the ordeal of modifying all of it's consumers (typically an
+unreasonable task). adapters give a way out of that, providing the
+most direct interface possible without modifying the base class in any
+way.
+
+Ultimately, however, classes in this fashion may not even be the right
+way to go. If there was some other way to describe data formatting in
+a concrete fashion but still allow it to be maleable, a language could
+live without such a tedious middleman.

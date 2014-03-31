@@ -1,0 +1,45 @@
+==================
+GLP-00002: Lambdas
+==================
+:author: Yusuke Tsutsumi
+:created_date: 2014-03-30
+:updated_date: 2014-03-30
+:approval: approved
+:approvers: yusuke
+:status: unimplemented
+
+-----------------------
+Proposed Implementation
+-----------------------
+
+Lambdas are a staple in functional programming, and can really help
+result in clean and concise examination of functionality. The proposed implementation is::
+
+  (val: type) -> result
+  (x) -> x * 2
+
+---------------------------------
+Implementation in other languages
+---------------------------------
+
+Scala's Lambdas are nice::
+
+  (x: Int) => x * 2
+  (args: types) => expression
+
+Python has lambdas too::
+
+  lambda args: result
+
+Not as clean as Scala. The additional lambda keyword makes things not
+look as clear form first glance.
+
+Alternately, haskell has one too::
+
+  \x -> x * 2
+
+------------------
+Further Discussion
+------------------
+
+The arrow really helps show that the arguments compute the result below.

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Style &mdash; Murasaki 0.1 documentation</title>
+    <title>Style &mdash; Greyhawk 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Murasaki 0.1 documentation" href="index.html" />
+    <link rel="top" title="Greyhawk 0.1 documentation" href="index.html" />
     <link rel="next" title="Dependency Management" href="dependencymanagement.html" />
     <link rel="prev" title="Inheritance" href="inheritance.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="inheritance.html" title="Inheritance"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Murasaki 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -72,11 +72,23 @@ naming determines various properties about the value:</p>
 <li>_Method -&gt; protected method (upper camel-case results + leading underscore)</li>
 <li>__Method -&gt; private method (upper camel-case results + double leading underscore)</li>
 </ul>
+<p>This probably won&#8217;t work in it&#8217;s current form:</p>
+<ul class="simple">
+<li>protected -&gt; public method modification breaks interface (because of losing the underscore)</li>
+<li>renaming variables is a pain</li>
+</ul>
+</div>
+<div class="section" id="class-naming">
+<h3>Class Naming<a class="headerlink" href="#class-naming" title="Permalink to this headline">¶</a></h3>
+<p>Classes types have brackets around them:</p>
+<blockquote>
+<div>&lt;ConfigFactory&gt;</div></blockquote>
 </div>
 <div class="section" id="constants">
 <h3>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h3>
 <p>Anything with ALL_CAPS and underscores is always a constant:</p>
-<div class="highlight-python"><pre>int8 ALL_CAPS = 5</pre>
+<div class="highlight-python"><div class="highlight"><pre>int8 ALL_CAPS = 5
+</pre></div>
 </div>
 </div>
 </div>
@@ -94,6 +106,7 @@ naming determines various properties about the value:</p>
 <li><a class="reference internal" href="#tabs-and-spaces">Tabs and Spaces</a></li>
 <li><a class="reference internal" href="#naming">Naming</a><ul>
 <li><a class="reference internal" href="#class-attributes">Class attributes</a></li>
+<li><a class="reference internal" href="#class-naming">Class Naming</a></li>
 <li><a class="reference internal" href="#constants">Constants</a></li>
 </ul>
 </li>
@@ -141,12 +154,12 @@ naming determines various properties about the value:</p>
         <li class="right" >
           <a href="inheritance.html" title="Inheritance"
              >previous</a> |</li>
-        <li><a href="index.html">Murasaki 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2013, Yusuke Tsutsumi.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

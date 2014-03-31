@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>GLP-00001: List Comprehensions &mdash; Greyhawk 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Greyhawk 0.1 documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="glp-00001-list-comprehensions">
+<h1>GLP-00001: List Comprehensions<a class="headerlink" href="#glp-00001-list-comprehensions" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Yusuke Tsutsumi</td>
+</tr>
+<tr class="field-even field"><th class="field-name">created_date:</th><td class="field-body">2014-03-29</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">updated_date:</th><td class="field-body">2014-03-29</td>
+</tr>
+<tr class="field-even field"><th class="field-name">approval:</th><td class="field-body">approved</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">approvers:</th><td class="field-body">yusuke</td>
+</tr>
+<tr class="field-even field"><th class="field-name">status:</th><td class="field-body">unimplemented</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="proposed-implementation">
+<h2>Proposed Implementation<a class="headerlink" href="#proposed-implementation" title="Permalink to this headline">¶</a></h2>
+<p>List comprehensions is a great way to show a conversion of one list to
+another. The proposed implementation is:</p>
+<div class="highlight-python"><div class="highlight"><pre>list.map(f).filter(g)
+list.filter((x) -&gt; x != 0).map((x) -&gt; x + 1)
+</pre></div>
+</div>
+</div>
+<div class="section" id="implementation-in-other-languages">
+<h2>Implementation in other languages<a class="headerlink" href="#implementation-in-other-languages" title="Permalink to this headline">¶</a></h2>
+<p>Python:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">my_list</span> <span class="k">if</span> <span class="n">condition</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Python chooses this over using functional method directly (such as map/filter) due to clarity.</p>
+<p>Scala:</p>
+<div class="highlight-python"><div class="highlight"><pre>list.map(f).filter(condition)
+list.filter((x: Int) =&gt; x != 0).map((x: Int) =&gt; x + 1)
+</pre></div>
+</div>
+<p>Haskell:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;-</span> <span class="nb">list</span><span class="p">,</span> <span class="n">x</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="further-discussion">
+<h2>Further Discussion<a class="headerlink" href="#further-discussion" title="Permalink to this headline">¶</a></h2>
+<p>Although it is true that the Python syntax is more legible, it does
+not allow easy changes between list comprehensions and generator
+functions. Python does this through the distinction between &#8220;[&#8221; and
+&#8220;(&#8221;, but it seems like this is an easy distinction to miss
+syntactically and legibility is not worth potential ambiguity.</p>
+<p>Making the methods functions instead makes it easy to switch out
+generator versions of these methods:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">list</span><span class="o">.</span><span class="n">gmap</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">gfilter</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With no difficulty whatsoever. This can be done for any functional
+method, not just map and filter.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">GLP-00001: List Comprehensions</a><ul>
+<li><a class="reference internal" href="#proposed-implementation">Proposed Implementation</a></li>
+<li><a class="reference internal" href="#implementation-in-other-languages">Implementation in other languages</a></li>
+<li><a class="reference internal" href="#further-discussion">Further Discussion</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/glps/glp-00001.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Yusuke Tsutsumi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

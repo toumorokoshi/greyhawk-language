@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Interfaces &mdash; Greyhawk 0.1 documentation</title>
+    <title>Compiling &mdash; Greyhawk 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -23,9 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Greyhawk 0.1 documentation" href="index.html" />
-    <link rel="next" title="Inheritance" href="inheritance.html" />
-    <link rel="prev" title="Language Objectives" href="objectives.html" /> 
+    <link rel="top" title="Greyhawk 0.1 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,12 +32,6 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="inheritance.html" title="Inheritance"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="objectives.html" title="Language Objectives"
-             accesskey="P">previous</a> |</li>
         <li><a href="index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,43 +41,23 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="interfaces">
-<h1>Interfaces<a class="headerlink" href="#interfaces" title="Permalink to this headline">¶</a></h1>
-<p>Interfaces in Murasaki differ from interfaces in other languages by
-the fact that they can also implement methods instead of just defining a
-required set of methods.</p>
-<p>An example is here:</p>
-<div class="highlight-python"><div class="highlight"><pre>interface Comparable:
-
-    int8 CompareTo(cls other)
-
-    bool LessThan(cls other):
-        return this.compareTo(other) &gt;= 1
-
-    bool GreaterThan(cls other):
-        return this.compareTo(other) &lt;= 1
+  <div class="section" id="compiling">
+<h1>Compiling<a class="headerlink" href="#compiling" title="Permalink to this headline">¶</a></h1>
+<p>The &#8216;greyhawk build&#8217; command build files. There are some options associated with it:</p>
+<div class="section" id="target">
+<h2>target<a class="headerlink" href="#target" title="Permalink to this headline">¶</a></h2>
+<p>The &#8216;target&#8217; directive determines whether the build is designed for debugging or production:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">--</span><span class="n">target</span><span class="o">=</span><span class="n">debug</span>
+<span class="o">--</span><span class="n">target</span><span class="o">=</span><span class="n">production</span>
 </pre></div>
 </div>
-<p>So a class can implement an interface, and receive associated methods for free:</p>
-<div class="highlight-python"><div class="highlight"><pre>class Version implements Comparable:
-
-    int8 major
-    int8 minor
-
-    Version(int8 major=1, int8 minor=0):
-        this.major = major
-        this.minor = minor
-
-    int8 CompareTo(Version other):
-        if major == other.major:
-            return major - other.major
-        return minor - other.minor
-
-int8 main:
-    v1 := Version()
-    v2 := Version(1, 1)
-    TestUtils.Assert(v2.LessThan(v1), true)
-</pre></div>
+<p>Production provides a set of optimizations that are designed to make
+code run faster. Debug will compile all code, including code that can
+be optimized away. In production mode specifically:</p>
+<ul class="simple">
+<li>any constants that can be factored out will be removed from the global context</li>
+<li>any code paths that are never run will be factored out</li>
+</ul>
 </div>
 </div>
 
@@ -95,15 +67,17 @@ int8 main:
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="objectives.html"
-                        title="previous chapter">Language Objectives</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="inheritance.html"
-                        title="next chapter">Inheritance</a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Compiling</a><ul>
+<li><a class="reference internal" href="#target">target</a></li>
+</ul>
+</li>
+</ul>
+
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/interfaces.txt"
+    <li><a href="_sources/compiling.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -129,12 +103,6 @@ int8 main:
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li class="right" >
-          <a href="inheritance.html" title="Inheritance"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="objectives.html" title="Language Objectives"
-             >previous</a> |</li>
         <li><a href="index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>

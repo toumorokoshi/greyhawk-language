@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Questions &mdash; Greyhawk 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Greyhawk 0.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="questions">
+<h1>Questions<a class="headerlink" href="#questions" title="Permalink to this headline">¶</a></h1>
+<p>This page talks about some of the big questions that need to be answered in program language design.</p>
+<div class="section" id="how-does-one-deal-with-really-large-classes-e-g-ones-with-a-large-list-of-methods">
+<h2>How does one deal with really large classes? e.g. ones with a large list of methods<a class="headerlink" href="#how-does-one-deal-with-really-large-classes-e-g-ones-with-a-large-list-of-methods" title="Permalink to this headline">¶</a></h2>
+<p>It seems like classes with lots of methods is an anti-pattern: the
+class can probably be factored out into smaller classes.</p>
+<p>That said, some languages provide methods to fix this:</p>
+<ul class="simple">
+<li>go allows adding methods on a class anywhere</li>
+<li>c++ requires the header to contain all method declarations , but allows logic to be split out into separate files</li>
+</ul>
+</div>
+<div class="section" id="implementing-observers">
+<h2>Implementing observers<a class="headerlink" href="#implementing-observers" title="Permalink to this headline">¶</a></h2>
+<p>It would be interesting to get the observer pattern in here.</p>
+<blockquote>
+<div><p>Foo.onChange(String name, ptr value):</p>
+<p>Foo.property.onChange.append(method)</p>
+</div></blockquote>
+</div>
+<div class="section" id="transactional-blocks">
+<h2>Transactional Blocks<a class="headerlink" href="#transactional-blocks" title="Permalink to this headline">¶</a></h2>
+<p>typically, exception handling is used for cleanup or reporting, and
+has nothing to do with actually modifying the behaviour of the
+exception or catching it in some way. Thus, current try/except patterns can get really ugly.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>try:</dt>
+<dd>has_exception_a()
+has_exception_b()</dd>
+<dt>except AException:</dt>
+<dd>cleanup_a()
+reraise AException</dd>
+<dt>except BException:</dt>
+<dd>cleanup_b()
+reraise BException</dd>
+</dl>
+</div></blockquote>
+<p>There needs to be some method to handle this transaction-based
+programming without altering the exception raised. D handles this with
+the scope() keywords <cite>scope &lt;http://dlang.org/statement.html#ScopeStatement&gt;</cite></p>
+<p>We need this too, but I&#8217;m hoping to make it clearer that a particular cleanup is affiliated with a call:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>lock_resource() {</dt>
+<dd><dl class="first last docutils">
+<dt>exit:</dt>
+<dd>release_resource()</dd>
+<dt>failure:</dt>
+<dd>log.info(&#8220;failed!&#8221;)</dd>
+<dt>success:</dt>
+<dd>log.info(&#8220;success!&#8221;)</dd>
+</dl>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</div>
+<div class="section" id="ternary">
+<h2>Ternary<a class="headerlink" href="#ternary" title="Permalink to this headline">¶</a></h2>
+<p>Ternaries, as with any other code, ideally exhibits the following qualities:</p>
+<ul class="simple">
+<li>clear</li>
+<li>concise (i.e. minimal syntax)</li>
+</ul>
+<p>Unfortunately, ternarys tend to be one or the other:</p>
+<blockquote>
+<div>condition ? true_expression : false_expression</div></blockquote>
+<p>is concise, but not clear</p>
+<blockquote>
+<div>true_expression if condition else false_expression</div></blockquote>
+<p>is kind of clear, but far from concise.</p>
+<p>My current solutions is:</p>
+<blockquote>
+<div><p>if condition then true_expressions else false_expression</p>
+<p>a := if is_32_bit() then 32 else 64</p>
+</div></blockquote>
+</div>
+<div class="section" id="utilizing-expressions-in-variable-assignment">
+<h2>Utilizing Expressions in Variable assignment<a class="headerlink" href="#utilizing-expressions-in-variable-assignment" title="Permalink to this headline">¶</a></h2>
+<p>It&#8217;s common to allow variable assignment in expressions:</p>
+<blockquote>
+<div>a := 32 if conditional_expressions() else 16</div></blockquote>
+<p>By making more statements into expressions, one can have more concise code:</p>
+<p>(a la rust):</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>let price =</dt>
+<dd><dl class="first docutils">
+<dt>if item == &#8220;salad&#8221; {</dt>
+<dd>2.50</dd>
+<dt>} else if item == &#8220;muffin&#8221; {</dt>
+<dd>2.25</dd>
+<dt>} else {</dt>
+<dd>2</dd>
+</dl>
+<p class="last">}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>After using Scala again and understanding how truly beautiful
+functional programming can be, I think something like this definitely
+necessary.</p>
+</div>
+<div class="section" id="casting">
+<h2>Casting<a class="headerlink" href="#casting" title="Permalink to this headline">¶</a></h2>
+<p>Two potential ways to cast:</p>
+<blockquote>
+<div>((foo) x).method()
+(x as foo).method()</div></blockquote>
+</div>
+<div class="section" id="syntax-extensions">
+<h2>Syntax Extensions<a class="headerlink" href="#syntax-extensions" title="Permalink to this headline">¶</a></h2>
+<p>I&#8217;m not sure about this one, but rust has an interesting idea of extending the base syntax by adding top-level methods:</p>
+<blockquote>
+<div>go!(thread_body)</div></blockquote>
+<p>syntax extensions are denoted by a &#8216;!&#8217;, to show that they are not part
+of the standard keywords. This may be a nice way of implementing
+bolt-commands, and a greate way of distinguishing between a built-in</p>
+</div>
+<div class="section" id="switch-case">
+<h2>Switch/Case<a class="headerlink" href="#switch-case" title="Permalink to this headline">¶</a></h2>
+<p>Switch/Case statements should have no falling through (only evaluate the matching statement)</p>
+</div>
+<div class="section" id="simple-concurrency-constructs">
+<h2>simple concurrency constructs<a class="headerlink" href="#simple-concurrency-constructs" title="Permalink to this headline">¶</a></h2>
+<p>Io has an interesting construct that makes build concurrent
+applications very simple. Since each invocation is actually a message,
+it allows the easy conversion of a synchronous process with an
+synchronous process:</p>
+<div class="highlight-python"><div class="highlight"><pre>// synchronous
+Object name
+
+// asynchronous with future value returned (placeholder which gets replaced by the real thing)
+Object @name
+
+// asynchronous with no return value
+Object @@name
+</pre></div>
+</div>
+<p>After playing around with Scala a bit, I like Scala&#8217;s model of actors
+a bit better. Scala creates actors, each of which have queues of
+actions you can send them:</p>
+<div class="highlight-python"><div class="highlight"><pre>actor { &lt;caller&gt; ! &lt;method&gt; }
+</pre></div>
+</div>
+<p>This allows for the actor pattern to be explicitely used when
+necessary. Although honestly go&#8217;s concurrency might be the best:</p>
+<div class="highlight-python"><div class="highlight"><pre>go &lt;method&gt;
+</pre></div>
+</div>
+<p>Very simple construct, each &#8216;gothread&#8217; has a channel by which to communicate.</p>
+</div>
+<div class="section" id="determining-methods-with-no-side-effects-purely-functional">
+<h2>Determining methods with no side effects (purely functional?)<a class="headerlink" href="#determining-methods-with-no-side-effects-purely-functional" title="Permalink to this headline">¶</a></h2>
+<p>I&#8217;ve been bitten by this before, where I&#8217;ve used methods with side
+effects and it gave me issues because I wasn&#8217;t aware it had side
+effects down the road. Maybe there&#8217;s a way to express that?</p>
+<p>D does this with the &#8216;pure&#8217; keyword. It would be cool to analyze pure functions at compile time,
+and allow the &#8216;pure&#8217; attribute to be explicitely added in situations where it is deemed necessary.</p>
+</div>
+<div class="section" id="really-powerful-functional-programming-constructs">
+<h2>Really Powerful Functional Programming Constructs<a class="headerlink" href="#really-powerful-functional-programming-constructs" title="Permalink to this headline">¶</a></h2>
+<p>Scala shows how powerful a functional programming language can be. It
+is full of shockingly easy-to-read one liners. As an example, here&#8217;s a
+method that iterates through a map, replacing each key with it&#8217;s value:</p>
+<div class="highlight-python"><div class="highlight"><pre>def censor(word: String) = censorMap.foldLeft(word)((word, entry) =&gt; word.replace(entry._1, entry._2))
+</pre></div>
+</div>
+<p>Such shortness and sweetness is one of the amazing things about
+Scala. Succinctness increases readibility and clarity.</p>
+<p>One of functional programming&#8217;s strengths is the ability to chain
+output into input to accomplish functions. This is kind of like the
+unix methodology of piping commands into each other:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">f</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">|</span> <span class="n">f</span> <span class="o">|</span> <span class="n">g</span>
+
+<span class="n">toMap</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">|</span> <span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)</span> <span class="o">|</span> <span class="n">toMap</span>
+<span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">toMap</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Questions</a><ul>
+<li><a class="reference internal" href="#how-does-one-deal-with-really-large-classes-e-g-ones-with-a-large-list-of-methods">How does one deal with really large classes? e.g. ones with a large list of methods</a></li>
+<li><a class="reference internal" href="#implementing-observers">Implementing observers</a></li>
+<li><a class="reference internal" href="#transactional-blocks">Transactional Blocks</a></li>
+<li><a class="reference internal" href="#ternary">Ternary</a></li>
+<li><a class="reference internal" href="#utilizing-expressions-in-variable-assignment">Utilizing Expressions in Variable assignment</a></li>
+<li><a class="reference internal" href="#casting">Casting</a></li>
+<li><a class="reference internal" href="#syntax-extensions">Syntax Extensions</a></li>
+<li><a class="reference internal" href="#switch-case">Switch/Case</a></li>
+<li><a class="reference internal" href="#simple-concurrency-constructs">simple concurrency constructs</a></li>
+<li><a class="reference internal" href="#determining-methods-with-no-side-effects-purely-functional">Determining methods with no side effects (purely functional?)</a></li>
+<li><a class="reference internal" href="#really-powerful-functional-programming-constructs">Really Powerful Functional Programming Constructs</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/questions.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Yusuke Tsutsumi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

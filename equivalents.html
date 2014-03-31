@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Interfaces &mdash; Greyhawk 0.1 documentation</title>
+    <title>Equivalents &mdash; Greyhawk 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -23,9 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Greyhawk 0.1 documentation" href="index.html" />
-    <link rel="next" title="Inheritance" href="inheritance.html" />
-    <link rel="prev" title="Language Objectives" href="objectives.html" /> 
+    <link rel="top" title="Greyhawk 0.1 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,12 +32,6 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="inheritance.html" title="Inheritance"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="objectives.html" title="Language Objectives"
-             accesskey="P">previous</a> |</li>
         <li><a href="index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,43 +41,38 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="interfaces">
-<h1>Interfaces<a class="headerlink" href="#interfaces" title="Permalink to this headline">¶</a></h1>
-<p>Interfaces in Murasaki differ from interfaces in other languages by
-the fact that they can also implement methods instead of just defining a
-required set of methods.</p>
-<p>An example is here:</p>
-<div class="highlight-python"><div class="highlight"><pre>interface Comparable:
+  <div class="section" id="equivalents">
+<h1>Equivalents<a class="headerlink" href="#equivalents" title="Permalink to this headline">¶</a></h1>
+<p>This page outlines equivalents of concepts in one language in Greyhawk.</p>
+<div class="section" id="preprocessor-directives-and-constants">
+<h2>Preprocessor directives and constants<a class="headerlink" href="#preprocessor-directives-and-constants" title="Permalink to this headline">¶</a></h2>
+<p>C and C++ utilize preprocessor directives to make code more
+efficient. By providing definitions that are injected into the code
+before they are compile, it allows for one less variable that needs to
+be referenced in a location in memory, instead of on runtime.</p>
+<p>Greyhawk handles this by offering a &#8216;production&#8217; build target that
+optimizes constants as if they were preprocessor directives. This also
+has the side effect of making it easier to see where a define was set:</p>
+<div class="highlight-python"><div class="highlight"><pre>from myapp import conf
 
-    int8 CompareTo(cls other)
-
-    bool LessThan(cls other):
-        return this.compareTo(other) &gt;= 1
-
-    bool GreaterThan(cls other):
-        return this.compareTo(other) &lt;= 1
+def run_this_on_debug():
+    /* in a production target build, with conf.DEBUG set to false,
+       this whole method would get optimized away */
+    if conf.DEBUG:
+        stdout.print(&quot;We&#39;re in debug mode!&quot;)
 </pre></div>
 </div>
-<p>So a class can implement an interface, and receive associated methods for free:</p>
-<div class="highlight-python"><div class="highlight"><pre>class Version implements Comparable:
+<p>Since null methods are optimized as well in a production build, you
+could easily create remove all debug logging message calls by wrapping
+it in a method which only runs anything when the debug variable is
+set:</p>
+<div class="highlight-python"><div class="highlight"><pre>class ExtendedLog extends Log:
 
-    int8 major
-    int8 minor
-
-    Version(int8 major=1, int8 minor=0):
-        this.major = major
-        this.minor = minor
-
-    int8 CompareTo(Version other):
-        if major == other.major:
-            return major - other.major
-        return minor - other.minor
-
-int8 main:
-    v1 := Version()
-    v2 := Version(1, 1)
-    TestUtils.Assert(v2.LessThan(v1), true)
+    def DebugLog(String message):
+        if conf.DEBUG:
+            Debug(message)
 </pre></div>
+</div>
 </div>
 </div>
 
@@ -95,15 +82,17 @@ int8 main:
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="objectives.html"
-                        title="previous chapter">Language Objectives</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="inheritance.html"
-                        title="next chapter">Inheritance</a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Equivalents</a><ul>
+<li><a class="reference internal" href="#preprocessor-directives-and-constants">Preprocessor directives and constants</a></li>
+</ul>
+</li>
+</ul>
+
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/interfaces.txt"
+    <li><a href="_sources/equivalents.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -129,12 +118,6 @@ int8 main:
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li class="right" >
-          <a href="inheritance.html" title="Inheritance"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="objectives.html" title="Language Objectives"
-             >previous</a> |</li>
         <li><a href="index.html">Greyhawk 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
