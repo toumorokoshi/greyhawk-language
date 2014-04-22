@@ -12,7 +12,7 @@ static raw_os_ostream debug_os_ostream(std::cout);
 #define debug(s);
 
 /* Returns an LLVM type based on the identifier */
-static Type *typeOf(NIdentifier& type) 
+static Type *typeOf(NIdentifier& type)
 {
   debug("generating typeof...");
 	if (type.name.compare("int") == 0) {
@@ -58,7 +58,7 @@ Value* CodeGenerator::generate(Node& n) {
 
 Value* CodeGenerator::generate(NExpression& n) {
   debug("dynamically determining expression");
-  
+
   if (typeid(n) == typeid(NIdentifier)) {
     debug("NIdentifier");
     return generate(static_cast<NIdentifier&>(n));
@@ -141,7 +141,7 @@ Value* CodeGenerator::generate(NMethodCall& nMethodCall) {
   std::vector<Value*> args;
   for (unsigned i = 0, e = nMethodCall.arguments.size(); i != e; ++i) {
     args.push_back(generate(*(nMethodCall.arguments[i])));
-    if (args.back() == 0) { 
+    if (args.back() == 0) {
       return 0;
     }
   }
@@ -212,7 +212,7 @@ Value* CodeGenerator::generate(NConditional& n) {
   debug("generating NConditional...");
   Value* conditionResult = generate(n.condition);
   Function* function = builder.GetInsertBlock()->getParent();
-  
+
   debug("  creating basic blocks...");
   // then, we generate the LLVM blocks for each of the branches
   BasicBlock* thenBasicBlock = BasicBlock::Create(getGlobalContext(), "then", function);
@@ -235,7 +235,7 @@ Value* CodeGenerator::generate(NConditional& n) {
   builder.CreateBr(mergeBasicBlock);
   // we re-assign thenBasicBlock, because it could have been modified by the inner code
   thenBasicBlock = builder.GetInsertBlock();
- 
+
   debug("  generating else...");
   /* ELSE BLOCK */
   function->getBasicBlockList().push_back(elseBasicBlock);
@@ -303,7 +303,7 @@ Value* CodeGenerator::generate(NFunctionDeclaration& n) {
   unsigned i = 0;
   for (Function::arg_iterator AI = function->arg_begin(); i != n.arguments.size(); ++AI, ++i) {
     AI->setName(n.arguments[i]->id.name);
-    
+
     // Add arguments to variable symbol table.
     Value* allocation = generate(*(n.arguments[i]));
     builder.CreateStore(AI, allocation);
