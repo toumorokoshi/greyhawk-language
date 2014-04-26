@@ -10,7 +10,7 @@ import shlex
 import subprocess
 import difflib
 
-EXECUTABLE = os.path.join(os.curdir, 'parser', 'greyhawk')
+EXECUTABLE = os.path.join(os.curdir, 'compiler', 'greyhawk')
 EXAMPLES_DIRECTORY = os.path.join(os.curdir, 'examples')
 # specifically test-related
 TEST_DIR = os.path.join(os.curdir, 'tests')
