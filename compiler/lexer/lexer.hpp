@@ -1,18 +1,26 @@
 #include <string>
+#include <exception>
 #include <boost/regex.hpp>
 
 using namespace std;
-using namespace boost;
+
+// extend exceptions from here if they have to do with
+// the lexer specifically
+class LexerException: public exception {
+public:
+  const string message;
+  LexerException(string _message) : message(_message) {}
+};
 
 class Token {
 
 public:
   const string name;
-  const regex pattern;
+  const boost::regex pattern;
   const bool ignore;
   Token(string _name, string _pattern, bool ignore)
     : name(_name),
-      pattern(regex("^" + _pattern, regex::ECMAScript)),
+      pattern(boost::regex("^" + _pattern, boost::regex::ECMAScript)),
       ignore(ignore) {}
   Token(string _name, string _pattern) :
     Token(_name, _pattern, false) {}
