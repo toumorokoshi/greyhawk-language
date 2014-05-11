@@ -1,11 +1,10 @@
-COMPILER_PATH=./bin/greyhawk
-.PHONY: compiler tests
+.PHONY: compiler lexer
 export
 
-all: compiler tests
+all: compiler lexer
 
 compiler:
 	$(MAKE) -C compiler
 
-tests:
-	$(MAKE) -C compiler tests
+lexer:
+	$(MAKE) -C compiler lexer

@@ -2,6 +2,10 @@
 #include <exception>
 #include <boost/regex.hpp>
 
+#ifndef LEXER_HPP
+
+#define LEXER_HPP
+
 using namespace std;
 
 // extend exceptions from here if they have to do with
@@ -28,14 +32,12 @@ public:
 
 typedef vector<Token> TokenVector;
 
-Token T_FOO = Token("foo", "testing");
-Token T_BAR = Token("bar", "none");
-Token T_NOTHING = Token("null", " ", true);
-
-TokenVector tokensByPrecedence {
-  T_FOO,
-    T_BAR,
-    T_NOTHING
-};
+// defined in lexer.cpp
+extern Token T_FOO;
+extern Token T_BAR;
+extern Token T_NOTHING;
+extern TokenVector tokensByPrecedence;
 
 TokenVector tokenize(string input);
+
+#endif

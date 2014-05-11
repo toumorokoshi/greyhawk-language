@@ -9,3 +9,4 @@ build/
 TAGS
 tags
 bin/greyhawk
+bin/lexer

@@ -1,4 +1,8 @@
 SHELL := /bin/bash
+LLVM_CONFIG=`llvm-config --libs core native` `llvm-config --cxxflags --ldflags`
+BOOST_OPTIONS=-lboost_program_options -lboost_regex
+OPTIONS=--std=c++11 -L/usr/lib -I/usr/include $(BOOST_OPTIONS)
+.PHONY: lexer
 
 all:
 	mkdir -p build
@@ -14,10 +18,7 @@ all:
 	clang++ -o ../bin/greyhawk -L/usr/lib main/*.cpp build/*.cpp *.cpp `llvm-config --libs core native` `llvm-config --cxxflags --ldflags` -lyaml-cpp -I/usr/include/ -fexceptions -lboost_program_options
 
 lexer:
-	cd lexer && make
-
-tests:
-	clang++ -o ../bin/test -L/usr/lib build/*.cpp *.cpp -I/usr/include/ -fexceptions -lboost_program_options
+	clang++ -o ../bin/lexer lexer/*.cpp main/lexer.cpp $(OPTIONS)
 
 clean:
 	rm -r build

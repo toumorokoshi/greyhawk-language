@@ -6,6 +6,16 @@
 
 using namespace std;
 
+Token T_FOO = Token("foo", "testing");
+Token T_BAR = Token("bar", "none");
+Token T_NOTHING = Token("null", " ", true);
+
+TokenVector tokensByPrecedence {
+  T_FOO,
+  T_BAR,
+  T_NOTHING
+};
+
 TokenVector tokenize(string input) {
 
   TokenVector tokens;
@@ -34,23 +44,4 @@ TokenVector tokenize(string input) {
     throw LexerException("invalid token: " + current_token);
   }
   return tokens;
-}
-
-int main() {
-  string input;
-  TokenVector tokens;
-  cout << "Greyhawk lexer." << endl;
-  while(true) {
-    cout << ">>> ";
-    getline(cin, input);
-    try {
-      tokens = tokenize(input);
-    } catch (LexerException& e) {
-      cout << e.message << endl;
-      continue;
-    }
-    for (TokenVector::iterator it = tokens.begin(); it != tokens.end(); ++it) {
-      cout << it->name << endl;
-    }
- }
 }
