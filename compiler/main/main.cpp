@@ -1,8 +1,8 @@
 #include <iostream>
 #include <stdio.h>
-#include "codegenerator.hpp"
-#include "yamlast.hpp"
-#include "node.hpp"
+#include "../codegenerator.hpp"
+#include "../yamlast.hpp"
+#include "../node.hpp"
 #include <boost/program_options.hpp>
 
 namespace po = boost::program_options;
@@ -15,7 +15,7 @@ typedef struct CommandLineArguments {
   std::string file_name;
   bool ast;
   bool llvm;
-} CommandLineArguments; 
+} CommandLineArguments;
 
 CommandLineArguments& getArguments(int argc, char*argv[]) {
 
@@ -33,7 +33,7 @@ CommandLineArguments& getArguments(int argc, char*argv[]) {
     ("file_name", po::value<std::string>()->required(), "path to the file to compile");
 
   po::variables_map vm;
-  
+
   try {
     po::store(po::command_line_parser(argc, argv)
               .options(desc)
