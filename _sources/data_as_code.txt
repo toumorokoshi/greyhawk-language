@@ -26,8 +26,8 @@ initialization specifically mirrors metadata pretty well::
       }
 
   { Map
-    ["test" "foo"],
-    ["too" "food"],
-    ["bar" "baz"],
-    ["roco" "no"]
+    "test": "foo",
+    "too": "food",
+    "bor": "baz",
+    "roco": "no"
   }
