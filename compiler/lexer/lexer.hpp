@@ -17,27 +17,27 @@ public:
 };
 
 class Token {
-
 public:
-  const string name;
-  const boost::regex pattern;
-  const bool ignore;
-  Token(string _name, string _pattern, bool ignore)
-    : name(_name),
-      pattern(boost::regex("^" + _pattern, boost::regex::ECMAScript)),
-      ignore(ignore) {}
-  Token(string _name, string _pattern) :
-    Token(_name, _pattern, false) {}
+  virtual string getDescription() { return "nothing"; }
 };
 
-typedef vector<Token> TokenVector;
 
-// defined in lexer.cpp
-extern Token T_FOO;
-extern Token T_BAR;
-extern Token T_NOTHING;
-extern TokenVector tokensByPrecedence;
+class Keyword : public Token {
+public:
+  const string symbol;
+  Keyword(string _symbol) : symbol(_symbol) {}
+  string getDescription() { return symbol; }
+};
+
+
+typedef vector<Token> TokenVector;
+typedef vector<Keyword> KeywordVector;
 
 TokenVector tokenize(string input);
+
+// utility methods
+bool isAlpha(char);
+bool isNumeric(char);
+bool isAlphaNumeric(char);
 
 #endif

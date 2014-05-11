@@ -20,5 +20,8 @@ all:
 lexer:
 	clang++ -o ../bin/lexer lexer/*.cpp main/lexer.cpp $(OPTIONS)
 
+tests:
+	clang++ -o ../bin/unit_tests lexer/*.cpp lexer/tests/*.cpp main/tests.cpp $(OPTIONS) -lgtest
+
 clean:
 	rm -r build

@@ -19,7 +19,7 @@ The Compiler uses the following:
 
 * c++11
 * llvm as the intermediary layer for the compiler
+* gtest, for unit testing
 * yaml-cpp to output the syntax tree in a human-readable format
 * boost, for:
   * the command line parser
-  * regex (clang's regex had a weird bug with beginning of line matches)
