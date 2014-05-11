@@ -1,10 +1,11 @@
-# this requires sphinx to be installed:
+ this requires sphinx to be installed:
 # $ easy_install -U sphinx
 cd docs
 make html
 git checkout gh-pages
-mv build/html/* ../
 cd ../
+rm -r glps _sources _static
+mv docs/build/html/* .
 git add .
 git commit -am "build $(date)"
 git push origin gh-pages
