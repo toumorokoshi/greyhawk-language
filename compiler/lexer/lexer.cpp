@@ -6,79 +6,83 @@
 
 using namespace std;
 
-// keywords
-Keyword T_ELSE ("else");
-Keyword T_IF ("if");
-Keyword T_IS ("is");
-Keyword T_RETURN ("return");
+namespace lexer {
 
-// constants
-Keyword T_FALSE ("false");
-Keyword T_TRUE ("true");
+    // keywords
+    Keyword T_ELSE ("else");
+    Keyword T_IF ("if");
+    Keyword T_IS ("is");
+    Keyword T_RETURN ("return");
 
-// comparison operators
-/*
-Token T_ASSIGN = Token("assign", "=");
-Token T_EQ = Token("equals", "==");
-Token T_NE = Token("not equals", "!=");
-Token T_LT = Token("less than", "<");
-Token T_LEQ = Token("less than or equal", "<=");
-Token T_GT = Token("greater than", ">");
-Token T_GEQ = Token("greater than or equal", ">=");
-*/
+    // constants
+    Keyword T_FALSE ("false");
+    Keyword T_TRUE ("true");
 
-// boolean operations
+    // comparison operators
+    /*
+    Token T_ASSIGN = Token("assign", "=");
+    Token T_EQ = Token("equals", "==");
+    Token T_NE = Token("not equals", "!=");
+    Token T_LT = Token("less than", "<");
+    Token T_LEQ = Token("less than or equal", "<=");
+    Token T_GT = Token("greater than", ">");
+    Token T_GEQ = Token("greater than or equal", ">=");
+    */
 
-KeywordVector keywordList {
-  T_ELSE,
-    T_IF,
-    T_IS,
-    T_RETURN,
-    T_FALSE,
-    T_TRUE
-};
+    // boolean operations
 
-bool isAlpha(char c) {
-  if ('a' <= c && c <= 'z') {
-    return true;
-  } else if ('A' <= c && c <= 'Z') {
-    return true;
-  }
-  return false;
-}
+    KeywordVector keywordList {
+      T_ELSE,
+        T_IF,
+        T_IS,
+        T_RETURN,
+        T_FALSE,
+        T_TRUE
+    };
 
-bool isNumeric(char c) {
-  return ('0' <= c && c <= '9');
-}
+    bool isAlpha(char c) {
+      if ('a' <= c && c <= 'z') {
+        return true;
+      } else if ('A' <= c && c <= 'Z') {
+        return true;
+      }
+      return false;
+    }
 
-bool isAlphaNumeric(char c) {
-  return isAlpha(c) || isNumeric(c);
-}
+    bool isNumeric(char c) {
+      return ('0' <= c && c <= '9');
+    }
 
-TokenVector tokenize(string input) {
+    bool isAlphaNumeric(char c) {
+      return isAlpha(c) || isNumeric(c);
+    }
 
-  TokenVector tokens;
+    TokenVector tokenize(string input) {
 
-  string current_token = "";
+      TokenVector tokens;
 
-  for (char& c : input) {
-    if (!isAlphaNumeric(c)) {
-      throw LexerException("Can not handle non-alphanumeric characters!");
-    } else {
+      string current_token = "";
 
-      current_token += c;
-      for (KeywordVector::iterator it = keywordList.begin(); it != keywordList.end(); ++it) {
-        if (current_token.compare(it->symbol)) {
-          current_token = "";
-          tokens.push_back(*it);
+      for (char& c : input) {
+        if (!isAlphaNumeric(c)) {
+          throw LexerException("Can not handle non-alphanumeric characters!");
+        } else {
+
+          current_token += c;
+          for (KeywordVector::iterator it = keywordList.begin(); it != keywordList.end(); ++it) {
+            if (current_token.compare(it->symbol)) {
+              current_token = "";
+              tokens.push_back(*it);
+            }
+          }
+
         }
       }
 
+      if (current_token.compare("") != 0) {
+        throw LexerException("invalid token: " + current_token);
+      }
+      return tokens;
     }
-  }
 
-  if (current_token.compare("") != 0) {
-    throw LexerException("invalid token: " + current_token);
-  }
-  return tokens;
 }

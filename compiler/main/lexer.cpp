@@ -1,5 +1,8 @@
 #include "../lexer/lexer.hpp"
 
+using namespace std;
+using namespace lexer;
+
 int main() {
   string input;
   TokenVector tokens;
