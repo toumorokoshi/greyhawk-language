@@ -1,8 +1,5 @@
 #include "lexer.hpp"
-#include <boost/tokenizer.hpp>
 #include <stdio.h>
-#include <iostream>
-#include <assert.h>
 
 using namespace std;
 
@@ -26,18 +23,27 @@ namespace lexer {
   Keyword* T_RETURN = new Keyword("return");
 
   // constants
-  Keyword* T_FALSE = new Keyword("false");
   Keyword* T_TRUE = new Keyword("true");
+  Keyword* T_FALSE = new Keyword("false");
 
-  // single character, non-alphanumeric characters
-  Character* T_LPAREN = new Character('(');
-  Character* T_RPAREN = new Character(')');
-  Character* T_DOT = new Character('.');
-  Character* T_COMMA = new Character(',');
-  Character* T_PLUS = new Character('+');
-  Character* T_MINUS = new Character('-');
-  Character* T_MUL = new Character('*');
-  Character* T_DIV = new Character('/');
+  // operators
+  Operator* T_LPAREN = new Operator("(");
+  Operator* T_RPAREN = new Operator(")");
+  Operator* T_COMMA = new Operator(",");
+  Operator* T_DOT = new Operator(".");
+  Operator* T_PLUS = new Operator("+");
+  Operator* T_MINUS = new Operator("-");
+  Operator* T_MUL = new Operator("*");
+  Operator* T_DIV = new Operator("/");
+  Operator* T_DECLARE = new Operator(":=");
+  Operator* T_ASSIGN = new Operator("=");
+  Operator* T_COMPARE_EQUAL = new Operator("==");
+  Operator* T_COMPARE_NOT_EQUAL = new Operator("!=");
+  Operator* T_COMPARE_LEQ = new Operator("<=");
+  Operator* T_COMPARE_GEQ = new Operator(">=");
+  Operator* T_COMPARE_LET = new Operator("<");
+  Operator* T_COMPARE_GET = new Operator(">");
+  Operator* T_COLON = new Operator(":");
 
   KeywordVector keywordList {
       T_ELSE,
@@ -48,16 +54,29 @@ namespace lexer {
       T_TRUE
   };
 
-  CharacterVector characterList {
-      T_LPAREN,
-      T_RPAREN,
-      T_DOT,
-      T_COMMA,
-      T_PLUS,
-      T_MINUS,
-      T_MUL,
-      T_DIV
+  OperatorPairVector operatorPairs {
+    T_LPAREN->getOperatorPair(),
+    T_RPAREN->getOperatorPair(),
+    T_COMMA->getOperatorPair(),
+    T_DOT->getOperatorPair(),
+    T_PLUS->getOperatorPair(),
+    T_MINUS->getOperatorPair(),
+    T_MUL->getOperatorPair(),
+    T_DIV->getOperatorPair(),
+    T_DECLARE->getOperatorPair(),
+    T_ASSIGN->getOperatorPair(),
+    T_COMPARE_EQUAL->getOperatorPair(),
+    T_COMPARE_NOT_EQUAL->getOperatorPair(),
+    T_COMPARE_LEQ->getOperatorPair(),
+    T_COMPARE_GEQ->getOperatorPair(),
+    T_COMPARE_LET->getOperatorPair(),
+    T_COMPARE_GET->getOperatorPair(),
+    T_COLON->getOperatorPair()
   };
+
+  OperatorFSM operatorFSM =
+    OperatorFSM(' ', NULL).addChildren(operatorPairs);
+
 
   bool isAlpha(char c) {
     if ('a' <= c && c <= 'z') {
@@ -75,51 +94,4 @@ namespace lexer {
   bool isAlphaNumeric(char c) {
     return isAlpha(c) || isNumeric(c);
   }
-
-
-  TokenVector tokenize(string input) {
-
-    TokenVector tokens;
-
-    string current_token = "";
-
-    for (char& c : input) {
-      if (!isAlphaNumeric(c)) {
-        // create an identifier token
-        if (current_token.compare("") != 0) {
-          tokens.push_back(new Identifier(current_token));
-          current_token = "";
-        }
-
-        bool matching_token = false;
-        for (CharacterVector::iterator it = characterList.begin(); it != characterList.end(); ++it) {
-          if ((*it)->symbol == c) {
-            matching_token = true;
-            tokens.push_back(*it);
-          }
-        }
-
-        if (!matching_token) {
-          throw LexerException("Unable to find token matching " + string(1, c));
-        }
-
-      } else {
-
-        current_token += c;
-        for (KeywordVector::iterator it = keywordList.begin(); it != keywordList.end(); ++it) {
-          if (current_token.compare((*it)->symbol) == 0) {
-            current_token = "";
-            tokens.push_back(*it);
-          }
-        }
-
-      }
-    }
-
-    if (current_token.compare("") != 0) {
-      throw LexerException("invalid token: " + current_token);
-    }
-    return tokens;
-  }
-
 }

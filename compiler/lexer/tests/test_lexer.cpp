@@ -9,5 +9,5 @@ TEST(Lexer, isAlpha) {
 
 TEST(Keyword, getDescription) {
   Keyword* kw = new Keyword("test");
-  EXPECT_EQ (((Token*) kw)->getDescription(), "test");
+  EXPECT_EQ (((Token*) kw)->getDescription(), "keyword: test");
 }
