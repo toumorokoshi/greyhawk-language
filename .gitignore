@@ -10,3 +10,4 @@ TAGS
 tags
 bin/greyhawk
 bin/lexer
+bin/unit_tests

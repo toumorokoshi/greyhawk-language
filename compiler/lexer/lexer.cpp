@@ -8,16 +8,6 @@ using namespace std;
 
 namespace lexer {
 
-    // keywords
-    Keyword T_ELSE ("else");
-    Keyword T_IF ("if");
-    Keyword T_IS ("is");
-    Keyword T_RETURN ("return");
-
-    // constants
-    Keyword T_FALSE ("false");
-    Keyword T_TRUE ("true");
-
     // comparison operators
     /*
     Token T_ASSIGN = Token("assign", "=");
@@ -29,7 +19,17 @@ namespace lexer {
     Token T_GEQ = Token("greater than or equal", ">=");
     */
 
-    // boolean operations
+    // keywords
+    Keyword* T_ELSE = new Keyword("else");
+    Keyword* T_IF = new Keyword("if");
+    Keyword* T_IS = new Keyword("is");
+    Keyword* T_RETURN = new Keyword("return");
+
+    // constants
+    Keyword* T_FALSE = new Keyword("false");
+    Keyword* T_TRUE = new Keyword("true");
+
+   // boolean operations
 
     KeywordVector keywordList {
       T_ELSE,
@@ -70,7 +70,7 @@ namespace lexer {
 
           current_token += c;
           for (KeywordVector::iterator it = keywordList.begin(); it != keywordList.end(); ++it) {
-            if (current_token.compare(it->symbol)) {
+            if (current_token.compare((*it)->symbol) == 0) {
               current_token = "";
               tokens.push_back(*it);
             }

@@ -30,8 +30,8 @@ namespace lexer {
     };
 
 
-    typedef std::vector<Token> TokenVector;
-    typedef std::vector<Keyword> KeywordVector;
+    typedef std::vector<Token*> TokenVector;
+    typedef std::vector<Keyword*> KeywordVector;
 
     TokenVector tokenize(std::string input);
 

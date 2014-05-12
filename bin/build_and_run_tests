@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+make tests
+./bin/unit_tests

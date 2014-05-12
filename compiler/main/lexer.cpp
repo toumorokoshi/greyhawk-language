@@ -17,7 +17,7 @@ int main() {
       continue;
     }
     for (TokenVector::iterator it = tokens.begin(); it != tokens.end(); ++it) {
-      cout << it->getDescription() << endl;
+      cout << (*it)->getDescription() << endl;
     }
  }
 }
