@@ -78,6 +78,8 @@ namespace lexer {
   extern OperatorFSM operatorFSM;
   extern KeywordVector keywordList;
 
+  extern Operator* T_ASSIGN;
+  extern Operator* T_COMPARE_EQUAL;
 }
 
 #endif

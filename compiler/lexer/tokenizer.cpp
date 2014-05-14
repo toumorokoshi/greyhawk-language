@@ -49,6 +49,7 @@ void Tokenizer::flushOperator() {
   }
   if (current_node->value != NULL) {
     tokens->push_back(current_node->value);
+    current_node = operator_root;
   }
 }
 
@@ -71,6 +72,7 @@ void Tokenizer::traverseOperatorFSM(char c) {
     } else {
       tokens->push_back(current_node->value);
       current_node = operator_root;
+      traverseOperatorFSM(c);
     }
   }
 
