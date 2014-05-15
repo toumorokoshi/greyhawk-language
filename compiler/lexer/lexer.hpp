@@ -1,6 +1,8 @@
 #include <string>
 #include <exception>
 #include <boost/regex.hpp>
+#include "./exceptions.hpp"
+#include "./scanner.hpp"
 #include "./fsm.hpp"
 
 #ifndef LEXER_HPP
@@ -9,17 +11,13 @@
 
 namespace lexer {
 
-  // extend exceptions from here if they have to do with
-  // the lexer specifically
-  class LexerException: public std::exception {
-  public:
-    const std::string message;
-    LexerException(std::string _message) : message(_message) {}
-  };
-
   class Token {
+  private:
+    std::string name;
   public:
-    virtual std::string getDescription() { return "nothing"; }
+    Token() : name("nothing") {}
+    Token(std::string _name) : name(_name) {}
+    virtual std::string getDescription() { return "token: " + name; }
   };
 
   class Operator :  public Token {
@@ -63,7 +61,7 @@ namespace lexer {
     void initialize();
     void flushKeyword();
     void flushOperator();
-    void traverseOperatorFSM(char c);
+    void traverseOperatorFSM();
     void matchKeyword();
   public:
     Tokenizer();
@@ -78,8 +76,12 @@ namespace lexer {
   extern OperatorFSM operatorFSM;
   extern KeywordVector keywordList;
 
+  extern Token* T_INDENT;
+  extern Token* T_UNINDENT;
+
   extern Operator* T_ASSIGN;
   extern Operator* T_COMPARE_EQUAL;
+
 }
 
 #endif

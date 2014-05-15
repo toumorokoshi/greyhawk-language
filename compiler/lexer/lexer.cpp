@@ -5,16 +5,9 @@ using namespace std;
 
 namespace lexer {
 
-  // comparison operators
-  /*
-    Token T_ASSIGN = Token("assign", "=");
-    Token T_EQ = Token("equals", "==");
-    Token T_NE = Token("not equals", "!=");
-    Token T_LT = Token("less than", "<");
-    Token T_LEQ = Token("less than or equal", "<=");
-    Token T_GT = Token("greater than", ">");
-    Token T_GEQ = Token("greater than or equal", ">=");
-  */
+  // the core indent / unindent
+  Token* T_INDENT = new Token("indent");
+  Token* T_UNINDENT = new Token("unindent");
 
   // keywords
   Keyword* T_ELSE = new Keyword("else");
