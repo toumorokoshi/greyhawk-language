@@ -54,17 +54,10 @@ namespace lexer {
 
   class Tokenizer {
   private:
-    TokenVector* tokens;
-    OperatorFSM* operator_root;
-    OperatorFSM* current_node;
-    std::string current_token;
-    void initialize();
-    void flushKeyword();
-    void flushOperator();
-    void traverseOperatorFSM();
-    void matchKeyword();
+    static Token* matchKeyword(StringScanner& scanner);
+    static Token* matchOperator(StringScanner& scanner);
   public:
-    Tokenizer();
+    Tokenizer() {};
     TokenVector tokenize(std::string input);
   };
 
@@ -76,8 +69,8 @@ namespace lexer {
   extern OperatorFSM operatorFSM;
   extern KeywordVector keywordList;
 
-  extern Token* T_INDENT;
-  extern Token* T_UNINDENT;
+  const Token T_INDENT("indent");
+  const Token T_UNINDENT("unindent");
 
   extern Operator* T_ASSIGN;
   extern Operator* T_COMPARE_EQUAL;

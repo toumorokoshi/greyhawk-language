@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 #include "./exceptions.hpp"
 
 #ifndef SCANNER_HPP
@@ -13,7 +14,7 @@ namespace lexer {
 
   class StringScanner {
   private:
-    std::string::iterator begin;
+    std::string source;
     std::string::iterator current;
     std::string::iterator end;
 
@@ -26,9 +27,9 @@ namespace lexer {
   public:
 
     StringScanner(std::string _source) :
-      begin(_source.begin()),
-      current(_source.begin()),
-      end(_source.end()) {}
+      source(_source),
+      current(source.begin()),
+      end(source.end()) {}
 
     char peek() {
       validateNextTokenExists();

@@ -6,8 +6,8 @@ using namespace std;
 namespace lexer {
 
   // the core indent / unindent
-  Token* T_INDENT = new Token("indent");
-  Token* T_UNINDENT = new Token("unindent");
+  // Token* T_INDENT = new Token("indent");
+  // Token* T_UNINDENT = new Token("unindent");
 
   // keywords
   Keyword* T_ELSE = new Keyword("else");

@@ -4,85 +4,61 @@
 using namespace lexer;
 using std::string;
 
-
-
-Tokenizer::Tokenizer() {
-}
-
 TokenVector Tokenizer::tokenize(std::string input) {
-    initialize();
+  StringScanner scanner(input);
+  TokenVector tokens;
 
-    for (char& c : input) {
-      if (c == ' ') {
-        flushKeyword();
-        flushOperator();
-        continue;
-      }
+  while (scanner.hasNext()) {
+    if (scanner.peek() == ' ') {
+      // we don't care about whitespace
+      scanner.next();
 
-      if (isAlphaNumeric(c)) {
-
-        current_token += c;
-        matchKeyword();
-
-      } else {
-
-        flushKeyword();
-        traverseOperatorFSM(c);
-
-      }
-    }
-    flushKeyword();
-    flushOperator();
-    return *tokens;
-};
-
-void Tokenizer::flushKeyword() {
-  if (current_token.compare("") != 0) {
-    tokens->push_back(new Identifier(current_token));
-    current_token = "";
-  }
-};
-
-void Tokenizer::flushOperator() {
-  if (current_node->value == NULL && current_node != operator_root) {
-    throw LexerException("Unable to find token matching " + string(1, current_node->token));
-  }
-  if (current_node->value != NULL) {
-    tokens->push_back(current_node->value);
-    current_node = operator_root;
-  }
-}
-
-void Tokenizer::initialize() {
-  tokens = new TokenVector();
-  operator_root = &operatorFSM;
-  current_node = &operatorFSM;
-  current_token = "";
-}
-
-void Tokenizer::traverseOperatorFSM(char c) {
-
-  if (current_node->hasChild(c)) {
-    current_node = &(current_node->children[c]);
-  } else {
-
-    if (current_node->value == NULL) {
-      throw LexerException("Unable to find token matching " + string(1, c));
+    } else if (isAlphaNumeric(scanner.peek())) {
+      // if the next character is alphanumeric,
+      // we pass it to the keyword matcher
+      tokens.push_back(matchKeyword(scanner));
 
     } else {
-      tokens->push_back(current_node->value);
-      current_node = operator_root;
-      traverseOperatorFSM(c);
+      // if it's not, we pass it to our operatorFSM
+      tokens.push_back(matchOperator(scanner));
     }
   }
+  return tokens;
+};
 
+Token* Tokenizer::matchOperator(StringScanner& scanner) {
+  OperatorFSM* current_node = &operatorFSM;
+
+  while (scanner.hasNext() && current_node->hasChild(scanner.peek())) {
+    current_node = &(current_node->children[scanner.next()]);
+  }
+
+  if (current_node->value == NULL) {
+
+    if (scanner.hasNext()) {
+      throw LexerException("Unable to find token matching " + string(1, scanner.peek()));
+    } else {
+      throw LexerException("Unable to find matching operator sequence");
+    }
+
+  } else {
+    return current_node->value;
+
+  }
 }
 
-void Tokenizer::matchKeyword() {
+Token* Tokenizer::matchKeyword(StringScanner& scanner) {
+  std::string current_token("");
+
+  while (scanner.hasNext() && scanner.peek() != ' ') {
+    current_token += scanner.next();
+  }
+
   for (KeywordVector::iterator it = keywordList.begin(); it != keywordList.end(); ++it) {
     if (current_token.compare((*it)->symbol) == 0) {
-      current_token = "";
-      tokens->push_back(*it);
+      return *it;
     }
   }
+
+  return new Identifier(current_token);
 }
