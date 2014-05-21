@@ -2,7 +2,7 @@ SHELL := /bin/bash
 LLVM_CONFIG=`llvm-config --libs core native` `llvm-config --cxxflags --ldflags`
 BOOST_OPTIONS=-lboost_program_options -lboost_regex
 OPTIONS=--std=c++11 -L/usr/lib -I/usr/include $(BOOST_OPTIONS)
-.PHONY: lexer
+.PHONY: lexer parser
 
 all:
 	mkdir -p build
@@ -19,6 +19,9 @@ all:
 
 lexer:
 	clang++ -o ../bin/lexer lexer/*.cpp main/lexer.cpp $(OPTIONS)
+
+parser:
+	clang++ -o ../bin/parser parser/*.cpp main/parser.cpp $(OPTIONS)
 
 tests:
 	clang++ -o ../bin/unit_tests lexer/*.cpp lexer/tests/*.cpp main/tests.cpp $(OPTIONS) -lgtest

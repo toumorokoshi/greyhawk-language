@@ -14,35 +14,31 @@ namespace lexer {
 
   class StringScanner {
   private:
-    std::string& source;
-    std::string::iterator current;
-    std::string::iterator end;
+    std::istream& source;
 
     void validateNextTokenExists() {
-      if (current == end) {
+      if (source.peek() == EOF) {
         throw StringScannerException("No next token exists!");
       }
     }
 
   public:
 
-    StringScanner(std::string& _source) :
-      source(_source),
-      current(source.begin()),
-      end(source.end()) {}
+    StringScanner(std::istream& _source) :
+      source(_source) {}
 
     char peek() {
       validateNextTokenExists();
-      return *current;
+      return source.peek();
     }
 
     char next() {
       validateNextTokenExists();
-      return *(current++);
+      return source.get();
     }
 
     bool hasNext() {
-      return (current != end);
+      return (source.peek() != EOF);
     }
 
   };

@@ -5,9 +5,8 @@
 #include <map>
 #include <vector>
 
-#ifndef FSM_HPP
-
-#define FSM_HPP
+#ifndef LEXER_FSM_HPP
+#define LEXER_FSM_HPP
 
 namespace lexer {
 

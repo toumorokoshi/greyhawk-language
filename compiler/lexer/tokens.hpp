@@ -34,6 +34,20 @@ namespace lexer {
     std::string getDescription() const { return "keyword: " + symbol; }
   };
 
+  class Integer : public Token {
+  public:
+    const int value;
+    Integer(int _value): value(_value) {}
+    std::string getDescription() const { return "integer: " + std::to_string(value); }
+  };
+
+  class Double : public Token {
+  public:
+    const double value;
+    Double(double _value): value(_value) {}
+    std::string getDescription() const { return "double: " + std::to_string(value); }
+  };
+
   class Identifier : public Token {
   public:
     const std::string name;
