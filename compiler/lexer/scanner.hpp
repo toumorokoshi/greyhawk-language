@@ -14,7 +14,7 @@ namespace lexer {
 
   class StringScanner {
   private:
-    std::string source;
+    std::string& source;
     std::string::iterator current;
     std::string::iterator end;
 
@@ -26,7 +26,7 @@ namespace lexer {
 
   public:
 
-    StringScanner(std::string _source) :
+    StringScanner(std::string& _source) :
       source(_source),
       current(source.begin()),
       end(source.end()) {}

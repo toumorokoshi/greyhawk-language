@@ -18,7 +18,7 @@ int main() {
       continue;
     }
     cout << tokens.size() << " tokens found." << endl;
-    for (TokenVector::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+    for (TokenVector::const_iterator it = tokens.begin(); it != tokens.end(); ++it) {
       cout << (*it)->getDescription() << endl;
     }
  }

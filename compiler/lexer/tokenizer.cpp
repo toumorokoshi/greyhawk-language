@@ -16,17 +16,17 @@ TokenVector Tokenizer::tokenize(std::string input) {
     } else if (isAlphaNumeric(scanner.peek())) {
       // if the next character is alphanumeric,
       // we pass it to the keyword matcher
-      tokens.push_back(matchKeyword(scanner));
+      tokens.push_back(&matchKeyword(scanner));
 
     } else {
       // if it's not, we pass it to our operatorFSM
-      tokens.push_back(matchOperator(scanner));
+      tokens.push_back(&matchOperator(scanner));
     }
   }
   return tokens;
 };
 
-Token* Tokenizer::matchOperator(StringScanner& scanner) {
+const Token& Tokenizer::matchOperator(StringScanner& scanner) {
   OperatorFSM* current_node = &operatorFSM;
 
   while (scanner.hasNext() && current_node->hasChild(scanner.peek())) {
@@ -42,23 +42,23 @@ Token* Tokenizer::matchOperator(StringScanner& scanner) {
     }
 
   } else {
-    return current_node->value;
+    return *(current_node->value);
 
   }
 }
 
-Token* Tokenizer::matchKeyword(StringScanner& scanner) {
+const Token& Tokenizer::matchKeyword(StringScanner& scanner) {
   std::string current_token("");
 
   while (scanner.hasNext() && scanner.peek() != ' ') {
     current_token += scanner.next();
   }
 
-  for (KeywordVector::iterator it = keywordList.begin(); it != keywordList.end(); ++it) {
-    if (current_token.compare((*it)->symbol) == 0) {
+  for (KeywordVector::const_iterator it = keywordList.begin(); it != keywordList.end(); ++it) {
+    if (current_token.compare((*it).symbol) == 0) {
       return *it;
     }
   }
 
-  return new Identifier(current_token);
+  return *(new Identifier(current_token));
 }
