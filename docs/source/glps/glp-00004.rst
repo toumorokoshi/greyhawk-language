@@ -1,0 +1,48 @@
+==================================
+GLP-00004: All methods are virtual
+==================================
+:author: Yusuke Tsutsumi
+:created_date: 2014-05-24
+:updated_date: 2014-05-24
+:approval: review
+:approvers: yusuke
+:status: unimplemented
+
+-----------------------
+Proposed Implementation
+-----------------------
+
+Some languages require a specific keyword to make methods
+'virtual'. Virtual methods are methods who, regardless of casting,
+will call their actual class's method instead.
+
+This GLP proposes to make all methods virtual. If someone wants to
+call a specific class's method on an object, that can be done with::
+
+    apply(BaseClass.method, object)(*args)
+
+
+---------------------------------
+Implementation in other languages
+---------------------------------
+
+Other languages deal with 'virtual' methods with:
+
+* C++: an explicit keyword 'virtual' on a method
+* Java: methods are virtual, with the exception of the keywords 'static' and 'final'
+* Python: methods are virtual by nature of the class model
+
+
+------------------
+Further Discussion
+------------------
+
+I think that explicitely allowing certain methods as virtual and
+others as non-virtual (as c++ does) can be confusing, and not
+particularly benifical. Virtual methods can come in handy with heavy
+reliance on casting, but I think from a consumer of an api or class,
+it requires special attention to understand what's going on when there
+is a mix of virtual/non-virtual methods being called.
+
+Using explicitly different syntax to denote that distinction, however,
+is a better decision.
