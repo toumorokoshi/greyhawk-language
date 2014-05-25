@@ -15,6 +15,7 @@ namespace lexer {
   public:
     Token() : name("nothing") {}
     Token(std::string _name) : name(_name) {}
+    virtual ~Token() {}
     virtual std::string getDescription() const { return "token: " + name; }
   };
 

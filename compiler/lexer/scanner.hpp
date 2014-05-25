@@ -1,6 +1,6 @@
 #include <string>
 #include <iostream>
-#include "./exceptions.hpp"
+#include "exceptions.hpp"
 
 #ifndef SCANNER_HPP
 #define SCANNER_HPP

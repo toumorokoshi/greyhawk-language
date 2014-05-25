@@ -17,14 +17,18 @@ all:
 # arch builder
 	clang++ -o ../bin/greyhawk -L/usr/lib main/*.cpp build/*.cpp *.cpp `llvm-config --libs core native` `llvm-config --cxxflags --ldflags` -lyaml-cpp -I/usr/include/ -fexceptions -lboost_program_options
 
+LEXER_FILES=lexer/*.cpp
+
 lexer:
-	clang++ -o ../bin/lexer lexer/*.cpp main/lexer.cpp $(OPTIONS)
+	clang++ -o ../bin/lexer $(LEXER_FILES) main/lexer.cpp $(OPTIONS)
+
+PARSER_FILES=parser/*.cpp
 
 parser:
-	clang++ -o ../bin/parser parser/*.cpp main/parser.cpp $(OPTIONS)
+	clang++ -o ../bin/parser $(LEXER_FILES) $(PARSER_FILES) main/parser.cpp $(OPTIONS)
 
 tests:
-	clang++ -o ../bin/unit_tests lexer/*.cpp lexer/tests/*.cpp main/tests.cpp $(OPTIONS) -lgtest
+	clang++ -o ../bin/unit_tests $(LEXER_FILES) $(PARSER_FILES) lexer/tests/*.cpp parser/tests/*.cpp main/tests.cpp $(OPTIONS) -lgtest
 
 clean:
 	rm -r build

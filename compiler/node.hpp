@@ -32,6 +32,7 @@ class NExpressionStatement;
 class NVariableDeclaration;
 class NFunctionDeclaration;
 
+typedef std::vector<Node*> NodeVector;
 typedef std::vector<NStatement*> StatementList;
 typedef std::vector<NExpression*> ExpressionList;
 typedef std::vector<NVariableDeclaration*> VariableList;
@@ -91,11 +92,11 @@ class NMethodCall : public NExpression {
 
 class NBinaryOperator : public NExpression {
  public:
-  int op;
   NExpression& lhs;
+  int op;
   NExpression& rhs;
   NBinaryOperator(NExpression& lhs, int op, NExpression& rhs) :
-    lhs(lhs), rhs(rhs), op(op) { }
+    lhs(lhs), op(op), rhs(rhs) { }
 };
 
 class NAssignment : public NExpression {
@@ -144,7 +145,7 @@ class NVariableDeclaration : public NStatement {
  public:
   NIdentifier& type;
   NIdentifier& id;
-  NExpression *assignmentExpr;
+  NExpression* assignmentExpr;
   NVariableDeclaration(NIdentifier& id, NIdentifier& type) : type(type), id(id), assignmentExpr(NULL) { }
   NVariableDeclaration(NIdentifier& id, NIdentifier& type, NExpression *assignmentExpr) :
     type(type), id(id), assignmentExpr(assignmentExpr)  { }
