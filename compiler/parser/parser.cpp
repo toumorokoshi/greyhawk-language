@@ -1,4 +1,5 @@
 #include "./parser.hpp"
+#include <iostream>
 
 
 using namespace parser;
@@ -29,6 +30,8 @@ Node* parser::matchNode(const ParserNode* node, lexer::TokenVector::iterator& to
       token_position++;
 
     } else {
+      std::cout << (*token_position)->getDescription() << std::endl;
+      std::cout << matchingToken.getDescription() << std::endl;
       return NULL;
 
     }
