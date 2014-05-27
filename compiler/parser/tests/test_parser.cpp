@@ -17,5 +17,5 @@ TEST(Parser, otherTest) {
     &T_TRUE,
     &T_IF
   };
-  // ASSERT_THROW(parseTokens(tokens), ParserException);
+  ASSERT_THROW(parseTokens(tokens), ParserException);
 }

@@ -17,6 +17,8 @@ namespace lexer {
     Token(std::string _name) : name(_name) {}
     virtual ~Token() {}
     virtual std::string getDescription() const { return "token: " + name; }
+    // returns true if it's a terminal token (this is for the parser)
+    virtual bool isTerminal() { return true; }
   };
 
   class Operator :  public Token {
@@ -65,68 +67,42 @@ namespace lexer {
   TokenVector tokenize(std::string input);
 
   // the actual tokens
-  const Token T_INDENT("indent");
-  const Token T_UNINDENT("unindent");
+  extern const Token T_INDENT;
+  extern const Token T_UNINDENT;
 
   // keywords
-  const Keyword T_ELSE("else");
-  const Keyword T_IF("if");
-  const Keyword T_IS("is");
-  const Keyword T_RETURN("return");
+  extern const Keyword T_ELSE;
+  extern const Keyword T_IF;
+  extern const Keyword T_IS;
+  extern const Keyword T_RETURN;
 
   // constants
-  const Keyword T_TRUE("true");
-  const Keyword T_FALSE("false");
+  extern const Keyword T_TRUE;
+  extern const Keyword T_FALSE;
 
   // operators
-  const Operator T_LPAREN("(");
-  const Operator T_RPAREN(")");
-  const Operator T_COMMA(",");
-  const Operator T_DOT(".");
-  const Operator T_PLUS("+");
-  const Operator T_MINUS("-");
-  const Operator T_MUL("*");
-  const Operator T_DIV("/");
-  const Operator T_DECLARE(":=");
-  const Operator T_ASSIGN("=");
-  const Operator T_COMPARE_EQUAL("==");
-  const Operator T_COMPARE_NOT_EQUAL("!=");
-  const Operator T_COMPARE_LEQ("<=");
-  const Operator T_COMPARE_GEQ(">=");
-  const Operator T_COMPARE_LET("<");
-  const Operator T_COMPARE_GET(">");
-  const Operator T_COLON(":");
+  extern const Operator T_LPAREN;
+  extern const Operator T_RPAREN;
+  extern const Operator T_COMMA;
+  extern const Operator T_DOT;
+  extern const Operator T_PLUS;
+  extern const Operator T_MINUS;
+  extern const Operator T_MUL;
+  extern const Operator T_DIV;
+  extern const Operator T_DECLARE;
+  extern const Operator T_ASSIGN;
+  extern const Operator T_COMPARE_EQUAL;
+  extern const Operator T_COMPARE_NOT_EQUAL;
+  extern const Operator T_COMPARE_LEQ;
+  extern const Operator T_COMPARE_GEQ;
+  extern const Operator T_COMPARE_LET;
+  extern const Operator T_COMPARE_GET;
+  extern const Operator T_COLON;
 
   // Grouping the tokens up
-  const KeywordVector keywordList{
-      T_ELSE,
-      T_IF,
-      T_IS,
-      T_RETURN,
-      T_FALSE,
-      T_TRUE
-  };
+  extern const KeywordVector keywordList;
 
-  const OperatorPairVector operatorPairs {
-    T_LPAREN.getOperatorPair(),
-    T_RPAREN.getOperatorPair(),
-    T_COMMA.getOperatorPair(),
-    T_DOT.getOperatorPair(),
-    T_PLUS.getOperatorPair(),
-    T_MINUS.getOperatorPair(),
-    T_MUL.getOperatorPair(),
-    T_DIV.getOperatorPair(),
-    T_DECLARE.getOperatorPair(),
-    T_ASSIGN.getOperatorPair(),
-    T_COMPARE_EQUAL.getOperatorPair(),
-    T_COMPARE_NOT_EQUAL.getOperatorPair(),
-    T_COMPARE_LEQ.getOperatorPair(),
-    T_COMPARE_GEQ.getOperatorPair(),
-    T_COMPARE_LET.getOperatorPair(),
-    T_COMPARE_GET.getOperatorPair(),
-    T_COLON.getOperatorPair()
-  };
-
+  extern const OperatorPairVector operatorPairs;
 }
 
 #endif

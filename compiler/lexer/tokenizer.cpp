@@ -4,9 +4,6 @@
 using namespace lexer;
 using std::string;
 
-OperatorFSM operatorFSM =
-  OperatorFSM(' ', NULL).addChildren(operatorPairs);
-
 TokenVector Tokenizer::tokenize(std::istream& input) {
   StringScanner scanner(input);
   TokenVector tokens;
@@ -46,10 +43,12 @@ TokenVector Tokenizer::tokenize(std::istream& input) {
 
 void Tokenizer::initialize() {
   indentation = 0;
+  rootNode = new OperatorFSM(' ', NULL);
+  rootNode->addChildren(operatorPairs);
 }
 
 const Token& Tokenizer::matchOperator(StringScanner& scanner) {
-  OperatorFSM* current_node = &operatorFSM;
+  OperatorFSM* current_node = rootNode;
 
   while (scanner.hasNext() && current_node->hasChild(scanner.peek())) {
     current_node = &(current_node->children[scanner.next()]);
@@ -65,7 +64,6 @@ const Token& Tokenizer::matchOperator(StringScanner& scanner) {
 
   } else {
     return *(current_node->value);
-
   }
 }
 

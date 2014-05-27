@@ -10,12 +10,15 @@
 
 namespace lexer {
 
+  typedef FSMNode<const Operator> OperatorFSM;
+
   class Tokenizer {
   private:
     int indentation;
     void initialize();
+    OperatorFSM* rootNode;
     static const Token& matchKeyword(StringScanner& scanner);
-    static const Token& matchOperator(StringScanner& scanner);
+    const Token& matchOperator(StringScanner& scanner);
     static const Token& matchNumber(StringScanner& scanner);
     void calculateIndent(StringScanner& scanner, TokenVector& tokens);
     void clearIndent(TokenVector& tokens);
