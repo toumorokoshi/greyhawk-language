@@ -59,7 +59,7 @@ namespace lexer {
   };
 
   typedef std::vector<const Token*> TokenVector;
-  typedef std::vector<Keyword> KeywordVector;
+  typedef std::vector<const Keyword*> KeywordVector;
 
   typedef std::pair<std::string, const Operator*> OperatorPair;
   typedef std::vector<OperatorPair> OperatorPairVector;

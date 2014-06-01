@@ -40,12 +40,12 @@ namespace lexer {
 
   // Grouping the tokens up
   const KeywordVector keywordList {
-      T_ELSE,
-      T_IF,
-      T_IS,
-      T_RETURN,
-      T_FALSE,
-      T_TRUE
+      &T_ELSE,
+      &T_IF,
+      &T_IS,
+      &T_RETURN,
+      &T_FALSE,
+      &T_TRUE
   };
 
   const OperatorPairVector operatorPairs {

@@ -16,7 +16,6 @@ namespace lexer {
   private:
     int indentation;
     void initialize();
-    OperatorFSM* rootNode;
     static const Token& matchKeyword(StringScanner& scanner);
     const Token& matchOperator(StringScanner& scanner);
     static const Token& matchNumber(StringScanner& scanner);
@@ -28,6 +27,8 @@ namespace lexer {
   };
 
   typedef FSMNode<const Operator> OperatorFSM;
+
+  OperatorFSM& getOperatorFSMRoot();
 }
 
 #endif

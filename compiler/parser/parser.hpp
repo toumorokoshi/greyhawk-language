@@ -49,11 +49,7 @@ namespace parser {
   Node& parseTokens(lexer::TokenVector& tokens);
   Node* matchNode(const ParserNode* node, lexer::TokenVector::iterator& token_position);
 
-  // the actual parse tree
-  const ProductionNode parserRootNode(*(new ParserNodeVector {
-          new TokenParserNode(lexer::T_TRUE),
-          new TokenParserNode(lexer::T_FALSE)
-            }));
+  const ProductionNode& getParserRootNode();
 }
 
 #endif

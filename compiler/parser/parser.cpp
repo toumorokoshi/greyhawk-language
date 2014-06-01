@@ -1,16 +1,24 @@
 #include "./parser.hpp"
-#include <iostream>
 
 
 using namespace parser;
 using namespace lexer;
+
+const ProductionNode& parser::getParserRootNode() {
+  // the actual parse tree
+  static const ProductionNode parserRootNode(*(new ParserNodeVector {
+        new TokenParserNode(lexer::T_TRUE),
+        new TokenParserNode(lexer::T_FALSE)
+  }));
+  return parserRootNode;
+}
 
 // I don't know what I'm doing here, just going to see if I can start
 // writing the algorithm I want
 
 Node& parser::parseTokens(TokenVector& tokens) {
   TokenVector::iterator head = tokens.begin();
-  const ParserNode* root = &parserRootNode;
+  const ParserNode* root = &getParserRootNode();
   Node* rootNode = matchNode(root, head);
   if (rootNode == NULL) {
     throw ParserException("No root node generated!");
@@ -42,8 +50,7 @@ Node* parser::matchNode(const ParserNode* node, lexer::TokenVector::iterator& to
       if (innerNode == NULL) {
         return NULL;
       }
-      nodeVector.push_back(matchNode(parserNode, token_position));
-      token_position++;
+      nodeVector.push_back(innerNode);
     }
   }
   return &(node->generateCompilerNode(nodeVector));
