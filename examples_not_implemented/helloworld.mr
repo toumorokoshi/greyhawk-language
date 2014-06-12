@@ -1,4 +1,4 @@
-import system
+import "system"
 
 int32 main():
     system.stdout.print("Hello World!")

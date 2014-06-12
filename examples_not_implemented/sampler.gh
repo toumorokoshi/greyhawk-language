@@ -1,0 +1,58 @@
+// class implementation
+
+type MyObject:
+
+	myPrivateProperty	string
+  MyPublicProperty string
+	myOptionalProperty string?
+
+	MyObject():
+		myProperty = "foo"
+
+
+// Methods
+// no overloading of methods
+
+Int doIt0():
+	return 0
+
+Int doIt1(a Int):
+	return a
+
+Int doIt2(a, b Int):
+	return a + b
+
+
+Int doItN(a* Int):
+	return foldright(a, 0, +)
+
+
+// Creating / Using an instance
+
+a := MyObject{
+  MyPublicProperty = "foo"
+}
+
+// Declaring variables
+
+Double double := 1.0 // mutable
+Double DOUBLE := 1.0 // constant double
+inferred_double := 1.0 // inferred, mutable
+
+/* Control Flow */
+
+if condition:
+	pass
+else:
+	pass
+
+switch val:
+	case 1:
+		"foo"
+	case 2:
+		"bar"
+	default:
+		"baz"
+
+for i in range(3):
+	pass
