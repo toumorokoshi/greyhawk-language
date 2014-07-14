@@ -3,12 +3,6 @@
 using namespace lexer;
 
 namespace parser {
-  const TokenParserNode P_TRUE(lexer::T_TRUE);
-  const TokenParserNode P_FALSE(lexer::T_FALSE);
-
-  const ProductionNode P_BOOLEAN(*(new ParserNodeVector {
-        &P_TRUE, &P_FALSE
-  }));
 
   const TokenParserNode2 P2_TRUE(
     T_TRUE,
@@ -18,5 +12,12 @@ namespace parser {
   const TokenParserNode2 P2_FALSE(
     T_FALSE,
     [] () -> Node* { return new NBoolean(false); }
+  );
+
+  const ProductionNode2 P2_TRUE_THEN_FALSE (
+    *(new ParserNodeVector2{ &P2_TRUE, &P2_FALSE }),
+    [] (std::vector<Node*>& nodes) -> Node* {
+      return new NBoolean(false);
+    }
   );
 }
