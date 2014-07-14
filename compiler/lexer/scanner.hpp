@@ -10,6 +10,7 @@ namespace lexer {
   class StringScannerException : public LexerException {
   public:
     StringScannerException(std::string _message): LexerException(_message) {}
+    virtual ~StringScannerException() throw () {}
   };
 
   class StringScanner {

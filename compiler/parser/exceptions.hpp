@@ -9,7 +9,8 @@ namespace parser {
   class ParserException: public greyhawk::GreyhawkException {
   public:
     ParserException(std::string _message)
-      : GreyhawkException("parser: " + _message) {};
+      : GreyhawkException("parser: " + _message) {}
+    virtual ~ParserException() throw () {}
   };
 
 }

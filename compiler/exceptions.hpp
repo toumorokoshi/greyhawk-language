@@ -11,8 +11,8 @@ namespace greyhawk {
   public:
     const std::string message;
     GreyhawkException(std::string _message) : message(_message) {}
+    virtual ~GreyhawkException() throw () {}
   };
-
 }
 
 #endif

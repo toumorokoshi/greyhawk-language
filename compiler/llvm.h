@@ -1,8 +1,13 @@
 #ifndef __LLVM_HEADERS
 #define __LLVM_HEADERS
 
-#define __STDC_LIMIT_MACROS
-#define __STDC_CONSTANT_MACROS
+#ifndef __STDC_LIMIT_MACROS
+  #define __STDC_LIMIT_MACROS
+#endif
+
+#ifndef __STDC_CONSTANT_MACROS
+  #define __STDC_CONSTANT_MACROS
+#endif
 
 #include <llvm/Analysis/Verifier.h>
 #include <llvm/Analysis/Passes.h>

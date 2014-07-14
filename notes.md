@@ -76,3 +76,7 @@ so this is interesting because it shows the following:
 * How can we handle multiple inheritance with classes with the same
   method name but different signatures? It won't be able to adhere to
   both interfaces (without some crazy syntax to let it do so)
+
+# Make things things easy:
+
+* copying an array (if we use slices a la Go this would be easy)

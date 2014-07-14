@@ -25,7 +25,7 @@ namespace lexer {
   inline bool isTokenBreakCharacter(char c) {
     static const std::vector<char> breakChar {' ', '\n', '\t'};
 
-    for (std::vector<char>::const_iterator it = breakChar.begin(); it != breakChar.end(); ++it) {
+    for (auto it = breakChar.begin(); it != breakChar.end(); ++it) {
       if ((*it) == c) { return true; }
     }
     return false;

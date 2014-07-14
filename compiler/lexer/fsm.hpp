@@ -24,7 +24,7 @@ namespace lexer {
   public:
     const char token;
     T* value;
-    std::map<char, FSMNode<T>> children;
+    std::map<char, FSMNode<T> > children;
     FSMNode() : FSMNode(' ', NULL) {}
 
     FSMNode(char _token, T* _value) :
@@ -53,14 +53,14 @@ namespace lexer {
       if (hasChild(*it)) {
         children[*it].value = result;
       } else {
-        children.insert(std::pair<char, FSMNode<T>>(*it, FSMNode<T>(*it, result)));
+        children.insert(std::pair<char, FSMNode<T> >(*it, FSMNode<T>(*it, result)));
       }
 
     } else {
 
       // if the element doesn't exist
       if (hasChild(*it)) {
-        children.insert(std::pair<char, FSMNode<T>>(*it, FSMNode<T>(*it, NULL)));
+        children.insert(std::pair<char, FSMNode<T> >(*it, FSMNode<T>(*it, NULL)));
       }
       children[*it].addChildInternal(++it, end, result);
     }

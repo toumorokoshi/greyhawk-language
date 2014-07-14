@@ -12,6 +12,7 @@ namespace lexer {
   public:
     const std::string message;
     LexerException(std::string _message) : message(_message) {}
+    virtual ~LexerException() throw() {}
   };
 
 }

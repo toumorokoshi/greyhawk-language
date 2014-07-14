@@ -9,7 +9,7 @@ using namespace std;
 using namespace lexer;
 
 void mainParseTokens(TokenVector& tokens) {
-  parser::parseTokens(tokens);
+  parser::parseTokens2(parser::P2_TRUE, tokens);
 }
 
 int main(int argc, char* argv[]) {
