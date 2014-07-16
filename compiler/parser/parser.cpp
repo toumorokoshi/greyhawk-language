@@ -6,7 +6,7 @@ using namespace lexer;
 namespace parser {
 
   /* THE NEW STUFF  */
-  Node& parseTokens2(const ParserNode2& root, TokenVector& tokens) {
+  Node& parseTokens(const Production& root, TokenVector& tokens) {
     auto tokens_head = tokens.begin();
     std::cout << (*tokens_head)->getDescription() << std::endl;
     auto rootNode = root.parseTokens(tokens_head);
@@ -22,7 +22,7 @@ namespace parser {
     return *rootNode;
   }
 
-  Node* TokenParserNode2::parseTokens(TokenVector::iterator& token_position) const {
+  Node* TokenProduction::parseTokens(TokenVector::iterator& token_position) const {
     if (*token_position == &(this->token)) {
       token_position++;
       return this->generateNode();
@@ -30,7 +30,7 @@ namespace parser {
     return NULL;
   }
 
-  Node* ProductionNode2::parseTokens(TokenVector::iterator& token_position) const {
+  Node* SeriesProduction::parseTokens(TokenVector::iterator& token_position) const {
     std::vector<Node*> nodes;
     for (auto i : _parserNodes) {
       nodes.push_back(i->parseTokens(token_position));

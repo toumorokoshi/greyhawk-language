@@ -4,18 +4,18 @@ using namespace lexer;
 
 namespace parser {
 
-  const TokenParserNode2 P2_TRUE(
+  const TokenProduction P2_TRUE(
     T_TRUE,
     [] () -> Node* { return new NBoolean(true); }
   );
 
-  const TokenParserNode2 P2_FALSE(
+  const TokenProduction P2_FALSE(
     T_FALSE,
     [] () -> Node* { return new NBoolean(false); }
   );
 
-  const ProductionNode2 P2_TRUE_THEN_FALSE (
-    *(new ParserNodeVector2{ &P2_TRUE, &P2_FALSE }),
+  const SeriesProduction P2_TRUE_THEN_FALSE (
+    *(new ProductionVector{ &P2_TRUE, &P2_FALSE }),
     [] (std::vector<Node*>& nodes) -> Node* {
       return new NBoolean(false);
     }
