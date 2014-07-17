@@ -41,6 +41,7 @@ typedef std::vector<NVariableDeclaration*> VariableList;
 class Node {
  public:
   virtual ~Node() {}
+  virtual std::string toString() = 0;
 };
 
 /*******************************************/
@@ -56,6 +57,7 @@ class NInteger : public NExpression {
  public:
   long long value;
   NInteger(long long value) : value(value) { }
+  virtual std::string toString() { return "integer: " + std::to_string(value); }
 };
 
 class NDouble : public NExpression {
@@ -79,6 +81,7 @@ class NBoolean : public NExpression {
  public:
   bool value;
   NBoolean(bool value) : value(value) { }
+  virtual std::string toString() { return value ? "true" : "false"; }
 };
 
 class NMethodCall : public NExpression {
@@ -110,6 +113,7 @@ class NBlock : public NExpression {
  public:
   StatementList statements;
   NBlock() { }
+  virtual std::string toString() { return "block"; }
 };
 
 /*******************************************/
@@ -117,6 +121,8 @@ class NBlock : public NExpression {
 
 // Statements do not necessarily return a value
 class NStatement : public Node {
+public:
+  virtual std::string toString() { return "statement"; }
 };
 
 class NConditional : public NStatement {
@@ -132,6 +138,7 @@ class NReturn: public NStatement {
  public:
   NExpression& returnExpr;
   NReturn(NExpression& returnExpr) : returnExpr(returnExpr) {}
+  virtual std::string toString() { return "return " + returnExpr.toString(); }
 };
 
 

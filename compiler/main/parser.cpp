@@ -1,6 +1,7 @@
 #include "../exceptions.hpp"
 #include "../lexer/tokenizer.hpp"
 #include "../parser/parser.hpp"
+#include "../yamlast.hpp"
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -9,7 +10,12 @@ using namespace std;
 using namespace lexer;
 
 void mainParseTokens(TokenVector& tokens) {
-  parser::parseTokens(parser::P2_TRUE_THEN_FALSE, tokens);
+  auto token_position = tokens.begin();
+  auto node = parser::parseStatement(token_position,
+                                     tokens.end());
+  // auto node = parser::parseTokens(parser::P2_TRUE_THEN_FALSE, tokens);
+  cout << "Parsed Tokens:" << endl;
+  cout << node->toString() << endl;
 }
 
 int main(int argc, char* argv[]) {

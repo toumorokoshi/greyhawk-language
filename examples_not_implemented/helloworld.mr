@@ -1,4 +1,3 @@
 import "system"
 
-int32 main():
-    system.stdout.print("Hello World!")
+system.stdout.print("Hello World!")

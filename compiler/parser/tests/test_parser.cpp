@@ -9,7 +9,8 @@ TEST(Parser, basicTest) {
     &T_TRUE,
     &T_FALSE
   };
-  parseTokens(tokens);
+  Node* node = parseTokens(parser::P2_TRUE_THEN_FALSE, tokens);
+  EXPECT_EQ(node->toString(), "false");
 }
 
 TEST(Parser, otherTest) {
@@ -17,5 +18,6 @@ TEST(Parser, otherTest) {
     &T_TRUE,
     &T_IF
   };
-  ASSERT_THROW(parseTokens(tokens), ParserException);
+  ASSERT_THROW(parseTokens(parser::P2_TRUE_THEN_FALSE, tokens),
+               ParserException);
 }
