@@ -1,7 +1,8 @@
 #include "yamlast.hpp"
-#include "build/parser.hpp"
+#include "lexer/tokens.hpp"
 #include <cstdio>
 
+using namespace lexer;
 
 YAML::Node* YamlParseError(const char *str) { printf("Error: %s\n", str); return 0; }
 
@@ -93,13 +94,13 @@ YAML::Node* YamlAST::generate(NBinaryOperator& n) {
   YAML::Node* root = new YAML::Node();
   std::string symbol;
   switch(n.op) {
-  case TPLUS:  symbol = "+"; break;
-  case TMINUS: symbol = "-"; break;
-  case TMUL:   symbol = "*"; break;
-  case TDIV:   symbol = "/"; break;
-  case TCEQ:   symbol = "=="; break;
-  case TCNE:   symbol = "!="; break;
-  case TIS:    symbol = "is"; break;
+  case OPERATOR_CODES::PLUS:  symbol = "+"; break;
+  case OPERATOR_CODES::MINUS: symbol = "-"; break;
+  case OPERATOR_CODES::MUL:   symbol = "*"; break;
+  case OPERATOR_CODES::DIV:   symbol = "/"; break;
+  case OPERATOR_CODES::COMPARE_EQUAL:   symbol = "=="; break;
+  case OPERATOR_CODES::COMPARE_NOT_EQUAL:   symbol = "!="; break;
+  case OPERATOR_CODES::IS:    symbol = "is"; break;
   default:     return YamlParseError("invalid binary operator!");
   }
   (*root)["binary_operator"]["operator"] = symbol;

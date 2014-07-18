@@ -64,6 +64,7 @@ class NDouble : public NExpression {
  public:
   double value;
   NDouble(double value) : value(value) { }
+  virtual std::string toString() { return "double: " + std::to_string(value); }
 };
 
 class NVoid : public NExpression {
@@ -100,6 +101,7 @@ class NBinaryOperator : public NExpression {
   NExpression& rhs;
   NBinaryOperator(NExpression& lhs, int op, NExpression& rhs) :
     lhs(lhs), op(op), rhs(rhs) { }
+  virtual std::string toString() { return "binary operator: " + lhs.toString() + " " + (char) op + " " + rhs.toString(); }
 };
 
 class NAssignment : public NExpression {

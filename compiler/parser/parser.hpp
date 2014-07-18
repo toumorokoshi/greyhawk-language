@@ -89,6 +89,9 @@ namespace parser {
 
   NExpression* parseNumeric(lexer::TokenVector::iterator& token_position,
                             lexer::TokenVector::iterator token_end);
+
+  NExpression* parseSingleNumeric(lexer::TokenVector::iterator& token_position,
+                                  lexer::TokenVector::iterator token_end);
 }
 
 #endif

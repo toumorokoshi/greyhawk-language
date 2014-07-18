@@ -44,6 +44,11 @@ namespace parser {
     return typeid(token) == typeid(Integer) || typeid(token) == typeid(Double);
   }
 
+  bool isBinaryOperator(const Token& token) {
+    std::cout << typeid(token).name() << std::endl;
+    return typeid(token) == typeid(Operator);
+  }
+
   NExpression* parseExpression(TokenVector::iterator& token_position,
                                TokenVector::iterator token_end) {
 
@@ -65,13 +70,34 @@ namespace parser {
 
   NExpression* parseNumeric(TokenVector::iterator& token_position,
                             TokenVector::iterator token_end) {
+    NExpression* lhs = parseSingleNumeric(token_position,
+                                          token_end);
+    while (token_position != token_end && isBinaryOperator(**token_position)) {
+      auto op = (Operator*) *token_position;
+      token_position++;
+      NExpression* rhs = parseSingleNumeric(token_position,
+                                            token_end);
+      lhs = new NBinaryOperator(*lhs, op->operatorCode, *rhs);
+    }
+    return lhs;
+ }
+
+  NExpression* parseSingleNumeric(TokenVector::iterator& token_position,
+                                  TokenVector::iterator token_end) {
     NExpression* lhs = NULL;
     if (typeid(**token_position) == typeid(Integer)) {
       auto integer = (Integer*) *token_position;
       lhs = new NInteger(integer->value);
+
+    } else if (typeid(**token_position) == typeid(Double)) {
+      Double* dbl = (Double*) *token_position;
+      lhs = new NDouble(dbl->value);
+
     } else {
       throw ParserException("expected a numeric!");
     }
+
+    token_position++;
     return lhs;
   }
 }

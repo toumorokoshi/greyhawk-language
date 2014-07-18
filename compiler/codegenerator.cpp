@@ -1,8 +1,9 @@
 #include "codegenerator.hpp"
-#include "build/parser.hpp"
+#include "lexer/tokens.hpp"
 #include <iostream>
 
 using namespace llvm;
+using namespace lexer;
 
 Value* ErrorV(const char *str) { printf("Error: %s\n", str); return 0; }
 static raw_os_ostream debug_os_ostream(std::cout);
@@ -152,13 +153,13 @@ Value* CodeGenerator::generate(NBinaryOperator& n) {
   Value* l = generate(n.lhs);
   Value* r = generate(n.rhs);
   switch(n.op) {
-  case TPLUS:  return builder.CreateAdd(l, r, "addtmp");
-  case TMINUS: return builder.CreateSub(l, r, "subtmp");
-  case TMUL:   return builder.CreateMul(l, r, "multmp");
-  case TDIV:   return builder.CreateFDiv(l, r, "divtmp");
-  case TCEQ:   return builder.CreateFCmpOEQ(l, r, "eqtmp");
-  case TCNE:   return builder.CreateFCmpONE(l, r, "neqtmp");
-  case TIS:    return builder.CreateICmpEQ(l, r, "istmp");
+  case OPERATOR_CODES::PLUS:                return builder.CreateAdd(l, r, "addtmp");
+  case OPERATOR_CODES::MINUS:               return builder.CreateSub(l, r, "subtmp");
+  case OPERATOR_CODES::MUL:                 return builder.CreateMul(l, r, "multmp");
+  case OPERATOR_CODES::DIV:                 return builder.CreateFDiv(l, r, "divtmp");
+  case OPERATOR_CODES::COMPARE_EQUAL:       return builder.CreateFCmpOEQ(l, r, "eqtmp");
+  case OPERATOR_CODES::COMPARE_NOT_EQUAL:   return builder.CreateFCmpONE(l, r, "neqtmp");
+  case OPERATOR_CODES::IS:                  return builder.CreateICmpEQ(l, r, "istmp");
   default:     return ErrorV("invalid binary operator!");
   }
 }

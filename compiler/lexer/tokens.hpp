@@ -25,7 +25,10 @@ namespace lexer {
     typedef std::pair<std::string, const Operator*> OperatorPair;
   public:
     const std::string symbols;
-    Operator(std::string _symbols) : symbols(_symbols) {};
+    const int operatorCode;
+    Operator(std::string _symbols, int operatorCode) :
+      symbols(_symbols),
+      operatorCode(operatorCode) {};
     std::string getDescription() const { return symbols; }
     OperatorPair getOperatorPair () const { return OperatorPair(symbols, this); }
   };
@@ -73,12 +76,32 @@ namespace lexer {
   // keywords
   extern const Keyword T_ELSE;
   extern const Keyword T_IF;
-  extern const Keyword T_IS;
   extern const Keyword T_RETURN;
 
   // constants
   extern const Keyword T_TRUE;
   extern const Keyword T_FALSE;
+
+  enum OPERATOR_CODES {
+    LPAREN,
+    RPAREN,
+    COMMA,
+    DOT,
+    PLUS,
+    MINUS,
+    MUL,
+    DIV,
+    DECLARE,
+    ASSIGN,
+    COMPARE_EQUAL,
+    COMPARE_NOT_EQUAL,
+    COMPARE_LEQ,
+    COMPARE_GEQ,
+    COMPARE_LET,
+    COMPARE_GET,
+    COLON,
+    IS
+  };
 
   // operators
   extern const Operator T_LPAREN;
@@ -98,6 +121,7 @@ namespace lexer {
   extern const Operator T_COMPARE_LET;
   extern const Operator T_COMPARE_GET;
   extern const Operator T_COLON;
+  extern const Operator T_IS;
 
   // Grouping the tokens up
   extern const KeywordVector keywordList;
