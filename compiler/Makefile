@@ -25,7 +25,7 @@ lexer:
 PARSER_FILES=parser/*.cpp
 
 parser:
-	clang++ -o ../bin/parser $(LEXER_FILES) $(PARSER_FILES) main/parser.cpp $(OPTIONS)
+	clang++ -o ../bin/parser $(LEXER_FILES) $(PARSER_FILES) yamlast.cpp main/parser.cpp -lyaml-cpp $(OPTIONS)
 
 tests:
 	clang++ -o ../bin/unit_tests $(LEXER_FILES) $(PARSER_FILES) lexer/tests/*.cpp parser/tests/*.cpp main/tests.cpp $(OPTIONS) -lgtest

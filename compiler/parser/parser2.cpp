@@ -45,7 +45,6 @@ namespace parser {
   }
 
   bool isBinaryOperator(const Token& token) {
-    std::cout << typeid(token).name() << std::endl;
     return typeid(token) == typeid(Operator);
   }
 

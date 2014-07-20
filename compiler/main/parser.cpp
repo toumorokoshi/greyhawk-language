@@ -13,9 +13,9 @@ void mainParseTokens(TokenVector& tokens) {
   auto token_position = tokens.begin();
   auto node = parser::parseStatement(token_position,
                                      tokens.end());
+  YAML::Node* yaml = YamlAST::generate(*node);
   // auto node = parser::parseTokens(parser::P2_TRUE_THEN_FALSE, tokens);
-  cout << "Parsed Tokens:" << endl;
-  cout << node->toString() << endl;
+  cout << (*yaml) << std::endl;
 }
 
 int main(int argc, char* argv[]) {

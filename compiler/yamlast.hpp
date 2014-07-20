@@ -6,25 +6,24 @@ public:
   YamlAST() {}
   YAML::Node* generateTree(NBlock&);
 
-private:
   YAML::Node* root;
 
   // value configuration
-   YAML::Node* generate(Node& n);
-   YAML::Node* generate(NExpression& n);
-   YAML::Node* generate(NInteger& n);
-   YAML::Node* generate(NDouble& n);
-   YAML::Node* generate(NVoid& n);
-   YAML::Node* generate(NBoolean& n);
-   YAML::Node* generate(NIdentifier& n);
-   YAML::Node* generate(NMethodCall& n);
-   YAML::Node* generate(NBinaryOperator& n);
-   YAML::Node* generate(NAssignment& n);
-   YAML::Node* generate(NBlock& n);
-   YAML::Node* generate(NStatement& n);
-   YAML::Node* generate(NConditional& n);
-   YAML::Node* generate(NReturn& n);
-   YAML::Node* generate(NExpressionStatement& n);
-   YAML::Node* generate(NVariableDeclaration& n);
-   YAML::Node* generate(NFunctionDeclaration& n);
+  static YAML::Node* generate(Node& n);
+  static YAML::Node* generate(NExpression& n);
+  static YAML::Node* generate(NInteger& n);
+  static YAML::Node* generate(NDouble& n);
+  static YAML::Node* generate(NVoid& n);
+  static YAML::Node* generate(NBoolean& n);
+  static YAML::Node* generate(NIdentifier& n);
+  static YAML::Node* generate(NMethodCall& n);
+  static YAML::Node* generate(NBinaryOperator& n);
+  static YAML::Node* generate(NAssignment& n);
+  static YAML::Node* generate(NBlock& n);
+  static YAML::Node* generate(NStatement& n);
+  static YAML::Node* generate(NConditional& n);
+  static YAML::Node* generate(NReturn& n);
+  static YAML::Node* generate(NExpressionStatement& n);
+  static YAML::Node* generate(NVariableDeclaration& n);
+  static YAML::Node* generate(NFunctionDeclaration& n);
 };
