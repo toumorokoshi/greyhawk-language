@@ -1,8 +1,9 @@
 SHELL := /bin/bash
 LLVM_CONFIG=`llvm-config --libs core native` `llvm-config --cxxflags --ldflags`
-BOOST_OPTIONS=-lboost_program_options -lboost_regex
-OPTIONS=--std=c++11 -L/usr/lib -I/usr/include $(BOOST_OPTIONS)
-.PHONY: lexer parser
+BOOST_OPTIONS=-lboost_program_options
+YAML_OPTIONS=yamlast.cpp -lyaml-cpp
+OPTIONS=--std=c++11 -L/usr/lib -I/usr/include
+.PHONY: lexer parser compiler
 
 all:
 	mkdir -p build
@@ -20,12 +21,15 @@ all:
 LEXER_FILES=lexer/*.cpp
 
 lexer:
-	clang++ -o ../bin/lexer $(LEXER_FILES) main/lexer.cpp $(OPTIONS)
+	clang++ $(LEXER_FILES) $(OPTIONS) main/lexer.cpp -o ../bin/lexer
 
 PARSER_FILES=parser/*.cpp
 
 parser:
-	clang++ -o ../bin/parser $(LEXER_FILES) $(PARSER_FILES) yamlast.cpp main/parser.cpp -lyaml-cpp $(OPTIONS)
+	clang++ $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(OPTIONS) main/parser.cpp -o ../bin/parser
+
+compiler:
+	clang++ $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(BOOST_OPTIONS) $(OPTIONS) main/greyhawk.cpp -o ../bin/greyhawk
 
 tests:
 	clang++ -o ../bin/unit_tests $(LEXER_FILES) $(PARSER_FILES) lexer/tests/*.cpp parser/tests/*.cpp main/tests.cpp $(OPTIONS) -lgtest

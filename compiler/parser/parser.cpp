@@ -5,77 +5,98 @@ using namespace lexer;
 
 namespace parser {
 
-  Node* parseTokens(const Production& root, TokenVector& tokens) {
-    auto tokens_head = tokens.begin();
-    auto rootNode = root.parseTokens(tokens_head, tokens.end());
-    if (rootNode == NULL) {
-      throw ParserException("No root node generated!");
-    } else if (tokens_head != tokens.end()) {
-      while (tokens_head != tokens.end()) {
-        std::cout << (*tokens_head)->getDescription() << std::endl;
-        tokens_head++;
-      }
-      throw ParserException("Not all tokens were consumed!!");
+  Node* parseProgram(TokenVector& tokens) {
+    NBlock* program = new NBlock();
+    TokenVector::iterator token_position = tokens.begin();
+    while (token_position != tokens.end()) {
+      //program->statements.push_back(parseStatement(token_position,
+      //                                            tokens.end()));
     }
-    return rootNode;
   }
 
-  Node* TokenProduction::parseTokens(TokenVector::iterator& token_position,
-                                      TokenVector::iterator token_end) const {
-    if (*token_position == &(this->token)) {
-      token_position++;
-      return this->generateNode();
-    }
-    return NULL;
+  Node* parseFunctionDeclaration(TokenVector::iterator token_position,
+                                 TokenVector::iterator token_end) {
   }
 
-  Node* SeriesProduction::parseTokens(TokenVector::iterator& token_position,
-                                      TokenVector::iterator token_end) const {
-    auto start_token_position = token_position;
-    std::vector<Node*> nodes;
-    for (auto production = _parserNodes.begin(); production != _parserNodes.end(); production++) {
-      Node* node = (*production)->parseTokens(token_position, token_end);
-
-      bool invalid = (
-        node == NULL ||
-        (token_position == token_end && (production + 1) != _parserNodes.end())
-      );
-
-      if (invalid) {
-        token_position = start_token_position;
-        return NULL;
-      }
-
-      nodes.push_back(node);
-    }
-    return _generateNode(nodes);
-  }
-
-  Node* ListProduction::parseTokens(TokenVector::iterator& token_position,
-                                    TokenVector::iterator token_end) const {
-    auto start_token_position = token_position;
-    std::vector<Node*> nodes;
+  NBlock* parseBlock(TokenVector::iterator& token_position,
+                     TokenVector::iterator token_end) {
+    NBlock* block = new NBlock();
     while(token_position != token_end) {
-      Node* node = _production.parseTokens(token_position, token_end);
-      if (node == NULL) {
-        token_position = start_token_position;
-        return NULL;
-      }
-      nodes.push_back(node);
+      NStatement* statement = parseStatement(token_position,
+                                             token_end);
+      block->statements.push_back(statement);
     }
-    return _generateNode(nodes);
+    return block;
   }
 
-  Node* ManyProduction::parseTokens(TokenVector::iterator& token_position,
-                                    TokenVector::iterator token_end) const {
-    auto start_token_position = token_position;
-    for (auto production : _productions) {
-      Node* node = production->parseTokens(token_position, token_end);
-      if (node != NULL) {
-        return node;
-      }
-      token_position = start_token_position;
+  NStatement* parseStatement(TokenVector::iterator& token_position,
+                             TokenVector::iterator token_end) {
+    if (*token_position == &T_RETURN) {
+      token_position++;
+      return new NReturn(*parseExpression(token_position,
+                                          token_end));
+    } else {
+      throw ParserException("Looking for statement, unable to find one");
     }
-    return NULL;
+  }
+
+  bool isNumeric(const Token& token) {
+    return typeid(token) == typeid(Integer) || typeid(token) == typeid(Double);
+  }
+
+  bool isBinaryOperator(const Token& token) {
+    return typeid(token) == typeid(Operator);
+  }
+
+  NExpression* parseExpression(TokenVector::iterator& token_position,
+                               TokenVector::iterator token_end) {
+
+    if (*token_position == &T_TRUE) {
+      token_position++;
+      return new NBoolean(true);
+
+    } else if (*token_position == &T_FALSE) {
+      token_position++;
+      return new NBoolean(false);
+
+    } else if (isNumeric(**token_position)) {
+      return parseNumeric(token_position, token_end);
+
+    } else {
+      throw ParserException("Looking for expression, unable to find one");
+    }
+  }
+
+  NExpression* parseNumeric(TokenVector::iterator& token_position,
+                            TokenVector::iterator token_end) {
+    NExpression* lhs = parseSingleNumeric(token_position,
+                                          token_end);
+    while (token_position != token_end && isBinaryOperator(**token_position)) {
+      auto op = (Operator*) *token_position;
+      token_position++;
+      NExpression* rhs = parseSingleNumeric(token_position,
+                                            token_end);
+      lhs = new NBinaryOperator(*lhs, op->operatorCode, *rhs);
+    }
+    return lhs;
+ }
+
+  NExpression* parseSingleNumeric(TokenVector::iterator& token_position,
+                                  TokenVector::iterator token_end) {
+    NExpression* lhs = NULL;
+    if (typeid(**token_position) == typeid(Integer)) {
+      auto integer = (Integer*) *token_position;
+      lhs = new NInteger(integer->value);
+
+    } else if (typeid(**token_position) == typeid(Double)) {
+      Double* dbl = (Double*) *token_position;
+      lhs = new NDouble(dbl->value);
+
+    } else {
+      throw ParserException("expected a numeric!");
+    }
+
+    token_position++;
+    return lhs;
   }
 }

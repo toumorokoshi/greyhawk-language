@@ -2,14 +2,17 @@
 #include <stdio.h>
 #include "../codegenerator.hpp"
 #include "../yamlast.hpp"
+#include "../lexer/tokenizer.hpp"
+#include "../parser/parser.hpp"
 #include "../node.hpp"
 #include <boost/program_options.hpp>
+#include <sstream>
+#include <fstream>
 
 namespace po = boost::program_options;
-
-extern NBlock* programBlock;
-extern int yyparse();
-extern FILE* yyin;
+using namespace std;
+using namespace lexer;
+using namespace parser;
 
 typedef struct CommandLineArguments {
   std::string file_name;
@@ -40,30 +43,69 @@ CommandLineArguments& getArguments(int argc, char*argv[]) {
               .positional(posixOptions)
               .run()
               , vm);
-    args->file_name = vm["file_name"].as<std::string>();
+
+    if (vm.count("file_name") > 0) {
+      args->file_name = vm["file_name"].as<std::string>();
+    }
+
     args->ast = vm.count("ast") > 0;
     return *args;
+
   } catch (po::error& e) {
     std::cerr << "ERROR: " << e.what() << std::endl;
     std::cerr << desc << std::endl;
     exit(1);
+
+  }
+}
+
+void parseTokens(TokenVector& tokens) {
+  auto token_position = tokens.begin();
+  auto node = parser::parseStatement(token_position,
+                                     tokens.end());
+  YAML::Node* yaml = YamlAST::generate(*node);
+  // auto node = parser::parseTokens(parser::P2_TRUE_THEN_FALSE, tokens);
+  cout << (*yaml) << std::endl;
+}
+
+void interpreter() {
+  string input;
+  Tokenizer tokenizer;
+  std::cout << "Greyhawk 0.0.1" << std::endl;
+  while (true) {
+    std::cout << ">> ";
+    getline(cin, input);
+    if (input.size() == 0) {
+      break;
+    }
+    try {
+      istringstream input_stream(input);
+      TokenVector tokens = tokenizer.tokenize(input_stream);
+      parseTokens(tokens);
+    } catch (LexerException& e) {
+      cout << e.message << endl;
+      continue;
+    } catch (ParserException& e) {
+      cout << e.message << endl;
+      continue;
+    }
   }
 }
 
 
 int main(int argc, char *argv[]) {
   CommandLineArguments& args = getArguments(argc, argv);
-  // set yyin before yyparse
-  yyin = fopen(args.file_name.c_str(), "r");
-  yyparse();
 
+  // set yyin before yyparse
   if (args.ast) {
+    NBlock* programBlock;
     YamlAST astGenerator;
     YAML::Node* tree = astGenerator.generateTree(*programBlock);
     std::cout << (*tree) << std::endl;
   } else {
-    CodeGenerator generator;
-    generator.generateCode(*programBlock);
+    // CodeGenerator generator;
+    // generator.generateCode(*programBlock);
+    interpreter();
   }
   return 0;
 }

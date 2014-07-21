@@ -4,7 +4,7 @@ export
 all: compiler lexer tests
 
 compiler:
-	$(MAKE) -C compiler
+	$(MAKE) -C compiler compiler
 
 lexer:
 	$(MAKE) -C compiler lexer
