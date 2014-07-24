@@ -24,7 +24,6 @@ YAML::Node* YamlAST::generate(NExpression& n) {
   } else if (typeid(n) == typeid(NInteger)) {
     return generate(static_cast<NInteger&>(n));
 
-
   } else if (typeid(n) == typeid(NDouble)) {
     return generate(static_cast<NDouble&>(n));
 
@@ -39,9 +38,6 @@ YAML::Node* YamlAST::generate(NExpression& n) {
 
   } else if (typeid(n) == typeid(NBinaryOperator)) {
     return generate(static_cast<NBinaryOperator&>(n));
-
-  } else if (typeid(n) == typeid(NAssignment)) {
-    return generate(static_cast<NAssignment&>(n));
 
   } else if (typeid(n) == typeid(NBlock)) {
     return generate(static_cast<NBlock&>(n));
@@ -131,9 +127,8 @@ YAML::Node* YamlAST::generate(NStatement& n) {
   } else if (typeid(n) == typeid(NReturn)) {
     return generate(static_cast<NReturn&>(n));
 
-  } else if (typeid(n) == typeid(NExpressionStatement)) {
-    return generate(static_cast<NExpressionStatement&>(n));
-
+  } else if (typeid(n) == typeid(NAssignment)) {
+    return generate(static_cast<NAssignment&>(n));
 
   } else if (typeid(n) == typeid(NVariableDeclaration)) {
     return generate(static_cast<NVariableDeclaration&>(n));
@@ -141,7 +136,10 @@ YAML::Node* YamlAST::generate(NStatement& n) {
   } else if (typeid(n) == typeid(NFunctionDeclaration)) {
     return generate(static_cast<NFunctionDeclaration&>(n));
   }
-  return YamlParseError("Unable to find type for statement node!");
+
+  // expressions are also statement, so we default
+  // to expression
+  return generate(static_cast<NExpression&>(n));
 }
 
 YAML::Node* YamlAST::generate(NConditional& n) {
@@ -155,12 +153,6 @@ YAML::Node* YamlAST::generate(NConditional& n) {
 YAML::Node* YamlAST::generate(NReturn& n) {
   YAML::Node* yaml = new YAML::Node();
   (*yaml)["return"] = *generate(n.returnExpr);
-  return yaml;
-}
-
-YAML::Node* YamlAST::generate(NExpressionStatement& n) {
-  YAML::Node* yaml = new YAML::Node();
-  (*yaml)["expression_statement"] = *generate(n.expression);
   return yaml;
 }
 

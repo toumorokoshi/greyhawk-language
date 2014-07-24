@@ -14,6 +14,8 @@ using namespace std;
 using namespace lexer;
 using namespace parser;
 
+// static llvm::ExecutionEngine *executionEngine;
+
 typedef struct CommandLineArguments {
   std::string file_name;
   bool ast;
@@ -61,10 +63,16 @@ CommandLineArguments& getArguments(int argc, char*argv[]) {
 
 void parseTokens(TokenVector& tokens) {
   auto token_position = tokens.begin();
-  auto node = parser::parseStatement(token_position,
-                                     tokens.end());
-  YAML::Node* yaml = YamlAST::generate(*node);
-  // auto node = parser::parseTokens(parser::P2_TRUE_THEN_FALSE, tokens);
+  YAML::Node* yaml;
+  try {
+    auto node = parser::parseStatement(token_position,
+                                       tokens.end());
+    yaml = YamlAST::generate(*node);
+  } catch (ParserException) {
+    auto node = parser::parseExpression(token_position,
+                                        tokens.end());
+    yaml = YamlAST::generate(*node);
+  }
   cout << (*yaml) << std::endl;
 }
 
@@ -92,6 +100,11 @@ void interpreter() {
   }
 }
 
+/* void handleTopLevelExpression(llvm::Function* function) {
+  // function->dump();
+  //void* f_pointer = executionEngine->getPointerToFunction(function);
+  } */
+
 
 int main(int argc, char *argv[]) {
   CommandLineArguments& args = getArguments(argc, argv);
@@ -103,7 +116,8 @@ int main(int argc, char *argv[]) {
     YAML::Node* tree = astGenerator.generateTree(*programBlock);
     std::cout << (*tree) << std::endl;
   } else {
-    // CodeGenerator generator;
+    CodeGenerator generator;
+    // executionEngine = EngineBuilder(&generator.module).create();
     // generator.generateCode(*programBlock);
     interpreter();
   }

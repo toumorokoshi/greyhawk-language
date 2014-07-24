@@ -23,7 +23,6 @@ public:
   static YAML::Node* generate(NStatement& n);
   static YAML::Node* generate(NConditional& n);
   static YAML::Node* generate(NReturn& n);
-  static YAML::Node* generate(NExpressionStatement& n);
   static YAML::Node* generate(NVariableDeclaration& n);
   static YAML::Node* generate(NFunctionDeclaration& n);
 };

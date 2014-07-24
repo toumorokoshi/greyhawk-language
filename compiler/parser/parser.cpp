@@ -31,13 +31,34 @@ namespace parser {
 
   NStatement* parseStatement(TokenVector::iterator& token_position,
                              TokenVector::iterator token_end) {
-    if (*token_position == &T_RETURN) {
+    auto token = *token_position;
+
+    if (token == &T_RETURN) {
       token_position++;
       return new NReturn(*parseExpression(token_position,
                                           token_end));
-    } else {
-      throw ParserException("Looking for statement, unable to find one");
+
+    } else if (typeid(*token) == typeid(Identifier)) {
+      auto token_as_identifier = (Identifier*) token;
+      token_position++;
+      auto next_token = *token_position;
+      if (next_token == &T_ASSIGN) {
+        // parseAssignment
+        return new NAssignment(*new NIdentifier(token_as_identifier->name),
+                               *new NVoid());
+
+      } else if(next_token == &T_DECLARE) {
+        // parse declaration
+        return new NVariableDeclaration(*new NIdentifier(token_as_identifier->name),
+                                        *new NIdentifier("void"));
+      } else {
+        token_position--;
+        return parseExpression(token_position, token_end);
+      }
+
     }
+
+    throw ParserException("Looking for statement, unable to find one");
   }
 
   bool isNumeric(const Token& token) {
@@ -62,9 +83,35 @@ namespace parser {
     } else if (isNumeric(**token_position)) {
       return parseNumeric(token_position, token_end);
 
-    } else {
-      throw ParserException("Looking for expression, unable to find one");
+    } else if (typeid(**token_position) == typeid(Identifier)) {
+      token_position++;
+      if (*token_position == &T_LPAREN) {
+        token_position--;
+        return parseMethodCall(token_position,
+                               token_end);
+      }
     }
+
+    throw ParserException("Looking for expression, unable to find one");
+  }
+
+  NMethodCall* parseMethodCall(TokenVector::iterator& token_position,
+                               TokenVector::iterator token_end) {
+    auto method_name = new NIdentifier(((Identifier*) *token_position)->name);
+    token_position++;
+
+    if (*token_position != &T_LPAREN) {
+      throw ParserException("expected a '(' for a method call!");
+    }
+    token_position++;
+    // YUSUKE TODO: parse arguments
+    ExpressionList arguments;
+
+    if (*token_position != &T_RPAREN) {
+      throw ParserException("expected a ')' for a method call!");
+    }
+
+    return new NMethodCall(*method_name, arguments);
   }
 
   NExpression* parseNumeric(TokenVector::iterator& token_position,

@@ -28,22 +28,23 @@ typedef std::map<BasicBlock*, BlockContext*> BlockContextMap;
 
 class CodeGenerator {
 public:
-  CodeGenerator() : 
-    module(*(new Module("main", getGlobalContext()))), 
+  Module& module;
+
+  CodeGenerator() :
+    module(*(new Module("main", getGlobalContext()))),
     fpm(*createFPM(module)),
     builder(*(new IRBuilder<>(getGlobalContext())))
   {}
   void generateCode(NBlock&);
 
 private:
-  Module& module;
   Function* mainFunction;
   FunctionPassManager& fpm;
   IRBuilder<>& builder;
   BlockContextMap blockContexts;
 
   FunctionPassManager* createFPM(Module&);
- 
+
   // utils
   bool variableExistsInContext(std::string);
   BlockContext& getContext();
@@ -64,7 +65,6 @@ private:
   Value* generate(NStatement& n);
   Value* generate(NConditional& n);
   Value* generate(NReturn& n);
-  Value* generate(NExpressionStatement& n);
   Value* generate(NVariableDeclaration& n);
   Value* generate(NFunctionDeclaration& n);
 };

@@ -14,6 +14,9 @@ namespace parser {
   NExpression* parseExpression(lexer::TokenVector::iterator& token_position,
                                lexer::TokenVector::iterator token_end);
 
+  NMethodCall* parseMethodCall(lexer::TokenVector::iterator& token_position,
+                               lexer::TokenVector::iterator token_end);
+
   NExpression* parseNumeric(lexer::TokenVector::iterator& token_position,
                             lexer::TokenVector::iterator token_end);
 

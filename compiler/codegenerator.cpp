@@ -88,10 +88,6 @@ Value* CodeGenerator::generate(NExpression& n) {
     debug("NBinaryOperator");
     return generate(static_cast<NBinaryOperator&>(n));
 
-  } else if (typeid(n) == typeid(NAssignment)) {
-    debug("NAssignment");
-    return generate(static_cast<NAssignment&>(n));
-
   } else if (typeid(n) == typeid(NBlock)) {
     debug("NBlock");
     return generate(static_cast<NBlock&>(n));
@@ -192,10 +188,9 @@ Value* CodeGenerator::generate(NStatement& n) {
     debug("NReturn");
     return generate(static_cast<NReturn&>(n));
 
-  } else if (typeid(n) == typeid(NExpressionStatement)) {
-    debug("NExpressionDeclaration");
-    return generate(static_cast<NExpressionStatement&>(n));
-
+  } else if (typeid(n) == typeid(NAssignment)) {
+    debug("NAssignment");
+    return generate(static_cast<NAssignment&>(n));
 
   } else if (typeid(n) == typeid(NVariableDeclaration)) {
     debug("NVariableDeclaration");
@@ -204,8 +199,10 @@ Value* CodeGenerator::generate(NStatement& n) {
   } else if (typeid(n) == typeid(NFunctionDeclaration)) {
     debug("NFunctionDeclaration");
     return generate(static_cast<NFunctionDeclaration&>(n));
+
   }
-  return NULL;
+
+  return generate(static_cast<NExpression&>(n));
 }
 
 Value* CodeGenerator::generate(NConditional& n) {
@@ -257,10 +254,6 @@ Value* CodeGenerator::generate(NReturn& n) {
   Value* returnValue = generate(n.returnExpr);
   debug(returnValue);
   return builder.CreateRet(returnValue);
-}
-
-Value* CodeGenerator::generate(NExpressionStatement& n) {
-  return generate(n.expression);
 }
 
 Value* CodeGenerator::generate(NVariableDeclaration& n) {
