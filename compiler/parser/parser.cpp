@@ -5,38 +5,23 @@ using namespace lexer;
 
 namespace parser {
 
-  Node* parseProgram(TokenVector& tokens) {
-    NBlock* program = new NBlock();
-    TokenVector::iterator token_position = tokens.begin();
-    while (token_position != tokens.end()) {
-      //program->statements.push_back(parseStatement(token_position,
-      //                                            tokens.end()));
-    }
-  }
-
-  Node* parseFunctionDeclaration(TokenVector::iterator token_position,
-                                 TokenVector::iterator token_end) {
-  }
-
   NBlock* parseBlock(TokenVector::iterator& token_position,
-                     TokenVector::iterator token_end) {
+                     TokenVector& tokens) {
     NBlock* block = new NBlock();
-    while(token_position != token_end) {
-      NStatement* statement = parseStatement(token_position,
-                                             token_end);
+    while(token_position != tokens.end()) {
+      NStatement* statement = parseStatement(token_position, tokens);
       block->statements.push_back(statement);
     }
     return block;
   }
 
   NStatement* parseStatement(TokenVector::iterator& token_position,
-                             TokenVector::iterator token_end) {
+                             TokenVector& tokens) {
     auto token = *token_position;
 
     if (token == &T_RETURN) {
       token_position++;
-      return new NReturn(*parseExpression(token_position,
-                                          token_end));
+      return new NReturn(*parseExpression(token_position, tokens));
 
     } else if (typeid(*token) == typeid(Identifier)) {
       auto token_as_identifier = (Identifier*) token;
@@ -53,7 +38,7 @@ namespace parser {
                                         *new NIdentifier("void"));
       } else {
         token_position--;
-        return parseExpression(token_position, token_end);
+        return parseExpression(token_position, tokens);
       }
 
     }
@@ -70,7 +55,7 @@ namespace parser {
   }
 
   NExpression* parseExpression(TokenVector::iterator& token_position,
-                               TokenVector::iterator token_end) {
+                               TokenVector& tokens) {
 
     if (*token_position == &T_TRUE) {
       token_position++;
@@ -81,14 +66,13 @@ namespace parser {
       return new NBoolean(false);
 
     } else if (isNumeric(**token_position)) {
-      return parseNumeric(token_position, token_end);
+      return parseNumeric(token_position, tokens);
 
     } else if (typeid(**token_position) == typeid(Identifier)) {
       token_position++;
       if (*token_position == &T_LPAREN) {
         token_position--;
-        return parseMethodCall(token_position,
-                               token_end);
+        return parseMethodCall(token_position, tokens);
       }
     }
 
@@ -96,7 +80,7 @@ namespace parser {
   }
 
   NMethodCall* parseMethodCall(TokenVector::iterator& token_position,
-                               TokenVector::iterator token_end) {
+                               TokenVector& tokens) {
     auto method_name = new NIdentifier(((Identifier*) *token_position)->name);
     token_position++;
 
@@ -115,21 +99,21 @@ namespace parser {
   }
 
   NExpression* parseNumeric(TokenVector::iterator& token_position,
-                            TokenVector::iterator token_end) {
+                            TokenVector& tokens) {
     NExpression* lhs = parseSingleNumeric(token_position,
-                                          token_end);
-    while (token_position != token_end && isBinaryOperator(**token_position)) {
+                                          tokens);
+    while (token_position != tokens.end() && isBinaryOperator(**token_position)) {
       auto op = (Operator*) *token_position;
       token_position++;
       NExpression* rhs = parseSingleNumeric(token_position,
-                                            token_end);
+                                            tokens);
       lhs = new NBinaryOperator(*lhs, op->operatorCode, *rhs);
     }
     return lhs;
  }
 
   NExpression* parseSingleNumeric(TokenVector::iterator& token_position,
-                                  TokenVector::iterator token_end) {
+                                  TokenVector& tokens) {
     NExpression* lhs = NULL;
     if (typeid(**token_position) == typeid(Integer)) {
       auto integer = (Integer*) *token_position;

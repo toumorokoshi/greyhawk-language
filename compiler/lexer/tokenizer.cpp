@@ -16,7 +16,7 @@ OperatorFSM& lexer::getOperatorFSMRoot() {
 
 TokenVector Tokenizer::tokenize(std::istream& input) {
   StringScanner scanner(input);
-  TokenVector tokens;
+  TokenVector& tokens = *new TokenVector();
   bool isNewLine = true;
   initialize();
 

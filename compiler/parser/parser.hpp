@@ -9,19 +9,19 @@
 namespace parser {
 
   NStatement* parseStatement(lexer::TokenVector::iterator& token_position,
-                            lexer::TokenVector::iterator token_end);
+                             lexer::TokenVector& tokens);
 
   NExpression* parseExpression(lexer::TokenVector::iterator& token_position,
-                               lexer::TokenVector::iterator token_end);
+                               lexer::TokenVector& tokens);
 
   NMethodCall* parseMethodCall(lexer::TokenVector::iterator& token_position,
-                               lexer::TokenVector::iterator token_end);
+                               lexer::TokenVector& tokens);
 
   NExpression* parseNumeric(lexer::TokenVector::iterator& token_position,
-                            lexer::TokenVector::iterator token_end);
+                            lexer::TokenVector& tokens);
 
   NExpression* parseSingleNumeric(lexer::TokenVector::iterator& token_position,
-                                  lexer::TokenVector::iterator token_end);
+                                  lexer::TokenVector& tokens);
 }
 
 #endif

@@ -11,8 +11,7 @@ using namespace lexer;
 
 void mainParseTokens(TokenVector& tokens) {
   auto token_position = tokens.begin();
-  auto node = parser::parseStatement(token_position,
-                                     tokens.end());
+  auto node = parser::parseStatement(token_position, tokens);
   YAML::Node* yaml = YamlAST::generate(*node);
   // auto node = parser::parseTokens(parser::P2_TRUE_THEN_FALSE, tokens);
   cout << (*yaml) << std::endl;
@@ -31,6 +30,9 @@ int main(int argc, char* argv[]) {
     while(true) {
       cout << ">>> ";
       getline(cin, input);
+      if (input.size() == 0) {
+        break;
+      }
       try {
         istringstream input_stream(input);
         TokenVector tokens = tokenizer.tokenize(input_stream);

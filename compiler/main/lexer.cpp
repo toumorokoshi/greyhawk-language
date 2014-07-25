@@ -29,6 +29,9 @@ int main(int argc, char* argv[]) {
     while(true) {
       cout << ">>> ";
       getline(cin, input);
+      if (input.size() == 0) {
+        break;
+      }
       try {
         istringstream input_stream(input);
         TokenVector tokens = tokenizer.tokenize(input_stream);
