@@ -5,6 +5,8 @@ namespace lexer {
   // the actual tokens
   const Token T_INDENT("indent");
   const Token T_UNINDENT("unindent");
+  const Token T_LPAREN("(");
+  const Token T_RPAREN(")");
 
   // keywords
   const Keyword T_ELSE("else");
@@ -16,8 +18,6 @@ namespace lexer {
   const Keyword T_FALSE("false");
 
   // operators
-  const Operator T_LPAREN("(", OPERATOR_CODES::LPAREN);
-  const Operator T_RPAREN(")", OPERATOR_CODES::RPAREN);
   const Operator T_COMMA(",", OPERATOR_CODES::COMMA);
   const Operator T_DOT(".", OPERATOR_CODES::DOT);
   const Operator T_PLUS("+", OPERATOR_CODES::PLUS);
@@ -47,8 +47,8 @@ namespace lexer {
   };
 
   const OperatorPairVector operatorPairs {
-    T_LPAREN.getOperatorPair(),
-    T_RPAREN.getOperatorPair(),
+    *(new OperatorPair("(", &T_LPAREN)),
+    *(new OperatorPair(")", &T_RPAREN)),
     T_COMMA.getOperatorPair(),
     T_DOT.getOperatorPair(),
     T_PLUS.getOperatorPair(),

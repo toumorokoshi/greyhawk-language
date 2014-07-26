@@ -22,7 +22,7 @@ namespace lexer {
   };
 
   class Operator :  public Token {
-    typedef std::pair<std::string, const Operator*> OperatorPair;
+    typedef std::pair<std::string, const Token*> OperatorPair;
   public:
     const std::string symbols;
     const int operatorCode;
@@ -54,6 +54,13 @@ namespace lexer {
     std::string getDescription() const { return "double: " + std::to_string(value); }
   };
 
+  class String: public Token {
+  public:
+    const std::string value;
+    String(std::string _value) : value(_value) {}
+    std::string getDescription() const { return "string: \"" + value + "\""; }
+  };
+
   class Identifier : public Token {
   public:
     const std::string name;
@@ -64,7 +71,7 @@ namespace lexer {
   typedef std::vector<const Token*> TokenVector;
   typedef std::vector<const Keyword*> KeywordVector;
 
-  typedef std::pair<std::string, const Operator*> OperatorPair;
+  typedef std::pair<std::string, const Token*> OperatorPair;
   typedef std::vector<OperatorPair> OperatorPairVector;
 
   TokenVector tokenize(std::string input);
@@ -72,6 +79,8 @@ namespace lexer {
   // the actual tokens
   extern const Token T_INDENT;
   extern const Token T_UNINDENT;
+  extern const Token T_LPAREN;
+  extern const Token T_RPAREN;
 
   // keywords
   extern const Keyword T_ELSE;
@@ -82,9 +91,8 @@ namespace lexer {
   extern const Keyword T_TRUE;
   extern const Keyword T_FALSE;
 
+
   enum OPERATOR_CODES {
-    LPAREN,
-    RPAREN,
     COMMA,
     DOT,
     PLUS,
@@ -104,8 +112,6 @@ namespace lexer {
   };
 
   // operators
-  extern const Operator T_LPAREN;
-  extern const Operator T_RPAREN;
   extern const Operator T_COMMA;
   extern const Operator T_DOT;
   extern const Operator T_PLUS;

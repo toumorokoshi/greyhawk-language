@@ -27,6 +27,9 @@ YAML::Node* YamlAST::generate(NExpression& n) {
   } else if (typeid(n) == typeid(NDouble)) {
     return generate(static_cast<NDouble&>(n));
 
+  } else if (typeid(n) == typeid(NString)) {
+    return generate(static_cast<NString&>(n));
+
   } else if (typeid(n) == typeid(NVoid)) {
     return generate(static_cast<NVoid&>(n));
 
@@ -52,6 +55,12 @@ YAML::Node* YamlAST::generate(NInteger& n) {
 }
 
 YAML::Node* YamlAST::generate(NDouble& n) {
+  YAML::Node* root = new YAML::Node();
+  (*root) = n.value;
+  return root;
+}
+
+YAML::Node* YamlAST::generate(NString& n) {
   YAML::Node* root = new YAML::Node();
   (*root) = n.value;
   return root;

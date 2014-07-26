@@ -1,5 +1,6 @@
 // put tokenizer methods in here
 #include "tokenizer.hpp"
+#include <sstream>
 
 using namespace lexer;
 using std::string;
@@ -21,6 +22,7 @@ TokenVector Tokenizer::tokenize(std::istream& input) {
   initialize();
 
   while (scanner.hasNext()) {
+
     if (isNewLine) {
       isNewLine = false;
       calculateIndent(scanner, tokens);
@@ -32,6 +34,15 @@ TokenVector Tokenizer::tokenize(std::istream& input) {
     } else if (scanner.peek() == '\n') {
       isNewLine = true;
       scanner.next();
+
+    } else if (scanner.peek() == '"') {
+      std::string output;
+      scanner.next();
+      while(scanner.peek() != '"') {
+        output.push_back(scanner.next());
+      }
+      scanner.next();
+      tokens.push_back(new String(output));
 
     } else if (isNumeric(scanner.peek())) {
       // then it's a number

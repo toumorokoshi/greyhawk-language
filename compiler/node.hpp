@@ -115,6 +115,12 @@ class NDouble : public NExpression {
   NDouble(double value) : value(value) { }
 };
 
+class NString: public NExpression {
+public:
+  const std::string value;
+  NString(std::string value) : value(value) {}
+};
+
 class NVoid : public NExpression {
 public:
   NVoid() {}

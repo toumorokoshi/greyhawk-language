@@ -13,6 +13,7 @@ public:
   static YAML::Node* generate(NExpression& n);
   static YAML::Node* generate(NInteger& n);
   static YAML::Node* generate(NDouble& n);
+  static YAML::Node* generate(NString& n);
   static YAML::Node* generate(NVoid& n);
   static YAML::Node* generate(NBoolean& n);
   static YAML::Node* generate(NIdentifier& n);

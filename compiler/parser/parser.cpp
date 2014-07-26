@@ -68,6 +68,11 @@ namespace parser {
     } else if (isNumeric(**token_position)) {
       return parseNumeric(token_position, tokens);
 
+    } else if (typeid(**token_position) == typeid(String)) {
+      auto stringToken = (String*) *token_position;
+      token_position++;
+      return new NString(stringToken->value);
+
     } else if (typeid(**token_position) == typeid(Identifier)) {
       token_position++;
       if (*token_position == &T_LPAREN) {
@@ -90,6 +95,9 @@ namespace parser {
     token_position++;
     // YUSUKE TODO: parse arguments
     ExpressionList arguments;
+    while(*token_position != &T_RPAREN) {
+      arguments.push_back(parseExpression(token_position, tokens));
+    }
 
     if (*token_position != &T_RPAREN) {
       throw ParserException("expected a ')' for a method call!");

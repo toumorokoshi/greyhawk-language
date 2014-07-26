@@ -10,7 +10,7 @@
 
 namespace lexer {
 
-  typedef FSMNode<const Operator> OperatorFSM;
+  typedef FSMNode<const Token> OperatorFSM;
 
   class Tokenizer {
   private:
@@ -25,8 +25,6 @@ namespace lexer {
     Tokenizer() {};
     TokenVector tokenize(std::istream& input);
   };
-
-  typedef FSMNode<const Operator> OperatorFSM;
 
   OperatorFSM& getOperatorFSMRoot();
 }
