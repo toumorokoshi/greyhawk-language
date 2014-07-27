@@ -4,11 +4,17 @@ using namespace llvm;
 
 namespace codegen {
 
-  Function* generatePuts(LLVMContext& context, Module &module) {
+  void addExterns(Module &module) {
+    generatePuts(module);
+  }
 
-    std::vector<Type*> arguments(1, PointerType::getUnqual(Type::getInt8Ty(context)));
+  Function* generatePuts(Module &module) {
 
-    FunctionType* FT = FunctionType::get(Type::getVoidTy(context), arguments, false);
+    std::vector<Type*> arguments(1, PointerType::getUnqual(Type::getInt8Ty(getGlobalContext())));
+
+    FunctionType* FT = FunctionType::get(Type::getVoidTy(getGlobalContext()),
+                                         arguments,
+                                         false);
 
     return Function::Create(FT, Function::ExternalLinkage, "puts", &module);
   }

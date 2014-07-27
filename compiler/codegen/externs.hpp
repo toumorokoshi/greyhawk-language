@@ -2,6 +2,8 @@
 
 namespace codegen {
 
+  void addExterns(llvm::Module&);
+
   // generate the put(string) instruction
-  llvm::Function* generatePuts(llvm::LLVMContext&);
+  llvm::Function* generatePuts(llvm::Module&);
 }

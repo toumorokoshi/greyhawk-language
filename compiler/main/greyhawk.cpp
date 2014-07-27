@@ -1,10 +1,11 @@
 #include <iostream>
 #include <stdio.h>
-#include "../codegen/codegenerator.hpp"
-#include "../yamlast.hpp"
 #include "../lexer/tokenizer.hpp"
+#include "../parser/yamlast.hpp"
 #include "../parser/parser.hpp"
-#include "../node.hpp"
+#include "../codegen/jit.hpp"
+#include "../codegen/codegenerator.hpp"
+#include "../codegen/exceptions.hpp"
 #include <boost/program_options.hpp>
 #include <sstream>
 #include <fstream>
@@ -65,18 +66,17 @@ void parseTokens(TokenVector& tokens) {
   auto token_position = tokens.begin();
   YAML::Node* yaml;
   try {
-    auto node = parser::parseStatement(token_position,
-                                       tokens.end());
+    auto node = parser::parseStatement(token_position, tokens);
     yaml = YamlAST::generate(*node);
   } catch (ParserException) {
-    auto node = parser::parseExpression(token_position,
-                                        tokens.end());
+    auto node = parser::parseExpression(token_position, tokens);
     yaml = YamlAST::generate(*node);
   }
   cout << (*yaml) << std::endl;
 }
 
 void interpreter() {
+  codegen::JIT jit;
   string input;
   Tokenizer tokenizer;
   std::cout << "Greyhawk 0.0.1" << std::endl;
@@ -89,11 +89,17 @@ void interpreter() {
     try {
       istringstream input_stream(input);
       TokenVector tokens = tokenizer.tokenize(input_stream);
-      parseTokens(tokens);
+      auto token_position = tokens.begin();
+      auto node = parser::parseExpression(token_position, tokens);
+      jit.executeExpression(node);
+      //parseTokens(tokens);
     } catch (LexerException& e) {
       cout << e.message << endl;
       continue;
     } catch (ParserException& e) {
+      cout << e.message << endl;
+      continue;
+    } catch (codegen::CodeGenException& e) {
       cout << e.message << endl;
       continue;
     }

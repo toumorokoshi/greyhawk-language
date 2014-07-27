@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-LLVM_CONFIG=`llvm-config --libs core native` `llvm-config --cxxflags --ldflags` -fexceptions
+LLVM_CONFIG=`llvm-config --libs core native jit` `llvm-config --cxxflags --ldflags` -fexceptions
 BOOST_OPTIONS=-lboost_program_options
 YAML_OPTIONS=-lyaml-cpp
 OPTIONS=--std=c++11 -L/usr/lib -I/usr/include
@@ -29,11 +29,11 @@ PARSER_FILES=parser/*.cpp
 parser:
 	clang++ main/parser.cpp $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(OPTIONS) -o ../bin/parser
 
-CODEGEN_FILES=codgen/*.cpp
+CODEGEN_FILES=codegen/*.cpp
 
 # note: llvm_config must come after source files
 compiler:
-	clang++ $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(BOOST_OPTIONS) $(OPTIONS) $(CODEGEN_FILES) main/greyhawk.cpp $(LLVM_CONFIG) -o ../bin/greyhawk
+	clang++ $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(BOOST_OPTIONS) $(OPTIONS) $(CODEGEN_FILES) $(LLVM_CONFIG) main/greyhawk.cpp -o ../bin/greyhawk
 
 tests:
 	clang++ -o ../bin/unit_tests $(LEXER_FILES) $(PARSER_FILES) lexer/tests/*.cpp parser/tests/*.cpp main/tests.cpp $(OPTIONS) -lgtest
