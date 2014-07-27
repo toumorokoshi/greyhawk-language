@@ -1,7 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <yaml-cpp/yaml.h>
-#include "llvm.h"
 
 #ifndef NODE_HPP
 

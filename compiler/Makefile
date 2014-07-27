@@ -1,10 +1,11 @@
 SHELL := /bin/bash
 LLVM_CONFIG=`llvm-config --libs core native` `llvm-config --cxxflags --ldflags` -fexceptions
 BOOST_OPTIONS=-lboost_program_options
-YAML_OPTIONS=yamlast.cpp -lyaml-cpp
+YAML_OPTIONS=-lyaml-cpp
 OPTIONS=--std=c++11 -L/usr/lib -I/usr/include
 .PHONY: lexer parser compiler
 
+# deprecated, lexers and parsers are by hand now
 all:
 	mkdir -p build
 	cp *.hpp build/
@@ -28,7 +29,7 @@ PARSER_FILES=parser/*.cpp
 parser:
 	clang++ main/parser.cpp $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(OPTIONS) -o ../bin/parser
 
-CODEGEN_FILES=codegenerator.cpp
+CODEGEN_FILES=codgen/*.cpp
 
 # note: llvm_config must come after source files
 compiler:

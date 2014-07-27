@@ -1,7 +1,7 @@
 #include "../exceptions.hpp"
 #include "../lexer/tokenizer.hpp"
 #include "../parser/parser.hpp"
-#include "../yamlast.hpp"
+#include "../parser/yamlast.hpp"
 #include <iostream>
 #include <sstream>
 #include <fstream>

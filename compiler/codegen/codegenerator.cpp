@@ -1,5 +1,5 @@
 #include "codegenerator.hpp"
-#include "lexer/tokens.hpp"
+#include "../lexer/tokens.hpp"
 #include <iostream>
 
 using namespace llvm;
@@ -313,8 +313,6 @@ Value* CodeGenerator::generate(NFunctionDeclaration& n) {
   fpm.run(*function);
 	return function;
 }
-
-
 
 FunctionPassManager* CodeGenerator::createFPM(Module& module) {
   FunctionPassManager* fpm = new FunctionPassManager(&module);

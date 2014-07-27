@@ -1,6 +1,6 @@
 #include <iostream>
 #include <stdio.h>
-#include "../codegenerator.hpp"
+#include "../codegen/codegenerator.hpp"
 #include "../yamlast.hpp"
 #include "../lexer/tokenizer.hpp"
 #include "../parser/parser.hpp"

@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <cstring>
 #include "llvm.h"
-#include "node.hpp"
+#include "../parser/node.hpp"
 
 using namespace llvm;
 

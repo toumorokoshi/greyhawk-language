@@ -1,5 +1,5 @@
 #include "yamlast.hpp"
-#include "lexer/tokens.hpp"
+#include "../lexer/tokens.hpp"
 #include <cstdio>
 
 using namespace lexer;

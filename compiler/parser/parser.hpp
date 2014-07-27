@@ -1,5 +1,5 @@
 #include "../lexer/tokens.hpp"
-#include "../node.hpp"
+#include "./node.hpp"
 #include "./exceptions.hpp"
 #include <functional>
 
