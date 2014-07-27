@@ -2,6 +2,7 @@
 #include <typeinfo>
 #include <cstdio>
 #include <cstring>
+#include "externs.hpp"
 #include "llvm.h"
 #include "../parser/node.hpp"
 
