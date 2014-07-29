@@ -12,7 +12,7 @@ namespace codegen {
 
     std::vector<Type*> arguments(1, PointerType::getUnqual(Type::getInt8Ty(getGlobalContext())));
 
-    FunctionType* FT = FunctionType::get(Type::getVoidTy(getGlobalContext()),
+    FunctionType* FT = FunctionType::get(Type::getInt32Ty(getGlobalContext()),
                                          arguments,
                                          false);
 

@@ -12,15 +12,17 @@ namespace codegen {
     FunctionType *ftype = FunctionType::get(Type::getVoidTy(getGlobalContext()),
                                             arguments,
                                             false);
-    Function* function = Function::Create(ftype, Function::ExternalLinkage, "jit", &module);
+    Function* function = Function::Create(ftype, Function::ExternalLinkage, "main", &module);
     BasicBlock* bblock = BasicBlock::Create(getGlobalContext(), "entry", function, 0);
 
     builder.SetInsertPoint(bblock);
     generate(*expression);
-    module.dump();
-    void* fptr = executionEngine.getPointerToFunction(function);
-    void (*cast_fptr)() = (void (*)())(intptr_t) fptr;
-    cast_fptr();
+    builder.CreateRetVoid();
+    // module.dump();
+    std::vector<GenericValue> noargs;
+    GenericValue value = executionEngine.runFunction(function, noargs);
+    // void (*cast_fptr)() = (void (*)())(intptr_t) fptr;
+    // cast_fptr();
   }
 
 
@@ -73,7 +75,7 @@ namespace codegen {
   }
 
   Value* JIT::generate(NString& nString) {
-    return ConstantDataArray::getString(getGlobalContext(), nString.value, true);
+    return builder.CreateGlobalStringPtr(*new StringRef(nString.value.c_str()), "jit");
   }
 
 }

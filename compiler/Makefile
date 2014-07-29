@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-LLVM_CONFIG=`llvm-config --libs core native jit` `llvm-config --cxxflags --ldflags` -fexceptions
+LLVM_CONFIG=`llvm-config --libs core native jit interpreter` `llvm-config --cxxflags --ldflags` -fexceptions
 BOOST_OPTIONS=-lboost_program_options
 YAML_OPTIONS=-lyaml-cpp
 OPTIONS=--std=c++11 -L/usr/lib -I/usr/include

@@ -2,5 +2,4 @@ int DoMath(a int, b int):
 	x int := a * b + 5
 	return x
 
-void main():
-	DoMath(5, 6)
+DoMath(5, 6)

@@ -113,7 +113,12 @@ void interpreter() {
 
 
 int main(int argc, char *argv[]) {
+  // THIS MUST BE CALLED
+  // BEFORE LLVM RUNS CODE
+  // InitializeNativeTarget();
   CommandLineArguments& args = getArguments(argc, argv);
+
+  try {
 
   // set yyin before yyparse
   if (args.ast) {
@@ -126,6 +131,11 @@ int main(int argc, char *argv[]) {
     // executionEngine = EngineBuilder(&generator.module).create();
     // generator.generateCode(*programBlock);
     interpreter();
+  }
+
+  } catch (codegen::CodeGenException& e) {
+    cout << e.message << endl;
+    exit(1);
   }
   return 0;
 }
