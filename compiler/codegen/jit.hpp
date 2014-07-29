@@ -22,7 +22,7 @@ namespace codegen {
   public:
     JIT():
       module(*new llvm::Module("main", llvm::getGlobalContext())),
-      executionEngine(*llvm::EngineBuilder(&module).setErrorStr(&errStr).create()),
+      executionEngine(*llvm::EngineBuilder(&module).setErrorStr(&errStr).setUseMCJIT(true).create()),
       fpm(*createFPM(module)),
       builder(*new llvm::IRBuilder<>(llvm::getGlobalContext()))
     {

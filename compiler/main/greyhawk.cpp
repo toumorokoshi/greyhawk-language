@@ -116,6 +116,8 @@ int main(int argc, char *argv[]) {
   // THIS MUST BE CALLED
   // BEFORE LLVM RUNS CODE
   // InitializeNativeTarget();
+  InitializeNativeTargetAsmPrinter();
+  InitializeNativeTargetAsmParser();
   CommandLineArguments& args = getArguments(argc, argv);
 
   try {
