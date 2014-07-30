@@ -16,11 +16,11 @@ namespace codegen {
     BasicBlock* bblock = BasicBlock::Create(getGlobalContext(), "entry", function, 0);
 
     builder.SetInsertPoint(bblock);
-    generate(*expression);
-    builder.CreateRetVoid();
-    // module.dump();
+    Value* value = generate(*expression);
+    builder.CreateRet(value);
+    module.dump();
     std::vector<GenericValue> noargs;
-    GenericValue value = executionEngine.runFunction(function, noargs);
+    GenericValue result = executionEngine.runFunction(function, noargs);
     // void (*cast_fptr)() = (void (*)())(intptr_t) fptr;
     // cast_fptr();
   }
