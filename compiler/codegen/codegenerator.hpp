@@ -6,66 +6,65 @@
 #include "llvm.h"
 #include "../parser/node.hpp"
 
-using namespace llvm;
+#ifndef CODEGEN_CODEGENERATOR_HPP
+#define CODEGEN_CODEGENERATOR_HPP
 
-// context for a basic block
-typedef std::map<std::string, Value*> LocalsMap;
+namespace codegen {
 
-class BlockContext {
-public:
-  LocalsMap locals;
-  BlockContext() {}
-};
+  // context for a basic block
+  typedef std::map<std::string, llvm::Value*> LocalsMap;
 
-class BlockStack {
-public:
-  void push(BasicBlock*);
-  BasicBlock* pop();
-private:
-  std::vector<BasicBlock*> _stack;
-};
+  class BlockContext {
+  public:
+    LocalsMap locals;
+    BlockContext() {}
+  };
 
-typedef std::map<BasicBlock*, BlockContext*> BlockContextMap;
+  typedef std::map<llvm::BasicBlock*, BlockContext*> BlockContextMap;
 
-class CodeGenerator {
-public:
-  Module& module;
+  class CodeGenerator {
+  public:
+    llvm::Module& module;
 
-  CodeGenerator() :
-    module(*(new Module("main", getGlobalContext()))),
-    fpm(*createFPM(module)),
-    builder(*(new IRBuilder<>(getGlobalContext())))
-  {}
-  void generateCode(NBlock&);
+    CodeGenerator(llvm::Module& module,
+                  llvm::FunctionPassManager& fpm,
+                  llvm::IRBuilder<>& builder):
+      module(module),
+      fpm(fpm),
+      builder(builder) {}
 
-private:
-  Function* mainFunction;
-  FunctionPassManager& fpm;
-  IRBuilder<>& builder;
-  BlockContextMap blockContexts;
+    // value configuration
+    llvm::Value* generate(Node&);
+    llvm::Value* generate(NExpression&);
+    llvm::Value* generate(NInteger&);
+    llvm::Value* generate(NDouble&);
+    llvm::Value* generate(NVoid&);
+    llvm::Value* generate(NBoolean&);
+    llvm::Value* generate(NIdentifier&);
+    llvm::Value* generate(NMethodCall&);
+    llvm::Value* generate(NBinaryOperator&);
+    llvm::Value* generate(NAssignment&);
+    llvm::Value* generate(NBlock&);
+    llvm::Value* generate(NStatement&);
+    llvm::Value* generate(NConditional&);
+    llvm::Value* generate(NReturn&);
+    llvm::Value* generate(NVariableDeclaration&);
+    llvm::Value* generate(NFunctionDeclaration&);
+    llvm::Value* generate(NString&);
 
-  FunctionPassManager* createFPM(Module&);
+  private:
+    llvm::Function* mainFunction;
+    llvm::FunctionPassManager& fpm;
+    llvm::IRBuilder<>& builder;
+    BlockContextMap blockContexts;
 
-  // utils
-  bool variableExistsInContext(std::string);
-  BlockContext& getContext();
-  void setInsertPoint(BasicBlock*);
+    // utils
+    bool variableExistsInContext(std::string);
+    BlockContext& getContext();
+    void setInsertPoint(llvm::BasicBlock*);
 
-  // value configuration
-  Value* generate(Node& n);
-  Value* generate(NExpression& n);
-  Value* generate(NInteger& n);
-  Value* generate(NDouble& n);
-  Value* generate(NVoid& n);
-  Value* generate(NBoolean& n);
-  Value* generate(NIdentifier& n);
-  Value* generate(NMethodCall& n);
-  Value* generate(NBinaryOperator& n);
-  Value* generate(NAssignment& n);
-  Value* generate(NBlock& n);
-  Value* generate(NStatement& n);
-  Value* generate(NConditional& n);
-  Value* generate(NReturn& n);
-  Value* generate(NVariableDeclaration& n);
-  Value* generate(NFunctionDeclaration& n);
-};
+ };
+
+}
+
+#endif

@@ -115,8 +115,8 @@ void interpreter() {
 int main(int argc, char *argv[]) {
   // THIS MUST BE CALLED
   // BEFORE LLVM RUNS CODE
-  InitializeNativeTargetAsmPrinter();
-  InitializeNativeTargetAsmParser();
+  llvm::InitializeNativeTargetAsmPrinter();
+  llvm::InitializeNativeTargetAsmParser();
   CommandLineArguments& args = getArguments(argc, argv);
 
   try {
@@ -128,9 +128,6 @@ int main(int argc, char *argv[]) {
     YAML::Node* tree = astGenerator.generateTree(*programBlock);
     std::cout << (*tree) << std::endl;
   } else {
-    CodeGenerator generator;
-    // executionEngine = EngineBuilder(&generator.module).create();
-    // generator.generateCode(*programBlock);
     interpreter();
   }
 
