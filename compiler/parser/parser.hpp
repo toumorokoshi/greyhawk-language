@@ -8,6 +8,9 @@
 
 namespace parser {
 
+  NBlock* parseBlock(lexer::TokenVector::iterator& token_position,
+                         lexer::TokenVector& tokens);
+
   NStatement* parseStatement(lexer::TokenVector::iterator& token_position,
                              lexer::TokenVector& tokens);
 

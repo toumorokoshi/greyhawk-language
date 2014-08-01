@@ -40,6 +40,13 @@ namespace codegen {
     function->eraseFromParent();
   }
 
+  void JIT::runBlock(NBlock& block) {
+    codeGenerator.generateRoot(block);
+    Function* f = executionEngine.FindFunctionNamed("main");
+    std::vector<GenericValue> noargs;
+    executionEngine.runFunction(f, noargs);
+  }
+
 
   FunctionPassManager* JIT::createFPM(Module& module) {
     FunctionPassManager* fpm = new FunctionPassManager(&module);

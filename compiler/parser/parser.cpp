@@ -102,6 +102,7 @@ namespace parser {
     if (*token_position != &T_RPAREN) {
       throw ParserException("expected a ')' for a method call!");
     }
+    token_position++;
 
     return new NMethodCall(*method_name, arguments);
   }

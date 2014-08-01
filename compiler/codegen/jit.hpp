@@ -33,6 +33,7 @@ namespace codegen {
     }
 
     void executeExpression(NExpression*);
+    void runBlock(NBlock&);
   };
 
 }

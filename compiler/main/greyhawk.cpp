@@ -16,9 +16,12 @@ using namespace lexer;
 using namespace parser;
 
 // static llvm::ExecutionEngine *executionEngine;
+// these are initialized in main
+static Tokenizer* tokenizer;
+static codegen::JIT* jit;
 
 typedef struct CommandLineArguments {
-  std::string file_name;
+  std::string fileName;
   bool ast;
   bool llvm;
 } CommandLineArguments;
@@ -48,7 +51,7 @@ CommandLineArguments& getArguments(int argc, char*argv[]) {
               , vm);
 
     if (vm.count("file_name") > 0) {
-      args->file_name = vm["file_name"].as<std::string>();
+      args->fileName = vm["file_name"].as<std::string>();
     }
 
     args->ast = vm.count("ast") > 0;
@@ -76,9 +79,7 @@ void parseTokens(TokenVector& tokens) {
 }
 
 void interpreter() {
-  codegen::JIT jit;
   string input;
-  Tokenizer tokenizer;
   std::cout << "Greyhawk 0.0.1" << std::endl;
   while (true) {
     std::cout << ">> ";
@@ -88,10 +89,10 @@ void interpreter() {
     }
     try {
       istringstream input_stream(input);
-      TokenVector tokens = tokenizer.tokenize(input_stream);
+      TokenVector tokens = tokenizer->tokenize(input_stream);
       auto token_position = tokens.begin();
       auto node = parser::parseExpression(token_position, tokens);
-      jit.executeExpression(node);
+      jit->executeExpression(node);
       //parseTokens(tokens);
     } catch (LexerException& e) {
       cout << e.message << endl;
@@ -117,21 +118,32 @@ int main(int argc, char *argv[]) {
   // BEFORE LLVM RUNS CODE
   llvm::InitializeNativeTargetAsmPrinter();
   llvm::InitializeNativeTargetAsmParser();
+  tokenizer = new Tokenizer();
+  jit = new codegen::JIT();
   CommandLineArguments& args = getArguments(argc, argv);
 
   try {
+    if (args.fileName != "") {
+      ifstream input_stream(args.fileName);
+      TokenVector tokens = tokenizer->tokenize(input_stream);
+      auto token_position = tokens.begin();
+      auto node = parser::parseBlock(token_position, tokens);
 
-  // set yyin before yyparse
-  if (args.ast) {
-    NBlock* programBlock;
-    YamlAST astGenerator;
-    YAML::Node* tree = astGenerator.generateTree(*programBlock);
-    std::cout << (*tree) << std::endl;
-  } else {
-    interpreter();
-  }
+      if (args.ast) {
+        YamlAST astGenerator;
+        YAML::Node* tree = astGenerator.generateTree(*node);
+        std::cout << (*tree) << std::endl;
+      } else {
+        jit->runBlock(*node);
+      }
+    } else {
+      interpreter();
+    }
 
   } catch (codegen::CodeGenException& e) {
+    cout << e.message << endl;
+    exit(1);
+  } catch (parser::ParserException& e) {
     cout << e.message << endl;
     exit(1);
   }

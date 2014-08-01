@@ -49,8 +49,25 @@ namespace codegen {
 
   // generator code
 
+  Value* CodeGenerator::generateRoot(NBlock& nblock) {
+    // we create the main function
+    std::vector<Type*> arguments;
+    FunctionType *ftype = FunctionType::get(Type::getVoidTy(getGlobalContext()),
+                                            arguments,
+                                            false);
+    Function* function = Function::Create(ftype, Function::ExternalLinkage, "main", &module);
+    BasicBlock* bblock = BasicBlock::Create(getGlobalContext(), "entry", function, 0);
+    Value *last = NULL;
+    for (StatementList::iterator it = nblock.statements.begin(); it != nblock.statements.end(); it++) {
+      builder.SetInsertPoint(bblock);
+      last = generate(**it);
+    }
+    builder.CreateRetVoid();
+    return last;
+  }
+
   Value* CodeGenerator::generate(Node& n) {
-    debug("ERROR! Core node class doesn't not have definition, and resulting in core node..");
+    debug("ERROR! Core node class does not have definition, and resulting in core node..");
     return NULL;
   }
 

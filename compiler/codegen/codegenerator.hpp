@@ -34,6 +34,7 @@ namespace codegen {
       builder(builder) {}
 
     // value configuration
+    llvm::Value* generateRoot(NBlock&);
     llvm::Value* generate(Node&);
     llvm::Value* generate(NExpression&);
     llvm::Value* generate(NInteger&);
