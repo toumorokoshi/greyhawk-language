@@ -1,5 +1,5 @@
-int DoMath(a int, b int):
-	x int := a * b + 5
+Int doMath(a Int, b Int):
+	x Int := a * b + 5
 	return x
 
-DoMath(5, 6)
+doMath(5, 6)

@@ -68,6 +68,13 @@ namespace lexer {
     std::string getDescription() const { return "identifier: " + name; }
   };
 
+  class TypeToken: public Token {
+  public:
+    const std::string name;
+    TypeToken(std::string _name) : name(_name) {}
+    std::string getDescription() const { return "type: " + name; }
+  };
+
   typedef std::vector<const Token*> TokenVector;
   typedef std::vector<const Keyword*> KeywordVector;
 

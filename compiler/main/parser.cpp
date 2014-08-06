@@ -24,7 +24,17 @@ int main(int argc, char* argv[]) {
     string filename(argv[1]);
     ifstream input_stream(filename);
     TokenVector tokens = tokenizer.tokenize(input_stream);
-    mainParseTokens(tokens);
+    auto token_position = tokens.begin();
+    NBlock* node;
+    try {
+      node = parser::parseBlock(token_position, tokens);
+    } catch (parser::ParserException& e) {
+      cout << ((greyhawk::GreyhawkException) e).message << endl;
+      exit(1);
+    }
+    YAML::Node* yaml = YamlAST::generate(*node);
+    cout << (*yaml) << std::endl;
+
   } else {
     cout << "Greyhawk parser." << endl;
     while(true) {

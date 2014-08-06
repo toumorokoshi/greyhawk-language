@@ -34,6 +34,7 @@ namespace codegen {
 
     void executeExpression(NExpression*);
     void runBlock(NBlock&);
+    void dumpBlock(NBlock&);
   };
 
 }

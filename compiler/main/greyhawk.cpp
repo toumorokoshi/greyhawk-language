@@ -55,6 +55,7 @@ CommandLineArguments& getArguments(int argc, char*argv[]) {
     }
 
     args->ast = vm.count("ast") > 0;
+    args->llvm = vm.count("llvm") > 0;
     return *args;
 
   } catch (po::error& e) {
@@ -133,6 +134,9 @@ int main(int argc, char *argv[]) {
         YamlAST astGenerator;
         YAML::Node* tree = astGenerator.generateTree(*node);
         std::cout << (*tree) << std::endl;
+      } else if (args.llvm) {
+        cout << "test" << endl;
+        jit->dumpBlock(*node);
       } else {
         jit->runBlock(*node);
       }

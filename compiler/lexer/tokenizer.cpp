@@ -88,6 +88,15 @@ const Token& Tokenizer::matchOperator(StringScanner& scanner) {
 
 const Token& Tokenizer::matchKeyword(StringScanner& scanner) {
   string current_token("");
+  bool startsWithCapital = false;
+  bool containsNonStartingCapital = false;
+
+  char firstToken = scanner.next();
+  if (isCapital(firstToken)) {
+    startsWithCapital = true;
+  }
+
+  current_token += firstToken;
 
   while (scanner.hasNext()) {
     char next = scanner.peek();
@@ -96,6 +105,9 @@ const Token& Tokenizer::matchKeyword(StringScanner& scanner) {
       break;
     }
 
+    if (isCapital(next)) {
+      containsNonStartingCapital = true;
+    }
     current_token += scanner.next();
   }
 
@@ -105,7 +117,11 @@ const Token& Tokenizer::matchKeyword(StringScanner& scanner) {
     }
   }
 
-  return *(new Identifier(current_token));
+  if (startsWithCapital) {
+    return *new TypeToken(current_token);
+  }
+
+  return *new Identifier(current_token);
 }
 
 const Token& Tokenizer::matchNumber(StringScanner& scanner) {

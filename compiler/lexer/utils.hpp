@@ -15,7 +15,11 @@ namespace lexer {
   }
 
   inline bool isNumeric(char c) {
-    return ('0' <= c && c <= '9');
+    return '0' <= c && c <= '9';
+  }
+
+  inline bool isCapital(char c) {
+    return 'A' <= c && c <= 'Z';
   }
 
   inline bool isAlphaNumeric(char c) {

@@ -47,6 +47,10 @@ namespace codegen {
     executionEngine.runFunction(f, noargs);
   }
 
+  void JIT::dumpBlock(NBlock& block) {
+    codeGenerator.generateRoot(block);
+    module.dump();
+  }
 
   FunctionPassManager* JIT::createFPM(Module& module) {
     FunctionPassManager* fpm = new FunctionPassManager(&module);

@@ -1,0 +1,4 @@
+Int doMath(a Int):
+	return 1
+
+doMath(5)
