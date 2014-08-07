@@ -29,7 +29,7 @@ namespace codegen {
       if (&executionEngine == NULL) {
         throw CodeGenException("Exception with starting LLVM JIT: " + errStr);
       }
-      addExterns(module);
+      addExterns(module, executionEngine);
     }
 
     void executeExpression(NExpression*);

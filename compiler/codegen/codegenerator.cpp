@@ -1,4 +1,5 @@
 #include "codegenerator.hpp"
+#include "exceptions.hpp"
 #include "../lexer/tokens.hpp"
 #include <iostream>
 
@@ -18,14 +19,15 @@ namespace codegen {
   static Type *typeOf(NIdentifier& type)
   {
     debug("generating typeof...");
-    if (type.name.compare("int") == 0) {
+    if (type.name.compare("Int") == 0) {
       return Type::getInt64Ty(getGlobalContext());
     }
-    else if (type.name.compare("double") == 0) {
+    else if (type.name.compare("Double") == 0) {
       return Type::getDoubleTy(getGlobalContext());
-    } else if (type.name.compare("bool") == 0) {
+    } else if (type.name.compare("Bool") == 0) {
       return Type::getInt1Ty(getGlobalContext());
     }
+    throw CodeGenException("Unable to detect type of " + type.name);
     return Type::getVoidTy(getGlobalContext());
   }
 

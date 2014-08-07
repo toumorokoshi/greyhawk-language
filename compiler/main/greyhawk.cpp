@@ -11,9 +11,10 @@
 #include <fstream>
 
 namespace po = boost::program_options;
-using namespace std;
 using namespace lexer;
 using namespace parser;
+
+
 
 // static llvm::ExecutionEngine *executionEngine;
 // these are initialized in main
@@ -76,33 +77,33 @@ void parseTokens(TokenVector& tokens) {
     auto node = parser::parseExpression(token_position, tokens);
     yaml = YamlAST::generate(*node);
   }
-  cout << (*yaml) << std::endl;
+  std::cout << (*yaml) << std::endl;
 }
 
 void interpreter() {
-  string input;
+  std::string input;
   std::cout << "Greyhawk 0.0.1" << std::endl;
   while (true) {
     std::cout << ">> ";
-    getline(cin, input);
+    getline(std::cin, input);
     if (input.size() == 0) {
       break;
     }
     try {
-      istringstream input_stream(input);
+      std::istringstream input_stream(input);
       TokenVector tokens = tokenizer->tokenize(input_stream);
       auto token_position = tokens.begin();
       auto node = parser::parseExpression(token_position, tokens);
       jit->executeExpression(node);
       //parseTokens(tokens);
     } catch (LexerException& e) {
-      cout << e.message << endl;
+      std::cout << e.message << std::endl;
       continue;
     } catch (ParserException& e) {
-      cout << e.message << endl;
+      std::cout << e.message << std::endl;
       continue;
     } catch (codegen::CodeGenException& e) {
-      cout << e.message << endl;
+      std::cout << e.message << std::endl;
       continue;
     }
   }
@@ -125,7 +126,7 @@ int main(int argc, char *argv[]) {
 
   try {
     if (args.fileName != "") {
-      ifstream input_stream(args.fileName);
+      std::ifstream input_stream(args.fileName);
       TokenVector tokens = tokenizer->tokenize(input_stream);
       auto token_position = tokens.begin();
       auto node = parser::parseBlock(token_position, tokens);
@@ -135,7 +136,7 @@ int main(int argc, char *argv[]) {
         YAML::Node* tree = astGenerator.generateTree(*node);
         std::cout << (*tree) << std::endl;
       } else if (args.llvm) {
-        cout << "test" << endl;
+        std::cout << "test" << std::endl;
         jit->dumpBlock(*node);
       } else {
         jit->runBlock(*node);
@@ -145,10 +146,10 @@ int main(int argc, char *argv[]) {
     }
 
   } catch (codegen::CodeGenException& e) {
-    cout << e.message << endl;
+    std::cout << e.message << std::endl;
     exit(1);
   } catch (parser::ParserException& e) {
-    cout << e.message << endl;
+    std::cout << e.message << std::endl;
     exit(1);
   }
   return 0;

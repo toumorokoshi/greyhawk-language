@@ -1,4 +1,4 @@
-Int doMath(a Int):
+Double doMath(a Double):
 	return 1
 
-doMath(5)
+print(doMath(5))
