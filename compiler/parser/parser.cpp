@@ -77,23 +77,7 @@ namespace parser {
   NExpression* parseExpression(TokenVector::iterator& token_position,
                                TokenVector& tokens) {
 
-    if (*token_position == &T_TRUE) {
-      token_position++;
-      return new NBoolean(true);
-
-    } else if (*token_position == &T_FALSE) {
-      token_position++;
-      return new NBoolean(false);
-
-    } else if (isNumeric(**token_position)) {
-      return parseNumeric(token_position, tokens);
-
-    } else if (typeid(**token_position) == typeid(String)) {
-      auto stringToken = (String*) *token_position;
-      token_position++;
-      return new NString(stringToken->value);
-
-    } else if (typeid(**token_position) == typeid(Identifier)) {
+    if (typeid(**token_position) == typeid(Identifier)) {
       token_position++;
       if (*token_position == &T_LPAREN) {
         token_position--;
@@ -101,7 +85,43 @@ namespace parser {
       }
     }
 
-    throw ParserException("Looking for expression, unable to find one");
+    // in the case where the format isn't 'name(', then we're dealing with values
+    NExpression* lhs = parseValue(token_position, tokens);
+    while (token_position != tokens.end() && isBinaryOperator(**token_position)) {
+      auto op = (Operator*) *token_position++;
+      NExpression* rhs = parseValue(token_position, tokens);
+
+      lhs = new NBinaryOperator(*lhs, op->operatorCode, *rhs);
+    }
+    return lhs;
+  }
+
+  NExpression* parseValue(TokenVector::iterator& token_position,
+                          TokenVector& tokens) {
+    auto token = *token_position;
+    token_position++;
+    if (token == &T_TRUE) {
+      return new NBoolean(true);
+
+    } else if (token == &T_FALSE) {
+      return new NBoolean(false);
+
+    } else if (typeid(*token) == typeid(String)) {
+      return new NString(((String*) token)->value);
+
+    } else if (typeid(*token) == typeid(Integer)) {
+      return new NInteger(((Integer*) token)->value);
+
+    } else if (typeid(*token) == typeid(Double)) {
+      return new NDouble(((Double*) token)->value);
+
+    } else if (typeid(*token) == typeid(Identifier)) {
+      return new NIdentifier(((Identifier*) token)->name);
+
+    } else {
+      throw ParserException("Expected a value!");
+
+    }
   }
 
   NMethodCall* parseMethodCall(TokenVector::iterator& token_position,
@@ -208,38 +228,5 @@ namespace parser {
     token_position++;
 
     return arguments;
-  }
-
-  NExpression* parseNumeric(TokenVector::iterator& token_position,
-                            TokenVector& tokens) {
-    NExpression* lhs = parseSingleNumeric(token_position,
-                                          tokens);
-    while (token_position != tokens.end() && isBinaryOperator(**token_position)) {
-      auto op = (Operator*) *token_position;
-      token_position++;
-      NExpression* rhs = parseSingleNumeric(token_position,
-                                            tokens);
-      lhs = new NBinaryOperator(*lhs, op->operatorCode, *rhs);
-    }
-    return lhs;
- }
-
-  NExpression* parseSingleNumeric(TokenVector::iterator& token_position,
-                                  TokenVector& tokens) {
-    NExpression* lhs = NULL;
-    if (typeid(**token_position) == typeid(Integer)) {
-      auto integer = (Integer*) *token_position;
-      lhs = new NInteger(integer->value);
-
-    } else if (typeid(**token_position) == typeid(Double)) {
-      Double* dbl = (Double*) *token_position;
-      lhs = new NDouble(dbl->value);
-
-    } else {
-      throw ParserException("expected a numeric!");
-    }
-
-    token_position++;
-    return lhs;
   }
 }

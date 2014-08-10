@@ -17,6 +17,9 @@ namespace parser {
   NExpression* parseExpression(lexer::TokenVector::iterator& token_position,
                                lexer::TokenVector& tokens);
 
+  NExpression* parseValue(lexer::TokenVector::iterator& token_position,
+                          lexer::TokenVector& tokens);
+
 
   NFunctionDeclaration* parseFunctionDeclaration(lexer::TokenVector::iterator& token_position,
                                                  lexer::TokenVector& tokens);
@@ -29,12 +32,6 @@ namespace parser {
 
   ExpressionList* parseArguments(lexer::TokenVector::iterator& token_position,
                                  lexer::TokenVector& tokens);
-
-  NExpression* parseNumeric(lexer::TokenVector::iterator& token_position,
-                            lexer::TokenVector& tokens);
-
-  NExpression* parseSingleNumeric(lexer::TokenVector::iterator& token_position,
-                                  lexer::TokenVector& tokens);
 }
 
 #endif

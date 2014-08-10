@@ -3,7 +3,6 @@
 
 using namespace llvm;
 
-extern "C"
 int32_t print(double d) {
   printf("%f\n", d);
   return 0;

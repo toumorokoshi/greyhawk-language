@@ -1,5 +1,5 @@
-int TestIfElse(x bool):
-	if x is true:
+Int TestIfElse(x Bool):
+	if x:
 		i int := 5
 		return i
 	else:
@@ -7,5 +7,5 @@ int TestIfElse(x bool):
 	return 0
 
 void main():
-	TestIfElse(true)
-	TestIfElse(false)
+	print(TestIfElse(true))
+	print(TestIfElse(false))
