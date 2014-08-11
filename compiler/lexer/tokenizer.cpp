@@ -5,8 +5,8 @@
 using namespace lexer;
 using std::string;
 
-OperatorFSM& lexer::getOperatorFSMRoot() {
-  static OperatorFSM root(' ', NULL);
+FSMNode& lexer::getOperatorFSMRoot() {
+  static FSMNode root(' ', BAD_TOKEN);
   static bool initialized = false;
   if (!initialized) {
     initialized = true;
@@ -16,6 +16,7 @@ OperatorFSM& lexer::getOperatorFSMRoot() {
 }
 
 TokenVector Tokenizer::tokenize(std::istream& input) {
+  int line = 0;
   StringScanner scanner(input);
   TokenVector& tokens = *new TokenVector();
   bool isNewLine = true;
@@ -24,8 +25,9 @@ TokenVector Tokenizer::tokenize(std::istream& input) {
   while (scanner.hasNext()) {
 
     if (isNewLine) {
+      line++;
       isNewLine = false;
-      calculateIndent(scanner, tokens);
+      calculateIndent(scanner, tokens, line);
 
     } else if (scanner.peek() == ' ') {
       // we don't care about whitespace
@@ -42,23 +44,23 @@ TokenVector Tokenizer::tokenize(std::istream& input) {
         output.push_back(scanner.next());
       }
       scanner.next();
-      tokens.push_back(new String(output));
+      tokens.push_back(new String(line, output));
 
     } else if (isNumeric(scanner.peek())) {
       // then it's a number
-      tokens.push_back(&matchNumber(scanner));
+      tokens.push_back(&matchNumber(scanner, line));
 
     } else if (isAlpha(scanner.peek())) {
       // if the next character is alphanumeric,
       // we pass it to the keyword matcher
-      tokens.push_back(&matchKeyword(scanner));
+      tokens.push_back(&matchKeyword(scanner, line));
 
     } else {
       // if it's not, we pass it to our operatorFSM
-      tokens.push_back(&matchOperator(scanner));
+      tokens.push_back(&matchOperator(scanner, line));
     }
   }
-  clearIndent(tokens);
+  clearIndent(tokens, line);
   return tokens;
 };
 
@@ -66,14 +68,14 @@ void Tokenizer::initialize() {
   indentation = 0;
 }
 
-const Token& Tokenizer::matchOperator(StringScanner& scanner) {
-  OperatorFSM* current_node = &getOperatorFSMRoot();
+const Token& Tokenizer::matchOperator(StringScanner& scanner, int line) {
+  FSMNode* current_node = &getOperatorFSMRoot();
 
   while (scanner.hasNext() && current_node->hasChild(scanner.peek())) {
     current_node = &(current_node->children[scanner.next()]);
   }
 
-  if (current_node->value == NULL) {
+  if (current_node->value == BAD_TOKEN) {
 
     if (scanner.hasNext()) {
       throw LexerException("Unable to find token matching " + string(1, scanner.peek()));
@@ -82,11 +84,11 @@ const Token& Tokenizer::matchOperator(StringScanner& scanner) {
     }
 
   } else {
-    return *(current_node->value);
+    return *new Token(current_node->value, line);
   }
 }
 
-const Token& Tokenizer::matchKeyword(StringScanner& scanner) {
+const Token& Tokenizer::matchKeyword(StringScanner& scanner, int line) {
   string current_token("");
   bool startsWithCapital = false;
   bool containsNonStartingCapital = false;
@@ -111,20 +113,20 @@ const Token& Tokenizer::matchKeyword(StringScanner& scanner) {
     current_token += scanner.next();
   }
 
-  for (KeywordVector::const_iterator it = keywordList.begin(); it != keywordList.end(); ++it) {
-    if (current_token.compare((*it)->symbol) == 0) {
-      return **it;
+  for (KeywordPairVector::const_iterator it = keywordList.begin(); it != keywordList.end(); ++it) {
+    if (current_token.compare(it->first) == 0) {
+      return *new Token(it->second, line);
     }
   }
 
   if (startsWithCapital) {
-    return *new TypeToken(current_token);
+    return *new TypeToken(line, current_token);
   }
 
-  return *new Identifier(current_token);
+  return *new Identifier(line, current_token);
 }
 
-const Token& Tokenizer::matchNumber(StringScanner& scanner) {
+const Token& Tokenizer::matchNumber(StringScanner& scanner, int line) {
   string current_token("");
   bool isDouble = false;
   while(scanner.hasNext()) {
@@ -145,14 +147,14 @@ const Token& Tokenizer::matchNumber(StringScanner& scanner) {
   }
 
   if (isDouble) {
-    return *(new Double(stod(current_token)));
+    return *(new Double(line, stod(current_token)));
   } else {
-    return *(new Integer(stoi(current_token)));
+    return *(new Integer(line, stoi(current_token)));
   }
 }
 
 
-void Tokenizer::calculateIndent(StringScanner& scanner, TokenVector& tokens) {
+void Tokenizer::calculateIndent(StringScanner& scanner, TokenVector& tokens, int line) {
 
   int current_indentation = 0;
   while (scanner.hasNext() && scanner.peek() == '\t') {
@@ -162,18 +164,18 @@ void Tokenizer::calculateIndent(StringScanner& scanner, TokenVector& tokens) {
 
   while (indentation > current_indentation) {
     indentation--;
-    tokens.push_back(&T_UNINDENT);
+    tokens.push_back(new Token(UNINDENT, line));
   }
 
   while (indentation < current_indentation) {
     indentation++;
-    tokens.push_back(&T_INDENT);
+    tokens.push_back(new Token(INDENT, line));
   }
 }
 
-void Tokenizer::clearIndent(TokenVector& tokens) {
+void Tokenizer::clearIndent(TokenVector& tokens, int line) {
   while(indentation > 0) {
     indentation--;
-    tokens.push_back(&T_UNINDENT);
+    tokens.push_back(new Token(UNINDENT, line));
   }
 }

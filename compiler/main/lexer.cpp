@@ -12,7 +12,7 @@ using namespace lexer;
 void parseTokens(TokenVector& tokens) {
   cout << tokens.size() << " tokens found." << endl;
   for (TokenVector::const_iterator it = tokens.begin(); it != tokens.end(); ++it) {
-    cout << (*it)->getDescription() << endl;
+    cout << (*it)->getFullDescription() << endl;
   }
 }
 

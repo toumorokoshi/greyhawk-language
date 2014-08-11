@@ -10,23 +10,21 @@
 
 namespace lexer {
 
-  typedef FSMNode<const Token> OperatorFSM;
-
   class Tokenizer {
   private:
     int indentation;
     void initialize();
-    static const Token& matchKeyword(StringScanner& scanner);
-    const Token& matchOperator(StringScanner& scanner);
-    static const Token& matchNumber(StringScanner& scanner);
-    void calculateIndent(StringScanner& scanner, TokenVector& tokens);
-    void clearIndent(TokenVector& tokens);
+    static const Token& matchKeyword(StringScanner& scanner, int line);
+    const Token& matchOperator(StringScanner& scanner, int line);
+    static const Token& matchNumber(StringScanner& scanner, int line);
+    void calculateIndent(StringScanner& scanner, TokenVector& tokens, int line);
+    void clearIndent(TokenVector& tokens, int line);
   public:
     Tokenizer() {};
     TokenVector tokenize(std::istream& input);
   };
 
-  OperatorFSM& getOperatorFSMRoot();
+  FSMNode& getOperatorFSMRoot();
 }
 
 #endif

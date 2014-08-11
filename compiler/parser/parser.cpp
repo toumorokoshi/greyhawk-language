@@ -83,6 +83,7 @@ namespace parser {
         token_position--;
         return parseMethodCall(token_position, tokens);
       }
+      token_position--;
     }
 
     // in the case where the format isn't 'name(', then we're dealing with values
@@ -119,7 +120,7 @@ namespace parser {
       return new NIdentifier(((Identifier*) token)->name);
 
     } else {
-      throw ParserException("Expected a value!");
+      throw ParserException("expected a value!");
 
     }
   }
@@ -128,7 +129,7 @@ namespace parser {
                                         TokenVector& tokens) {
 
     validateToken(token_position, tokens, &typeid(Identifier),
-                  "Expected a name for a method!");
+                  "expected a name for a method!");
 
     auto method_name = new NIdentifier(((Identifier*) *token_position)->name);
     token_position++;
@@ -143,7 +144,7 @@ namespace parser {
 
     // get + check type
     if (typeid(**token_position) != typeid(TypeToken)) {
-      throw ParserException("Expected a type for a method!");
+      throw ParserException("expected a type for a method!");
     }
 
     auto type = new NIdentifier(((TypeToken*) *token_position)->name);
@@ -151,7 +152,7 @@ namespace parser {
 
     // get + check method
     if (typeid(**token_position) != typeid(Identifier)) {
-      throw ParserException("Expected a name for a method!");
+      throw ParserException("expected a name for a method!");
     }
 
     auto method_name = new NIdentifier(((Identifier*) *token_position)->name);
@@ -206,6 +207,10 @@ namespace parser {
       token_position++;
 
       variableList->push_back(new NVariableDeclaration(*identifier, *type));
+
+      if (*token_position == &T_COMMA) {
+        token_position++;
+      }
     }
     return variableList;
   }
