@@ -22,8 +22,12 @@ int main(int argc, char* argv[]) {
   if (argc == 2) {
     string filename(argv[1]);
     ifstream input_stream(filename);
-    TokenVector tokens = tokenizer.tokenize(input_stream);
-    parseTokens(tokens);
+    try {
+      TokenVector tokens = tokenizer.tokenize(input_stream);
+      parseTokens(tokens);
+    } catch (LexerException& e) {
+      cout << e.message << endl;
+    }
   } else {
     cout << "Greyhawk lexer." << endl;
     while(true) {

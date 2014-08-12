@@ -4,6 +4,11 @@ namespace lexer {
 
   std::map<L, std::string> tokenMap = {
     {BAD_TOKEN, "bad token"},
+    {INT, "integer"},
+    {DOUBLE, "double"},
+    {STRING, "string"},
+    {IDENTIFIER, "identifier"},
+    {TYPE, "type"},
     {IF, "if"},
     {ELSE, "else"},
     {RETURN, "return"},
@@ -54,6 +59,7 @@ namespace lexer {
     // binary operators
     pairFromType(PLUS),
     pairFromType(MINUS),
+    pairFromType(MUL),
     pairFromType(DIV),
     pairFromType(DECLARE),
     pairFromType(ASSIGN),

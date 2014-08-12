@@ -19,7 +19,7 @@ namespace parser {
   NBlock* parseBlock(TokenVector::iterator& token_position,
                      TokenVector& tokens) {
     NBlock* block = new NBlock();
-    while(token_position != tokens.end() && *token_position != &T_UNINDENT) {
+    while(token_position != tokens.end() && (*token_position)->type != UNINDENT) {
       NStatement* statement = parseStatement(token_position, tokens);
       block->statements.push_back(statement);
     }
@@ -30,24 +30,24 @@ namespace parser {
                              TokenVector& tokens) {
     auto token = *token_position;
 
-    if (token == &T_RETURN) {
+    if (token->type == RETURN) {
       token_position++;
       return new NReturn(*parseExpression(token_position, tokens));
 
-    } else if (typeid(*token) == typeid(TypeToken)) {
+    } else if (token->type == TYPE) {
       // it's the start of a method declaration when the type is first
       return parseFunctionDeclaration(token_position, tokens);
 
-    } else if (typeid(*token) == typeid(Identifier)) {
+    } else if (token->type == IDENTIFIER) {
       auto token_as_identifier = (Identifier*) token;
       token_position++;
       auto next_token = *token_position;
-      if (next_token == &T_ASSIGN) {
+      if (next_token->type == ASSIGN) {
         // parseAssignment
         return new NAssignment(*new NIdentifier(token_as_identifier->name),
                                *new NVoid());
 
-      } else if(next_token == &T_DECLARE) {
+      } else if(next_token->type == DECLARE) {
         // parse declaration
         return new NVariableDeclaration(*new NIdentifier(token_as_identifier->name),
                                         *new NIdentifier("void"));
@@ -67,11 +67,11 @@ namespace parser {
   }
 
   bool isNumeric(const Token& token) {
-    return typeid(token) == typeid(Integer) || typeid(token) == typeid(Double);
+    return token.type == INT || token.type == DOUBLE;
   }
 
   bool isBinaryOperator(const Token& token) {
-    return typeid(token) == typeid(Operator);
+    return token.type >= PLUS && token.type <= IS;
   }
 
   NExpression* parseExpression(TokenVector::iterator& token_position,
@@ -79,7 +79,7 @@ namespace parser {
 
     if (typeid(**token_position) == typeid(Identifier)) {
       token_position++;
-      if (*token_position == &T_LPAREN) {
+      if ((*token_position)->type == LPAREN) {
         token_position--;
         return parseMethodCall(token_position, tokens);
       }
@@ -89,10 +89,9 @@ namespace parser {
     // in the case where the format isn't 'name(', then we're dealing with values
     NExpression* lhs = parseValue(token_position, tokens);
     while (token_position != tokens.end() && isBinaryOperator(**token_position)) {
-      auto op = (Operator*) *token_position++;
       NExpression* rhs = parseValue(token_position, tokens);
-
-      lhs = new NBinaryOperator(*lhs, op->operatorCode, *rhs);
+      lhs = new NBinaryOperator(*lhs, (*token_position)->type, *rhs);
+      token_position++;
     }
     return lhs;
   }
@@ -101,10 +100,10 @@ namespace parser {
                           TokenVector& tokens) {
     auto token = *token_position;
     token_position++;
-    if (token == &T_TRUE) {
+    if (token->type == TRUE) {
       return new NBoolean(true);
 
-    } else if (token == &T_FALSE) {
+    } else if (token->type == FALSE) {
       return new NBoolean(false);
 
     } else if (typeid(*token) == typeid(String)) {

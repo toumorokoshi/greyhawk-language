@@ -55,51 +55,24 @@ namespace lexer {
   public:
     const L type;
     const int line;
-    Token(L _type, int _line) : type(_type), line(_line)  {}
+    const std::string value;
+    Token(L _type, int _line) : Token(_type, _line, "") {}
+    Token(L _type, int _line, std::string _value) :
+      type(_type), line(_line), value(_value)  {}
     virtual ~Token() {}
+
     virtual std::string getDescription() const {
-      return tokenMap.find(type) != tokenMap.begin() ? tokenMap[type] : "token";
+      auto output_string = tokenMap.find(type) != tokenMap.begin() ? tokenMap[type] : "token";
+      if (value != "") {
+        output_string += ": " + value;
+      }
+      return output_string;
     }
+
     virtual std::string getFullDescription() const {
       return "line " + std::to_string(line) + ": " + getDescription();
     }
-    // returns true if it's a terminal token (this is for the parser)
-    virtual bool isTerminal() { return true; }
-  };
 
-  class Integer : public Token {
-  public:
-    const int value;
-    Integer(int line, int _value): Token(INT, line), value(_value) { }
-    std::string getDescription() const { return "integer: " + std::to_string(value); }
-  };
-
-  class Double : public Token {
-  public:
-    const double value;
-    Double(int line, double _value): Token(DOUBLE, line), value(_value) {}
-    std::string getDescription() const { return "double: " + std::to_string(value); }
-  };
-
-  class String: public Token {
-  public:
-    const std::string value;
-    String(int line, std::string _value) : Token(STRING, line), value(_value) {}
-    std::string getDescription() const { return "string: \"" + value + "\""; }
-  };
-
-  class Identifier : public Token {
-  public:
-    const std::string name;
-    Identifier(int line, std::string _name) : Token(IDENTIFIER, line), name(_name) {}
-    std::string getDescription() const { return "identifier: " + name; }
-  };
-
-  class TypeToken: public Token {
-  public:
-    const std::string name;
-    TypeToken(int line, std::string _name) : Token(TYPE, line), name(_name) {}
-    std::string getDescription() const { return "type: " + name; }
   };
 
   typedef std::vector<const Token*> TokenVector;

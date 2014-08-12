@@ -44,7 +44,7 @@ TokenVector Tokenizer::tokenize(std::istream& input) {
         output.push_back(scanner.next());
       }
       scanner.next();
-      tokens.push_back(new String(line, output));
+      tokens.push_back(new Token(STRING, line, output));
 
     } else if (isNumeric(scanner.peek())) {
       // then it's a number
@@ -120,10 +120,10 @@ const Token& Tokenizer::matchKeyword(StringScanner& scanner, int line) {
   }
 
   if (startsWithCapital) {
-    return *new TypeToken(line, current_token);
+    return *new Token(TYPE, line, current_token);
   }
 
-  return *new Identifier(line, current_token);
+  return *new Token(IDENTIFIER, line, current_token);
 }
 
 const Token& Tokenizer::matchNumber(StringScanner& scanner, int line) {
@@ -147,9 +147,9 @@ const Token& Tokenizer::matchNumber(StringScanner& scanner, int line) {
   }
 
   if (isDouble) {
-    return *(new Double(line, stod(current_token)));
+    return *(new Token(DOUBLE, line, current_token));
   } else {
-    return *(new Integer(line, stoi(current_token)));
+    return *(new Token(INT, line, current_token));
   }
 }
 
