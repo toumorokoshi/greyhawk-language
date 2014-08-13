@@ -99,13 +99,13 @@ YAML::Node* YamlAST::generate(NBinaryOperator& n) {
   YAML::Node* root = new YAML::Node();
   std::string symbol;
   switch(n.op) {
-  case OPERATOR_CODES::PLUS:  symbol = "+"; break;
-  case OPERATOR_CODES::MINUS: symbol = "-"; break;
-  case OPERATOR_CODES::MUL:   symbol = "*"; break;
-  case OPERATOR_CODES::DIV:   symbol = "/"; break;
-  case OPERATOR_CODES::COMPARE_EQUAL:   symbol = "=="; break;
-  case OPERATOR_CODES::COMPARE_NOT_EQUAL:   symbol = "!="; break;
-  case OPERATOR_CODES::IS:    symbol = "is"; break;
+  case PLUS:  symbol = "+"; break;
+  case MINUS: symbol = "-"; break;
+  case MUL:   symbol = "*"; break;
+  case DIV:   symbol = "/"; break;
+  case EQUAL:   symbol = "=="; break;
+  case NOT_EQUAL:   symbol = "!="; break;
+  case IS:    symbol = "is"; break;
   default:     return YamlParseError("invalid binary operator!");
   }
   (*root)["binary_operator"]["operator"] = symbol;

@@ -33,20 +33,22 @@ namespace lexer {
     RPAREN,
     COMMA,
     DOT,
+    COLON,
+    DECLARE,
+    ASSIGN,
+    // binary operators
     PLUS,
     MINUS,
     MUL,
     DIV,
-    DECLARE,
-    ASSIGN,
     EQUAL,
     NOT_EQUAL,
     LESS_OR_EQUAL,
     GREATER_OR_EQUAL,
     LESS_THAN,
     GREATER_THAN,
-    COLON,
     IS
+    // end binary ops
   };
 
   extern std::map<L, std::string> tokenMap;

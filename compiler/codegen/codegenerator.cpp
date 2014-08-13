@@ -172,13 +172,13 @@ namespace codegen {
     Value* l = generate(n.lhs);
     Value* r = generate(n.rhs);
     switch(n.op) {
-    case OPERATOR_CODES::PLUS:                return builder.CreateFAdd(l, r, "addtmp");
-    case OPERATOR_CODES::MINUS:               return builder.CreateFSub(l, r, "subtmp");
-    case OPERATOR_CODES::MUL:                 return builder.CreateFMul(l, r, "multmp");
-    case OPERATOR_CODES::DIV:                 return builder.CreateFDiv(l, r, "divtmp");
-    case OPERATOR_CODES::COMPARE_EQUAL:       return builder.CreateFCmpOEQ(l, r, "eqtmp");
-    case OPERATOR_CODES::COMPARE_NOT_EQUAL:   return builder.CreateFCmpONE(l, r, "neqtmp");
-    case OPERATOR_CODES::IS:                  return builder.CreateICmpEQ(l, r, "istmp");
+    case PLUS:                return builder.CreateFAdd(l, r, "addtmp");
+    case MINUS:               return builder.CreateFSub(l, r, "subtmp");
+    case MUL:                 return builder.CreateFMul(l, r, "multmp");
+    case DIV:                 return builder.CreateFDiv(l, r, "divtmp");
+    case EQUAL:               return builder.CreateFCmpOEQ(l, r, "eqtmp");
+    case NOT_EQUAL:           return builder.CreateFCmpONE(l, r, "neqtmp");
+    case IS:                  return builder.CreateICmpEQ(l, r, "istmp");
     default:     return ErrorV("invalid binary operator!");
     }
   }
