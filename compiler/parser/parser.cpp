@@ -60,10 +60,12 @@ namespace parser {
         // parseAssignment
         return new NAssignment(*new NIdentifier(identifier->value),
                                *new NVoid());
-      }  else if(next_token->type == DECLARE) {
-          // parse declaration
-          return new NVariableDeclaration(*new NIdentifier(identifier->value),
-                                          *new NIdentifier("void"));
+
+      } else if(next_token->type == TYPE) {
+        // parse declaration
+        token_position--;
+        return parseVariableDeclaration(token_position, tokens);
+
       } else {
         token_position--;
         return parseExpression(token_position, tokens);
@@ -80,6 +82,33 @@ namespace parser {
 
     }
  }
+
+  NVariableDeclaration* parseVariableDeclaration(TokenVector::iterator& token_position,
+                                                 TokenVector& tokens) {
+    if ((*token_position)->type != IDENTIFIER) {
+      throw ParserException("expected a name for a variable declaration!");
+    }
+
+    auto identifer = new NIdentifier((*token_position)->value);
+    token_position++;
+
+
+    if ((*token_position)->type != TYPE) {
+      throw ParserException("expected a type for a variable declaration!");
+    }
+
+    auto type = new NIdentifier((*token_position)->value);
+    token_position++;
+
+    if ((*token_position)->type != DECLARE) {
+      throw ParserException("expected a := for a variable declaration!");
+    }
+    token_position++;
+
+    auto expression = parseExpression(token_position, tokens);
+
+    return new NVariableDeclaration(*identifer, *type, expression);
+  }
 
   NExpression* parseExpression(TokenVector::iterator& token_position,
                                TokenVector& tokens) {
@@ -232,6 +261,14 @@ namespace parser {
     ExpressionList* arguments = new ExpressionList();
     while((*token_position)->type != RPAREN) {
       arguments->push_back(parseExpression(token_position, tokens));
+
+      if ((*token_position)->type != RPAREN) {
+        if ((*token_position)->type != COMMA) {
+          throw ParserException("expected a ',' in between arguments.");
+        }
+        token_position++;
+      }
+
     }
 
     if ((*token_position)->type != RPAREN) {

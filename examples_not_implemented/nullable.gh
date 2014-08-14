@@ -1,4 +1,4 @@
-string nullableStatement(myObject? test):
-	if myObject? and myObject?.Attribute == 'this':
+String nullableStatement(test MyObject?):
+	if test? and test.Attribute == 'this':
 		return "true"
 	return "false"

@@ -1,4 +1,0 @@
-Double doMath(a Double):
-	return a + 1
-
-print(doMath(5))
