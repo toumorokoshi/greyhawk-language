@@ -18,6 +18,8 @@ namespace lexer {
     {UNINDENT, "unindent"},
     {LPAREN, "("},
     {RPAREN, ")"},
+    {L_BRACKET, "["},
+    {R_BRACKET, "]"},
     {COMMA, ","},
     {DOT, "."},
     {PLUS, "+"},
@@ -53,6 +55,8 @@ namespace lexer {
     // todo: separate these out from binary operators
     pairFromType(LPAREN),
     pairFromType(RPAREN),
+    pairFromType(L_BRACKET),
+    pairFromType(R_BRACKET),
     pairFromType(COLON),
     pairFromType(COMMA),
     pairFromType(DOT),

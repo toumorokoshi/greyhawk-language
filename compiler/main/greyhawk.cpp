@@ -151,6 +151,12 @@ int main(int argc, char *argv[]) {
   } catch (parser::ParserException& e) {
     std::cout << e.message << std::endl;
     exit(1);
+  } catch (lexer::LexerException& e) {
+    std::cout << e.message << std::endl;
+    if (e.specMessage != "") {
+      std::cout << e.specMessage << std::endl;
+    }
+    exit(1);
   }
   return 0;
 }

@@ -1,5 +1,5 @@
 Double doMath(a Double, b Double):
 	x Double := a * b + 5
-	return x
+  return x
 
 print(doMath(5 + 7, 6))

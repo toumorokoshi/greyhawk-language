@@ -1,4 +1,5 @@
 // put tokenizer methods in here
+#include "../spec.hpp"
 #include "tokenizer.hpp"
 #include <sstream>
 
@@ -170,6 +171,11 @@ void Tokenizer::calculateIndent(StringScanner& scanner, TokenVector& tokens, int
   while (indentation < current_indentation) {
     indentation++;
     tokens.push_back(new Token(INDENT, line));
+  }
+
+  if (scanner.peek() == ' ') {
+    throw LexerException("Spaces cannot be at the beginning of a line!",
+                         spec::TABS_SCOPE);
   }
 }
 

@@ -7,7 +7,7 @@ namespace parser {
 
   // extend exceptions from here if they have to do with
   // the Parser specifically
-  class ParserException: public greyhawk::GreyhawkException {
+  class ParserException: public core::GreyhawkException {
   public:
     ParserException(std::string _message)
       : GreyhawkException(_message) {}

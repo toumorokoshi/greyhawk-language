@@ -61,8 +61,10 @@ namespace parser {
         return new NAssignment(*new NIdentifier(identifier->value),
                                *new NVoid());
 
-      } else if(next_token->type == TYPE) {
+      } else if(next_token->type == TYPE || next_token->type == L_BRACKET) {
         // parse declaration
+        // if we see IDENT [, we can assume this is a declaration of
+        // an array type.
         token_position--;
         return parseVariableDeclaration(token_position, tokens);
 
@@ -86,22 +88,22 @@ namespace parser {
   NVariableDeclaration* parseVariableDeclaration(TokenVector::iterator& token_position,
                                                  TokenVector& tokens) {
     if ((*token_position)->type != IDENTIFIER) {
-      throw ParserException("expected a name for a variable declaration!");
+      throw ParserException(**token_position, "expected a name for a variable declaration!");
     }
 
     auto identifer = new NIdentifier((*token_position)->value);
     token_position++;
 
 
-    if ((*token_position)->type != TYPE) {
-      throw ParserException("expected a type for a variable declaration!");
+    if ((*token_position)->type != TYPE && (*token_position)->type != L_BRACKET) {
+      throw ParserException(**token_position, "expected a type for a variable declaration!");
     }
 
     auto type = new NIdentifier((*token_position)->value);
     token_position++;
 
     if ((*token_position)->type != DECLARE) {
-      throw ParserException("expected a := for a variable declaration!");
+      throw ParserException(**token_position, "expected a := for a variable declaration!");
     }
     token_position++;
 

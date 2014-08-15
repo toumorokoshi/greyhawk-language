@@ -36,6 +36,8 @@ namespace lexer {
     COLON,
     DECLARE,
     ASSIGN,
+    L_BRACKET,
+    R_BRACKET,
     // binary operators
     PLUS,
     MINUS,
