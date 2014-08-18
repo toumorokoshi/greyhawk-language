@@ -10,7 +10,7 @@ namespace spec {
   static std::string TABS_SCOPE =
     "Tabs are used exclusively to define scope in a file, "
     "and are only the only way scope is defined (e.g. spaces "
-    "are not valid.)";
+    "are not valid)";
 }
 
 #endif

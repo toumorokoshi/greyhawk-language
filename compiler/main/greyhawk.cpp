@@ -136,7 +136,6 @@ int main(int argc, char *argv[]) {
         YAML::Node* tree = astGenerator.generateTree(*node);
         std::cout << (*tree) << std::endl;
       } else if (args.llvm) {
-        std::cout << "test" << std::endl;
         jit->dumpBlock(*node);
       } else {
         jit->runBlock(*node);
@@ -154,6 +153,7 @@ int main(int argc, char *argv[]) {
   } catch (lexer::LexerException& e) {
     std::cout << e.message << std::endl;
     if (e.specMessage != "") {
+      std::cout << std::endl << "details:" << std::endl;
       std::cout << e.specMessage << std::endl;
     }
     exit(1);

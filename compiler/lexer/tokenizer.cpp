@@ -79,9 +79,13 @@ const Token& Tokenizer::matchOperator(StringScanner& scanner, int line) {
   if (current_node->value == BAD_TOKEN) {
 
     if (scanner.hasNext()) {
-      throw LexerException("Unable to find token matching " + string(1, scanner.peek()));
+      throw LexerException(line,
+                           "Unable to find token matching " + string(1, scanner.peek()),
+                           "");
     } else {
-      throw LexerException("Unable to find matching operator sequence");
+      throw LexerException(line,
+                           "Unable to find matching operator sequence",
+                           "");
     }
 
   } else {
@@ -174,7 +178,8 @@ void Tokenizer::calculateIndent(StringScanner& scanner, TokenVector& tokens, int
   }
 
   if (scanner.peek() == ' ') {
-    throw LexerException("Spaces cannot be at the beginning of a line!",
+    throw LexerException(line,
+                         "Spaces cannot be at the beginning of a line!",
                          spec::TABS_SCOPE);
   }
 }

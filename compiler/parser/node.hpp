@@ -16,6 +16,9 @@ class NInteger;
 class NDouble;
 class NVoid;
 class NIdentifier;
+class NType;
+class NSingleType;
+class NArrayType;
 class NBoolean;
 class NMethodCall;
 class NBinaryOperator;
@@ -66,11 +69,11 @@ class NReturn: public NStatement {
 
 class NVariableDeclaration : public NStatement {
  public:
-  NIdentifier& type;
+  NType& type;
   NIdentifier& id;
   NExpression* assignmentExpr;
-  NVariableDeclaration(NIdentifier& id, NIdentifier& type) : type(type), id(id), assignmentExpr(NULL) { }
-  NVariableDeclaration(NIdentifier& id, NIdentifier& type, NExpression *assignmentExpr) :
+  NVariableDeclaration(NIdentifier& id, NType& type) : type(type), id(id), assignmentExpr(NULL) { }
+  NVariableDeclaration(NIdentifier& id, NType& type, NExpression *assignmentExpr) :
     type(type), id(id), assignmentExpr(assignmentExpr)  { }
 };
 
@@ -83,11 +86,11 @@ class NAssignment : public NStatement {
 
 class NFunctionDeclaration : public NStatement {
  public:
-  NIdentifier& type;
+  NType& type;
   NIdentifier& id;
   VariableList arguments;
   NBlock& block;
-  NFunctionDeclaration(NIdentifier& type, NIdentifier& id, VariableList& arguments, NBlock& block) :
+  NFunctionDeclaration(NType& type, NIdentifier& id, VariableList& arguments, NBlock& block) :
     type(type), id(id), arguments(arguments), block(block) { }
 };
 
@@ -99,6 +102,12 @@ class NFunctionDeclaration : public NStatement {
 // evaluated result of the expression.
 
 class NExpression : public NStatement {
+};
+
+class NArray: public NExpression {
+public:
+  NType& type;
+  NArray(NType& _type) : type(_type) {}
 };
 
 class NInteger : public NExpression {
@@ -128,6 +137,21 @@ class NIdentifier : public NExpression {
  public:
   std::string name;
   NIdentifier(const std::string& name) : name(name) { }
+};
+
+class NType: public NExpression {
+};
+
+class NSingleType : public NType {
+public:
+  std::string name;
+  NSingleType(const std::string& name) : name(name) { }
+};
+
+class NArrayType: public NType {
+public:
+  NSingleType & type;
+  NArrayType(NSingleType & _type) : type(_type) {}
 };
 
 class NBoolean : public NExpression {

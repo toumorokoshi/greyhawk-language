@@ -7,9 +7,9 @@
 
 namespace lexer {
 
-  class StringScannerException : public LexerException {
+  class StringScannerException : public core::GreyhawkException {
   public:
-    StringScannerException(std::string _message): LexerException(_message) {}
+    StringScannerException(std::string _message): core::GreyhawkException(_message) {}
     virtual ~StringScannerException() throw () {}
   };
 

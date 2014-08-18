@@ -42,6 +42,7 @@ namespace codegen {
     llvm::Value* generate(NVoid&);
     llvm::Value* generate(NBoolean&);
     llvm::Value* generate(NIdentifier&);
+    llvm::Value* generate(NArray&);
     llvm::Value* generate(NMethodCall&);
     llvm::Value* generate(NBinaryOperator&);
     llvm::Value* generate(NAssignment&);

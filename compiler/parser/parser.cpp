@@ -95,12 +95,7 @@ namespace parser {
     token_position++;
 
 
-    if ((*token_position)->type != TYPE && (*token_position)->type != L_BRACKET) {
-      throw ParserException(**token_position, "expected a type for a variable declaration!");
-    }
-
-    auto type = new NIdentifier((*token_position)->value);
-    token_position++;
+    auto type = parseType(token_position, tokens);
 
     if ((*token_position)->type != DECLARE) {
       throw ParserException(**token_position, "expected a := for a variable declaration!");
@@ -137,6 +132,17 @@ namespace parser {
     return lhs;
   }
 
+  NExpression* parseArray(TokenVector::iterator& token_position,
+                          TokenVector& tokens) {
+    validateToken(token_position, tokens, L_BRACKET, "expected a [ for an array!");
+    token_position++;
+    while ((*token_position)->type != R_BRACKET) {
+      token_position++;
+    }
+    token_position++;
+    return new NArray(*new NSingleType("Void"));
+  }
+
   NExpression* parseValue(TokenVector::iterator& token_position,
                           TokenVector& tokens) {
     auto token = *token_position;
@@ -154,8 +160,37 @@ namespace parser {
       return new NDouble(stod(token->value));
     case IDENTIFIER:
       return new NIdentifier(token->value);
+    case L_BRACKET:
+      token_position--;
+      return parseArray(token_position, tokens);
     default:
       throw ParserException(*token, "expected a value!");
+    }
+  }
+
+  NType* parseType(TokenVector::iterator& token_position,
+                         TokenVector& tokens) {
+    auto token = *token_position;
+    switch ((*token_position)->type) {
+
+    case TYPE: {
+      auto type = new NSingleType(token->value);
+      token_position++;
+      return type;
+    }
+
+    case L_BRACKET: {
+      token_position++;
+      validateToken(token_position, tokens, TYPE, "expected a type!");
+      auto arrayType = new NArrayType(*new NSingleType((*token_position)->value));
+      token_position++;
+      validateToken(token_position, tokens, R_BRACKET, "expected ]!");
+      token_position++;
+      return arrayType;
+    }
+
+    default:
+      throw ParserException(**token_position, "expected a type!");
     }
   }
 
@@ -176,13 +211,8 @@ namespace parser {
   NFunctionDeclaration* parseFunctionDeclaration(TokenVector::iterator& token_position,
                                                  TokenVector& tokens) {
 
-    // get + check type
-    if ((*token_position)->type != TYPE) {
-      throw ParserException("expected a type for a method!");
-    }
-
-    auto type = new NIdentifier((*token_position)->value);
-    token_position++;
+   // get + check type
+    auto type = parseType(token_position, tokens);
 
     // get + check method
     if ((*token_position)->type != IDENTIFIER) {
@@ -237,12 +267,7 @@ namespace parser {
       auto identifier = new NIdentifier((*token_position)->value);
       token_position++;
 
-      if ((*token_position)->type != TYPE) {
-        throw ParserException(**token_position, "expected a type in a variable list");
-      }
-
-      auto type = new NIdentifier((*token_position)->value);
-      token_position++;
+      auto type = parseType(token_position, tokens);
 
       variableList->push_back(new NVariableDeclaration(*identifier, *type));
 

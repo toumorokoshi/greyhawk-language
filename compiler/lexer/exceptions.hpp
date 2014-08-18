@@ -11,9 +11,9 @@ namespace lexer {
   // the lexer specifically
   class LexerException: public core::GreyhawkException {
   public:
-    LexerException(std::string _message) : GreyhawkException(_message) {}
-    LexerException(std::string _message, std::string _specMessage) :
-      GreyhawkException(_message, _specMessage) {}
+    LexerException(int _linum, std::string _message, std::string _specMessage) :
+      GreyhawkException("line " + std::to_string(_linum) + ": " + _message,
+                        _specMessage) {}
     virtual ~LexerException() throw() {}
   };
 

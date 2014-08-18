@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
     try {
       node = parser::parseBlock(token_position, tokens);
     } catch (parser::ParserException& e) {
-      cout << ((greyhawk::GreyhawkException) e).message << endl;
+      cout << ((core::GreyhawkException) e).message << endl;
       exit(1);
     }
     YAML::Node* yaml = YamlAST::generate(*node);
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
         TokenVector tokens = tokenizer.tokenize(input_stream);
         mainParseTokens(tokens);
       } catch (parser::ParserException& e) {
-        cout << ((greyhawk::GreyhawkException) e).message << endl;
+        cout << ((core::GreyhawkException) e).message << endl;
         continue;
       }
     }
