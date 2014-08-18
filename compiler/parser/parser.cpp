@@ -136,11 +136,12 @@ namespace parser {
                           TokenVector& tokens) {
     validateToken(token_position, tokens, L_BRACKET, "expected a [ for an array!");
     token_position++;
+    auto expressions = new ExpressionList();
     while ((*token_position)->type != R_BRACKET) {
-      token_position++;
+      expressions->push_back(parseExpression(token_position, tokens));
     }
     token_position++;
-    return new NArray(*new NSingleType("Void"));
+    return new NArray(*expressions);
   }
 
   NExpression* parseValue(TokenVector::iterator& token_position,

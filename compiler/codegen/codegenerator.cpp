@@ -37,6 +37,7 @@ namespace codegen {
   /* Returns an LLVM type based on the identifier */
   static Type* typeOf(NType* type) {
 
+    debug("generating typeof on type...");
     if (NSingleType* n = dynamic_cast<NSingleType*>(type)) {
       return singleTypeOf(*n);
 
@@ -81,10 +82,11 @@ namespace codegen {
     BasicBlock* bblock = BasicBlock::Create(getGlobalContext(), "entry", function, 0);
     Value *last = NULL;
     for (StatementList::iterator it = nblock.statements.begin(); it != nblock.statements.end(); it++) {
-      builder.SetInsertPoint(bblock);
+      setInsertPoint(bblock);
       last = generate(**it);
     }
     builder.CreateRetVoid();
+    fpm.run(*function);
     return last;
   }
 
@@ -142,14 +144,14 @@ namespace codegen {
     return ErrorV("Unable to dynamically determine expression!");
   }
 
-  Value* CodeGenerator::generate(NInteger& n) {
+  Constant* CodeGenerator::generate(NInteger& n) {
     debug("generating integer...");
     // return ConstantInt::get(getGlobalContext(), APInt(64, n.value, false));
     // TODO: actually parse ints. We'll just do doubles for now.
     return ConstantFP::get(getGlobalContext(), APFloat((double) n.value));
   }
 
-  Value* CodeGenerator::generate(NDouble& nDouble) {
+  Constant* CodeGenerator::generate(NDouble& nDouble) {
     return ConstantFP::get(getGlobalContext(), APFloat(nDouble.value));
   }
 
@@ -167,6 +169,7 @@ namespace codegen {
     if(!variableExistsInContext(nIdentifier.name)) {
       return NULL;
     }
+    debug("loading identifier...");
     return builder.CreateLoad(getContext().locals[nIdentifier.name], false);
   }
 
@@ -193,7 +196,17 @@ namespace codegen {
   }
 
   Value* CodeGenerator::generate(NArray& nArray) {
-    auto arrayType = ArrayType::get(Type::getVoidTy(getGlobalContext()), 0);
+    debug("generating array...");
+    auto values = new ArrayRef<Constant*>();
+    Type* element_type;
+    if (nArray.elements.size() == 0) {
+      element_type = Type::getVoidTy(getGlobalContext());
+    } else {
+      auto first_element = generate(**(nArray.elements.begin()));
+      element_type = first_element->getType();
+      values->push_back(first_element);
+    }
+    auto array_type = ArrayType::get(element_type, nArray.elements.size());
     auto values = new ArrayRef<Constant*>();
     return ConstantArray::get(arrayType, *values);
   }
@@ -214,6 +227,7 @@ namespace codegen {
   }
 
   Value* CodeGenerator::generate(NAssignment& n) {
+    debug("nassignment");
     if (!variableExistsInContext(n.lhs.name)) {
       return ErrorV("Undeclared variable");
     }

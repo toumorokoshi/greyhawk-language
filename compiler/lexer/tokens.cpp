@@ -14,6 +14,7 @@ namespace lexer {
     {RETURN, "return"},
     {TRUE, "true"},
     {FALSE, "false"},
+    {TYPE_TOKEN, "type"},
     {INDENT, "indent"},
     {UNINDENT, "unindent"},
     {LPAREN, "("},
@@ -49,6 +50,7 @@ namespace lexer {
     pairFromType(RETURN),
     pairFromType(FALSE),
     pairFromType(TRUE),
+    pairFromType(TYPE_TOKEN),
   };
 
   const KeywordPairVector operatorPairs {

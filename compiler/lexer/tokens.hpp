@@ -27,6 +27,7 @@ namespace lexer {
     RETURN,
     TRUE,
     FALSE,
+    TYPE_TOKEN,
     INDENT,
     UNINDENT,
     LPAREN,

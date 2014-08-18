@@ -44,8 +44,17 @@ YAML::Node* YamlAST::generate(NExpression& n) {
 
   } else if (typeid(n) == typeid(NBlock)) {
     return generate(static_cast<NBlock&>(n));
+
+  } else if (typeid(n) == typeid(NArray)) {
+    return generate(static_cast<NArray&>(n));
+
   }
+
   return YamlParseError("Unable to find type for expression node!");
+}
+
+YAML::Node* YamlAST::generate(NArray& n) {
+  return new YAML::Node("array");
 }
 
 YAML::Node* YamlAST::generate(NInteger& n) {
@@ -84,6 +93,21 @@ YAML::Node* YamlAST::generate(NIdentifier& n) {
   return root;
 }
 
+YAML::Node* YamlAST::generate(NType& n) {
+  YAML::Node* root = new YAML::Node();
+
+  if (typeid(n) == typeid(NSingleType)) {
+    NSingleType& singleType = static_cast<NSingleType&>(n);
+    (*root) = singleType.name;
+
+  } else if (typeid(n) == typeid(NArrayType)) {
+    NArrayType& arrayType = static_cast<NArrayType&>(n);
+    (*root) = "[" + arrayType.type.name + "]";
+
+  }
+
+  return root;
+}
 
 
 YAML::Node* YamlAST::generate(NMethodCall& n) {

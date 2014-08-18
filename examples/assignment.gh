@@ -1,0 +1,2 @@
+x Double := 1 + 2
+print(x)

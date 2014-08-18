@@ -37,8 +37,8 @@ namespace codegen {
     llvm::Value* generateRoot(NBlock&);
     llvm::Value* generate(Node&);
     llvm::Value* generate(NExpression&);
-    llvm::Value* generate(NInteger&);
-    llvm::Value* generate(NDouble&);
+    llvm::Constant* generate(NInteger&);
+    llvm::Constant* generate(NDouble&);
     llvm::Value* generate(NVoid&);
     llvm::Value* generate(NBoolean&);
     llvm::Value* generate(NIdentifier&);

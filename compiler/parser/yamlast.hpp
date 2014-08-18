@@ -11,12 +11,14 @@ public:
   // value configuration
   static YAML::Node* generate(Node& n);
   static YAML::Node* generate(NExpression& n);
+  static YAML::Node* generate(NArray& n);
   static YAML::Node* generate(NInteger& n);
   static YAML::Node* generate(NDouble& n);
   static YAML::Node* generate(NString& n);
   static YAML::Node* generate(NVoid& n);
   static YAML::Node* generate(NBoolean& n);
   static YAML::Node* generate(NIdentifier& n);
+  static YAML::Node* generate(NType& n);
   static YAML::Node* generate(NMethodCall& n);
   static YAML::Node* generate(NBinaryOperator& n);
   static YAML::Node* generate(NAssignment& n);

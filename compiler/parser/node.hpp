@@ -12,14 +12,16 @@ class Node;
 
 // expressions + subclasses
 class NExpression;
+class NArray;
 class NInteger;
 class NDouble;
+class NString;
 class NVoid;
+class NBoolean;
 class NIdentifier;
 class NType;
 class NSingleType;
 class NArrayType;
-class NBoolean;
 class NMethodCall;
 class NBinaryOperator;
 class NAssignment;
@@ -94,6 +96,13 @@ class NFunctionDeclaration : public NStatement {
     type(type), id(id), arguments(arguments), block(block) { }
 };
 
+class NTypeDeclaration : public NStatement {
+public:
+  NSingleType& name;
+  VariableList& attributes;
+  NTypeDeclaration(NSingleType& _name, VariableList& _attributes) :
+    name(_name), attributes(_attributes) {}
+};
 
 /*******************************************/
 /*             EXPRESSIONS                 */
@@ -106,8 +115,9 @@ class NExpression : public NStatement {
 
 class NArray: public NExpression {
 public:
-  NType& type;
-  NArray(NType& _type) : type(_type) {}
+  ExpressionList& elements;
+  NArray(ExpressionList& _elements) :
+    elements(_elements) {}
 };
 
 class NInteger : public NExpression {
