@@ -27,7 +27,7 @@ namespace lexer {
     RETURN,
     TRUE,
     FALSE,
-    TYPE_TOKEN,
+    CLASS,
     INDENT,
     UNINDENT,
     LPAREN,
@@ -39,6 +39,8 @@ namespace lexer {
     ASSIGN,
     L_BRACKET,
     R_BRACKET,
+    L_CURLY,
+    R_CURLY,
     // binary operators
     PLUS,
     MINUS,
