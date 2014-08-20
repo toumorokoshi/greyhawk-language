@@ -52,6 +52,9 @@ namespace parser {
       // it's the start of a method declaration when the type is first
       return parseFunctionDeclaration(token_position, tokens);
 
+    case CLASS:
+      return parseClassDeclaration(token_position, tokens);
+
     case IDENTIFIER: {
       auto identifier = token;
       token_position++;
@@ -97,31 +100,57 @@ namespace parser {
 
     auto type = parseType(token_position, tokens);
 
-    if ((*token_position)->type != DECLARE) {
-      throw ParserException(**token_position, "expected a := for a variable declaration!");
-    }
-    token_position++;
+    NExpression* expression = NULL;
 
-    auto expression = parseExpression(token_position, tokens);
+    if ((*token_position)->type == DECLARE) {
+      token_position++;
+      expression = parseExpression(token_position, tokens);
+    }
 
     return new NVariableDeclaration(*identifer, *type, expression);
+  }
+
+  NClassDeclaration* parseClassDeclaration(lexer::TokenVector::iterator& token_position,
+                                           lexer::TokenVector& tokens) {
+    validateToken(token_position, tokens, CLASS,
+                  "expected class token for a class declaration!");
+    token_position++;
+
+    validateToken(token_position, tokens, TYPE,
+                  "expected single type for a class declaration!");
+
+    auto type = new NSingleType((*token_position)->value);
+    token_position++;
+
+    validateToken(token_position, tokens, LPAREN,
+                  "expected ( for a class declaration!");
+    token_position++;
+
+    validateToken(token_position, tokens, RPAREN,
+                  "expected ) for a class declaration!");
+    token_position++;
+
+    validateToken(token_position, tokens, COLON,
+                  "expected : for a class declaration!");
+    token_position++;
+
+    validateToken(token_position, tokens, INDENT,
+                  "expected indent for a class declaration!");
+    token_position++;
+
+    auto attributes = new VariableList();
+    while ((*token_position)->type != UNINDENT) {
+      attributes->push_back(parseVariableDeclaration(token_position, tokens));
+    }
+
+    token_position++; // shifting unindent
+
+    return new NClassDeclaration(*type, *attributes);
   }
 
   NExpression* parseExpression(TokenVector::iterator& token_position,
                                TokenVector& tokens) {
 
-    if ((*token_position)->type == IDENTIFIER) {
-      token_position++;
-
-      if ((*token_position)->type == LPAREN) {
-        token_position--;
-        return parseMethodCall(token_position, tokens);
-      }
-
-      token_position--;
-    }
-
-    // in the case where the format isn't 'name(', then we're dealing with values
     NExpression* lhs = parseValue(token_position, tokens);
     while (token_position != tokens.end() && isBinaryOperator(**token_position)) {
       auto op = (*token_position)->type;
@@ -129,7 +158,22 @@ namespace parser {
       NExpression* rhs = parseValue(token_position, tokens);
       lhs = new NBinaryOperator(*lhs, op, *rhs);
     }
+
     return lhs;
+  }
+
+  NClassInstantiation* parseClassInstantiation(TokenVector::iterator& token_position,
+                                               TokenVector& tokens) {
+    validateToken(token_position, tokens, TYPE,
+                  "expected single type for a class instantiation!");
+
+    auto type = new NSingleType((*token_position)->value);
+    token_position++;
+
+    auto parameters = parseArguments(token_position,
+                                     tokens);
+
+    return new NClassInstantiation(*type, *parameters);
   }
 
   NExpression* parseArray(TokenVector::iterator& token_position,
@@ -151,19 +195,44 @@ namespace parser {
     switch (token->type) {
     case TRUE:
       return new NBoolean(true);
+
     case FALSE:
       return new NBoolean(false);
+
     case STRING:
       return new NString(token->value);
+
     case INT:
       return new NInteger(stoi(token->value));
+
     case DOUBLE:
       return new NDouble(stod(token->value));
-    case IDENTIFIER:
-      return new NIdentifier(token->value);
+
     case L_BRACKET:
       token_position--;
       return parseArray(token_position, tokens);
+
+    case IDENTIFIER: {
+      if ((*token_position)->type == LPAREN) {
+        token_position--;
+        return parseMethodCall(token_position, tokens);
+
+      } else {
+        return new NIdentifier(token->value);
+
+      }
+    }
+
+    case TYPE: {
+
+      if ((*token_position)->type == LPAREN) {
+        token_position--;
+        return parseClassInstantiation(token_position,
+                                       tokens);
+      }
+
+    }
+
     default:
       throw ParserException(*token, "expected a value!");
     }

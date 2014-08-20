@@ -17,8 +17,14 @@ namespace parser {
   NVariableDeclaration* parseVariableDeclaration(lexer::TokenVector::iterator& token_position,
                                                  lexer::TokenVector& tokens);
 
+  NClassDeclaration* parseClassDeclaration(lexer::TokenVector::iterator& token_position,
+                                           lexer::TokenVector& tokens);
+
   NExpression* parseExpression(lexer::TokenVector::iterator& token_position,
                                lexer::TokenVector& tokens);
+
+  NClassInstantiation* parseClassInstantiation(lexer::TokenVector::iterator& token_position,
+                                               lexer::TokenVector& tokens);
 
   NExpression* parseArray(lexer::TokenVector::iterator& token_position,
                           lexer::TokenVector& tokens);

@@ -23,9 +23,13 @@ public:
   static YAML::Node* generate(NBinaryOperator& n);
   static YAML::Node* generate(NAssignment& n);
   static YAML::Node* generate(NBlock& n);
+  static YAML::Node* generate(NClassInstantiation& n);
+
+  // statements
   static YAML::Node* generate(NStatement& n);
   static YAML::Node* generate(NConditional& n);
   static YAML::Node* generate(NReturn& n);
   static YAML::Node* generate(NVariableDeclaration& n);
   static YAML::Node* generate(NFunctionDeclaration& n);
+  static YAML::Node* generate(NClassDeclaration& n);
 };

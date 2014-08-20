@@ -33,7 +33,6 @@ namespace lexer {
     LPAREN,
     RPAREN,
     COMMA,
-    DOT,
     COLON,
     DECLARE,
     ASSIGN,

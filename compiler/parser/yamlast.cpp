@@ -48,6 +48,9 @@ YAML::Node* YamlAST::generate(NExpression& n) {
   } else if (typeid(n) == typeid(NArray)) {
     return generate(static_cast<NArray&>(n));
 
+  } else if (typeid(n) == typeid(NClassInstantiation)) {
+    return generate(static_cast<NClassInstantiation&>(n));
+
   }
 
   return YamlParseError("Unable to find type for expression node!");
@@ -152,6 +155,17 @@ YAML::Node* YamlAST::generate(NBlock& n) {
   return root;
 }
 
+YAML::Node* YamlAST::generate(NClassInstantiation& n) {
+  YAML::Node* yaml = new YAML::Node();
+  (*yaml)["class_instantiation"]["type"] = n.type.name.c_str();
+
+  for (auto attribute : n.parameters) {
+    (*yaml)["class_instantiation"]["attributes"].push_back(*generate(*attribute));
+  }
+
+  return yaml;
+}
+
 YAML::Node* YamlAST::generate(NStatement& n) {
 
   if (typeid(n) == typeid(NConditional)) {
@@ -168,6 +182,9 @@ YAML::Node* YamlAST::generate(NStatement& n) {
 
   } else if (typeid(n) == typeid(NFunctionDeclaration)) {
     return generate(static_cast<NFunctionDeclaration&>(n));
+
+  } else if (typeid(n) == typeid(NClassDeclaration)) {
+    return generate(static_cast<NClassDeclaration&>(n));
   }
 
   // expressions are also statement, so we default
@@ -206,5 +223,14 @@ YAML::Node* YamlAST::generate(NFunctionDeclaration& n) {
     (*yaml)["function_declaration"]["arguments"].push_back(*generate(*n.arguments[i]));
   }
   (*yaml)["function_declaration"]["body"] = *(generate(n.block));
+  return yaml;
+}
+
+YAML::Node* YamlAST::generate(NClassDeclaration& n) {
+  YAML::Node* yaml = new YAML::Node();
+  (*yaml)["class_declaration"]["name"] = n.name.name.c_str();
+  for (unsigned i = 0, e = n.attributes.size(); i != e; ++i) {
+    (*yaml)["class_declaration"]["attributes"].push_back(*generate(*n.attributes[i]));
+  }
   return yaml;
 }

@@ -9,25 +9,26 @@ greyhawk as well.
 I think the best way to achieve this is through ensuring that object
 initialization specifically mirrors metadata pretty well::
 
-  { FileMenu
-    { Tab[]
-      { Tab "File" [
-        if isOSX() { Command "New" } else None
-        { Command "Open" }
-        { Command "Save" }
-        { Command "Save as..." }
-      ]
-    }
-  }
+  FileMenu([
+      Tab("File", [
+        if isOSX() Command("New") else None
+        Command("Open")
+        Command("Save")
+        Command("Save as...")
+      ])
+  ])
 
   def create_filemenu():
-      return { FileMenu
-        { Tab "Test" }
-      }
+    return FileMenu(
+      Tab("Test")
+    )
 
-  { Map
+  return {
     "test": "foo",
+    "too": "foo",
+    "test": "foo",
+    "test", "foo",
     "too": "food",
     "bor": "baz",
     "roco": "no"
-  }
+  )

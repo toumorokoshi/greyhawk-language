@@ -24,7 +24,6 @@ namespace lexer {
     {L_CURLY, "{"},
     {R_CURLY, "}"},
     {COMMA, ","},
-    {DOT, "."},
     {PLUS, "+"},
     {MINUS, "-"},
     {MUL, "*"},
@@ -65,7 +64,6 @@ namespace lexer {
     pairFromType(R_CURLY),
     pairFromType(COLON),
     pairFromType(COMMA),
-    pairFromType(DOT),
     // binary operators
     pairFromType(PLUS),
     pairFromType(MINUS),

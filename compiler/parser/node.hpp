@@ -26,13 +26,16 @@ class NMethodCall;
 class NBinaryOperator;
 class NAssignment;
 class NBlock;
+class NClassInstantiation;
 
 // statements + subclasses
 class NStatement;
 class NConditional;
 class NReturn;
+class NBlock;
 class NVariableDeclaration;
 class NFunctionDeclaration;
+class NClassDeclaration;
 
 typedef std::vector<Node*> NodeVector;
 typedef std::vector<NStatement*> StatementList;
@@ -96,11 +99,11 @@ class NFunctionDeclaration : public NStatement {
     type(type), id(id), arguments(arguments), block(block) { }
 };
 
-class NTypeDeclaration : public NStatement {
+class NClassDeclaration: public NStatement {
 public:
   NSingleType& name;
   VariableList& attributes;
-  NTypeDeclaration(NSingleType& _name, VariableList& _attributes) :
+  NClassDeclaration(NSingleType& _name, VariableList& _attributes) :
     name(_name), attributes(_attributes) {}
 };
 
@@ -186,6 +189,16 @@ class NBinaryOperator : public NExpression {
   NExpression& rhs;
   NBinaryOperator(NExpression& lhs, int op, NExpression& rhs) :
     lhs(lhs), op(op), rhs(rhs) { }
+};
+
+
+class NClassInstantiation : public NExpression {
+public:
+  NSingleType& type;
+  ExpressionList& parameters;
+  NClassInstantiation(NSingleType& _type,
+                      ExpressionList& _parameters) :
+    type(_type), parameters(_parameters) {}
 };
 
 class NBlock : public NExpression {
