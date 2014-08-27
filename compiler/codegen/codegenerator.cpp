@@ -15,43 +15,6 @@ namespace codegen {
   static raw_os_ostream debug_os_ostream(std::cout);
   // any value can have debug info printed with:  <Value*>->print(debug_os_ostream);
 
-  static Type* singleTypeOf(NSingleType& type)
-  {
-    debug("generating typeof...");
-    if (type.name.compare("Int") == 0) {
-      return Type::getInt64Ty(getGlobalContext());
-
-    } else if (type.name.compare("Double") == 0) {
-      return Type::getDoubleTy(getGlobalContext());
-
-    } else if (type.name.compare("Bool") == 0) {
-      return Type::getInt1Ty(getGlobalContext());
-
-    } else if (type.name.compare("Void") == 0) {
-      return Type::getVoidTy(getGlobalContext());
-
-    }
-    throw CodeGenException("Unable to detect type of " + type.name);
-  }
-
-  /* Returns an LLVM type based on the identifier */
-  static Type* typeOf(NType* type) {
-
-    debug("generating typeof on type...");
-    if (NSingleType* n = dynamic_cast<NSingleType*>(type)) {
-      return singleTypeOf(*n);
-
-    } else if (NArrayType* n = dynamic_cast<NArrayType*> (type)) {
-      auto element_type = singleTypeOf(n->type);
-      return ArrayType::get(element_type, 0);
-
-    } else {
-      throw CodeGenException("Expected Type!");
-
-    }
-
-  }
-
   // utils
   bool CodeGenerator::variableExistsInContext(std::string name) {
     debug("variable exists in context...");
@@ -138,6 +101,8 @@ namespace codegen {
       debug("NArray");
       return generate(static_cast<NArray&>(n));
 
+    } else if (typeid(n) == typeid(NClassInstantiation)) {
+      debug("NClassInstantiation");
     }
 
     debug("can't determine expression!");
@@ -153,6 +118,10 @@ namespace codegen {
 
   Constant* CodeGenerator::generate(NDouble& nDouble) {
     return ConstantFP::get(getGlobalContext(), APFloat(nDouble.value));
+  }
+
+  Value* CodeGenerator::generate(NString& nString) {
+    return builder.CreateGlobalStringPtr(*new StringRef(nString.value.c_str()), "str");
   }
 
   Value* CodeGenerator::generate(NVoid& n) {
@@ -195,7 +164,7 @@ namespace codegen {
     return builder.CreateCall(function, args, "calltmp");
   }
 
-  Value* CodeGenerator::generate(NArray& nArray) {
+  /* Value* CodeGenerator::generate(NArray& nArray) {
     debug("generating array...");
     auto values = new ArrayRef<Constant*>();
     Type* element_type;
@@ -209,7 +178,7 @@ namespace codegen {
     auto array_type = ArrayType::get(element_type, nArray.elements.size());
     auto values = new ArrayRef<Constant*>();
     return ConstantArray::get(arrayType, *values);
-  }
+    } */
 
   Value* CodeGenerator::generate(NBinaryOperator& n) {
     Value* l = generate(n.lhs);
@@ -266,6 +235,11 @@ namespace codegen {
     } else if (typeid(n) == typeid(NFunctionDeclaration)) {
       debug("NFunctionDeclaration");
       return generate(static_cast<NFunctionDeclaration&>(n));
+
+    } else if (typeid(n) == typeid(NClassDeclaration)) {
+      debug("NClassDeclaration");
+      generate(static_cast<NClassDeclaration&>(n));
+      return NULL;
 
     }
 
@@ -325,7 +299,7 @@ namespace codegen {
 
   Value* CodeGenerator::generate(NVariableDeclaration& n) {
     debug("Generating NVariableDeclaration");
-    AllocaInst* alloc = builder.CreateAlloca(typeOf(&n.type), generate(n.id), n.id.name);
+    AllocaInst* alloc = builder.CreateAlloca(typeOf(&n.type, getContext().classes), generate(n.id), n.id.name);
     getContext().locals[n.id.name] = alloc;
     if (n.assignmentExpr != NULL) {
       debug("generating assignment");
@@ -344,11 +318,15 @@ namespace codegen {
 
     debug("Getting Arguments...");
     for (it = n.arguments.begin(); it != n.arguments.end(); it++) {
-      argTypes.push_back(typeOf(&(**it).type));
+      argTypes.push_back(typeOf(&(**it).type, getContext().classes));
     }
 
     debug("Generating function objects...");
-    FunctionType *ftype = FunctionType::get(typeOf(&n.type), llvm::makeArrayRef(argTypes), false);
+    FunctionType *ftype = FunctionType::get(typeOf(&n.type,
+                                                   getContext().classes),
+                                            llvm::makeArrayRef(argTypes),
+                                            false);
+
     Function *function = Function::Create(ftype, Function::ExternalLinkage, n.id.name.c_str(), &module);
     BasicBlock *bblock = BasicBlock::Create(getGlobalContext(), "entry", function, 0);
 
@@ -379,10 +357,6 @@ namespace codegen {
 
     fpm.run(*function);
     return function;
-  }
-
-  Value* CodeGenerator::generate(NString& nString) {
-    return builder.CreateGlobalStringPtr(*new StringRef(nString.value.c_str()), "str");
   }
 
 }

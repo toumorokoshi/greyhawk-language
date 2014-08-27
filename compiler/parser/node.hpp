@@ -32,7 +32,6 @@ class NClassInstantiation;
 class NStatement;
 class NConditional;
 class NReturn;
-class NBlock;
 class NVariableDeclaration;
 class NFunctionDeclaration;
 class NClassDeclaration;
