@@ -103,6 +103,7 @@ namespace codegen {
 
     } else if (typeid(n) == typeid(NClassInstantiation)) {
       debug("NClassInstantiation");
+      return generate(static_cast<NClassInstantiation&>(n));
     }
 
     debug("can't determine expression!");
