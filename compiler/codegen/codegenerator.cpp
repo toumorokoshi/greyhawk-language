@@ -49,7 +49,7 @@ namespace codegen {
       last = generate(**it);
     }
     builder.CreateRetVoid();
-    fpm.run(*function);
+    // fpm.run(*function);
     return last;
   }
 
@@ -356,7 +356,7 @@ namespace codegen {
       builder.CreateRetVoid();
     }
 
-    fpm.run(*function);
+    // fpm.run(*function);
     return function;
   }
 

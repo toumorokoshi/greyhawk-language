@@ -32,8 +32,8 @@ namespace codegen {
     BlockContext() {}
   };
 
-  llvm::Type* singleTypeOf(NSingleType& type, ClassMap& classes);
-  llvm::Type* typeOf(NType* type, ClassMap& classes);
+  extern llvm::Type* singleTypeOf(NSingleType& type, ClassMap& classes);
+  extern llvm::Type* typeOf(NType* type, ClassMap& classes);
 
 
   typedef std::map<llvm::BasicBlock*, BlockContext*> BlockContextMap;
@@ -64,7 +64,7 @@ namespace codegen {
     llvm::Value* generate(NBinaryOperator&);
     llvm::Value* generate(NAssignment&);
     llvm::Value* generate(NBlock&);
-    llvm::Value* generate(NClassInstantiation*);
+    llvm::Value* generate(NClassInstantiation&);
     llvm::Value* generate(NStatement&);
     llvm::Value* generate(NConditional&);
     llvm::Value* generate(NReturn&);

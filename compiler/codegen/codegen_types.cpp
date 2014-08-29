@@ -7,7 +7,7 @@ using namespace llvm;
 
 namespace codegen {
 
-  static Type* singleTypeOf(NSingleType& type, ClassMap& classes)
+  Type* singleTypeOf(NSingleType& type, ClassMap& classes)
   {
     if (type.name.compare("Int") == 0) {
       return Type::getInt64Ty(getGlobalContext());
