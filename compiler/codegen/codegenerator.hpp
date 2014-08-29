@@ -32,7 +32,7 @@ namespace codegen {
     BlockContext() {}
   };
 
-  llvm::Type* singleTypeOf(NSingleType* type, ClassMap& classes);
+  llvm::Type* singleTypeOf(NSingleType& type, ClassMap& classes);
   llvm::Type* typeOf(NType* type, ClassMap& classes);
 
 

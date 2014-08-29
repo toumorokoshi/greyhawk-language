@@ -6,4 +6,8 @@
 using namespace llvm;
 
 namespace codegen {
+
+  Value* CodeGenerator::generate(NClassInstantiation& n) {
+    auto type = singleTypeOf(n.type, getContext().classes);
+  }
 }
