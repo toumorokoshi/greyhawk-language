@@ -8,11 +8,17 @@ namespace VM {
 
   class VMClass {
   public:
+    virtual ~VMClass() {}
+  };
+
+  class VMStruct : public VMClass {
+  public:
     std::map<std::string, std::string>& attributes;
-    VMClass(std::map<std::string, std::string>& _attributes) :
+    VMStruct(std::map<std::string, std::string>& _attributes) :
       attributes(_attributes) {}
   };
 
+  extern VMClass VMStringClass;
 }
 
 #endif
