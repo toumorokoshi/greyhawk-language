@@ -1,6 +1,7 @@
 class Foo():
 	attribute Double
+	attribute2 Double
 
-f Foo := Foo(1)
+f Foo := Foo(1, 2)
 
 print(f.attribute)
