@@ -19,6 +19,7 @@ namespace VM {
   };
 
   extern VMClass VMStringClass;
+  extern VMClass VMMethodClass;
 }
 
 #endif
