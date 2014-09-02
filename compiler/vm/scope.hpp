@@ -13,9 +13,10 @@ namespace VM {
     std::map<std::string, VMClass*> classes;
     std::map<std::string, VMObject*> locals;
     VMScope(VMScope* parent) : _parentScope(parent) {}
+    VMScope() {}
+    VMObject* invokeMethod(std::string methodName, std::vector<VMObject*> args);
   private:
     VMScope* _parentScope;
-    VMObject* invokeMethod(std::string methodName, std::vector<VMObject*> args);
   };
 
 }

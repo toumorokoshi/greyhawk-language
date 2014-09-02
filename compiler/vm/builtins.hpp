@@ -1,11 +1,16 @@
 #include "./object.hpp"
+#include "./scope.hpp"
 
 #ifndef VM_BUILTINS_HPP
 #define VM_BUILTINS_HPP
 
 namespace VM {
 
-  void vm_print(VMObject* object);
+  extern VMScope* _BUILTIN_SCOPE;
+
+  void vm_print(std::vector<VMObject*>& objects);
+  VMMethod& _getVMPrint();
+  VMScope& getBuiltinScope();
 
 };
 

@@ -1,3 +1,4 @@
+#include <functional>
 #include <vector>
 #include "./class.hpp"
 
@@ -20,12 +21,19 @@ namespace VM {
       value(_value) {}
   };
 
+  typedef std::function<VMObject* (std::vector<VMObject*>&)> VMRawMethod;
+
   class VMMethod : public VMObject {
   public:
-    std::vector<VMClass&> argumentTypes;
-    std::vector<VMStatement&> statements;
     virtual VMClass* getType() { return &VMMethodClass; };
-    VMObject* call(std::vector<VMObject*> arguments);
+    VMObject* call(std::vector<VMObject*>& arguments);
+    VMMethod(std::vector<VMClass*>& argumentTypes,
+             VMRawMethod& rawMethod) :
+      _argumentTypes(argumentTypes),
+      _rawMethod(rawMethod) {}
+  private:
+    std::vector<VMClass*>& _argumentTypes;
+    VMRawMethod& _rawMethod;
   };
 
   class VMStructInstance : public VMObject {

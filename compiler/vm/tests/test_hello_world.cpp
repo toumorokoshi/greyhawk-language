@@ -7,9 +7,8 @@ using namespace VM;
 TEST(VM, helloWorld) {
 
   auto arguments = new std::vector<VMObject*>();
-  arguments.push_back(new VMString("hello world"));
-  auto statement = new VMCall("print", arguments);
-
+  arguments->push_back(new VMString("hello world"));
   auto topScope = new VMScope();
-  topScope.executeStatement(statement);
+  auto statement = new VMCall("print", arguments);
+  statement.run(topScope);
 }
