@@ -5,20 +5,20 @@ namespace VM {
 
   class VMExpression {
   public:
-    virtual VMObject* run(VMScope& scope);
-    virtual ~VMExpression();
+    virtual VMObject* run(VMScope& scope) = 0;
+    virtual ~VMExpression() {}
   };
 
-  class VMCall {
+  class VMCall : VMExpression {
   public:
-    std::string& methodName;
+    std::string methodName;
     std::vector<VMObject*>& arguments;
 
     virtual VMObject* run(VMScope& scope) {
-      scope.invokeMethod(methodName, arguments);
-    };
+      return scope.invokeMethod(methodName, arguments);
+    }
 
-    VMCall(std::string& _methodName,
+    VMCall(std::string _methodName,
            std::vector<VMObject*>& _arguments) :
       methodName(_methodName), arguments(_arguments) {}
   };

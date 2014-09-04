@@ -21,7 +21,7 @@ namespace VM {
       if (scope.locals.find(identifier->name) == scope.locals.end()) {
         throw VMException(identifier->name + " is not defined in the local scope!");
       }
-      return &scope.locals[identifier->name];
+      return scope.locals[identifier->name];
 
     } else if (auto methodCall = dynamic_cast<NMethodCall*>(expression)) {
       std::vector<VMObject*> arguments;

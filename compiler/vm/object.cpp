@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "./object.hpp"
 #include "./exceptions.hpp"
 
@@ -6,8 +7,7 @@ namespace VM {
   VMObject* VMMethod::call(std::vector<VMObject*>& arguments) {
     // type checking
     if (arguments.size() != _argumentTypes.size()) {
-      throw VMException("method requires " + arguments.size() + " arguments. " +
-                        _argumentTypes.size() + " arguments were passed.");
+      throw VMException("mismatched argument count!");
     }
 
     for (int i = 0; i < arguments.size(); i++) {

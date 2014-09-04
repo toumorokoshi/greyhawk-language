@@ -8,7 +8,7 @@ namespace VM {
 
   extern VMScope* _BUILTIN_SCOPE;
 
-  void vm_print(std::vector<VMObject*>& objects);
+  VMObject* vm_print(std::vector<VMObject*>& objects);
   VMMethod& _getVMPrint();
   VMScope& getBuiltinScope();
 

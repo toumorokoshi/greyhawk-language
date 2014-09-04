@@ -18,8 +18,8 @@ namespace VM {
       attributes(_attributes) {}
   };
 
-  extern VMClass VMStringClass;
-  extern VMClass VMMethodClass;
+  VMClass* getVMStringClass();
+  VMClass* getVMMethodClass();
 }
 
 #endif

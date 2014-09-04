@@ -16,7 +16,7 @@ namespace VM {
   class VMString : public VMObject {
   public:
     std::string value;
-    virtual VMClass* getType() { return &VMStringClass; };
+    virtual VMClass* getType() { return getVMStringClass(); };
     VMString(std::string _value) :
       value(_value) {}
   };
@@ -25,7 +25,7 @@ namespace VM {
 
   class VMMethod : public VMObject {
   public:
-    virtual VMClass* getType() { return &VMMethodClass; };
+    virtual VMClass* getType() { return getVMMethodClass(); };
     VMObject* call(std::vector<VMObject*>& arguments);
     VMMethod(std::vector<VMClass*>& argumentTypes,
              VMRawMethod& rawMethod) :

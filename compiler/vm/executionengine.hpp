@@ -11,7 +11,7 @@ namespace VM {
     VMScope scope;
     void executeBlock(NBlock&);
     void executeStatement(NStatement*);
-    void executeExpression(NExpression*);
+    VMObject* executeExpression(NExpression*);
   };
 }
 

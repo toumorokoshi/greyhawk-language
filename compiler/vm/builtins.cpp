@@ -4,15 +4,21 @@
 
 namespace VM {
 
-  void vm_print(std::vector<VMObject*> objects) {
+  VMObject* vm_print(std::vector<VMObject*>& objects) {
     auto string = dynamic_cast<VMString*>(*objects.begin());
     printf(string->value.c_str());
   }
 
   VMMethod& _getVMPrint() {
     auto argumentTypes = new std::vector<VMClass*>();
-    argumentTypes->push_back(&VMStringClass);
-    return new VMMethod(argumentTypes, vm_print);
+    argumentTypes->push_back(getVMStringClass());
+
+    VMRawMethod _vm_print = [] (std::vector<VMObject*>& objects) -> VMObject* {
+      auto string = dynamic_cast<VMString*>(*objects.begin());
+      printf(string->value.c_str());
+    };
+
+    return new VMMethod(*argumentTypes, _vm_print);
   }
 
   VMScope* _BUILTIN_SCOPE = NULL;

@@ -3,14 +3,12 @@
 
 using namespace lexer;
 
-typedef FSMNode<std::string> StringNode;
 typedef std::pair<std::string, std::string*> StringNodePair;
 typedef std::vector<StringNodePair> StringNodePairVector;
 
 TEST(LexerFSM, addChild) {
-  std::string* result = new std::string("test");
-  StringNode root = StringNode(' ', NULL);
-  root.addChild("ab", result);
+  FSMNode root;
+  root.addChild("ab", BAD_TOKEN);
   EXPECT_TRUE(root.children.find('a') != root.children.end());
 
   EXPECT_TRUE(root.children['a'].children.find('b') !=
@@ -19,23 +17,20 @@ TEST(LexerFSM, addChild) {
 
 
 TEST(LexerFSM, getValue) {
-  std::string* result = new std::string("test");
-  StringNode root = StringNode(' ', NULL);
-  root.addChild("ab", result);
+  FSMNode root;
+  root.addChild("ab", BAD_TOKEN);
 
-  EXPECT_EQ(root.getValue("ab"), result);
+  EXPECT_EQ(root.getValue("ab"), BAD_TOKEN);
 }
 
 
 TEST(LexerFSM, addChildren) {
-  std::string* foo = new std::string("foo");
-  std::string* bar = new std::string("bar");
-  StringNodePairVector childrenPairs {
-      StringNodePair("ab", foo),
-      StringNodePair("ac", bar)
+  KeywordPairVector childrenPairs {
+      KeywordPair("ab", IF),
+      KeywordPair("ac", ELSE)
   };
-  StringNode root = StringNode(' ', NULL)
+  FSMNode root = FSMNode(' ', BAD_TOKEN)
     .addChildren(childrenPairs);
-  EXPECT_EQ(root.getValue("ab"), foo);
-  EXPECT_EQ(root.getValue("ac"), bar);
+  EXPECT_EQ(root.getValue("ab"), IF);
+  EXPECT_EQ(root.getValue("ac"), ELSE);
 }
