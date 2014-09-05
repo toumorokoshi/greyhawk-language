@@ -21,19 +21,19 @@ namespace VM {
       value(_value) {}
   };
 
-  typedef std::function<VMObject* (std::vector<VMObject*>&)> VMRawMethod;
+  typedef VMObject* (*VMRawMethod)(std::vector<VMObject*>&);
 
   class VMMethod : public VMObject {
   public:
     virtual VMClass* getType() { return getVMMethodClass(); };
     VMObject* call(std::vector<VMObject*>& arguments);
     VMMethod(std::vector<VMClass*>& argumentTypes,
-             VMRawMethod& rawMethod) :
+             VMRawMethod rawMethod) :
       _argumentTypes(argumentTypes),
       _rawMethod(rawMethod) {}
   private:
     std::vector<VMClass*>& _argumentTypes;
-    VMRawMethod& _rawMethod;
+    VMRawMethod _rawMethod;
   };
 
   class VMStructInstance : public VMObject {

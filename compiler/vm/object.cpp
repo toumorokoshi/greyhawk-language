@@ -1,6 +1,6 @@
-#include <stdio.h>
 #include "./object.hpp"
 #include "./exceptions.hpp"
+#include <iostream>
 
 namespace VM {
 

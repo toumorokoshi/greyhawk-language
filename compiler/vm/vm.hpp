@@ -1,3 +1,5 @@
 #include "./scope.hpp"
 #include "./object.hpp"
 #include "./expression.hpp"
+#include "./exceptions.hpp"
+#include "./builtins.hpp"
