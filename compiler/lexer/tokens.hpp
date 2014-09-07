@@ -86,8 +86,6 @@ namespace lexer {
   typedef std::pair<std::string, L> KeywordPair;
   typedef std::vector<KeywordPair> KeywordPairVector;
 
-  TokenVector tokenize(std::string input);
-
   // Grouping the tokens up
   extern const KeywordPairVector keywordList;
   extern const KeywordPairVector operatorPairs;

@@ -24,7 +24,7 @@ LEXER_FILES=lexer/*.cpp
 lexer:
 	clang++ $(LEXER_FILES) $(OPTIONS) main/lexer.cpp -o ../bin/lexer
 
-PARSER_FILES=parser/*.cpp
+PARSER_FILES=parser2/*.cpp
 
 parser:
 	clang++ main/parser.cpp $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(OPTIONS) -o ../bin/parser
@@ -36,7 +36,7 @@ compiler:
 	clang++ main/greyhawk.cpp $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(BOOST_OPTIONS) $(OPTIONS) $(CODEGEN_FILES) $(LLVM_CONFIG) -o ../bin/greyhawk
 
 tests:
-	clang++ -o ../bin/unit_tests $(LEXER_FILES) $(PARSER_FILES) vm/*.cpp lexer/tests/*.cpp vm/tests/*.cpp main/tests.cpp $(OPTIONS) -lgtest $(YAML_OPTIONS)
+	clang++ -o ../bin/unit_tests $(LEXER_FILES) $(PARSER_FILES) vm/*.cpp lexer/tests/*.cpp vm/tests/*.cpp parser2/tests/*.cpp main/tests.cpp $(OPTIONS) -lgtest $(YAML_OPTIONS)
 
 clean:
 	rm -r build

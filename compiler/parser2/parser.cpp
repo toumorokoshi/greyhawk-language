@@ -1,5 +1,9 @@
 #include "parser.hpp"
 #include "exceptions.hpp"
+#include <iostream>
+
+#define debug(s);
+// #define debug(s) std::cout << s << std::endl;
 
 using namespace VM;
 using namespace lexer;
@@ -19,6 +23,7 @@ namespace parser {
   }
 
   VMBlock* Parser::parseBlock() {
+    debug("parseBlock");
     auto block = new VMBlock(scope);
 
     while (token_position != tokens.end()
@@ -27,16 +32,18 @@ namespace parser {
       block->statements.push_back(statement);
     }
 
+    debug("parseBlock: finished");
     return block;
   }
 
   VMStatement* Parser::parseStatement() {
+    debug("parseStatement");
     auto token = *token_position;
 
     switch (token->type) {
 
     case IDENTIFIER:
-      parseCall();
+      return parseCall();
 
 
     default:
@@ -51,19 +58,23 @@ namespace parser {
   }
 
   VMExpression* Parser::parseExpression() {
+    debug("parseExpression");
     return parseValue();
   }
 
   VMExpression* Parser::parseValue() {
+    debug("parseValue");
     auto token = *token_position;
     token_position++;
     switch(token->type) {
     case STRING:
+      debug("parseValue: returning string.");
       return new VMConstant(new VMString(token->value));
     }
   };
 
   VMCall* Parser::parseCall() {
+    debug("parseCall");
     _validateToken(IDENTIFIER, "expected a name for a method!");
     auto method_name = (*token_position)->value;
     token_position++;
@@ -73,21 +84,27 @@ namespace parser {
 
     std::vector<VMExpression*>* arguments = parseArguments();
 
-    _validateToken(LPAREN, "expected a ')' for a method call!");
+    _validateToken(RPAREN, "expected a ')' for a method call!");
     token_position++; // iterating passed a right paren
+
+    debug("finished parseCall");
+    return new VMCall(method_name, *arguments);
   }
 
   std::vector<VMExpression*>* Parser::parseArguments() {
-    std::vector<VMExpression*>* arguments;
+    auto arguments = new std::vector<VMExpression*>();
 
     while ((*token_position)->type != RPAREN) {
       arguments->push_back(parseExpression());
-      if ((*token_position)->type != COMMA) {
-        throw ParserException("expected a ',' in between arguments.");
+      if ((*token_position)->type != RPAREN) {
+        if ((*token_position)->type != COMMA) {
+          throw ParserException("expected a ',' in between arguments.");
+        }
+        token_position++;
       }
-      token_position++;
     }
 
+    debug("parseArguments: finished");
     return arguments;
   }
 };
