@@ -1,4 +1,5 @@
 #include "scope.hpp"
+#include "exceptions.hpp"
 
 #ifndef VM_STATEMENT_HPP
 #define VM_STATEMENT_HPP

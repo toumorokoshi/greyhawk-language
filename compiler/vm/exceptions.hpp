@@ -11,6 +11,7 @@ namespace VM {
     const std::string message;
     VMException(std::string _message) :
       message(_message) {}
+    virtual const char* what() const noexcept { return message.c_str(); }
   };
 
 }

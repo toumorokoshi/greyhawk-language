@@ -1,5 +1,6 @@
 #include "./builtins.hpp"
 #include "./block.hpp"
+#include "./declare.hpp"
 #include "./exceptions.hpp"
 #include "./expression.hpp"
 #include "./object.hpp"

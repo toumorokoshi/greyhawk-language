@@ -11,4 +11,9 @@ namespace VM {
     static auto VMMethodClass = new VMClass();
     return VMMethodClass;
   }
+
+  VMClass* getVMIntClass() {
+    static auto VMIntClass = new VMClass();
+    return VMIntClass;
+  }
 }

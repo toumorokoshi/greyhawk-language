@@ -21,6 +21,13 @@ namespace VM {
       value(_value) {}
   };
 
+  class VMInt : public VMObject {
+  public:
+    int value;
+    virtual VMClass* getType() { return getVMIntClass(); };
+    VMInt(int _value): value(_value) {}
+  };
+
   typedef VMObject* (*VMRawMethod)(std::vector<VMObject*>&);
 
   class VMMethod : public VMObject {
