@@ -1,14 +1,16 @@
-#include "./parser.hpp"
-#include <stdio.h>
+#include "parser.hpp"
+#include "exceptions.hpp"
+#include <iostream>
 
+#define debug(s);
+// #define debug(s) std::cout << s << std::endl;
+
+using namespace VM;
 using namespace lexer;
 
 namespace parser {
 
-  void validateToken(TokenVector::iterator& token_position,
-                     TokenVector& tokens,
-                     L type,
-                     std::string message) {
+  void Parser::_validateToken(L type, std::string message) {
 
     if (token_position == tokens.end()) {
       throw ParserException(message);
@@ -20,62 +22,29 @@ namespace parser {
     }
   }
 
-  bool isNumeric(const Token& token) {
-    return token.type == INT || token.type == DOUBLE;
-  }
+  VMBlock* Parser::parseBlock() {
+    debug("parseBlock");
+    auto block = new VMBlock(scope);
 
-  bool isBinaryOperator(const Token& token) {
-    return token.type >= PLUS && token.type <= IS;
-  }
-
-  NBlock* parseBlock(TokenVector::iterator& token_position,
-                     TokenVector& tokens) {
-    NBlock* block = new NBlock();
-    while(token_position != tokens.end() && (*token_position)->type != UNINDENT) {
-      NStatement* statement = parseStatement(token_position, tokens);
+    while (token_position != tokens.end()
+           && (*token_position)->type != UNINDENT) {
+      auto statement = parseStatement();
       block->statements.push_back(statement);
     }
+
+    debug("parseBlock: finished");
     return block;
   }
 
-  NStatement* parseStatement(TokenVector::iterator& token_position,
-                             TokenVector& tokens) {
+  VMStatement* Parser::parseStatement() {
+    debug("parseStatement");
     auto token = *token_position;
 
     switch (token->type) {
 
-    case RETURN:
-      token_position++;
-      return new NReturn(*parseExpression(token_position, tokens));
+    case IDENTIFIER:
+      return parseCall();
 
-    case TYPE:
-      // it's the start of a method declaration when the type is first
-      return parseFunctionDeclaration(token_position, tokens);
-
-    case CLASS:
-      return parseClassDeclaration(token_position, tokens);
-
-    case IDENTIFIER: {
-      auto identifier = token;
-      token_position++;
-      auto next_token = *token_position;
-      if (next_token->type == ASSIGN) {
-        // parseAssignment
-        return new NAssignment(*new NIdentifier(identifier->value),
-                               *new NVoid());
-
-      } else if(next_token->type == TYPE || next_token->type == L_BRACKET) {
-        // parse declaration
-        // if we see IDENT [, we can assume this is a declaration of
-        // an array type.
-        token_position--;
-        return parseVariableDeclaration(token_position, tokens);
-
-      } else {
-        token_position--;
-        return parseExpression(token_position, tokens);
-      }
-    }
 
     default:
       std::string message("Looking for statement, unable to find one.");
@@ -86,293 +55,56 @@ namespace parser {
       throw ParserException(**token_position, message);
 
     }
- }
-
-  NVariableDeclaration* parseVariableDeclaration(TokenVector::iterator& token_position,
-                                                 TokenVector& tokens) {
-    if ((*token_position)->type != IDENTIFIER) {
-      throw ParserException(**token_position, "expected a name for a variable declaration!");
-    }
-
-    auto identifer = new NIdentifier((*token_position)->value);
-    token_position++;
-
-
-    auto type = parseType(token_position, tokens);
-
-    NExpression* expression = NULL;
-
-    if ((*token_position)->type == DECLARE) {
-      token_position++;
-      expression = parseExpression(token_position, tokens);
-    }
-
-    return new NVariableDeclaration(*identifer, *type, expression);
   }
 
-  NClassDeclaration* parseClassDeclaration(lexer::TokenVector::iterator& token_position,
-                                           lexer::TokenVector& tokens) {
-    validateToken(token_position, tokens, CLASS,
-                  "expected class token for a class declaration!");
-    token_position++;
-
-    validateToken(token_position, tokens, TYPE,
-                  "expected single type for a class declaration!");
-
-    auto type = new NSingleType((*token_position)->value);
-    token_position++;
-
-    validateToken(token_position, tokens, LPAREN,
-                  "expected ( for a class declaration!");
-    token_position++;
-
-    validateToken(token_position, tokens, RPAREN,
-                  "expected ) for a class declaration!");
-    token_position++;
-
-    validateToken(token_position, tokens, COLON,
-                  "expected : for a class declaration!");
-    token_position++;
-
-    validateToken(token_position, tokens, INDENT,
-                  "expected indent for a class declaration!");
-    token_position++;
-
-    auto attributes = new VariableList();
-    while ((*token_position)->type != UNINDENT) {
-      attributes->push_back(parseVariableDeclaration(token_position, tokens));
-    }
-
-    token_position++; // shifting unindent
-
-    return new NClassDeclaration(*type, *attributes);
+  VMExpression* Parser::parseExpression() {
+    debug("parseExpression");
+    return parseValue();
   }
 
-  NExpression* parseExpression(TokenVector::iterator& token_position,
-                               TokenVector& tokens) {
-
-    NExpression* lhs = parseValue(token_position, tokens);
-    while (token_position != tokens.end() && isBinaryOperator(**token_position)) {
-      auto op = (*token_position)->type;
-      token_position++;
-      NExpression* rhs = parseValue(token_position, tokens);
-      lhs = new NBinaryOperator(*lhs, op, *rhs);
-    }
-
-    return lhs;
-  }
-
-  NClassInstantiation* parseClassInstantiation(TokenVector::iterator& token_position,
-                                               TokenVector& tokens) {
-    validateToken(token_position, tokens, TYPE,
-                  "expected single type for a class instantiation!");
-
-    auto type = new NSingleType((*token_position)->value);
-    token_position++;
-
-    auto parameters = parseArguments(token_position,
-                                     tokens);
-
-    return new NClassInstantiation(*type, *parameters);
-  }
-
-  NExpression* parseArray(TokenVector::iterator& token_position,
-                          TokenVector& tokens) {
-    validateToken(token_position, tokens, L_BRACKET, "expected a [ for an array!");
-    token_position++;
-    auto expressions = new ExpressionList();
-    while ((*token_position)->type != R_BRACKET) {
-      expressions->push_back(parseExpression(token_position, tokens));
-    }
-    token_position++;
-    return new NArray(*expressions);
-  }
-
-  NExpression* parseValue(TokenVector::iterator& token_position,
-                          TokenVector& tokens) {
+  VMExpression* Parser::parseValue() {
+    debug("parseValue");
     auto token = *token_position;
     token_position++;
-    switch (token->type) {
-    case TRUE:
-      return new NBoolean(true);
-
-    case FALSE:
-      return new NBoolean(false);
-
+    switch(token->type) {
     case STRING:
-      return new NString(token->value);
-
-    case INT:
-      return new NInteger(stoi(token->value));
-
-    case DOUBLE:
-      return new NDouble(stod(token->value));
-
-    case L_BRACKET:
-      token_position--;
-      return parseArray(token_position, tokens);
-
-    case IDENTIFIER: {
-      if ((*token_position)->type == LPAREN) {
-        token_position--;
-        return parseMethodCall(token_position, tokens);
-
-      } else {
-        return new NIdentifier(token->value);
-
-      }
+      debug("parseValue: returning string.");
+      return new VMConstant(new VMString(token->value));
     }
+  };
 
-    case TYPE: {
+  VMCall* Parser::parseCall() {
+    debug("parseCall");
+    _validateToken(IDENTIFIER, "expected a name for a method!");
+    auto method_name = (*token_position)->value;
+    token_position++;
 
-      if ((*token_position)->type == LPAREN) {
-        token_position--;
-        return parseClassInstantiation(token_position,
-                                       tokens);
-      }
+    _validateToken(LPAREN, "expected a '(' for a method call!");
+    token_position++;
 
-    }
+    std::vector<VMExpression*>* arguments = parseArguments();
 
-    default:
-      throw ParserException(*token, "expected a value!");
-    }
+    _validateToken(RPAREN, "expected a ')' for a method call!");
+    token_position++; // iterating passed a right paren
+
+    debug("finished parseCall");
+    return new VMCall(method_name, *arguments);
   }
 
-  NType* parseType(TokenVector::iterator& token_position,
-                         TokenVector& tokens) {
-    auto token = *token_position;
-    switch ((*token_position)->type) {
+  std::vector<VMExpression*>* Parser::parseArguments() {
+    auto arguments = new std::vector<VMExpression*>();
 
-    case TYPE: {
-      auto type = new NSingleType(token->value);
-      token_position++;
-      return type;
-    }
-
-    case L_BRACKET: {
-      token_position++;
-      validateToken(token_position, tokens, TYPE, "expected a type!");
-      auto arrayType = new NArrayType(*new NSingleType((*token_position)->value));
-      token_position++;
-      validateToken(token_position, tokens, R_BRACKET, "expected ]!");
-      token_position++;
-      return arrayType;
-    }
-
-    default:
-      throw ParserException(**token_position, "expected a type!");
-    }
-  }
-
-  NMethodCall* parseMethodCall(TokenVector::iterator& token_position,
-                                        TokenVector& tokens) {
-
-    validateToken(token_position, tokens, IDENTIFIER,
-                  "expected a name for a method!");
-
-    auto method_name = new NIdentifier((*token_position)->value);
-    token_position++;
-
-    ExpressionList* arguments = parseArguments(token_position, tokens);
-
-    return new NMethodCall(*method_name, *arguments);
-  }
-
-  NFunctionDeclaration* parseFunctionDeclaration(TokenVector::iterator& token_position,
-                                                 TokenVector& tokens) {
-
-   // get + check type
-    auto type = parseType(token_position, tokens);
-
-    // get + check method
-    if ((*token_position)->type != IDENTIFIER) {
-      throw ParserException(**token_position,
-                            "expected a name for a method!");
-    }
-
-    auto method_name = new NIdentifier((*token_position)->value);
-    token_position++;
-
-    if ((*token_position)->type != LPAREN) {
-      throw ParserException(**token_position,
-                            "expected a '(' for a method declaration!");
-    }
-    token_position++;
-
-    auto arguments = parseVariableList(token_position, tokens);
-
-    validateToken(token_position, tokens, RPAREN,
-                  "expected a ')' for a method declaration!");
-    token_position++;
-
-    if ((*token_position)->type != COLON) {
-      throw ParserException(**token_position, "expected a ':' for a method declaration!");
-    }
-    token_position++;
-
-    if ((*token_position)->type != INDENT) {
-      throw ParserException(**token_position, "expected an indent for a method declaration!");
-    }
-    token_position++;
-
-    auto nblock = parseBlock(token_position, tokens);
-
-    if ((*token_position)->type != UNINDENT) {
-      throw ParserException(**token_position, "expected an unindent for a method declaration!");
-    }
-    token_position++;
-
-    return new NFunctionDeclaration(*type,
-                                    *method_name,
-                                    *arguments,
-                                    *nblock);
-  }
-
-  VariableList* parseVariableList(TokenVector::iterator& token_position,
-                                  TokenVector& tokens) {
-
-    auto variableList = new VariableList();
-
-    while((*token_position)->type == IDENTIFIER) {
-      auto identifier = new NIdentifier((*token_position)->value);
-      token_position++;
-
-      auto type = parseType(token_position, tokens);
-
-      variableList->push_back(new NVariableDeclaration(*identifier, *type));
-
-      if ((*token_position)->type == COMMA) {
-        token_position++;
-      }
-    }
-    return variableList;
-  }
-
-  ExpressionList* parseArguments(TokenVector::iterator& token_position,
-                                 TokenVector& tokens) {
-    if ((*token_position)->type != LPAREN) {
-      throw ParserException(**token_position, "expected a '(' for a method call!");
-    }
-    token_position++;
-
-    ExpressionList* arguments = new ExpressionList();
-    while((*token_position)->type != RPAREN) {
-      arguments->push_back(parseExpression(token_position, tokens));
-
+    while ((*token_position)->type != RPAREN) {
+      arguments->push_back(parseExpression());
       if ((*token_position)->type != RPAREN) {
         if ((*token_position)->type != COMMA) {
           throw ParserException("expected a ',' in between arguments.");
         }
         token_position++;
       }
-
     }
 
-    if ((*token_position)->type != RPAREN) {
-      throw ParserException(**token_position, "expected a ')' for a method call!");
-    }
-    token_position++;
-
+    debug("parseArguments: finished");
     return arguments;
   }
-}
+};

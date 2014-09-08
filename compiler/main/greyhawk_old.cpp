@@ -1,8 +1,11 @@
 #include <iostream>
 #include <stdio.h>
 #include "../lexer/tokenizer.hpp"
-#include "../vm/vm.hpp"
+#include "../parser/yamlast.hpp"
 #include "../parser/parser.hpp"
+#include "../codegen/jit.hpp"
+#include "../codegen/codegenerator.hpp"
+#include "../codegen/exceptions.hpp"
 #include <boost/program_options.hpp>
 #include <sstream>
 #include <fstream>
@@ -10,13 +13,13 @@
 namespace po = boost::program_options;
 using namespace lexer;
 using namespace parser;
-using namespace VM;
 
 
 
+// static llvm::ExecutionEngine *executionEngine;
 // these are initialized in main
 static Tokenizer* tokenizer;
-static VMScope* globalScope;
+static codegen::JIT* jit;
 
 typedef struct CommandLineArguments {
   std::string fileName;
@@ -35,6 +38,7 @@ CommandLineArguments& getArguments(int argc, char*argv[]) {
   po::options_description desc("Options");
   desc.add_options()
     ("help", "Print help message")
+    ("llvm", "print llvm IR code")
     ("ast", "print the ast")
     ("file_name", po::value<std::string>()->required(), "path to the file to compile");
 
@@ -52,6 +56,7 @@ CommandLineArguments& getArguments(int argc, char*argv[]) {
     }
 
     args->ast = vm.count("ast") > 0;
+    args->llvm = vm.count("llvm") > 0;
     return *args;
 
   } catch (po::error& e) {
@@ -60,6 +65,19 @@ CommandLineArguments& getArguments(int argc, char*argv[]) {
     exit(1);
 
   }
+}
+
+void parseTokens(TokenVector& tokens) {
+  auto token_position = tokens.begin();
+  YAML::Node* yaml;
+  try {
+    auto node = parser::parseStatement(token_position, tokens);
+    yaml = YamlAST::generate(*node);
+  } catch (ParserException) {
+    auto node = parser::parseExpression(token_position, tokens);
+    yaml = YamlAST::generate(*node);
+  }
+  std::cout << (*yaml) << std::endl;
 }
 
 void interpreter() {
@@ -75,14 +93,16 @@ void interpreter() {
       std::istringstream input_stream(input);
       TokenVector tokens = tokenizer->tokenize(input_stream);
       auto token_position = tokens.begin();
-      Parser parser(globalScope, token_position, tokens);
-      auto statement = parser.parseStatement();
-      statement->execute(*globalScope);
+      auto node = parser::parseExpression(token_position, tokens);
+      jit->executeExpression(node);
       //parseTokens(tokens);
     } catch (LexerException& e) {
       std::cout << e.message << std::endl;
       continue;
     } catch (ParserException& e) {
+      std::cout << e.message << std::endl;
+      continue;
+    } catch (codegen::CodeGenException& e) {
       std::cout << e.message << std::endl;
       continue;
     }
@@ -98,8 +118,10 @@ void interpreter() {
 int main(int argc, char *argv[]) {
   // THIS MUST BE CALLED
   // BEFORE LLVM RUNS CODE
+  llvm::InitializeNativeTargetAsmPrinter();
+  llvm::InitializeNativeTargetAsmParser();
   tokenizer = new Tokenizer();
-  globalScope = new VMScope(getBuiltinScope());
+  jit = new codegen::JIT();
   CommandLineArguments& args = getArguments(argc, argv);
 
   try {
@@ -107,14 +129,24 @@ int main(int argc, char *argv[]) {
       std::ifstream input_stream(args.fileName);
       TokenVector tokens = tokenizer->tokenize(input_stream);
       auto token_position = tokens.begin();
-      Parser parser(globalScope, token_position, tokens);
-      auto rootBlock = parser.parseBlock();
-      rootBlock->execute();
+      auto node = parser::parseBlock(token_position, tokens);
 
+      if (args.ast) {
+        YamlAST astGenerator;
+        YAML::Node* tree = astGenerator.generateTree(*node);
+        std::cout << (*tree) << std::endl;
+      } else if (args.llvm) {
+        jit->dumpBlock(*node);
+      } else {
+        jit->runBlock(*node);
+      }
     } else {
       interpreter();
     }
 
+  } catch (codegen::CodeGenException& e) {
+    std::cout << e.message << std::endl;
+    exit(1);
   } catch (parser::ParserException& e) {
     std::cout << e.message << std::endl;
     exit(1);

@@ -6,10 +6,20 @@ SCRIPT=$1
 
 echo
 echo
+echo "C:"
+clang ./benchmarks/$SCRIPT/$SCRIPT.c -o ./benchmarks/$SCRIPT/c_$SCRIPT
+time {
+    for run in {1..$COUNT}; do
+        ./benchmarks/$SCRIPT/c_$SCRIPT > /dev/null
+    done
+}
+
+echo
+echo
 echo "Greyhawk:"
 time {
     for run in {1..$COUNT}; do
-      ./bin/greyhawk ./benchmarks/$SCRIPT/$SCRIPT.gh > /dev/null
+        ./bin/greyhawk ./benchmarks/$SCRIPT/$SCRIPT.gh > /dev/null
     done
 }
 

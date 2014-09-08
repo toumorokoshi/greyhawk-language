@@ -1,52 +1,32 @@
+#include "../vm/vm.hpp"
+#include "exceptions.hpp"
 #include "../lexer/tokens.hpp"
-#include "./node.hpp"
-#include "./exceptions.hpp"
-#include <functional>
 
-#ifndef PARSER_HPP
-#define PARSER_HPP
+#ifndef PARSER_PARSER_HPP
+#define PARSER_PARSER_HPP
 
 namespace parser {
 
-  NBlock* parseBlock(lexer::TokenVector::iterator& token_position,
-                         lexer::TokenVector& tokens);
+  class Parser {
+  public:
+    VM::VMScope* scope;
+    lexer::TokenVector::iterator& token_position;
+    lexer::TokenVector& tokens;
+    Parser(VM::VMScope* _scope,
+           lexer::TokenVector::iterator& _token_position,
+           lexer::TokenVector& _tokens) :
+      scope(_scope), token_position(_token_position), tokens(_tokens) {}
 
-  NStatement* parseStatement(lexer::TokenVector::iterator& token_position,
-                             lexer::TokenVector& tokens);
+    VM::VMBlock* parseBlock();
+    VM::VMStatement* parseStatement();
+    VM::VMExpression* parseExpression();
+    VM::VMExpression* parseValue();
+    VM::VMCall* parseCall();
+    std::vector<VM::VMExpression*>* parseArguments();
 
-  NVariableDeclaration* parseVariableDeclaration(lexer::TokenVector::iterator& token_position,
-                                                 lexer::TokenVector& tokens);
-
-  NClassDeclaration* parseClassDeclaration(lexer::TokenVector::iterator& token_position,
-                                           lexer::TokenVector& tokens);
-
-  NExpression* parseExpression(lexer::TokenVector::iterator& token_position,
-                               lexer::TokenVector& tokens);
-
-  NClassInstantiation* parseClassInstantiation(lexer::TokenVector::iterator& token_position,
-                                               lexer::TokenVector& tokens);
-
-  NExpression* parseArray(lexer::TokenVector::iterator& token_position,
-                          lexer::TokenVector& tokens);
-
-  NExpression* parseValue(lexer::TokenVector::iterator& token_position,
-                          lexer::TokenVector& tokens);
-
-  NType* parseType(lexer::TokenVector::iterator& token_position,
-                         lexer::TokenVector& tokens);
-
-
-  NFunctionDeclaration* parseFunctionDeclaration(lexer::TokenVector::iterator& token_position,
-                                                 lexer::TokenVector& tokens);
-
-  NMethodCall* parseMethodCall(lexer::TokenVector::iterator& token_position,
-                               lexer::TokenVector& tokens);
-
-  VariableList* parseVariableList(lexer::TokenVector::iterator& token_position,
-                                    lexer::TokenVector& tokens);
-
-  ExpressionList* parseArguments(lexer::TokenVector::iterator& token_position,
-                                 lexer::TokenVector& tokens);
+  private:
+    void _validateToken(lexer::L type, std::string message);
+  };
 }
 
 #endif
