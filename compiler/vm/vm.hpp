@@ -1,3 +1,4 @@
+#include "./assign.hpp"
 #include "./builtins.hpp"
 #include "./block.hpp"
 #include "./declare.hpp"

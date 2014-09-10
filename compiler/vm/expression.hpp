@@ -21,6 +21,13 @@ namespace VM {
     VMConstant(VMObject* _object) : object(_object) {}
   };
 
+  class VMIdentifier: public VMExpression {
+  public:
+    std::string identifier;
+    virtual VMObject* evaluate(VMScope& scope) { return scope.getObject(identifier); }
+    VMIdentifier(std::string _identifier) : identifier(_identifier) {}
+  };
+
   class VMCall : public VMExpression {
   public:
     std::string methodName;

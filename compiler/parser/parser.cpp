@@ -42,18 +42,33 @@ namespace parser {
 
     switch (token->type) {
 
-    case IDENTIFIER:
-      return parseCall();
+    case IDENTIFIER: {
+      auto identifier = token;
+      token_position++;
 
+      switch ((*token_position)->type) {
+
+      case DECLARE: {
+        token_position++; // iterate past declare
+        VMExpression* expression = parseExpression();
+        return new VMDeclare(identifier->value, expression);
+      }
+
+      case ASSIGN: {
+        token_position++; // iterate past assign
+        VMExpression* expression = parseExpression();
+        return new VMAssign(identifier->value, expression);
+      }
+
+      default:
+        token_position--;
+        return parseCall();
+      }
+
+    }
 
     default:
-      std::string message("Looking for statement, unable to find one.");
-      if (token_position != tokens.end()) {
-        message += " found " ;
-        message += (*token_position)->getDescription();
-      }
-      throw ParserException(**token_position, message);
-
+      return parseExpression();
     }
   }
 
@@ -70,6 +85,11 @@ namespace parser {
     case STRING:
       debug("parseValue: returning string.");
       return new VMConstant(new VMString(token->value));
+    case IDENTIFIER:
+      debug("parseValue: return identifier.");
+      return new VMIdentifier(token->value);
+    default:
+      throw ParserException(*token, "expected value!");
     }
   };
 

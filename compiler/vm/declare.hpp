@@ -17,7 +17,7 @@ namespace VM {
 
     virtual void execute(VMScope& scope) {
       if (scope.locals.find(name) != scope.locals.end()) {
-        throw VMException("cannot declare variable twice!");
+        throw VMException("cannot declare variable '" + name + "' twice!");
       }
 
       scope.locals[name] = expression->evaluate(scope);
