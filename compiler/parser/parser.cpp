@@ -1,6 +1,7 @@
 #include "parser.hpp"
 #include "exceptions.hpp"
 #include <iostream>
+#include <string>
 
 #define debug(s);
 // #define debug(s) std::cout << s << std::endl;
@@ -85,6 +86,9 @@ namespace parser {
     case STRING:
       debug("parseValue: returning string.");
       return new VMConstant(new VMString(token->value));
+    case INT:
+      debug("parseValue: returning int.");
+      return new VMConstant(new VMInt(std::stoi(token->value)));
     case IDENTIFIER:
       debug("parseValue: return identifier.");
       return new VMIdentifier(token->value);
