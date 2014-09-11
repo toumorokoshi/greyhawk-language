@@ -23,7 +23,7 @@ namespace VM {
       VMObject* new_value = expression->evaluate(scope);
       VMObject* variable = scope.locals[name];
       // TODO: don't evaluate to get return type
-      if (variable->getType() != new_value->getType()) {
+      if (!variable->getType()->matches(new_value->getType())) {
         throw VMException("cannot assign variable to a different type!");
       }
 

@@ -7,7 +7,7 @@
 namespace VM {
 
   VMObject* vm_print(std::vector<VMObject*>& objects);
-  VMMethod& _getVMPrint();
+  VMFunction& _getVMPrint();
   VMScope& getBuiltinScope();
 
 };

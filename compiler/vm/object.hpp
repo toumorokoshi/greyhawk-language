@@ -1,6 +1,7 @@
-#include <functional>
-#include <vector>
 #include "./class.hpp"
+#include "./string.hpp"
+#include "exceptions.hpp"
+#include <functional>
 
 #ifndef VM_OBJECT_HPP
 #define VM_OBJECT_HPP
@@ -10,8 +11,11 @@ namespace VM {
   class VMObject {
   public:
     virtual VMClass* getType() = 0;
+    VMObject* call(std::string, std::vector<VMObject*>&);
     virtual ~VMObject() {}
   };
+
+  typedef std::vector<VMObject*> VMObjectList;
 
   class VMString : public VMObject {
   public:
@@ -28,16 +32,27 @@ namespace VM {
     VMInt(int _value): value(_value) {}
   };
 
-  typedef VMObject* (*VMRawMethod)(std::vector<VMObject*>&);
+  typedef VMObject* (*VMRawFunction)(VMObjectList&);
+  typedef VMObject* (*VMRawMethod)(VMObject*, VMObjectList&);
+
+  class VMFunction : public VMObject {
+  public:
+    virtual VMClass* getType() { return getVMFunctionClass(); };
+    VMObject* call(VMObjectList& arguments);
+    VMFunction(std::vector<VMClass*>& argumentTypes,
+               VMRawFunction rawFunction) :
+      _argumentTypes(argumentTypes),
+      _rawFunction(rawFunction) {}
+  private:
+    std::vector<VMClass*>& _argumentTypes;
+    VMRawFunction _rawFunction;
+  };
 
   class VMMethod : public VMObject {
   public:
-    virtual VMClass* getType() { return getVMMethodClass(); };
-    VMObject* call(std::vector<VMObject*>& arguments);
-    VMMethod(std::vector<VMClass*>& argumentTypes,
-             VMRawMethod rawMethod) :
-      _argumentTypes(argumentTypes),
-      _rawMethod(rawMethod) {}
+    virtual VMClass* getType() { return getVMMethodClass(); }
+    VMObject* call(VMObject* self, VMObjectList& arguments);
+    VMMethod(std::vector<VMClass*>& argumentTypes, VMRawMethod rawMethod);
   private:
     std::vector<VMClass*>& _argumentTypes;
     VMRawMethod _rawMethod;

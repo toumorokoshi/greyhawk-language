@@ -2,18 +2,18 @@
 
 namespace VM {
 
-  VMClass* getVMStringClass() {
-    static auto VMStringClass = new VMClass();
-    return VMStringClass;
-  }
-
-  VMClass* getVMMethodClass() {
-    static auto VMMethodClass = new VMClass();
-    return VMMethodClass;
+  VMClass* getVMFunctionClass() {
+    static auto VMFunctionClass = new VMClass("Function");
+    return VMFunctionClass;
   }
 
   VMClass* getVMIntClass() {
-    static auto VMIntClass = new VMClass();
+    static auto VMIntClass = new VMClass("Int");
     return VMIntClass;
+  }
+
+  VMClass* getVMMethodClass () {
+    static auto VMMethodClass = new VMClass("Method");
+    return VMMethodClass;
   }
 }

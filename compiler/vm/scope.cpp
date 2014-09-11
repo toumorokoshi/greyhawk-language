@@ -7,11 +7,11 @@ namespace VM {
                                   std::vector<VMObject*>& arguments) {
     auto object = getObject(methodName);
 
-    if (auto method = dynamic_cast<VMMethod*>(object)) {
+    if (auto method = dynamic_cast<VMFunction*>(object)) {
       return method->call(arguments);
 
     } else {
-      throw VMException(methodName + " is not a method!");
+      throw VMException(methodName + " is not a function!");
     }
   }
 }

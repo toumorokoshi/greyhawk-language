@@ -4,5 +4,7 @@
 #include "./declare.hpp"
 #include "./exceptions.hpp"
 #include "./expression.hpp"
+#include "./interface.hpp"
 #include "./object.hpp"
 #include "./scope.hpp"
+#include "./string.hpp"

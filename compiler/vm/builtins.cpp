@@ -1,24 +1,29 @@
 #include "./class.hpp"
 #include "./builtins.hpp"
 #include "./exceptions.hpp"
+#include "./interface.hpp"
 #include <iostream>
 
 namespace VM {
 
   VMObject* vm_print(std::vector<VMObject*>& args) {
-    if(auto string = dynamic_cast<VMString*>(*args.begin())) {
+    auto string =
+      dynamic_cast<VMString*>((*args.begin())->call("toString",
+                                                    *new std::vector<VMObject*>()));
+    std::cout << string->value << std::endl;
+    /* if(auto string = dynamic_cast<VMString*>(*args.begin())) {
       std::cout << string->value << std::endl;
     } else if(auto integer = dynamic_cast<VMInt*>(*args.begin())) {
       std::cout << integer->value << std::endl;
-    }
+      } */
     return NULL;
   }
 
-  VMMethod& _getVMPrint() {
+  VMFunction& _getVMPrint() {
     auto argumentTypes = new std::vector<VMClass*>();
-    argumentTypes->push_back(getVMStringClass());
+    argumentTypes->push_back(getVMIStringable());
 
-    return *new VMMethod(*argumentTypes, (VMRawMethod) &vm_print);
+    return *new VMFunction(*argumentTypes, (VMRawFunction) &vm_print);
   }
 
   VMScope& getBuiltinScope() {
