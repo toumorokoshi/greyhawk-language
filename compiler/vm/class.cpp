@@ -7,11 +7,6 @@ namespace VM {
     return VMFunctionClass;
   }
 
-  VMClass* getVMIntClass() {
-    static auto VMIntClass = new VMClass("Int");
-    return VMIntClass;
-  }
-
   VMClass* getVMMethodClass () {
     static auto VMMethodClass = new VMClass("Method");
     return VMMethodClass;

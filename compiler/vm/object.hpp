@@ -1,5 +1,6 @@
 #include "./class.hpp"
 #include "./string.hpp"
+#include "int.hpp"
 #include "exceptions.hpp"
 #include <functional>
 

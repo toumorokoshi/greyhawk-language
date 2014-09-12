@@ -28,7 +28,6 @@ namespace VM {
 
   VMClass* getVMFunctionClass();
   VMClass* getVMMethodClass();
-  VMClass* getVMIntClass();
 
 }
 
