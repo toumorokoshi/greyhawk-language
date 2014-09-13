@@ -2,6 +2,7 @@
 #include "./builtins.hpp"
 #include "./exceptions.hpp"
 #include "./interface.hpp"
+#include "./arithmetic.hpp"
 #include <iostream>
 
 namespace VM {
@@ -11,11 +12,6 @@ namespace VM {
       dynamic_cast<VMString*>((*args.begin())->call("toString",
                                                     *new std::vector<VMObject*>()));
     std::cout << string->value << std::endl;
-    /* if(auto string = dynamic_cast<VMString*>(*args.begin())) {
-      std::cout << string->value << std::endl;
-    } else if(auto integer = dynamic_cast<VMInt*>(*args.begin())) {
-      std::cout << integer->value << std::endl;
-      } */
     return NULL;
   }
 
@@ -31,6 +27,10 @@ namespace VM {
     static bool _initialized = false;
     if (!_initialized) {
       _BUILTIN_SCOPE.locals["print"] = &_getVMPrint();
+      _BUILTIN_SCOPE.locals["__add"] = &_getVMAdd();
+      _BUILTIN_SCOPE.locals["__sub"] = &_getVMSub();
+      _BUILTIN_SCOPE.locals["__mul"] = &_getVMMul();
+      _BUILTIN_SCOPE.locals["__div"] = &_getVMDiv();
       _initialized = true;
     }
     return _BUILTIN_SCOPE;

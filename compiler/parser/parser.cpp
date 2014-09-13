@@ -11,6 +11,36 @@ using namespace lexer;
 
 namespace parser {
 
+  bool isBinaryOperator(const Token& token) {
+    return token.type >= PLUS && token.type <= IS;
+  }
+
+  VMCall* generateBinaryOperation(VMExpression* lhs, const Token& op, VMExpression* rhs) {
+    std::string methodName;
+    switch(op.type) {
+    case PLUS:
+      methodName = "__add";
+      break;
+
+    case MINUS:
+      methodName = "__sub";
+      break;
+
+    case MUL:
+      methodName = "__mul";
+      break;
+
+    case DIV:
+      methodName = "__div";
+      break;
+
+    default:
+      throw ParserException(op, "unable to get binary operator!");
+    }
+
+    return new VMCall(methodName, *new std::vector<VMExpression*> {lhs, rhs});
+  }
+
   void Parser::_validateToken(L type, std::string message) {
 
     if (token_position == tokens.end()) {
@@ -75,7 +105,14 @@ namespace parser {
 
   VMExpression* Parser::parseExpression() {
     debug("parseExpression");
-    return parseValue();
+    auto lhs = parseValue();
+    while (token_position != tokens.end() && isBinaryOperator(**token_position)) {
+      auto token = **token_position;
+      token_position++;
+      auto rhs = parseValue();
+      lhs = generateBinaryOperation(lhs, token, rhs);
+    }
+    return lhs;
   }
 
   VMExpression* Parser::parseValue() {
