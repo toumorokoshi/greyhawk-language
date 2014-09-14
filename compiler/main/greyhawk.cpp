@@ -77,7 +77,18 @@ void interpreter() {
       auto token_position = tokens.begin();
       Parser parser(globalScope, token_position, tokens);
       auto statement = parser.parseStatement();
-      statement->execute(*globalScope);
+
+      if (auto expression = dynamic_cast<VMExpression*>(statement)) {
+        auto value = expression->evaluate(*globalScope);
+        if (value != NULL) {
+          VM::vm_print(*new std::vector<VMObject*>{value});
+        }
+
+      } else {
+        statement->execute(*globalScope);
+
+      }
+
       //parseTokens(tokens);
     } catch (LexerException& e) {
       std::cout << e.message << std::endl;

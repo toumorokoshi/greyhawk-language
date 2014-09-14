@@ -91,9 +91,14 @@ namespace parser {
         return new VMAssign(identifier->value, expression);
       }
 
-      default:
+      case LPAREN:
         token_position--;
         return parseCall();
+
+      default:
+        token_position--;
+        return parseExpression();
+
       }
 
     }
