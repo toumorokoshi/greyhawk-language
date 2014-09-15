@@ -12,6 +12,7 @@ namespace VM {
   };
 
   VMInterface* getVMIStringable();
+  VMInterface* getVMIIterable();
 }
 
 #endif

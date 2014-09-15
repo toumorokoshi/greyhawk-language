@@ -1,4 +1,5 @@
 #include "assign.hpp"
+#include "basic_types/bool.hpp"
 #include "builtins.hpp"
 #include "block.hpp"
 #include "declare.hpp"

@@ -7,6 +7,7 @@
 
 namespace VM {
 
+  /** print() **/
   VMObject* vm_print(std::vector<VMObject*>& args) {
     auto string =
       dynamic_cast<VMString*>((*args.begin())->call("toString",
@@ -22,15 +23,17 @@ namespace VM {
     return *new VMFunction(*argumentTypes, (VMRawFunction) &vm_print);
   }
 
+
   VMScope& getBuiltinScope() {
     static VMScope _BUILTIN_SCOPE;
     static bool _initialized = false;
     if (!_initialized) {
-      _BUILTIN_SCOPE.locals["print"] = &_getVMPrint();
       _BUILTIN_SCOPE.locals["__add"] = &_getVMAdd();
       _BUILTIN_SCOPE.locals["__sub"] = &_getVMSub();
       _BUILTIN_SCOPE.locals["__mul"] = &_getVMMul();
       _BUILTIN_SCOPE.locals["__div"] = &_getVMDiv();
+      _BUILTIN_SCOPE.locals["range"] = &_getVMRange();
+      _BUILTIN_SCOPE.locals["print"] = &_getVMPrint();
       _initialized = true;
     }
     return _BUILTIN_SCOPE;

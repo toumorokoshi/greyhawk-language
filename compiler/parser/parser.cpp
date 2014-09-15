@@ -125,15 +125,27 @@ namespace parser {
     auto token = *token_position;
     token_position++;
     switch(token->type) {
+
     case STRING:
       debug("parseValue: returning string.");
       return new VMConstant(new VMString(token->value));
+
     case INT:
       debug("parseValue: returning int.");
       return new VMConstant(new VMInt(std::stoi(token->value)));
+
     case IDENTIFIER:
       debug("parseValue: return identifier.");
       return new VMIdentifier(token->value);
+
+    case TRUE:
+      debug("parseValue: return true.");
+      return new VMConstant(new VMBool(true));
+
+    case FALSE:
+      debug("parseValue: return false.");
+      return new VMConstant(new VMBool(false));
+
     default:
       throw ParserException(*token, "expected value!");
     }
