@@ -126,6 +126,11 @@ namespace parser {
     token_position++;
     switch(token->type) {
 
+    case TYPE:
+      debug("parseValue: returning class.");
+      token_position--;
+      return parseClassInstantiation();
+
     case STRING:
       debug("parseValue: returning string.");
       return new VMConstant(new VMString(token->value));
@@ -150,6 +155,21 @@ namespace parser {
       throw ParserException(*token, "expected value!");
     }
   };
+
+  VMExpression* Parser::parseClassInstantiation() {
+    auto className = (*token_position)->value;
+    token_position++;
+
+    _validateToken(LPAREN, "expected a '(' for a class instantiation!");
+    token_position++;
+
+    auto arguments = parseArguments();
+
+    _validateToken(RPAREN, "expected a ')' for a class instantiation!");
+    token_position++;
+
+    return new VMCall(className, *arguments);
+  }
 
   VMCall* Parser::parseCall() {
     debug("parseCall");

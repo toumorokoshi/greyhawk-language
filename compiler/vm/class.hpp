@@ -9,11 +9,13 @@
 namespace VM {
 
   class VMMethod;
+  class VMFunction;
 
   class VMClass {
   public:
     virtual bool matches(VMClass* otherClass) { return this == otherClass; }
     std::string name;
+    VMFunction* constructor;
     std::map<std::string, VMMethod*> methods;
     VMClass(std::string _name) : name(_name) {}
     virtual ~VMClass() {}

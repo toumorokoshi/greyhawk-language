@@ -12,7 +12,7 @@ namespace VM {
   class VMObject {
   public:
     virtual VMClass* getType() = 0;
-    VMObject* call(std::string, std::vector<VMObject*>&);
+    virtual VMObject* call(std::string, std::vector<VMObject*>&);
     virtual ~VMObject() {}
   };
 
