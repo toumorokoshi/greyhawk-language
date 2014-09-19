@@ -23,7 +23,9 @@ namespace parser {
     VM::VMExpression* parseValue();
     VM::VMExpression* parseClassInstantiation();
     VM::VMCall* parseCall();
+    VM::VMCallMethod* parseMethodCall();
     std::vector<VM::VMExpression*>* parseArguments();
+    std::vector<VM::VMExpression*>* parseArgumentsParens();
 
   private:
     void _validateToken(lexer::L type, std::string message);

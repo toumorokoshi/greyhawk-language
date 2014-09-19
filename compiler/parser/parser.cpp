@@ -160,30 +160,61 @@ namespace parser {
     auto className = (*token_position)->value;
     token_position++;
 
-    _validateToken(LPAREN, "expected a '(' for a class instantiation!");
-    token_position++;
-
-    auto arguments = parseArguments();
-
-    _validateToken(RPAREN, "expected a ')' for a class instantiation!");
-    token_position++;
+    auto arguments = parseArgumentsParens();
 
     return new VMCall(className, *arguments);
   }
 
+  VMCallMethod* Parser::parseMethodCall() {
+    debug("parseMethodCall");
+    VMExpression* currentValue = parseValue();
+
+    while((*token_position)->type == DOT) {
+
+      _validateToken(DOT, "expected a . for a method call");
+      token_position++;
+
+      _validateToken(IDENTIFIER, "expected an identifier for a method call");
+      auto methodName = (*token_position)->value;
+      token_position++;
+
+      switch((*token_position)->type) {
+      case LPAREN: {
+        auto arguments = parseArgumentsParens();
+        currentValue = new VMCallMethod(currentValue,
+                                        methodName,
+                                        *arguments);
+        continue;
+      }
+
+      case DOT:
+      default:
+        // this is something like a.foo,
+        // which directly translates to a.foo()
+        currentValue = new VMCallMethod(currentValue,
+                                        methodName,
+                                        *new std::vector<VMExpression*>());
+        continue;
+      }
+
+    }
+
+    auto methodCall = dynamic_cast<VMCallMethod*>(currentValue);
+
+    if (methodCall == NULL) {
+      throw ParserException("could not parse method call!");
+    }
+
+    return methodCall;
+
+  }
+
   VMCall* Parser::parseCall() {
     debug("parseCall");
-    _validateToken(IDENTIFIER, "expected a name for a method!");
     auto method_name = (*token_position)->value;
     token_position++;
 
-    _validateToken(LPAREN, "expected a '(' for a method call!");
-    token_position++;
-
-    std::vector<VMExpression*>* arguments = parseArguments();
-
-    _validateToken(RPAREN, "expected a ')' for a method call!");
-    token_position++; // iterating passed a right paren
+    std::vector<VMExpression*>* arguments = parseArgumentsParens();
 
     debug("finished parseCall");
     return new VMCall(method_name, *arguments);
@@ -205,4 +236,18 @@ namespace parser {
     debug("parseArguments: finished");
     return arguments;
   }
+
+  std::vector<VMExpression*>* Parser::parseArgumentsParens() {
+
+    _validateToken(LPAREN, "expected a '(' for a method call!");
+    token_position++; // iterate past a left paren
+
+    std::vector<VMExpression*>* arguments = parseArguments();
+
+    _validateToken(RPAREN, "expected a ')' for a method call!");
+    token_position++; // iterat past a right paren
+
+    return arguments;
+  }
+
 };

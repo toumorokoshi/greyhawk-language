@@ -30,23 +30,9 @@ namespace VM {
   };
 
 
-  class VMAttribute : public VMExpression {
-  public:
-    VMExpression& parent;
-    std::string child;
-    VMAttribute(VMExpression _parent, std::string _child) :
-      parent(_parent), child(_child) {}
-
-    virtual VMObject* evaluate(VMScope& scope) {
-      auto parentObject = parent.evaluate(scope);
-      return parentObject->call(child, new std::vector<VMObject*>());
-    }
-
-  };
-
   class VMCall : public VMExpression {
   public:
-    VMExpression& methodExpression;
+    std::string methodName;
     std::vector<VMExpression*>& arguments;
 
     virtual VMObject* evaluate(VMScope& scope) {
@@ -55,13 +41,12 @@ namespace VM {
         evaluatedArguments.push_back(argument->evaluate(scope));
       }
 
-      auto method = (VMFunction*) methodExpression.evaluate(scope);
-      return method->call(evaluatedArguments);
+      return scope.invokeMethod(methodName, evaluatedArguments);
     }
 
-    VMCall(VMExpression& _methodExpression,
+    VMCall(std::string _methodName,
            std::vector<VMExpression*>& _arguments) :
-      methodExpression(_methodExpression), arguments(_arguments) {}
+      methodName(_methodName), arguments(_arguments) {}
   };
 
   class VMCallMethod : public VMExpression {
@@ -71,10 +56,10 @@ namespace VM {
     std::vector<VMExpression*>& arguments;
 
     VMCallMethod(VMExpression* _selfExpression,
-                 std::string _methodExpression,
+                 std::string _methodName,
                  std::vector<VMExpression*>& _arguments) :
       selfExpression(_selfExpression),
-      methodExpression(_methodExpression),
+      methodName(_methodName),
       arguments(_arguments)
     {}
 
