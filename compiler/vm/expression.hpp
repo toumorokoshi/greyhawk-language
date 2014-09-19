@@ -29,9 +29,24 @@ namespace VM {
     VMIdentifier(std::string _identifier) : identifier(_identifier) {}
   };
 
+
+  class VMAttribute : public VMExpression {
+  public:
+    VMExpression& parent;
+    std::string child;
+    VMAttribute(VMExpression _parent, std::string _child) :
+      parent(_parent), child(_child) {}
+
+    virtual VMObject* evaluate(VMScope& scope) {
+      auto parentObject = parent.evaluate(scope);
+      return parentObject->call(child, new std::vector<VMObject*>());
+    }
+
+  };
+
   class VMCall : public VMExpression {
   public:
-    std::string methodName;
+    VMExpression& methodExpression;
     std::vector<VMExpression*>& arguments;
 
     virtual VMObject* evaluate(VMScope& scope) {
@@ -40,30 +55,28 @@ namespace VM {
         evaluatedArguments.push_back(argument->evaluate(scope));
       }
 
-      return scope.invokeMethod(methodName, evaluatedArguments);
+      auto method = (VMFunction*) methodExpression.evaluate(scope);
+      return method->call(evaluatedArguments);
     }
 
-    VMCall(std::string _methodName,
+    VMCall(VMExpression& _methodExpression,
            std::vector<VMExpression*>& _arguments) :
-      methodName(_methodName), arguments(_arguments) {}
+      methodExpression(_methodExpression), arguments(_arguments) {}
   };
 
   class VMCallMethod : public VMExpression {
   public:
-    VMMethod* method;
-    VMObject* self;
+    VMExpression* selfExpression;
+    std::string methodName;
     std::vector<VMExpression*>& arguments;
-    VMCallMethod(VMObject* self, std::string methodName,
+
+    VMCallMethod(VMExpression* _selfExpression,
+                 std::string _methodExpression,
                  std::vector<VMExpression*>& _arguments) :
-      arguments(_arguments) {
-
-      VMClass* type = self->getType();
-      if (type->methods.find(methodName) == type->methods.end()) {
-        throw VMException("method " + methodName + " does not exist");
-      }
-
-      method = type->methods[methodName];
-    }
+      selfExpression(_selfExpression),
+      methodExpression(_methodExpression),
+      arguments(_arguments)
+    {}
 
     virtual VMObject* evaluate(VMScope& scope) {
       std::vector<VMObject*> evaluatedArguments;
@@ -71,7 +84,9 @@ namespace VM {
         evaluatedArguments.push_back(argument->evaluate(scope));
       }
 
-      return method->call(self, evaluatedArguments);
+      auto self = selfExpression->evaluate(scope);
+
+      return self->call(methodName, evaluatedArguments);
     }
 
   };

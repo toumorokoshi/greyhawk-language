@@ -37,6 +37,7 @@ namespace lexer {
     {LESS_THAN, "<"},
     {GREATER_THAN, ">"},
     {COLON, ":"},
+    {DOT, "."},
     {IS, "is"}
   };
 
@@ -64,6 +65,7 @@ namespace lexer {
     pairFromType(R_CURLY),
     pairFromType(COLON),
     pairFromType(COMMA),
+    pairFromType(DOT),
     // binary operators
     pairFromType(PLUS),
     pairFromType(MINUS),

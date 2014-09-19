@@ -34,6 +34,7 @@ namespace lexer {
     RPAREN,
     COMMA,
     COLON,
+    DOT,
     DECLARE,
     ASSIGN,
     L_BRACKET,

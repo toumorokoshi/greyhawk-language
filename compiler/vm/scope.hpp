@@ -26,7 +26,7 @@ namespace VM {
         return _parentScope->getObject(name);
       }
 
-      throw VMException(name + "is not defined!");
+      throw VMException(name + " is not defined!");
 
     }
 

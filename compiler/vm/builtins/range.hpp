@@ -32,7 +32,7 @@ namespace VM {
 
     VMObject* call(std::string methodName, std::vector<VMObject*>&) {
 
-      if      (methodName == "hasNext") { return hasNext(); }
+      if      (methodName == "hasNext") {  return hasNext(); }
       else if (methodName == "next") { return next(); }
       else if (methodName == "toString") { return toString(); }
 
