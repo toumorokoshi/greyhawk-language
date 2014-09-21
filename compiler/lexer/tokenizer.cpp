@@ -108,7 +108,7 @@ const Token& Tokenizer::matchKeyword(StringScanner& scanner, int line) {
   while (scanner.hasNext()) {
     char next = scanner.peek();
 
-    if (isTokenBreakCharacter(next) || !(isAlphaNumeric(next) || next == '.')) {
+    if (isTokenBreakCharacter(next) || !isAlphaNumeric(next)) {
       break;
     }
 

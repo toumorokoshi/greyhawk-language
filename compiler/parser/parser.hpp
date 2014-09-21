@@ -21,9 +21,10 @@ namespace parser {
     VM::VMStatement* parseStatement();
     VM::VMExpression* parseExpression();
     VM::VMExpression* parseValue();
+    VM::VMExpression* parseBaseValue();
     VM::VMExpression* parseClassInstantiation();
     VM::VMCall* parseCall();
-    VM::VMCallMethod* parseMethodCall();
+    VM::VMCallMethod* parseMethodCall(VM::VMExpression*);
     std::vector<VM::VMExpression*>* parseArguments();
     std::vector<VM::VMExpression*>* parseArgumentsParens();
 

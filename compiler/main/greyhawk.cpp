@@ -107,8 +107,6 @@ void interpreter() {
 
 
 int main(int argc, char *argv[]) {
-  // THIS MUST BE CALLED
-  // BEFORE LLVM RUNS CODE
   tokenizer = new Tokenizer();
   globalScope = new VMScope(getBuiltinScope());
   CommandLineArguments& args = getArguments(argc, argv);

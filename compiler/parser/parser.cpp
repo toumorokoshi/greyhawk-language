@@ -121,6 +121,16 @@ namespace parser {
   }
 
   VMExpression* Parser::parseValue() {
+    auto baseValue = parseBaseValue();
+
+    if ((*token_position)->type == DOT) {
+      return parseMethodCall(baseValue);
+    }
+
+    return baseValue;
+  }
+
+  VMExpression* Parser::parseBaseValue() {
     debug("parseValue");
     auto token = *token_position;
     token_position++;
@@ -165,11 +175,11 @@ namespace parser {
     return new VMCall(className, *arguments);
   }
 
-  VMCallMethod* Parser::parseMethodCall() {
+  VMCallMethod* Parser::parseMethodCall(VMExpression* currentValue) {
     debug("parseMethodCall");
-    VMExpression* currentValue = parseValue();
 
-    while((*token_position)->type == DOT) {
+    debug("parseMethodCall: top of the while");
+    while(token_position != tokens.end() && (*token_position)->type == DOT) {
 
       _validateToken(DOT, "expected a . for a method call");
       token_position++;
@@ -181,23 +191,29 @@ namespace parser {
       switch((*token_position)->type) {
       case LPAREN: {
         auto arguments = parseArgumentsParens();
+
+        debug("parseMethodCall: found method call, creating VMCallMethod..");
         currentValue = new VMCallMethod(currentValue,
                                         methodName,
                                         *arguments);
-        continue;
+        break;
       }
 
       case DOT:
       default:
         // this is something like a.foo,
         // which directly translates to a.foo()
+        debug("parseMethodCall: found property, implicitly creating VMCallMethod..");
+        debug(methodName);
         currentValue = new VMCallMethod(currentValue,
                                         methodName,
                                         *new std::vector<VMExpression*>());
-        continue;
+        break;
       }
 
     }
+
+    debug("parseMethodCall: found all chained instantiations.");
 
     auto methodCall = dynamic_cast<VMCallMethod*>(currentValue);
 
@@ -205,6 +221,7 @@ namespace parser {
       throw ParserException("could not parse method call!");
     }
 
+    debug("parseMethodCall: finished");
     return methodCall;
 
   }
@@ -227,7 +244,8 @@ namespace parser {
       arguments->push_back(parseExpression());
       if ((*token_position)->type != RPAREN) {
         if ((*token_position)->type != COMMA) {
-          throw ParserException("expected a ',' in between arguments.");
+          throw ParserException(**token_position,
+                                "expected a ',' in between arguments.");
         }
         token_position++;
       }
