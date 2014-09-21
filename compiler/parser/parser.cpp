@@ -42,11 +42,14 @@ namespace parser {
   }
 
   void Parser::_validateToken(L type, std::string message) {
+    debug("validateToken");
 
     if (token_position == tokens.end()) {
+      debug("validateToken: at end");
       throw ParserException(message);
 
     } else if ((*token_position)->type != type) {
+      debug("validateToken: type mismatch");
       throw ParserException(**token_position,
                             message + " found " + (*token_position)->getDescription());
 
@@ -179,28 +182,28 @@ namespace parser {
     debug("parseMethodCall");
 
     debug("parseMethodCall: top of the while");
+    // debug(std::to_string(*token_position));
+    debug(std::to_string((*token_position)->type));
     while(token_position != tokens.end() && (*token_position)->type == DOT) {
 
       _validateToken(DOT, "expected a . for a method call");
       token_position++;
 
       _validateToken(IDENTIFIER, "expected an identifier for a method call");
+      debug("parsing identifier...");
       auto methodName = (*token_position)->value;
       token_position++;
 
-      switch((*token_position)->type) {
-      case LPAREN: {
+      if (token_position != tokens.end() && (*token_position)->type == LPAREN) {
         auto arguments = parseArgumentsParens();
 
         debug("parseMethodCall: found method call, creating VMCallMethod..");
         currentValue = new VMCallMethod(currentValue,
                                         methodName,
                                         *arguments);
-        break;
-      }
+        continue;
 
-      case DOT:
-      default:
+      } else {
         // this is something like a.foo,
         // which directly translates to a.foo()
         debug("parseMethodCall: found property, implicitly creating VMCallMethod..");
@@ -208,7 +211,7 @@ namespace parser {
         currentValue = new VMCallMethod(currentValue,
                                         methodName,
                                         *new std::vector<VMExpression*>());
-        break;
+        continue;
       }
 
     }

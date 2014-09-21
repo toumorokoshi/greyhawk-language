@@ -96,6 +96,9 @@ void interpreter() {
     } catch (ParserException& e) {
       std::cout << e.message << std::endl;
       continue;
+    } catch (VMException& e) {
+      std::cout << e.message << std::endl;
+      continue;
     }
   }
 }

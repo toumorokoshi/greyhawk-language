@@ -34,7 +34,7 @@ VM_FILES=vm/*.cpp vm/basic_types/*.cpp vm/builtins/*.cpp
 
 # note: llvm_config must come after source files
 compiler:
-	clang++ main/greyhawk.cpp $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(BOOST_OPTIONS) $(OPTIONS) $(VM_FILES) -o ../bin/greyhawk
+	clang++ main/greyhawk.cpp $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(BOOST_OPTIONS) $(OPTIONS) $(VM_FILES) -g -o ../bin/greyhawk
 
 tests:
 	clang++ -o ../bin/unit_tests $(LEXER_FILES) $(PARSER_FILES) vm/*.cpp lexer/tests/*.cpp vm/tests/*.cpp parser/tests/*.cpp main/tests.cpp $(OPTIONS) -lgtest $(YAML_OPTIONS)

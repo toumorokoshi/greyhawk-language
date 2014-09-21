@@ -22,7 +22,7 @@ namespace VM {
     VMBool* hasNext() { return new VMBool(_curVal < _max); }
 
     VMInt* next() {
-      if (!hasNext()) {
+      if (!hasNext()->value) {
         throw VMException("IntRange has no next element!");
       }
       return new VMInt(_curVal++);
