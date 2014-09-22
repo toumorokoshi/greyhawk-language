@@ -58,7 +58,7 @@ namespace parser {
 
   VMBlock* Parser::parseBlock() {
     debug("parseBlock");
-    auto block = new VMBlock(scope);
+    auto block = new VMBlock();
 
     while (token_position != tokens.end()
            && (*token_position)->type != UNINDENT) {
@@ -106,9 +106,41 @@ namespace parser {
 
     }
 
+    case FOR:
+      return parseForLoop();
+
     default:
       return parseExpression();
     }
+  }
+
+  VMForLoop* Parser::parseForLoop() {
+   debug("parseForLoop");
+
+    _validateToken(FOR, "expected a for a for loop");
+    token_position++;
+
+    _validateToken(IDENTIFIER, "expected a identifier for a for loop");
+    auto variableName = (*token_position)->value;
+    token_position++;
+
+    _validateToken(IN, "expected a in for a for loop");
+    token_position++;
+
+    auto expression = parseExpression();
+
+    _validateToken(COLON, "expected a : for a for loop");
+    token_position++;
+
+    _validateToken(INDENT, "expected an indent for a for loop");
+    token_position++;
+
+    auto block = parseBlock();
+
+    _validateToken(UNINDENT, "expected an unindent for a for loop");
+    token_position++;
+
+    return new VMForLoop(block, variableName, expression);
   }
 
   VMExpression* Parser::parseExpression() {

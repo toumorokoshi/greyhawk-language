@@ -11,6 +11,8 @@ namespace lexer {
     {TYPE, "type"},
     {IF, "if"},
     {ELSE, "else"},
+    {FOR, "for"},
+    {IN, "in"},
     {RETURN, "return"},
     {TRUE, "true"},
     {FALSE, "false"},
@@ -49,6 +51,8 @@ namespace lexer {
   const KeywordPairVector keywordList {
     pairFromType(ELSE),
     pairFromType(IF),
+    pairFromType(FOR),
+    pairFromType(IN),
     pairFromType(RETURN),
     pairFromType(FALSE),
     pairFromType(TRUE),

@@ -13,3 +13,4 @@ bin/parser
 bin/greyhawk
 bin/lexer
 bin/unit_tests
+bin/greyhawk.dSYM

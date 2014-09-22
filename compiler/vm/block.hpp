@@ -9,17 +9,12 @@ namespace VM {
 
   class VMBlock {
   public:
-    VMScope scope;
     std::vector<VMStatement*> statements;
 
-    VMBlock(VMScope* parentScope) :
-      scope(VMScope(parentScope)) {}
-
-    VMObject* execute() {
+    void execute(VMScope& scope) {
       for (auto statement : statements) {
         statement->execute(scope);
       }
-      return NULL;
     }
 
   };

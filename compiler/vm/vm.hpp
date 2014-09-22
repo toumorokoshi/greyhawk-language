@@ -5,6 +5,7 @@
 #include "declare.hpp"
 #include "exceptions.hpp"
 #include "expression.hpp"
+#include "for.hpp"
 #include "int.hpp"
 #include "interface.hpp"
 #include "object.hpp"

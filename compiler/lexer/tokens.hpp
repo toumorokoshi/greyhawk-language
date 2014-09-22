@@ -25,6 +25,8 @@ namespace lexer {
     IF,
     ELSE,
     RETURN,
+    FOR,
+    IN,
     TRUE,
     FALSE,
     CLASS,

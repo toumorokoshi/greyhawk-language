@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
       auto token_position = tokens.begin();
       Parser parser(globalScope, token_position, tokens);
       auto rootBlock = parser.parseBlock();
-      rootBlock->execute();
+      rootBlock->execute(*globalScope);
 
     } else {
       interpreter();
