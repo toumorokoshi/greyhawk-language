@@ -1,0 +1,4 @@
+if false:
+	print("true")
+else:
+	print("not so true")

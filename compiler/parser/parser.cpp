@@ -70,6 +70,43 @@ namespace parser {
     return block;
   }
 
+  VMIfElse* Parser::parseIfElse() {
+    debug("parseIfElse");
+
+    _validateToken(IF, "expected an 'if' for an if else statement");
+    token_position++;
+
+    auto expression = parseExpression();
+
+    _validateToken(COLON, "expected an ':' for an if else statement");
+    token_position++;
+
+    _validateToken(INDENT, "expected an indent for an if statement");
+    token_position++;
+
+    auto trueBlock = parseBlock();
+
+    _validateToken(UNINDENT, "expected an unindent for an if statement");
+    token_position++;
+
+    _validateToken(ELSE, "expected an 'else' for an else statement");
+    token_position++;
+
+    _validateToken(COLON, "expected an ':' for an else statement");
+    token_position++;
+
+     _validateToken(INDENT, "expected an indent for an if statement");
+    token_position++;
+
+    auto falseBlock = parseBlock();
+
+    _validateToken(UNINDENT, "expected an unindent for an if statement");
+    token_position++;
+
+    return new VMIfElse(expression, trueBlock, falseBlock);
+
+  }
+
   VMStatement* Parser::parseStatement() {
     debug("parseStatement");
     auto token = *token_position;
@@ -80,31 +117,40 @@ namespace parser {
       auto identifier = token;
       token_position++;
 
-      switch ((*token_position)->type) {
+      if (token_position != tokens.end()) {
 
-      case DECLARE: {
-        token_position++; // iterate past declare
-        VMExpression* expression = parseExpression();
-        return new VMDeclare(identifier->value, expression);
+        switch ((*token_position)->type) {
+
+        case DECLARE: {
+          token_position++; // iterate past declare
+          VMExpression* expression = parseExpression();
+          return new VMDeclare(identifier->value, expression);
+        }
+
+        case ASSIGN: {
+          token_position++; // iterate past assign
+          VMExpression* expression = parseExpression();
+          return new VMAssign(identifier->value, expression);
+        }
+
+        case LPAREN:
+          token_position--;
+          return parseCall();
+
+        default:
+          break;
+
+        }
+
       }
 
-      case ASSIGN: {
-        token_position++; // iterate past assign
-        VMExpression* expression = parseExpression();
-        return new VMAssign(identifier->value, expression);
-      }
-
-      case LPAREN:
-        token_position--;
-        return parseCall();
-
-      default:
-        token_position--;
-        return parseExpression();
-
-      }
+      token_position--;
+      return parseExpression();
 
     }
+
+    case IF:
+      return parseIfElse();
 
     case FOR:
       return parseForLoop();
@@ -158,7 +204,7 @@ namespace parser {
   VMExpression* Parser::parseValue() {
     auto baseValue = parseBaseValue();
 
-    if ((*token_position)->type == DOT) {
+    if (token_position != tokens.end() && (*token_position)->type == DOT) {
       return parseMethodCall(baseValue);
     }
 
@@ -166,34 +212,34 @@ namespace parser {
   }
 
   VMExpression* Parser::parseBaseValue() {
-    debug("parseValue");
+    debug("parseBaseValue");
     auto token = *token_position;
     token_position++;
     switch(token->type) {
 
     case TYPE:
-      debug("parseValue: returning class.");
+      debug("parseBaseValue: returning class.");
       token_position--;
       return parseClassInstantiation();
 
     case STRING:
-      debug("parseValue: returning string.");
+      debug("parseBaseValue: returning string.");
       return new VMConstant(new VMString(token->value));
 
     case INT:
-      debug("parseValue: returning int.");
+      debug("parseBaseValue: returning int.");
       return new VMConstant(new VMInt(std::stoi(token->value)));
 
     case IDENTIFIER:
-      debug("parseValue: return identifier.");
+      debug("parseBaseValue: return identifier.");
       return new VMIdentifier(token->value);
 
     case TRUE:
-      debug("parseValue: return true.");
+      debug("parseBaseValue: return true.");
       return new VMConstant(new VMBool(true));
 
     case FALSE:
-      debug("parseValue: return false.");
+      debug("parseBaseValue: return false.");
       return new VMConstant(new VMBool(false));
 
     default:
