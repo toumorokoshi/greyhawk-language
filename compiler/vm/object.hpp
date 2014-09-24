@@ -33,21 +33,7 @@ namespace VM {
     VMInt(int _value): value(_value) {}
   };
 
-  typedef VMObject* (*VMRawFunction)(VMObjectList&);
   typedef VMObject* (*VMRawMethod)(VMObject*, VMObjectList&);
-
-  class VMFunction : public VMObject {
-  public:
-    virtual VMClass* getType() { return getVMFunctionClass(); };
-    VMObject* call(VMObjectList& arguments);
-    VMFunction(std::vector<VMClass*>& argumentTypes,
-               VMRawFunction rawFunction) :
-      _argumentTypes(argumentTypes),
-      _rawFunction(rawFunction) {}
-  private:
-    std::vector<VMClass*>& _argumentTypes;
-    VMRawFunction _rawFunction;
-  };
 
   class VMMethod : public VMObject {
   public:

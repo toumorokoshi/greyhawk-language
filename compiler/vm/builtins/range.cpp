@@ -15,8 +15,8 @@ namespace VM {
       auto constructorArguments = new std::vector<VMClass*> {
         getVMIntClass()
       };
-      auto constructor = new VMFunction(*constructorArguments,
-                                        (VMRawFunction) &intRangeConstructor);
+      auto constructor = new VMRawFunctionWrapper(*constructorArguments,
+                                                  (VMRawFunction) &intRangeConstructor);
 
       IntRange->constructor = constructor;
       _initialized = true;

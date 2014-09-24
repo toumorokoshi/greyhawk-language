@@ -1,2 +1,2 @@
-for i in IntRange(5):
+for i in IntRange(10000):
 	print(i)

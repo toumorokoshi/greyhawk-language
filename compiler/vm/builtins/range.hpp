@@ -3,6 +3,7 @@
 #include "../string.hpp"
 #include "../basic_types/bool.hpp"
 #include "../exceptions.hpp"
+#include "../function.hpp"
 
 #ifndef VM_BUILTINS_RANGE_HPP
 #define VM_BUILTINS_RANGE_HPP

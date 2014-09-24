@@ -1,4 +1,5 @@
 #include "./arithmetic.hpp"
+#include "function.hpp"
 #include <iostream>
 
 namespace VM {
@@ -13,8 +14,8 @@ namespace VM {
     static auto argumentTypes = new std::vector<VMClass*> {
       getVMIntClass(), getVMIntClass()
     };
-    static VMFunction* VMAdd = new VMFunction(*argumentTypes,
-                                              (VMRawFunction) &vm_add);
+    static VMFunction* VMAdd = new VMRawFunctionWrapper(*argumentTypes,
+                                                        (VMRawFunction) &vm_add);
     return *VMAdd;
   }
 
@@ -28,8 +29,8 @@ namespace VM {
     static auto argumentTypes = new std::vector<VMClass*> {
       getVMIntClass(), getVMIntClass()
     };
-    static VMFunction* VMSub = new VMFunction(*argumentTypes,
-                                              (VMRawFunction) &vm_sub);
+    static VMFunction* VMSub = new VMRawFunctionWrapper(*argumentTypes,
+                                                        (VMRawFunction) &vm_sub);
     return *VMSub;
   }
 
@@ -43,8 +44,8 @@ namespace VM {
     static auto argumentTypes = new std::vector<VMClass*> {
       getVMIntClass(), getVMIntClass()
     };
-    static VMFunction* VMMul = new VMFunction(*argumentTypes,
-                                              (VMRawFunction) &vm_mul);
+    static VMFunction* VMMul = new VMRawFunctionWrapper(*argumentTypes,
+                                                        (VMRawFunction) &vm_mul);
     return *VMMul;
   }
 
@@ -58,8 +59,8 @@ namespace VM {
     static auto argumentTypes = new std::vector<VMClass*> {
       getVMIntClass(), getVMIntClass()
     };
-    static VMFunction* VMDiv = new VMFunction(*argumentTypes,
-                                              (VMRawFunction) &vm_div);
+    static VMFunction* VMDiv = new VMRawFunctionWrapper(*argumentTypes,
+                                                        (VMRawFunction) &vm_div);
     return *VMDiv;
   }
 

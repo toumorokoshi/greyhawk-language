@@ -113,6 +113,9 @@ namespace parser {
 
     switch (token->type) {
 
+    case TYPE:
+      return parseFunctionDeclaration();
+
     case IDENTIFIER: {
       auto identifier = token;
       token_position++;
@@ -158,6 +161,56 @@ namespace parser {
     default:
       return parseExpression();
     }
+  }
+
+  VMFunctionDeclaration* Parser::parseFunctionDeclaration() {
+    // skip for now. I'll add this in later.
+    _validateToken(TYPE, "expected a type for a function declaration");
+    token_position++;
+
+    _validateToken(IDENTIFIER, "expected a function name for a function declaration");
+    auto functionName = (*token_position)->value;
+    token_position++;
+
+    _validateToken(LPAREN, "expected a '(' for a method call!");
+    token_position++; // iterate past a left paren
+
+    auto arguments = new VMArgumentList();
+
+    while ((*token_position)->type != RPAREN) {
+
+      _validateToken(IDENTIFIER, "expected a variable name for a function declaration");
+      auto variableName = (*token_position)->value;
+      token_position++;
+
+      _validateToken(TYPE, "expected a variable name for a function declaration");
+      auto typeName = (*token_position)->value;
+      token_position++;
+
+      arguments->push_back(new VMArgumentDefinition(variableName, typeName));
+
+      if ((*token_position)->type == COMMA) {
+        token_position++;
+      }
+
+    }
+
+    _validateToken(RPAREN, "expected a ')' for a function declaration!");
+    token_position++; // iterate past a right paren
+
+    _validateToken(COLON, "expected a ':' for a function declaration!");
+    token_position++; // iterate past colon
+
+    _validateToken(INDENT, "expected an indent for an function declaration");
+    token_position++;
+
+    auto body = parseBlock();
+
+    _validateToken(UNINDENT, "expected an unindent for an function declaration");
+    token_position++;
+
+    return new VMFunctionDeclaration(functionName, *arguments, body);
+
   }
 
   VMForLoop* Parser::parseForLoop() {

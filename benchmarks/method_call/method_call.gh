@@ -1,0 +1,5 @@
+Int doMath(a Int, b Int):
+	print(a + b)
+
+for i in IntRange(10000):
+	doMath(1, 2)

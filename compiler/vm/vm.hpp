@@ -6,6 +6,7 @@
 #include "exceptions.hpp"
 #include "expression.hpp"
 #include "for.hpp"
+#include "function.hpp"
 #include "ifelse.hpp"
 #include "int.hpp"
 #include "interface.hpp"

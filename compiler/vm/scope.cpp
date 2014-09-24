@@ -1,5 +1,6 @@
 #include "./scope.hpp"
 #include "./exceptions.hpp"
+#include "function.hpp"
 
 namespace VM {
 
@@ -8,7 +9,7 @@ namespace VM {
     auto object = getObject(methodName);
 
     if (auto method = dynamic_cast<VMFunction*>(object)) {
-      return method->call(arguments);
+      return method->call(*this, arguments);
 
     } else {
       throw VMException(methodName + " is not a function!");

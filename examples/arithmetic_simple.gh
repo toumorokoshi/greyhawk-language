@@ -1,0 +1,4 @@
+Int doMath(a Int, b Int):
+	print(a + b)
+
+doMath(1, 2)
