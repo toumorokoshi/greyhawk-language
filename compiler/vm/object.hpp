@@ -1,6 +1,4 @@
-#include "./class.hpp"
-#include "./string.hpp"
-#include "int.hpp"
+#include "class.hpp"
 #include "exceptions.hpp"
 #include <functional>
 
@@ -17,33 +15,6 @@ namespace VM {
   };
 
   typedef std::vector<VMObject*> VMObjectList;
-
-  class VMString : public VMObject {
-  public:
-    std::string value;
-    virtual VMClass* getType() { return getVMStringClass(); };
-    VMString(std::string _value) :
-      value(_value) {}
-  };
-
-  class VMInt : public VMObject {
-  public:
-    int value;
-    virtual VMClass* getType() { return getVMIntClass(); };
-    VMInt(int _value): value(_value) {}
-  };
-
-  typedef VMObject* (*VMRawMethod)(VMObject*, VMObjectList&);
-
-  class VMMethod : public VMObject {
-  public:
-    virtual VMClass* getType() { return getVMMethodClass(); }
-    VMObject* call(VMObject* self, VMObjectList& arguments);
-    VMMethod(std::vector<VMClass*>& argumentTypes, VMRawMethod rawMethod);
-  private:
-    std::vector<VMClass*>& _argumentTypes;
-    VMRawMethod _rawMethod;
-  };
 
   class VMStructInstance : public VMObject {
   public:

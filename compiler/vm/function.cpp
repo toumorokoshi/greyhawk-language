@@ -2,6 +2,11 @@
 
 namespace VM {
 
+  VMClass* getVMFunctionClass() {
+    static auto VMFunctionClass = new VMClass("Function");
+    return VMFunctionClass;
+  }
+
   VMObject* VMRawFunctionWrapper::call(VMScope& scope, VMObjectList& arguments) {
     // type checking
     if (arguments.size() != _argumentTypes.size()) {

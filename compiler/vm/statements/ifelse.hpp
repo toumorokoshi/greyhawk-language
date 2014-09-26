@@ -1,6 +1,6 @@
-#include "block.hpp"
-#include "statement.hpp"
-#include "expression.hpp"
+#include "../block.hpp"
+#include "../statement.hpp"
+#include "../expression.hpp"
 
 #ifndef VM_IFELSE_HPP
 #define VM_IFELSE_HPP

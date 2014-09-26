@@ -1,5 +1,5 @@
 #include "ifelse.hpp"
-#include "utils.hpp"
+#include "../basic_types/bool.hpp"
 
 namespace VM {
 

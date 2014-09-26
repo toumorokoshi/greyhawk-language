@@ -1,5 +1,5 @@
 #include "for.hpp"
-#include "basic_types/bool.hpp"
+#include "../basic_types/bool.hpp"
 
 namespace VM {
 

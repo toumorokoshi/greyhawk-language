@@ -1,4 +1,5 @@
 #include "../statement.hpp"
+#include "../expression.hpp"
 
 
 #ifndef VM_STATEMENT_RETURN_HPP

@@ -1,7 +1,8 @@
 #include "../class.hpp"
 #include "../object.hpp"
-#include "../string.hpp"
 #include "../basic_types/bool.hpp"
+#include "../basic_types/int.hpp"
+#include "../basic_types/string.hpp"
 #include "../exceptions.hpp"
 #include "../function.hpp"
 

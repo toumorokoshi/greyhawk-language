@@ -1,5 +1,5 @@
-#include "./string.hpp"
-#include "./object.hpp"
+#include "string.hpp"
+#include "../method.hpp"
 
 namespace VM {
 

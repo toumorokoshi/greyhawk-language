@@ -9,6 +9,7 @@ namespace VM {
 
   typedef VMObject* (*VMRawFunction)(VMObjectList&);
 
+  VMClass* getVMFunctionClass();
 
   class VMFunction : public VMObject {
   public:

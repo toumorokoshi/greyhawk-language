@@ -1,5 +1,6 @@
-#include "./arithmetic.hpp"
+#include "arithmetic.hpp"
 #include "function.hpp"
+#include "basic_types/int.hpp"
 #include <iostream>
 
 namespace VM {

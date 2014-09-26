@@ -7,6 +7,8 @@ namespace VM {
 
   VMClass* getVMBoolClass();
 
+  bool evaluate_vmbool(VMObject* b);
+
   class VMBool : public VMObject {
   public:
     bool value;

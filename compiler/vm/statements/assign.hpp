@@ -1,6 +1,6 @@
-#include "statement.hpp"
-#include "expression.hpp"
-#include "exceptions.hpp"
+#include "../statement.hpp"
+#include "../expression.hpp"
+#include "../exceptions.hpp"
 
 #ifndef VM_ASSIGN_HPP
 #define VM_ASSIGN_HPP

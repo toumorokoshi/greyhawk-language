@@ -30,7 +30,7 @@ parser:
 	clang++ main/parser.cpp $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(OPTIONS) -o ../bin/parser
 
 CODEGEN_FILES=codegen/*.cpp
-VM_FILES=vm/*.cpp vm/basic_types/*.cpp vm/builtins/*.cpp
+VM_FILES=vm/*.cpp vm/basic_types/*.cpp vm/builtins/*.cpp vm/statements/*.cpp
 
 # note: llvm_config must come after source files
 compiler:

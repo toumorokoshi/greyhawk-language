@@ -1,4 +1,6 @@
-#include "./object.hpp"
+#include "int.hpp"
+#include "../method.hpp"
+#include "string.hpp"
 #include <iostream>
 
 namespace VM {
@@ -9,16 +11,16 @@ namespace VM {
   }
 
   VMClass* getVMIntClass() {
-    static auto VMStringClass = new VMClass("Int");
+    static auto VMIntClass = new VMClass("Int");
     static bool _initialized = false;
 
     if (!_initialized) {
       auto arguments = new std::vector<VMClass*>;
-      VMStringClass->methods["toString"] = new VMMethod(*arguments,
+      VMIntClass->methods["toString"] = new VMMethod(*arguments,
                                                         (VMRawMethod) &InttoString);
     }
 
-    return VMStringClass;
+    return VMIntClass;
   }
 
 }

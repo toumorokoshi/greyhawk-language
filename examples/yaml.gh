@@ -1,0 +1,19 @@
+map := yaml.load(YAML_FILE)
+
+switch(map):
+	Map:
+		service_map := map['service_name']
+		switch(service_map):
+
+	default:
+		raise Exception()
+
+
+class Manifest:
+	String _name,
+
+
+Schema manifestSchema := Schema(
+	String _name,
+
+)

@@ -1,10 +1,16 @@
 #include "bool.hpp"
+#include "string.hpp"
+#include "../method.hpp"
 
 namespace VM {
 
   VMObject* BoolToString(VMObject* self, VMObjectList& arguments) {
     auto boolObject = dynamic_cast<VMBool*>(self);
     return new VMString(boolObject->value ? "true" : "false");
+  }
+
+  bool evaluate_vmbool(VMObject* b) {
+    return dynamic_cast<VMBool*>(b)->value;
   }
 
   VMClass* getVMBoolClass() {
