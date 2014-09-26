@@ -3,11 +3,11 @@
 
 namespace VM {
 
-  void VMIfElse::execute(VMScope& scope) {
+  VMObject* VMIfElse::execute(VMScope& scope) {
     if (evaluate_vmbool(ifStatement->evaluate(scope))) {
-      trueBlock->execute(scope);
+      return trueBlock->execute(scope);
     } else {
-      falseBlock->execute(scope);
+      return falseBlock->execute(scope);
     }
   }
 

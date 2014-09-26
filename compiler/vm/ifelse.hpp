@@ -12,7 +12,7 @@ namespace VM {
     VMExpression * ifStatement;
     VMBlock* trueBlock;
     VMBlock* falseBlock;
-    virtual void execute(VMScope& scope);
+    virtual VMObject* execute(VMScope& scope);
     VMIfElse(VMExpression* _ifStatement,
              VMBlock* _trueBlock,
              VMBlock* _falseBlock) :

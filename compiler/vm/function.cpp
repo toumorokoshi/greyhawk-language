@@ -36,12 +36,12 @@ namespace VM {
       localScope.locals[argumentDefinition->first] = object;
     }
 
-    body->execute(localScope);
-    return NULL;
+    return body->execute(localScope);
   }
 
-  void VMFunctionDeclaration::execute(VMScope& scope) {
+  VMObject* VMFunctionDeclaration::execute(VMScope& scope) {
     scope.locals[functionName] = this;
+    return NULL;
   }
 
 }

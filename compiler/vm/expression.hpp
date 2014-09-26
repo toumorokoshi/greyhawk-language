@@ -11,7 +11,9 @@ namespace VM {
   class VMExpression : public VMStatement {
   public:
     virtual VMObject* evaluate(VMScope& scope) = 0;
-    virtual void execute(VMScope& scope) { evaluate(scope); }
+    // we don't return anything for execute because we're not explicitly returning
+    // the value (via a return statement)
+    virtual VMObject* execute(VMScope& scope) { evaluate(scope); return NULL; }
     virtual ~VMExpression() {}
   };
 

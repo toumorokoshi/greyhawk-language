@@ -11,10 +11,17 @@ namespace VM {
   public:
     std::vector<VMStatement*> statements;
 
-    void execute(VMScope& scope) {
+    VMObject* execute(VMScope& scope) {
+
       for (auto statement : statements) {
-        statement->execute(scope);
+        auto object = statement->execute(scope);
+        if (object != NULL) {
+          return object;
+        }
+
       }
+
+      return NULL;
     }
 
   };

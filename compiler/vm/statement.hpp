@@ -8,7 +8,7 @@ namespace VM {
 
   class VMStatement {
   public:
-    virtual void execute(VMScope& scope) = 0;
+    virtual VMObject* execute(VMScope& scope) = 0;
     virtual ~VMStatement() {}
   };
 }

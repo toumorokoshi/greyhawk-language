@@ -158,6 +158,9 @@ namespace parser {
     case FOR:
       return parseForLoop();
 
+    case RETURN:
+      return parseReturn();
+
     default:
       return parseExpression();
     }
@@ -211,6 +214,15 @@ namespace parser {
 
     return new VMFunctionDeclaration(functionName, *arguments, body);
 
+  }
+
+  VMReturn* Parser::parseReturn() {
+    _validateToken(RETURN, "expected a return for a return statment");
+    token_position++;
+
+    auto expression = parseExpression();
+
+    return new VMReturn(expression);
   }
 
   VMForLoop* Parser::parseForLoop() {
@@ -283,9 +295,25 @@ namespace parser {
       debug("parseBaseValue: returning int.");
       return new VMConstant(new VMInt(std::stoi(token->value)));
 
-    case IDENTIFIER:
+    case IDENTIFIER: {
+      if (token_position != tokens.end()) {
+        debug("parseBaseValue: switch on identifier");
+
+        switch((*token_position)->type) {
+
+        case LPAREN:
+          token_position--;
+          return parseCall();
+
+        default:
+          break;
+
+        }
+      }
+
       debug("parseBaseValue: return identifier.");
       return new VMIdentifier(token->value);
+    }
 
     case TRUE:
       debug("parseBaseValue: return true.");

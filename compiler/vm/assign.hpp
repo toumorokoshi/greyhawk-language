@@ -15,7 +15,7 @@ namespace VM {
     VMAssign(std::string _name, VMExpression* _expression) :
       name(_name), expression(_expression) {}
 
-    virtual void execute(VMScope& scope) {
+    virtual VMObject* execute(VMScope& scope) {
       if (scope.locals.find(name) == scope.locals.end()) {
         throw VMException("'" + name + "' is not declared!");
       }
@@ -28,6 +28,7 @@ namespace VM {
       }
 
       scope.locals[name] = new_value;
+      return NULL;
     }
   };
 }

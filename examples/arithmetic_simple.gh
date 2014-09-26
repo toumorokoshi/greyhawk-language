@@ -1,4 +1,5 @@
 Int doMath(a Int, b Int):
-	print(a + b)
+	x := a + b
+	return x
 
-doMath(1, 2)
+print(doMath(1, 2))

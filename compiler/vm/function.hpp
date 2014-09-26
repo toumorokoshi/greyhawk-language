@@ -37,7 +37,7 @@ namespace VM {
     std::string functionName;
     VMBlock* body;
     VMArgumentList& arguments;
-    virtual void execute(VMScope& scope);
+    virtual VMObject* execute(VMScope& scope);
     virtual VMObject* call(VMScope& scope, VMObjectList& arguments);
     VMFunctionDeclaration(std::string _functionName,
                           VMArgumentList& _arguments,

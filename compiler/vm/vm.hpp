@@ -12,4 +12,6 @@
 #include "interface.hpp"
 #include "object.hpp"
 #include "scope.hpp"
+#include "statement.hpp"
+#include "statements/return.hpp"
 #include "string.hpp"

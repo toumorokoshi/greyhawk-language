@@ -12,7 +12,7 @@ namespace VM {
     VMBlock* block;
     std::string variableName;
     VMExpression* iterableObjectExpression;
-    virtual void execute(VMScope& scope);
+    virtual VMObject* execute(VMScope& scope);
     VMForLoop(VMBlock* _block,
               std::string _variableName,
               VMExpression* _iterableObjectExpression) :

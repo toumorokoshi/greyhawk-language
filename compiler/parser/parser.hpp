@@ -20,6 +20,7 @@ namespace parser {
     VM::VMBlock* parseBlock();
     VM::VMStatement* parseStatement();
     VM::VMFunctionDeclaration* parseFunctionDeclaration();
+    VM::VMReturn* parseReturn();
     VM::VMForLoop* parseForLoop();
     VM::VMIfElse* parseIfElse();
     VM::VMExpression* parseExpression();

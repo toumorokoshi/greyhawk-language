@@ -3,7 +3,7 @@
 
 namespace VM {
 
-  void VMForLoop::execute(VMScope& scope) {
+  VMObject* VMForLoop::execute(VMScope& scope) {
     std::vector<VMObject*> noArgs;
     VMScope localScope(&scope);
 
@@ -11,8 +11,12 @@ namespace VM {
 
     while(((VMBool*) iterableObject->call("hasNext", noArgs))->value) {
       localScope.locals[variableName] = iterableObject->call("next", noArgs);
-      block->execute(localScope);
+      auto returnObject = block->execute(localScope);
+
+      if (returnObject != NULL) { return returnObject; }
     }
+
+    return NULL;
   }
 
 }
