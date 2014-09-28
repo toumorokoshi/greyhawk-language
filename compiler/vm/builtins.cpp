@@ -3,6 +3,7 @@
 #include "./exceptions.hpp"
 #include "./interface.hpp"
 #include "./arithmetic.hpp"
+#include "basic_types/int.hpp"
 #include "builtins/file.hpp"
 #include "function.hpp"
 #include <iostream>
@@ -37,6 +38,8 @@ namespace VM {
       _BUILTIN_SCOPE.locals["print"] = &_getVMPrint();
       // built in classes
       _BUILTIN_SCOPE.locals["IntRange"] = getVMIntRangeClass()->constructor;
+      _BUILTIN_SCOPE.locals["Int"] = _getVMIntConstructor();
+      _BUILTIN_SCOPE.locals["stdin"] = _getVMStdin();
       _BUILTIN_SCOPE.locals["stdin"] = _getVMStdin();
       _initialized = true;
     }

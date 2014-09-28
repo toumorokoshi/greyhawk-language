@@ -7,6 +7,9 @@
 namespace VM {
 
   VMClass* getVMIntClass();
+  VMObject* StringToInt(VMObjectList& arguments);
+
+  VMFunction* _getVMIntConstructor();
 
   class VMInt : public VMObject {
   public:

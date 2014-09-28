@@ -1,9 +1,23 @@
 #include "int.hpp"
 #include "../method.hpp"
+#include "../function.hpp"
 #include "string.hpp"
+#include <string>
 #include <iostream>
 
 namespace VM {
+
+  VMObject* StringToInt(VMObjectList& arguments) {
+    auto stringObject = dynamic_cast<VMString*>(arguments[0]);
+    return new VMInt(std::stoi(stringObject->value));
+  }
+
+  VMFunction* _getVMIntConstructor() {
+    auto static VMIntConstructor = new VMRawFunctionWrapper(*new std::vector<VMClass*>{ getVMStringClass() },
+                                                            (VMRawFunction) StringToInt
+                                                            );
+    return VMIntConstructor;
+  }
 
   VMObject* InttoString(VMObject* self, VMObjectList& arguments) {
     auto integer = dynamic_cast<VMInt*>(self);
