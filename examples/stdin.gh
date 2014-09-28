@@ -1,0 +1,2 @@
+print(stdin.nextLine())
+print(stdin.nextLine())
