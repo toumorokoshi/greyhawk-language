@@ -1,11 +1,14 @@
-Int TestIfElse(x Bool):
+Int testIfElse(x Bool):
 	if x:
-		i int := 5
+		i := 5
 		return i
 	else:
 		return 2
 	return 0
 
-void main():
-	print(TestIfElse(true))
-	print(TestIfElse(false))
+Void main():
+	print(testIfElse(true))
+	print(testIfElse(false))
+	print(1)
+
+main()

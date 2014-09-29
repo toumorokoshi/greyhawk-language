@@ -6,39 +6,12 @@
 #define debug(s);
 // #define debug(s) std::cout << s << std::endl;
 
-using namespace VM;
 using namespace lexer;
 
 namespace parser {
 
   bool isBinaryOperator(const Token& token) {
     return token.type >= PLUS && token.type <= IS;
-  }
-
-  VMCall* generateBinaryOperation(VMExpression* lhs, const Token& op, VMExpression* rhs) {
-    std::string methodName;
-    switch(op.type) {
-    case PLUS:
-      methodName = "__add";
-      break;
-
-    case MINUS:
-      methodName = "__sub";
-      break;
-
-    case MUL:
-      methodName = "__mul";
-      break;
-
-    case DIV:
-      methodName = "__div";
-      break;
-
-    default:
-      throw ParserException(op, "unable to get binary operator!");
-    }
-
-    return new VMCall(methodName, *new std::vector<VMExpression*> {lhs, rhs});
   }
 
   void Parser::_validateToken(L type, std::string message) {
@@ -56,9 +29,9 @@ namespace parser {
     }
   }
 
-  VMBlock* Parser::parseBlock() {
+  PBlock* Parser::parseBlock() {
     debug("parseBlock");
-    auto block = new VMBlock();
+    auto block = new PBlock();
 
     while (token_position != tokens.end()
            && (*token_position)->type != UNINDENT) {
@@ -70,7 +43,7 @@ namespace parser {
     return block;
   }
 
-  VMIfElse* Parser::parseIfElse() {
+  PIfElse* Parser::parseIfElse() {
     debug("parseIfElse");
 
     _validateToken(IF, "expected an 'if' for an if else statement");
@@ -103,11 +76,11 @@ namespace parser {
     _validateToken(UNINDENT, "expected an unindent for an if statement");
     token_position++;
 
-    return new VMIfElse(expression, trueBlock, falseBlock);
+    return new PIfElse(expression, trueBlock, falseBlock);
 
   }
 
-  VMStatement* Parser::parseStatement() {
+  PStatement* Parser::parseStatement() {
     debug("parseStatement");
     auto token = *token_position;
 
@@ -126,19 +99,19 @@ namespace parser {
 
         case DECLARE: {
           token_position++; // iterate past declare
-          VMExpression* expression = parseExpression();
-          return new VMDeclare(identifier->value, expression);
+          auto* expression = parseExpression();
+          return new PDeclare(identifier->value, expression);
         }
 
         case ASSIGN: {
           token_position++; // iterate past assign
-          VMExpression* expression = parseExpression();
-          return new VMAssign(identifier->value, expression);
+          auto* expression = parseExpression();
+          return new PAssign(identifier->value, expression);
         }
 
         case LPAREN:
           token_position--;
-          return parseCall();
+          return parseFunctionCall();
 
         default:
           break;
@@ -166,9 +139,10 @@ namespace parser {
     }
   }
 
-  VMFunctionDeclaration* Parser::parseFunctionDeclaration() {
+  PFunctionDeclaration* Parser::parseFunctionDeclaration() {
     // skip for now. I'll add this in later.
     _validateToken(TYPE, "expected a type for a function declaration");
+    auto returnType = (*token_position)->value;
     token_position++;
 
     _validateToken(IDENTIFIER, "expected a function name for a function declaration");
@@ -178,7 +152,7 @@ namespace parser {
     _validateToken(LPAREN, "expected a '(' for a method call!");
     token_position++; // iterate past a left paren
 
-    auto arguments = new VMArgumentList();
+    auto arguments = new PArgumentList();
 
     while ((*token_position)->type != RPAREN) {
 
@@ -190,7 +164,7 @@ namespace parser {
       auto typeName = (*token_position)->value;
       token_position++;
 
-      arguments->push_back(new VMArgumentDefinition(variableName, typeName));
+      arguments->push_back(new PArgumentDefinition(variableName, typeName));
 
       if ((*token_position)->type == COMMA) {
         token_position++;
@@ -212,20 +186,20 @@ namespace parser {
     _validateToken(UNINDENT, "expected an unindent for an function declaration");
     token_position++;
 
-    return new VMFunctionDeclaration(functionName, *arguments, body);
+    return new PFunctionDeclaration(returnType, functionName, *arguments, body);
 
   }
 
-  VMReturn* Parser::parseReturn() {
+  PReturn* Parser::parseReturn() {
     _validateToken(RETURN, "expected a return for a return statment");
     token_position++;
 
     auto expression = parseExpression();
 
-    return new VMReturn(expression);
+    return new PReturn(expression);
   }
 
-  VMForLoop* Parser::parseForLoop() {
+  PForLoop* Parser::parseForLoop() {
    debug("parseForLoop");
 
     _validateToken(FOR, "expected a for a for loop");
@@ -251,22 +225,22 @@ namespace parser {
     _validateToken(UNINDENT, "expected an unindent for a for loop");
     token_position++;
 
-    return new VMForLoop(block, variableName, expression);
+    return new PForLoop(variableName, expression, block);
   }
 
-  VMExpression* Parser::parseExpression() {
+  PExpression* Parser::parseExpression() {
     debug("parseExpression");
     auto lhs = parseValue();
     while (token_position != tokens.end() && isBinaryOperator(**token_position)) {
       auto token = **token_position;
       token_position++;
       auto rhs = parseValue();
-      lhs = generateBinaryOperation(lhs, token, rhs);
+      lhs = new PBinaryOperation(lhs, token.type, rhs);
     }
     return lhs;
   }
 
-  VMExpression* Parser::parseValue() {
+  PExpression* Parser::parseValue() {
     auto baseValue = parseBaseValue();
 
     if (token_position != tokens.end() && (*token_position)->type == DOT) {
@@ -276,7 +250,7 @@ namespace parser {
     return baseValue;
   }
 
-  VMExpression* Parser::parseBaseValue() {
+  PExpression* Parser::parseBaseValue() {
     debug("parseBaseValue");
     auto token = *token_position;
     token_position++;
@@ -289,11 +263,11 @@ namespace parser {
 
     case STRING:
       debug("parseBaseValue: returning string.");
-      return new VMConstant(new VMString(token->value));
+      return new PConstantString(token->value);
 
     case INT:
       debug("parseBaseValue: returning int.");
-      return new VMConstant(new VMInt(std::stoi(token->value)));
+      return new PConstantInt(std::stoi(token->value));
 
     case IDENTIFIER: {
       if (token_position != tokens.end()) {
@@ -303,7 +277,7 @@ namespace parser {
 
         case LPAREN:
           token_position--;
-          return parseCall();
+          return parseFunctionCall();
 
         default:
           break;
@@ -312,32 +286,32 @@ namespace parser {
       }
 
       debug("parseBaseValue: return identifier.");
-      return new VMIdentifier(token->value);
+      return new PIdentifier(token->value);
     }
 
     case TRUE:
       debug("parseBaseValue: return true.");
-      return new VMConstant(new VMBool(true));
+      return new PConstantBool(true);
 
     case FALSE:
       debug("parseBaseValue: return false.");
-      return new VMConstant(new VMBool(false));
+      return new PConstantBool(false);
 
     default:
       throw ParserException(*token, "expected value!");
     }
   };
 
-  VMExpression* Parser::parseClassInstantiation() {
+  PFunctionCall* Parser::parseClassInstantiation() {
     auto className = (*token_position)->value;
     token_position++;
 
     auto arguments = parseArgumentsParens();
 
-    return new VMCall(className, *arguments);
+    return new PFunctionCall(className, *arguments);
   }
 
-  VMCallMethod* Parser::parseMethodCall(VMExpression* currentValue) {
+  PMethodCall* Parser::parseMethodCall(PExpression* currentValue) {
     debug("parseMethodCall");
 
     debug("parseMethodCall: top of the while");
@@ -357,9 +331,7 @@ namespace parser {
         auto arguments = parseArgumentsParens();
 
         debug("parseMethodCall: found method call, creating VMCallMethod..");
-        currentValue = new VMCallMethod(currentValue,
-                                        methodName,
-                                        *arguments);
+        currentValue = new PMethodCall(currentValue, methodName, *arguments);
         continue;
 
       } else {
@@ -367,9 +339,7 @@ namespace parser {
         // which directly translates to a.foo()
         debug("parseMethodCall: found property, implicitly creating VMCallMethod..");
         debug(methodName);
-        currentValue = new VMCallMethod(currentValue,
-                                        methodName,
-                                        *new std::vector<VMExpression*>());
+        currentValue = new PMethodCall(currentValue, methodName, *new PExpressions());
         continue;
       }
 
@@ -377,7 +347,7 @@ namespace parser {
 
     debug("parseMethodCall: found all chained instantiations.");
 
-    auto methodCall = dynamic_cast<VMCallMethod*>(currentValue);
+    auto methodCall = dynamic_cast<PMethodCall*>(currentValue);
 
     if (methodCall == NULL) {
       throw ParserException("could not parse method call!");
@@ -388,19 +358,19 @@ namespace parser {
 
   }
 
-  VMCall* Parser::parseCall() {
+  PFunctionCall* Parser::parseFunctionCall() {
     debug("parseCall");
     auto method_name = (*token_position)->value;
     token_position++;
 
-    std::vector<VMExpression*>* arguments = parseArgumentsParens();
+    PExpressions* arguments = parseArgumentsParens();
 
     debug("finished parseCall");
-    return new VMCall(method_name, *arguments);
+    return new PFunctionCall(method_name, *arguments);
   }
 
-  std::vector<VMExpression*>* Parser::parseArguments() {
-    auto arguments = new std::vector<VMExpression*>();
+  PExpressions* Parser::parseArguments() {
+    auto arguments = new PExpressions();
 
     while ((*token_position)->type != RPAREN) {
       arguments->push_back(parseExpression());
@@ -417,12 +387,12 @@ namespace parser {
     return arguments;
   }
 
-  std::vector<VMExpression*>* Parser::parseArgumentsParens() {
+  PExpressions* Parser::parseArgumentsParens() {
 
     _validateToken(LPAREN, "expected a '(' for a method call!");
     token_position++; // iterate past a left paren
 
-    std::vector<VMExpression*>* arguments = parseArguments();
+    auto arguments = parseArguments();
 
     _validateToken(RPAREN, "expected a ')' for a method call!");
     token_position++; // iterat past a right paren

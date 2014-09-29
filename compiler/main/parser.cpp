@@ -1,19 +1,18 @@
 #include "../exceptions.hpp"
 #include "../lexer/tokenizer.hpp"
 #include "../parser/parser.hpp"
-#include "../parser/yamlast.hpp"
 #include <iostream>
 #include <sstream>
 #include <fstream>
 
 using namespace std;
+using namespace parser;
 using namespace lexer;
 
 void mainParseTokens(TokenVector& tokens) {
-  auto token_position = tokens.begin();
-  auto node = parser::parseStatement(token_position, tokens);
-  YAML::Node* yaml = YamlAST::generate(*node);
-  // auto node = parser::parseTokens(parser::P2_TRUE_THEN_FALSE, tokens);
+  Parser parser(tokens);
+  auto block = parser.parseBlock();
+  YAML::Node* yaml = block->toYaml();
   cout << (*yaml) << std::endl;
 }
 
@@ -24,15 +23,15 @@ int main(int argc, char* argv[]) {
     string filename(argv[1]);
     ifstream input_stream(filename);
     TokenVector tokens = tokenizer.tokenize(input_stream);
-    auto token_position = tokens.begin();
-    NBlock* node;
+    Parser parser(tokens);
+    PBlock* mainBlock;
     try {
-      node = parser::parseBlock(token_position, tokens);
+      mainBlock = parser.parseBlock();
     } catch (parser::ParserException& e) {
       cout << ((core::GreyhawkException) e).message << endl;
       exit(1);
     }
-    YAML::Node* yaml = YamlAST::generate(*node);
+    YAML::Node* yaml = mainBlock->toYaml();
     cout << (*yaml) << std::endl;
 
   } else {
