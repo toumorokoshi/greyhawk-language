@@ -12,7 +12,8 @@ namespace VM {
   class VMScope {
   public:
     std::map<std::string, VMObject*> locals;
-    std::map<std::string, std::string> localTypes;
+    std::map<std::string, VMClass*> localTypes;
+
     VMScope(VMScope* parent) : _parentScope(parent) {}
     VMScope() {}
     VMObject* invokeMethod(std::string methodName, std::vector<VMObject*>& args);

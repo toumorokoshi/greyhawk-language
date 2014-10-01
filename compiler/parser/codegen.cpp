@@ -1,8 +1,8 @@
 #include "nodes.hpp"
 #include "exceptions.hpp"
 
-// #define debug(s);
-#define debug(s) std::cout << s << std::endl;
+#define debug(s);
+// #define debug(s) std::cout << s << std::endl;
 
 using namespace VM;
 
@@ -34,7 +34,7 @@ namespace parser {
 
     auto vmExpression = expression->generateExpression(scope);
 
-    scope->localTypes[name] = expression->getType();
+    scope->localTypes[name] = expression->getType(scope);
     return new VMDeclare(name, vmExpression);
   }
 
@@ -44,7 +44,7 @@ namespace parser {
     }
     auto vmExpression = expression->generateExpression(scope);
 
-    if (scope->localTypes[name] != expression->getType()) {
+    if (!expression->getType(scope)->matches(scope->localTypes[name])) {
       throw ParserException("type mismatch in assignment!");
     }
 
@@ -55,7 +55,7 @@ namespace parser {
   VMStatement* PForLoop::generateStatement(VMScope* scope) {
     VMScope forScope(scope);
     auto expression = iterableExpression->generateExpression(scope);
-    forScope.localTypes[variableName] = iterableExpression->getType();
+    forScope.localTypes[variableName] = iterableExpression->getType(scope);
     auto vmBlock = block->generate(&forScope);
     return new VMForLoop(vmBlock, variableName, expression);
   }
@@ -69,5 +69,27 @@ namespace parser {
 
     auto vmBody = body->generate(&functionScope);
     return NULL;
+  }
+
+  VMExpression* PFunctionCall::generateExpression(VMScope* scope) {
+    if (scope->localTypes.find(name) == scope->localTypes.end()) {
+      throw ParserException("function does not exist in scope: " + name);
+    }
+
+    auto scopeType = scope->localTypes[name];
+
+    if (!getVMFunctionClass()->matches(scopeType)) {
+      throw ParserException(name + " is not a function");
+    }
+
+    auto function = dynamic_cast<VMFunction*>(scope->locals[name]);
+
+    std::vector<VMClass*> argumentTypes;
+    auto argumentExpressions = new std::vector<VMExpression*>;
+    for (auto argument : arguments) {
+      argumentTypes.push_back(argument->getType(scope));
+      argumentExpressions->push_back(argument->generateExpression(scope));
+    }
+    return new VMCall(name, *argumentExpressions);
   }
 }

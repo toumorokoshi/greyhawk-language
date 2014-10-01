@@ -15,12 +15,14 @@ namespace VM {
   public:
     virtual ~VMFunction() {}
     virtual VMClass* getType() { return getVMFunctionClass(); };
+    virtual void validateTypes(std::vector<VMClass*>& types) = 0;
     virtual VMObject* call(VMScope& scope, VMObjectList& arguments) = 0;
   };
 
   class VMRawFunctionWrapper : public VMFunction {
   public:
     virtual VMObject* call(VMScope& scope, VMObjectList& arguments);
+    virtual void validateTypes(std::vector<VMClass*>&) {}
     VMRawFunctionWrapper(std::vector<VMClass*>& argumentTypes,
                          VMRawFunction rawFunction) :
       _argumentTypes(argumentTypes),
@@ -39,6 +41,7 @@ namespace VM {
     VMBlock* body;
     VMArgumentList& arguments;
     virtual VMObject* execute(VMScope& scope);
+    virtual void validateTypes(std::vector<VMClass*>&) {}
     virtual VMObject* call(VMScope& scope, VMObjectList& arguments);
     VMFunctionDeclaration(std::string _functionName,
                           VMArgumentList& _arguments,

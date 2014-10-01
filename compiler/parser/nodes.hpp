@@ -35,7 +35,7 @@ namespace parser {
     }
 
     virtual VM::VMExpression* generateExpression(VM::VMScope*) = 0;
-    virtual std::string getType() = 0;
+    virtual VM::VMClass* getType(VM::VMScope*) = 0;
   };
 
   typedef std::vector<PExpression*> PExpressions;
@@ -138,7 +138,7 @@ namespace parser {
     bool value;
 
     virtual YAML::Node* toYaml();
-    virtual std::string getType() { return "Bool"; }
+    virtual VM::VMClass* getType(VM::VMScope*) { return VM::getVMBoolClass(); }
     virtual VM::VMExpression* generateExpression(VM::VMScope*) {
       return new VM::VMBool(value);
     }
@@ -151,7 +151,7 @@ namespace parser {
     int value;
 
     virtual YAML::Node* toYaml();
-    virtual std::string getType() { return "Int"; }
+    virtual VM::VMClass* getType(VM::VMScope*) { return VM::getVMIntClass(); }
     virtual VM::VMExpression* generateExpression(VM::VMScope*) {
       return new VM::VMInt(value);
     }
@@ -164,7 +164,7 @@ namespace parser {
     std::string value;
 
     virtual YAML::Node* toYaml();
-    virtual std::string getType() { return "String"; }
+    virtual VM::VMClass* getType(VM::VMScope*) { return VM::getVMStringClass(); }
     virtual VM::VMExpression* generateExpression(VM::VMScope*) {
       return new VM::VMString(value);
     }
@@ -177,9 +177,12 @@ namespace parser {
     std::string name;
 
     virtual YAML::Node* toYaml();
-    virtual std::string getType() { return NULL; }
+    virtual VM::VMClass* getType(VM::VMScope* scope) {
+      return scope->localTypes[name];
+    }
+
     virtual VM::VMExpression* generateExpression(VM::VMScope*) {
-      return new VMIdentifier(name);
+      return new VM::VMIdentifier(name);
     }
 
     PIdentifier(std::string _name) : name(_name) {}
@@ -191,8 +194,8 @@ namespace parser {
     PExpressions& arguments;
 
     virtual YAML::Node* toYaml();
-    virtual std::string getType() { return "Function"; }
-    virtual VM::VMExpression* generateExpression(VM::VMScope*) { return NULL; }
+    virtual VM::VMClass* getType(VM::VMScope*) { return NULL; }
+    virtual VM::VMExpression* generateExpression(VM::VMScope*);
 
     PFunctionCall(std::string _name,
                   PExpressions& _arguments) :
@@ -206,7 +209,7 @@ namespace parser {
     PExpressions& arguments;
 
     virtual YAML::Node* toYaml();
-    virtual std::string getType() { return NULL; }
+    virtual VM::VMClass* getType(VM::VMScope*) { return NULL; }
     virtual VM::VMExpression* generateExpression(VM::VMScope*) { return NULL; }
 
     PMethodCall(PExpression* _currentValue,
@@ -224,7 +227,7 @@ namespace parser {
     PExpression* rhs;
 
     virtual YAML::Node* toYaml();
-    virtual std::string getType() { return lhs->getType(); }
+    virtual VM::VMClass* getType(VM::VMScope* s) { return lhs->getType(s); }
     virtual VM::VMExpression* generateExpression(VM::VMScope*) { return NULL; }
 
     PBinaryOperation(PExpression* _lhs,
