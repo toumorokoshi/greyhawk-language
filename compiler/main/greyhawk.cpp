@@ -74,9 +74,9 @@ void interpreter() {
     try {
       std::istringstream input_stream(input);
       TokenVector tokens = tokenizer->tokenize(input_stream);
-      auto token_position = tokens.begin();
-      Parser parser(globalScope, token_position, tokens);
-      auto statement = parser.parseStatement();
+      Parser parser(tokens);
+      auto pstatement = parser.parseStatement();
+      auto statement = pstatement->generateStatement(globalScope);
 
       if (auto expression = dynamic_cast<VMExpression*>(statement)) {
         auto value = expression->evaluate(*globalScope);
@@ -118,10 +118,10 @@ int main(int argc, char *argv[]) {
     if (args.fileName != "") {
       std::ifstream input_stream(args.fileName);
       TokenVector tokens = tokenizer->tokenize(input_stream);
-      auto token_position = tokens.begin();
-      Parser parser(globalScope, token_position, tokens);
-      auto rootBlock = parser.parseBlock();
-      rootBlock->execute(*globalScope);
+      Parser parser(tokens);
+      auto pBlock = parser.parseBlock();
+      auto block = pBlock->generate(globalScope);
+      block->execute(*globalScope);
 
     } else {
       interpreter();

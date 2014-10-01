@@ -7,6 +7,7 @@
 // #define debug(s) std::cout << s << std::endl;
 
 using namespace lexer;
+using namespace VM;
 
 namespace parser {
 

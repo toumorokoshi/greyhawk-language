@@ -16,10 +16,6 @@ namespace VM {
       name(_name), expression(_expression) {}
 
     virtual VMObject* execute(VMScope& scope) {
-      if (scope.locals.find(name) != scope.locals.end()) {
-        throw VMException("cannot declare variable '" + name + "' twice!");
-      }
-
       scope.locals[name] = expression->evaluate(scope);
       return NULL;
     }

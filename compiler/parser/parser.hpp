@@ -7,6 +7,15 @@
 
 namespace parser {
 
+  class CScope {
+  };
+
+  class CType {
+  public:
+    std::string value;
+    CType(std::string _value) : value(_value) {}
+  };
+
   class Parser {
   public:
     lexer::TokenVector& tokens;

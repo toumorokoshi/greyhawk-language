@@ -1,6 +1,8 @@
+#include <map>
 #include <string>
 #include <vector>
 #include "../lexer/tokens.hpp"
+#include "../vm/vm.hpp"
 #include "yaml-cpp/yaml.h"
 
 #ifndef PARSER_NODES_HPP
@@ -18,11 +20,24 @@ namespace parser {
 
   class PBlock;
 
-  class PStatement : public PNode {};
+  class PStatement : public PNode {
+  public:
+    virtual VM::VMStatement* generateStatement(VM::VMScope*) = 0;
+  };
 
   typedef std::vector<PStatement*> PStatements;
 
-  class PExpression : public PStatement {};
+  class PExpression : public PStatement {
+  public:
+
+    virtual VM::VMStatement* generateStatement(VM::VMScope* s) {
+      return generateExpression(s);
+    }
+
+    virtual VM::VMExpression* generateExpression(VM::VMScope*) = 0;
+    virtual std::string getType() = 0;
+  };
+
   typedef std::vector<PExpression*> PExpressions;
 
   class PAssign : public PStatement {
@@ -31,6 +46,7 @@ namespace parser {
     PExpression* expression;
 
     virtual YAML::Node* toYaml();
+    virtual VM::VMStatement* generateStatement(VM::VMScope*);
 
     PAssign(std::string _name,
             PExpression* _expression) :
@@ -43,6 +59,7 @@ namespace parser {
     PExpression* expression;
 
     virtual YAML::Node* toYaml();
+    virtual VM::VMStatement* generateStatement(VM::VMScope*);
 
     PDeclare(std::string _name,
              PExpression* _expression) :
@@ -56,6 +73,7 @@ namespace parser {
     PBlock* block;
 
     virtual YAML::Node* toYaml();
+    virtual VM::VMStatement* generateStatement(VM::VMScope*);
 
     PForLoop(std::string _variableName,
              PExpression* _iterableExpression,
@@ -76,6 +94,7 @@ namespace parser {
     PBlock* body;
 
     virtual YAML::Node* toYaml();
+    virtual VM::VMStatement* generateStatement(VM::VMScope*);
 
     PFunctionDeclaration(std::string _returnType,
                          std::string _name,
@@ -92,6 +111,7 @@ namespace parser {
     PBlock* falseBlock;
 
     virtual YAML::Node* toYaml();
+    virtual VM::VMStatement* generateStatement(VM::VMScope*) { return NULL; }
 
     PIfElse(PExpression* _condition,
             PBlock* _trueBlock,
@@ -103,7 +123,10 @@ namespace parser {
   class PReturn : public PStatement {
   public:
     PExpression* expression;
+
     virtual YAML::Node* toYaml();
+    virtual VM::VMStatement* generateStatement(VM::VMScope*) { return NULL; }
+
     PReturn(PExpression* _expression) :
       expression(_expression) {}
   };
@@ -113,28 +136,52 @@ namespace parser {
   class PConstantBool : public PExpression {
   public:
     bool value;
+
     virtual YAML::Node* toYaml();
+    virtual std::string getType() { return "Bool"; }
+    virtual VM::VMExpression* generateExpression(VM::VMScope*) {
+      return new VM::VMBool(value);
+    }
+
     PConstantBool(bool _value) : value(_value) {}
   };
 
   class PConstantInt : public PExpression {
   public:
     int value;
+
     virtual YAML::Node* toYaml();
+    virtual std::string getType() { return "Int"; }
+    virtual VM::VMExpression* generateExpression(VM::VMScope*) {
+      return new VM::VMInt(value);
+    }
+
     PConstantInt(int _value) : value(_value) {}
   };
 
   class PConstantString : public PExpression {
   public:
     std::string value;
+
     virtual YAML::Node* toYaml();
+    virtual std::string getType() { return "String"; }
+    virtual VM::VMExpression* generateExpression(VM::VMScope*) {
+      return new VM::VMString(value);
+    }
+
     PConstantString(std::string _value) : value(_value) {};
   };
 
   class PIdentifier : public PExpression {
   public:
     std::string name;
+
     virtual YAML::Node* toYaml();
+    virtual std::string getType() { return NULL; }
+    virtual VM::VMExpression* generateExpression(VM::VMScope*) {
+      return new VMIdentifier(name);
+    }
+
     PIdentifier(std::string _name) : name(_name) {}
   };
 
@@ -142,7 +189,11 @@ namespace parser {
   public:
     std::string name;
     PExpressions& arguments;
+
     virtual YAML::Node* toYaml();
+    virtual std::string getType() { return "Function"; }
+    virtual VM::VMExpression* generateExpression(VM::VMScope*) { return NULL; }
+
     PFunctionCall(std::string _name,
                   PExpressions& _arguments) :
       name(_name), arguments(_arguments) {}
@@ -153,7 +204,11 @@ namespace parser {
     PExpression* currentValue;
     std::string methodName;
     PExpressions& arguments;
+
     virtual YAML::Node* toYaml();
+    virtual std::string getType() { return NULL; }
+    virtual VM::VMExpression* generateExpression(VM::VMScope*) { return NULL; }
+
     PMethodCall(PExpression* _currentValue,
                 std::string _methodName,
                 PExpressions& _arguments) :
@@ -167,7 +222,11 @@ namespace parser {
     PExpression* lhs;
     lexer::L op;
     PExpression* rhs;
+
     virtual YAML::Node* toYaml();
+    virtual std::string getType() { return lhs->getType(); }
+    virtual VM::VMExpression* generateExpression(VM::VMScope*) { return NULL; }
+
     PBinaryOperation(PExpression* _lhs,
                      lexer::L _op,
                      PExpression* _rhs) :
@@ -180,6 +239,7 @@ namespace parser {
   public:
     PStatements statements;
     virtual YAML::Node* toYaml();
+    VM::VMBlock* generate(VM::VMScope*);
   };
 }
 

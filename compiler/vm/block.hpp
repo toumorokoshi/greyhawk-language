@@ -13,7 +13,7 @@ namespace VM {
 
     VMObject* execute(VMScope& scope) {
 
-      for (auto statement : statements) {
+      for (auto statement : statements){
         auto object = statement->execute(scope);
         if (object != NULL) {
           return object;
