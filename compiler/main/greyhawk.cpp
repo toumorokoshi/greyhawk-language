@@ -103,12 +103,6 @@ void interpreter() {
   }
 }
 
-/* void handleTopLevelExpression(llvm::Function* function) {
-  // function->dump();
-  //void* f_pointer = executionEngine->getPointerToFunction(function);
-  } */
-
-
 int main(int argc, char *argv[]) {
   tokenizer = new Tokenizer();
   globalScope = new VMScope(getBuiltinScope());

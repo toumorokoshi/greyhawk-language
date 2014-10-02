@@ -5,6 +5,7 @@
 // #define debug(s) std::cout << s << std::endl;
 
 using namespace VM;
+using namespace lexer;
 
 namespace parser {
 
@@ -28,7 +29,7 @@ namespace parser {
   }
 
   VMStatement* PDeclare::generateStatement(VMScope* scope) {
-    if (scope->localTypes.find(name) != scope->localTypes.end()) {
+    if (scope->getObjectType(name)) {
       throw ParserException("Cannot redeclare variable " + name);
     }
 
@@ -39,7 +40,7 @@ namespace parser {
   }
 
   VMStatement* PAssign::generateStatement(VMScope* scope) {
-    if (scope->localTypes.find(name) == scope->localTypes.end()) {
+    if (!scope->getObjectType(name)) {
       throw ParserException("Cannot assign undeclared variable " + name);
     }
     auto vmExpression = expression->generateExpression(scope);
@@ -50,6 +51,29 @@ namespace parser {
 
     return new VMDeclare(name, vmExpression);
 
+  }
+
+  VMExpression* PBinaryOperation::generateExpression(VM::VMScope* scope) {
+    if (!lhs->getType(scope)->matches(rhs->getType(scope))) {
+      throw ParserException("Type mismatch for binary operation!");
+    }
+
+    std::string methodName = "";
+    switch(op) {
+
+    case PLUS: methodName =  "__add"; break;
+    case MINUS: methodName = "__sub"; break;
+    case MUL: methodName =   "__mul"; break;
+    case DIV: methodName =   "__div"; break;
+
+    default:
+      throw ParserException("Cannot find operator!");
+    }
+
+    auto arguments = new std::vector<VMExpression*>;
+    arguments->push_back(lhs->generateExpression(scope));
+    arguments->push_back(rhs->generateExpression(scope));
+    return new VMCall(methodName, *arguments);
   }
 
   VMStatement* PForLoop::generateStatement(VMScope* scope) {
@@ -72,17 +96,18 @@ namespace parser {
   }
 
   VMExpression* PFunctionCall::generateExpression(VMScope* scope) {
-    if (scope->localTypes.find(name) == scope->localTypes.end()) {
+    if (!scope->getObjectType(name)) {
       throw ParserException("function does not exist in scope: " + name);
     }
 
-    auto scopeType = scope->localTypes[name];
+    auto scopeType = scope->getObjectType(name);
 
     if (!getVMFunctionClass()->matches(scopeType)) {
       throw ParserException(name + " is not a function");
     }
 
-    auto function = dynamic_cast<VMFunction*>(scope->locals[name]);
+    auto function = dynamic_cast<VMFunction*>(scope->getObject(name));
+
 
     std::vector<VMClass*> argumentTypes;
     auto argumentExpressions = new std::vector<VMExpression*>;
@@ -90,6 +115,9 @@ namespace parser {
       argumentTypes.push_back(argument->getType(scope));
       argumentExpressions->push_back(argument->generateExpression(scope));
     }
+
+    function->validateTypes(argumentTypes);
+
     return new VMCall(name, *argumentExpressions);
   }
 }

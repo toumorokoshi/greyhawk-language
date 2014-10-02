@@ -228,7 +228,7 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::VMClass* getType(VM::VMScope* s) { return lhs->getType(s); }
-    virtual VM::VMExpression* generateExpression(VM::VMScope*) { return NULL; }
+    virtual VM::VMExpression* generateExpression(VM::VMScope*);
 
     PBinaryOperation(PExpression* _lhs,
                      lexer::L _op,

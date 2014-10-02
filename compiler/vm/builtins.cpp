@@ -39,6 +39,7 @@ namespace VM {
       _BUILTIN_SCOPE.localTypes["print"] = getVMFunctionClass();
       // built in classes
       _BUILTIN_SCOPE.locals["IntRange"] = getVMIntRangeClass()->constructor;
+      _BUILTIN_SCOPE.localTypes["IntRange"] = getVMFunctionClass();
       _BUILTIN_SCOPE.locals["Int"] = _getVMIntConstructor();
       _BUILTIN_SCOPE.locals["stdin"] = _getVMStdin();
       _BUILTIN_SCOPE.locals["stdin"] = _getVMStdin();

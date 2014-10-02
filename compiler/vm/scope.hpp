@@ -27,8 +27,19 @@ namespace VM {
         return _parentScope->getObject(name);
       }
 
-      throw VMException(name + " is not defined!");
+      return NULL;
+    }
 
+    VMClass* getObjectType(std::string name) {
+      if (localTypes.find(name) != localTypes.end()) {
+        return localTypes[name];
+      }
+
+      if (_parentScope != NULL) {
+        return _parentScope->getObjectType(name);
+      }
+
+      return NULL;
     }
 
   private:

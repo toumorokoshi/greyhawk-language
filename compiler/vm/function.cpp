@@ -8,17 +8,6 @@ namespace VM {
   }
 
   VMObject* VMRawFunctionWrapper::call(VMScope& scope, VMObjectList& arguments) {
-    // type checking
-    if (arguments.size() != _argumentTypes.size()) {
-      throw VMException("mismatched argument count!");
-    }
-
-    for (int i = 0; i < arguments.size(); i++) {
-      if (!_argumentTypes[i]->matches(arguments[i]->getType())) {
-        throw VMException("type difference!");
-      }
-    }
-
     return _rawFunction(arguments);
   }
 
