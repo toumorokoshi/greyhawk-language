@@ -1,0 +1,4 @@
+None printHelloWorld():
+	print("hello world")
+
+printHelloWorld()

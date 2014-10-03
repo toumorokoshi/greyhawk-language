@@ -178,7 +178,7 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::VMClass* getType(VM::VMScope* scope) {
-      return scope->localTypes[name];
+      return scope->getObjectType(name);
     }
 
     virtual VM::VMExpression* generateExpression(VM::VMScope*) {

@@ -1,4 +1,5 @@
 #include "function.hpp"
+#include <iostream>
 
 namespace VM {
 
