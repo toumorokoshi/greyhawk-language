@@ -91,17 +91,27 @@ namespace parser {
 
     VMScope functionScope(scope);
     for (auto argument : arguments) {
-      scope->localTypes[argument->first] = evaluateType(argument->second);
+      functionScope.localTypes[argument->first] = evaluateType(argument->second);
     }
 
     auto vmBody = body->generate(&functionScope);
 
     scope->localTypes[name] = getVMFunctionClass();
     auto function = new VMFunctionDeclaration(name,
+                                              evaluateType(returnType),
                                               arguments,
                                               vmBody);
     scope->locals[name] = function;
     return function;
+  }
+
+  VMStatement* PReturn::generateStatement(VMScope* scope) {
+    return new VMReturn(expression->generateExpression(scope));
+  }
+
+  VMClass* PFunctionCall::getType(VM::VMScope* scope) {
+    auto function = dynamic_cast<VMFunction*>(scope->getObject(name));
+    return function->getType();
   }
 
   VMExpression* PFunctionCall::generateExpression(VMScope* scope) {

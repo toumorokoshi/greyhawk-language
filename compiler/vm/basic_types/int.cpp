@@ -13,7 +13,8 @@ namespace VM {
   }
 
   VMFunction* _getVMIntConstructor() {
-    auto static VMIntConstructor = new VMRawFunctionWrapper(*new std::vector<VMClass*>{ getVMStringClass() },
+    auto static VMIntConstructor = new VMRawFunctionWrapper(getVMIntClass(),
+                                                            *new std::vector<VMClass*>{ getVMStringClass() },
                                                             (VMRawFunction) StringToInt
                                                             );
     return VMIntConstructor;

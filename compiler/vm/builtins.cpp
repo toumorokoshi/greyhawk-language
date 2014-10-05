@@ -23,7 +23,7 @@ namespace VM {
     auto argumentTypes = new std::vector<VMClass*>();
     argumentTypes->push_back(getVMIStringable());
 
-    return *new VMRawFunctionWrapper(*argumentTypes, (VMRawFunction) &vm_print);
+    return *new VMRawFunctionWrapper(getNoneType(), *argumentTypes, (VMRawFunction) &vm_print);
   }
 
 

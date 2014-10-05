@@ -125,7 +125,7 @@ namespace parser {
     PExpression* expression;
 
     virtual YAML::Node* toYaml();
-    virtual VM::VMStatement* generateStatement(VM::VMScope*) { return NULL; }
+    virtual VM::VMStatement* generateStatement(VM::VMScope*);
 
     PReturn(PExpression* _expression) :
       expression(_expression) {}
@@ -194,7 +194,7 @@ namespace parser {
     PExpressions& arguments;
 
     virtual YAML::Node* toYaml();
-    virtual VM::VMClass* getType(VM::VMScope*) { return NULL; }
+    virtual VM::VMClass* getType(VM::VMScope*);
     virtual VM::VMExpression* generateExpression(VM::VMScope*);
 
     PFunctionCall(std::string _name,
