@@ -3,8 +3,8 @@
 #include <iostream>
 #include <string>
 
-#define debug(s);
-// #define debug(s) std::cout << s << std::endl;
+// #define debug(s);
+#define debug(s) std::cout << s << std::endl;
 
 using namespace lexer;
 using namespace VM;
@@ -99,12 +99,14 @@ namespace parser {
         switch ((*token_position)->type) {
 
         case DECLARE: {
+          debug("pDeclare");
           token_position++; // iterate past declare
           auto* expression = parseExpression();
           return new PDeclare(identifier->value, expression);
         }
 
         case ASSIGN: {
+          debug("pAssign");
           token_position++; // iterate past assign
           auto* expression = parseExpression();
           return new PAssign(identifier->value, expression);

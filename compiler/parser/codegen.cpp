@@ -16,8 +16,10 @@ namespace parser {
       return getVMBoolClass();
     } else if (typeName == "String") {
       return getVMStringClass();
+    } else if (typeName == "None") {
+      return getNoneType();
     }
-    throw new ParserException("Cannot find class " + typeName);
+    throw ParserException("Cannot find class " + typeName);
   }
 
   VMBlock* PBlock::generate(VMScope* scope) {

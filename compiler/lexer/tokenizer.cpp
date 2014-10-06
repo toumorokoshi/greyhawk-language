@@ -21,6 +21,7 @@ TokenVector Tokenizer::tokenize(std::istream& input) {
   StringScanner scanner(input);
   TokenVector& tokens = *new TokenVector();
   bool isNewLine = true;
+  bool isComment = false;
   initialize();
 
   while (scanner.hasNext()) {
@@ -28,7 +29,9 @@ TokenVector Tokenizer::tokenize(std::istream& input) {
     if (isNewLine) {
       line++;
       isNewLine = false;
+      isComment = false;
       calculateIndent(scanner, tokens, line);
+
 
     } else if (scanner.peek() == ' ') {
       // we don't care about whitespace
@@ -37,6 +40,19 @@ TokenVector Tokenizer::tokenize(std::istream& input) {
     } else if (scanner.peek() == '\n') {
       isNewLine = true;
       scanner.next();
+
+    } else if (isComment) {
+      scanner.next();
+
+    } else if (scanner.peek() == '/') {
+      scanner.next();
+      if (scanner.peek() == '/') {
+        scanner.next();
+        isComment = true;
+      } else {
+        scanner.back();
+        tokens.push_back(&matchOperator(scanner, line));
+      }
 
     } else if (scanner.peek() == '"') {
       std::string output;

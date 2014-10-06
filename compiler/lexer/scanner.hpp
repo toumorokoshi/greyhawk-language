@@ -38,6 +38,10 @@ namespace lexer {
       return source.get();
     }
 
+    void back() {
+      source.unget();
+    }
+
     bool hasNext() {
       return (source.peek() != EOF);
     }

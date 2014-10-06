@@ -6,6 +6,6 @@ Int doMath(a Int, b Int):
 print(doMath(1, 2))
 
 None printHelloWorld():
-	print("hello world")
+	print("hello, world")
 
 printHelloWorld()
