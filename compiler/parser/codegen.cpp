@@ -111,6 +111,23 @@ namespace parser {
     return new VMReturn(expression->generateExpression(scope));
   }
 
+  VMExpression* PArray::generateExpression(VMScope* scope) {
+    VMClass* elementType = getNoneType();
+    if (elements.size() > 0) { elementType = elements[0]->getType(scope); }
+
+    auto vmElements = new std::vector<VMExpression*>;
+
+    for (auto element : elements) {
+      if (!elementType->matches(element->getType(scope))) {
+        throw ParserException("array Element does not match type!");
+      }
+
+      vmElements->push_back(element->generateExpression(scope));
+    }
+
+    return new VMArrayExpression(elementType, *vmElements);
+  }
+
   VMClass* PFunctionCall::getType(VM::VMScope* scope) {
     auto function = dynamic_cast<VMFunction*>(scope->getObject(name));
     return function->getType();

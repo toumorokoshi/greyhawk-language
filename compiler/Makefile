@@ -28,7 +28,7 @@ PARSER_FILES=parser/*.cpp
 
 
 CODEGEN_FILES=codegen/*.cpp
-VM_FILES=vm/*.cpp vm/basic_types/*.cpp vm/builtins/*.cpp vm/statements/*.cpp
+VM_FILES=vm/*.cpp vm/basic_types/*.cpp vm/builtins/*.cpp vm/statements/*.cpp vm/expressions/*.cpp
 
 parser:
 	clang++ main/parser.cpp $(VM_FILES) $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(OPTIONS) -o ../bin/parser

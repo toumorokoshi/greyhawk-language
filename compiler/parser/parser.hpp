@@ -28,7 +28,8 @@ namespace parser {
     PFunctionDeclaration* parseFunctionDeclaration();
     PReturn* parseReturn();
     PForLoop* parseForLoop();
-    PIfElse*parseIfElse();
+    PIfElse* parseIfElse();
+    PArray* parseArray();
     PExpression* parseExpression();
     PExpression* parseValue();
     PExpression* parseBaseValue();

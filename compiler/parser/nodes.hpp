@@ -188,6 +188,17 @@ namespace parser {
     PIdentifier(std::string _name) : name(_name) {}
   };
 
+  class PArray : public PExpression {
+  public:
+    std::vector<PExpression*>& elements;
+    virtual YAML::Node* toYaml();
+    virtual VM::VMClass* getType(VM::VMScope*) { return VM::getVMArrayClass(); }
+    virtual VM::VMExpression* generateExpression(VM::VMScope*);
+
+    PArray(std::vector<PExpression*>& _elements) :
+      elements(_elements) {}
+  };
+
   class PFunctionCall : public PExpression {
   public:
     std::string name;

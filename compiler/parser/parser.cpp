@@ -3,8 +3,8 @@
 #include <iostream>
 #include <string>
 
-// #define debug(s);
-#define debug(s) std::cout << s << std::endl;
+#define debug(s);
+// #define debug(s) std::cout << s << std::endl;
 
 using namespace lexer;
 using namespace VM;
@@ -79,6 +79,29 @@ namespace parser {
 
     return new PIfElse(expression, trueBlock, falseBlock);
 
+  }
+
+  PArray* Parser::parseArray() {
+    _validateToken(L_BRACKET, "expected an '[' for an array");
+    token_position++;
+
+    auto elements = new std::vector<PExpression*>;
+
+    while ((*token_position)->type != R_BRACKET) {
+      elements->push_back(parseExpression());
+      if ((*token_position)->type != R_BRACKET) {
+        if ((*token_position)->type != COMMA) {
+          throw ParserException(**token_position,
+                                "expected a ',' in between arguments.");
+        }
+        token_position++;
+      }
+    }
+
+    _validateToken(R_BRACKET, "expected an ']' for an array");
+    token_position++;
+
+    return new PArray(*elements);
   }
 
   PStatement* Parser::parseStatement() {
@@ -258,6 +281,11 @@ namespace parser {
     auto token = *token_position;
     token_position++;
     switch(token->type) {
+
+    case L_BRACKET:
+      debug("parseBaseValue: return array.");
+      token_position--;
+      return parseArray();
 
     case TYPE:
       debug("parseBaseValue: returning class.");

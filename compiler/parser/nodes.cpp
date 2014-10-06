@@ -82,6 +82,14 @@ namespace parser {
     return node;
   }
 
+  YAML::Node* PArray::toYaml() {
+    auto node = new YAML::Node();
+    for (auto element: elements) {
+      node->push_back(*element->toYaml());
+    }
+    return node;
+  }
+
   YAML::Node* PFunctionCall::toYaml() {
     auto node = new YAML::Node();
     (*node)["function_call"]["name"] = name;
