@@ -55,6 +55,10 @@ namespace parser {
 
   }
 
+  VMExpression* PAttributeAccess::generateExpression(VM::VMScope* scope) {
+    return NULL;
+  }
+
   VMExpression* PBinaryOperation::generateExpression(VM::VMScope* scope) {
     if (!lhs->getType(scope)->matches(rhs->getType(scope))) {
       throw ParserException("Type mismatch for binary operation!");

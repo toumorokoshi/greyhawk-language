@@ -199,18 +199,18 @@ namespace parser {
       elements(_elements) {}
   };
 
-  class PFunctionCall : public PExpression {
+  class PCall : public PExpression {
   public:
-    std::string name;
+    PExpression* methodName;
     PExpressions& arguments;
 
     virtual YAML::Node* toYaml();
     virtual VM::VMClass* getType(VM::VMScope*);
     virtual VM::VMExpression* generateExpression(VM::VMScope*);
 
-    PFunctionCall(std::string _name,
+    PCall(PExpression* _methodName,
                   PExpressions& _arguments) :
-      name(_name), arguments(_arguments) {}
+      methodName(_methodName), arguments(_arguments) {}
   };
 
   class PMethodCall : public PExpression {

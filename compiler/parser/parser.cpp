@@ -340,6 +340,7 @@ namespace parser {
     auto arguments = parseArgumentsParens();
 
     return new PFunctionCall(className, *arguments);
+
   }
 
   PMethodCall* Parser::parseMethodCall(PExpression* currentValue) {
@@ -387,48 +388,6 @@ namespace parser {
     debug("parseMethodCall: finished");
     return methodCall;
 
-  }
-
-  PFunctionCall* Parser::parseFunctionCall() {
-    debug("parseCall");
-    auto method_name = (*token_position)->value;
-    token_position++;
-
-    PExpressions* arguments = parseArgumentsParens();
-
-    debug("finished parseCall");
-    return new PFunctionCall(method_name, *arguments);
-  }
-
-  PExpressions* Parser::parseArguments() {
-    auto arguments = new PExpressions();
-
-    while ((*token_position)->type != RPAREN) {
-      arguments->push_back(parseExpression());
-      if ((*token_position)->type != RPAREN) {
-        if ((*token_position)->type != COMMA) {
-          throw ParserException(**token_position,
-                                "expected a ',' in between arguments.");
-        }
-        token_position++;
-      }
-    }
-
-    debug("parseArguments: finished");
-    return arguments;
-  }
-
-  PExpressions* Parser::parseArgumentsParens() {
-
-    _validateToken(LPAREN, "expected a '(' for a method call!");
-    token_position++; // iterate past a left paren
-
-    auto arguments = parseArguments();
-
-    _validateToken(RPAREN, "expected a ')' for a method call!");
-    token_position++; // iterat past a right paren
-
-    return arguments;
   }
 
 };

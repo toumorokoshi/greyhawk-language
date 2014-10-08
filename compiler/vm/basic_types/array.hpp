@@ -31,9 +31,11 @@ namespace VM {
       return new VMString(stream);
     }
 
-    VMObject* call(std::string methodName, std::vector<VMObject*>&) {
+    VMObject* call(std::string methodName, std::vector<VMObject*>& args) {
 
-      if (methodName == "toString") { return toString(); }
+      if (methodName == "__get") { return __get(args); }
+      else if (methodName == "__set") { return _set(args); }
+      else if (methodName == "toString") { return toString(); }
 
       throw VMException("IntRange has no method " + methodName);
 
