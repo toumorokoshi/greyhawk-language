@@ -16,18 +16,7 @@ namespace VM {
       name(_name), expression(_expression) {}
 
     virtual VMObject* execute(VMScope& scope) {
-      if (scope.locals.find(name) == scope.locals.end()) {
-        throw VMException("'" + name + "' is not declared!");
-      }
-
-      VMObject* new_value = expression->evaluate(scope);
-      VMObject* variable = scope.locals[name];
-      // TODO: don't evaluate to get return type
-      if (!variable->getType()->matches(new_value->getType())) {
-        throw VMException("cannot assign variable to a different type!");
-      }
-
-      scope.locals[name] = new_value;
+      scope.locals[name] = expression->evaluate(scope);
       return NULL;
     }
   };

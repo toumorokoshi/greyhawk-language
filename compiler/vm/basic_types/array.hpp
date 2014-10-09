@@ -22,9 +22,13 @@ namespace VM {
       return elements[index];
     }
 
-    VMObject* __set(int index, VMObject* value) {
+    VMObject* __set(VMObjectList& args) {
+
+      auto index = ((VMInt*) args[0])->value;
+      auto value = args[1];
       elements[index] = value; return NULL;
     }
+
     VMObject* toString() {
       std::string stream = "[";
       static std::vector<VMObject*> noArgs;
@@ -39,6 +43,7 @@ namespace VM {
     VMObject* call(std::string methodName, std::vector<VMObject*>& args) {
 
       if (methodName == "__get") { return __get(args); }
+      else if (methodName == "__set") { return __set(args); }
       else if (methodName == "toString") { return toString(); }
 
       throw VMException("array has no method " + methodName);

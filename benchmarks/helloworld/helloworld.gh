@@ -1,1 +1,2 @@
-print("Hello, World!")
+for i in IntRange(10000):
+	print("Hello, World!")

@@ -10,6 +10,8 @@ namespace lexer {
       return true;
     } else if ('A' <= c && c <= 'Z') {
       return true;
+    } else if (c == '_') {
+      return true;
     }
     return false;
   }

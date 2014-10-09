@@ -99,7 +99,7 @@ namespace parser {
     return new PCall(name, *arguments);
   }
 
-  PMethodCall* Parser::parseArrayAccess(PExpression* value) {
+  PArrayAccess* Parser::parseArrayAccess(PExpression* value) {
     debug("parseArrayAccess");
 
     _validateToken(L_BRACKET, "expected an '[' for an array access");
@@ -111,7 +111,7 @@ namespace parser {
     token_position++;
 
     debug("parseArrayAccess: finished");
-    return new PMethodCall(value, "__get", *new PExpressions{expression});
+    return new PArrayAccess(value, expression);
   }
 
   PExpression* Parser::parseBaseValue() {

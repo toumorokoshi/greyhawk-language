@@ -124,13 +124,6 @@ namespace parser {
           return new PDeclare(identifier->value, expression);
         }
 
-        case ASSIGN: {
-          debug("pAssign");
-          token_position++; // iterate past assign
-          auto* expression = parseExpression();
-          return new PAssign(identifier->value, expression);
-        }
-
         case LPAREN:
           token_position--;
           return parseCall();
@@ -143,7 +136,16 @@ namespace parser {
       }
 
       token_position--;
-      return parseExpression();
+      auto expression = parseExpression();
+
+      switch ((*token_position)->type) {
+      case ASSIGN:
+        token_position++;
+        return new PAssign(expression, parseExpression());
+
+      default:
+        return expression;
+      }
 
     }
 

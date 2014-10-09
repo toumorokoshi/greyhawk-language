@@ -12,7 +12,7 @@ namespace parser {
 
   YAML::Node* PAssign::toYaml() {
     auto root = new YAML::Node();
-    (*root)["assign"]["name"] = name;
+    (*root)["assign"]["name"] = *identifier->toYaml();
     (*root)["assign"]["value"] = *expression->toYaml();
     return root;
   }
@@ -96,6 +96,13 @@ namespace parser {
     for (auto argument : arguments) {
       (*node)["function_call"]["arguments"].push_back(*argument->toYaml());
     }
+    return node;
+  }
+
+  YAML::Node* PArrayAccess::toYaml() {
+    auto node = new YAML::Node();
+    (*node)["array_access"]["array"] = *value->toYaml();
+    (*node)["array_access"]["index"] = *index->toYaml();
     return node;
   }
 

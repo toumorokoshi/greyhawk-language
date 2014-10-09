@@ -2,4 +2,4 @@ Int doMath(a Int, b Int):
 	x := a + b
 	return x
 
-print(doMath(1, 2))
+print(doMath(1, 2) + 10)

@@ -42,15 +42,15 @@ namespace parser {
 
   class PAssign : public PStatement {
   public:
-    std::string name;
+    PExpression* identifier;
     PExpression* expression;
 
     virtual YAML::Node* toYaml();
     virtual VM::VMStatement* generateStatement(VM::VMScope*);
 
-    PAssign(std::string _name,
+    PAssign(PExpression* _identifier,
             PExpression* _expression) :
-      name(_name), expression(_expression) {}
+      identifier(_identifier), expression(_expression) {}
   };
 
   class PDeclare : public PStatement {
@@ -211,6 +211,20 @@ namespace parser {
     PCall(std::string _name,
           PExpressions& _arguments) :
       name(_name), arguments(_arguments) {}
+  };
+
+  class PArrayAccess : public PExpression {
+  public:
+    PExpression* value;
+    PExpression* index;
+
+    virtual YAML::Node* toYaml();
+    virtual VM::VMClass* getType(VM::VMScope*) { return VM::getNoneType(); };
+    virtual VM::VMExpression* generateExpression(VM::VMScope*);
+
+    PArrayAccess(PExpression* _value,
+                 PExpression* _index) :
+      value(_value), index(_index) {}
   };
 
   class PMethodCall : public PExpression {

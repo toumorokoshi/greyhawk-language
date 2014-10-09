@@ -31,3 +31,14 @@ time {
       python ./benchmarks/$SCRIPT/$SCRIPT.py > /dev/null
     done
 }
+
+if [ -e "./benchmarks/$SCRIPT/$SCRIPT.llvm" ]; then
+    echo
+    echo
+    echo "LLVM:"
+    time {
+        for run in {1..$COUNT}; do
+            lli ./benchmarks/$SCRIPT/$SCRIPT.llvm > /dev/null
+        done
+    }
+fi

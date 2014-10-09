@@ -25,6 +25,9 @@ namespace VM {
       return new VMString(buffer);
     }
 
+    VMObject* write() {
+    }
+
     VMObject* call(std::string methodName, std::vector<VMObject*>&) {
       if (methodName == "nextLine") { return nextLine(); }
 

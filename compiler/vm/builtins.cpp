@@ -12,9 +12,8 @@ namespace VM {
 
   /** print() **/
   VMObject* vm_print(std::vector<VMObject*>& args) {
-    auto string =
-      dynamic_cast<VMString*>((*args.begin())->call("toString",
-                                                    *new std::vector<VMObject*>()));
+    auto string = (VMString*) (*args.begin())->call("toString",
+                                                    *new std::vector<VMObject*>());
     std::cout << string->value << std::endl;
     return NULL;
   }

@@ -42,17 +42,28 @@ namespace parser {
   }
 
   VMStatement* PAssign::generateStatement(VMScope* scope) {
-    if (!scope->getObjectType(name)) {
-      throw ParserException("Cannot assign undeclared variable " + name);
-    }
     auto vmExpression = expression->generateExpression(scope);
 
-    if (!expression->getType(scope)->matches(scope->localTypes[name])) {
-      throw ParserException("type mismatch in assignment!");
+    if (auto pIdentifier = dynamic_cast<PIdentifier*>(identifier)) {
+      if (!scope->getObjectType(pIdentifier->name)) {
+        throw ParserException("Cannot assign undeclared variable " + pIdentifier->name);
+      }
+
+      if (!expression->getType(scope)->matches(scope->localTypes[pIdentifier->name])) {
+        throw ParserException("type mismatch in assignment!");
+      }
+
+      return new VMAssign(pIdentifier->name, vmExpression);
+    } else if (auto pArrayAccess = dynamic_cast<PArrayAccess*>(identifier)) {
+      return new VMCallMethod(pArrayAccess->value->generateExpression(scope),
+                              "__set",
+                              *new std::vector<VMExpression*> {
+                                pArrayAccess->index->generateExpression(scope),
+                                  vmExpression
+                                  });
+
     }
-
-    return new VMDeclare(name, vmExpression);
-
+    throw ParserException("Cannot assign value!");
   }
 
   VMExpression* PBinaryOperation::generateExpression(VM::VMScope* scope) {
@@ -157,6 +168,12 @@ namespace parser {
     function->validateTypes(argumentTypes);
 
     return new VMCall(name, *argumentExpressions);
+  }
+
+  VMExpression* PArrayAccess::generateExpression(VM::VMScope* scope) {
+    return new VMCallMethod(value->generateExpression(scope),
+                            "__get",
+                            *new std::vector<VMExpression*> { index->generateExpression(scope) });
   }
 
   VMExpression* PMethodCall::generateExpression(VM::VMScope* scope) {
