@@ -3,7 +3,7 @@ LLVM_CONFIG=`llvm-config --libs core native mcjit interpreter x86` `llvm-config 
 BOOST_OPTIONS=-lboost_program_options
 YAML_OPTIONS=-lyaml-cpp
 OPTIONS=--std=c++11 -L/usr/lib -I/usr/include
-.PHONY: lexer parser compiler
+.PHONY: lexer parser compiler vm2
 
 # deprecated, lexers and parsers are by hand now
 all:
@@ -42,3 +42,6 @@ tests:
 
 clean:
 	rm -r build
+
+vm:
+	$(MAKE) -c vm2 all

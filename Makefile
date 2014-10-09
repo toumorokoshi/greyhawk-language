@@ -1,4 +1,4 @@
-.PHONY: compiler lexer tests parser
+.PHONY: compiler lexer tests parser vm
 export
 
 all: compiler lexer tests
@@ -14,3 +14,6 @@ parser:
 
 tests:
 	$(MAKE) -C compiler tests
+
+vm:
+	$(MAKE) -c compiler vm2
