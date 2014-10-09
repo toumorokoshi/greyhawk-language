@@ -90,7 +90,7 @@ namespace parser {
     return node;
   }
 
-  YAML::Node* PFunctionCall::toYaml() {
+  YAML::Node* PCall::toYaml() {
     auto node = new YAML::Node();
     (*node)["function_call"]["name"] = name;
     for (auto argument : arguments) {

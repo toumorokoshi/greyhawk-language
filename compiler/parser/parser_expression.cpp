@@ -8,6 +8,10 @@ using namespace lexer;
 
 namespace parser {
 
+  bool isBinaryOperator(const Token& token) {
+    return token.type >= PLUS && token.type <= IS;
+  }
+
   PExpression* Parser::parseExpression() {
     // an expression could be one of the following:
     // * a method call
@@ -15,6 +19,41 @@ namespace parser {
     // * an array access
     // a binary operator
     // all of the start with a base value.
+    auto lhs = parseValue();
+
+    while (token_position != tokens.end() && isBinaryOperator(**token_position)) {
+      auto op = (*token_position)->type;
+      token_position++;
+      auto rhs = parseValue();
+      lhs = new PBinaryOperation(lhs, op, rhs);
+    }
+
+    return lhs;
+  }
+
+  PExpression* Parser::parseValue() {
+    auto baseValue = parseBaseValue();
+
+    while (true) {
+      debug("loop");
+
+      if (token_position == tokens.end()) {
+        return baseValue;
+      }
+
+      // now we check to see if we're
+      // accessing an array or it's function call
+      switch((*token_position)->type) {
+      case DOT:
+        baseValue = parseMethodCall(baseValue);
+        break;
+      case L_BRACKET:
+        baseValue = parseArrayAccess(baseValue);
+        break;
+      default:
+        return baseValue;
+      }
+    }
   }
 
   PMethodCall* Parser::parseMethodCall(PExpression* currentValue) {
@@ -48,31 +87,16 @@ namespace parser {
     return new PMethodCall(currentValue, methodName, *arguments);
   }
 
-  PExpression* Parser::parseValue() {
-    auto baseValue = parseBaseValue();
-    // now we check to see if we're
-    // accessing an array or it's function call
-    switch((*token_position)->type) {
-    case LPAREN:
-      debug("function call");
-      return parseCall(baseValue);
-    case DOT:
-      debug("method call");
-      return parseMethodCall(baseValue);
-    case L_BRACKET:
-      debug("array access");
-      parseArrayAccess(baseValue);
-    default:
-      return baseValue;
-    }
-  }
-
-  PCall* Parser::parseCall(PExpression* function) {
+  PCall* Parser::parseCall() {
     debug("parseCall");
+
+    _validateToken(IDENTIFIER, "expected an identifier for a function call");
+    auto name = (*token_position)->value;
+    token_position++;
 
     PExpressions* arguments = parseArgumentsParens();
     debug("finished parseCall");
-    return new PCall(function, *arguments);
+    return new PCall(name, *arguments);
   }
 
   PMethodCall* Parser::parseArrayAccess(PExpression* value) {
@@ -86,6 +110,7 @@ namespace parser {
     _validateToken(R_BRACKET, "expected an ']' for an array access");
     token_position++;
 
+    debug("parseArrayAccess: finished");
     return new PMethodCall(value, "__get", *new PExpressions{expression});
   }
 
@@ -115,7 +140,13 @@ namespace parser {
 
     case IDENTIFIER: {
       debug("parseBaseValue: return identifier.");
-      return new PIdentifier(token->value);
+
+      if ((*token_position)->type == LPAREN) {
+        token_position--;
+        return parseCall();
+      } else {
+        return new PIdentifier(token->value);
+      }
     }
 
     case TRUE:

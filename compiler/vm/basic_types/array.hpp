@@ -1,6 +1,7 @@
 #include "../object.hpp"
 #include "int.hpp"
 #include "string.hpp"
+#include <iostream>
 
 #ifndef VM_HPP_BASIC_TYPES_ARRAY
 #define VM_HPP_BASIC_TYPES_ARRAY
@@ -16,7 +17,11 @@ namespace VM {
     virtual VMObject* evaluate(VMScope&) { return this; }
     VMObject* next();
 
-    VMObject* __get(int index) { return elements[index]; }
+    VMObject* __get(VMObjectList& args) {
+      auto index = ((VMInt*) args[0])->value;
+      return elements[index];
+    }
+
     VMObject* __set(int index, VMObject* value) {
       elements[index] = value; return NULL;
     }
@@ -34,10 +39,9 @@ namespace VM {
     VMObject* call(std::string methodName, std::vector<VMObject*>& args) {
 
       if (methodName == "__get") { return __get(args); }
-      else if (methodName == "__set") { return _set(args); }
       else if (methodName == "toString") { return toString(); }
 
-      throw VMException("IntRange has no method " + methodName);
+      throw VMException("array has no method " + methodName);
 
     }
 

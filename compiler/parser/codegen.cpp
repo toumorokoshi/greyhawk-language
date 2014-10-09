@@ -55,10 +55,6 @@ namespace parser {
 
   }
 
-  VMExpression* PAttributeAccess::generateExpression(VM::VMScope* scope) {
-    return NULL;
-  }
-
   VMExpression* PBinaryOperation::generateExpression(VM::VMScope* scope) {
     if (!lhs->getType(scope)->matches(rhs->getType(scope))) {
       throw ParserException("Type mismatch for binary operation!");
@@ -132,12 +128,12 @@ namespace parser {
     return new VMArrayExpression(elementType, *vmElements);
   }
 
-  VMClass* PFunctionCall::getType(VM::VMScope* scope) {
+  VMClass* PCall::getType(VM::VMScope* scope) {
     auto function = dynamic_cast<VMFunction*>(scope->getObject(name));
     return function->getType();
   }
 
-  VMExpression* PFunctionCall::generateExpression(VMScope* scope) {
+  VMExpression* PCall::generateExpression(VMScope* scope) {
     if (!scope->getObjectType(name)) {
       throw ParserException("function does not exist in scope: " + name);
     }
@@ -161,5 +157,14 @@ namespace parser {
     function->validateTypes(argumentTypes);
 
     return new VMCall(name, *argumentExpressions);
+  }
+
+  VMExpression* PMethodCall::generateExpression(VM::VMScope* scope) {
+    auto vmValue = currentValue->generateExpression(scope);
+    auto vmArguments = new std::vector<VMExpression*>;
+    for (auto argument : arguments) {
+      vmArguments->push_back(argument->generateExpression(scope));
+    }
+    return new VMCallMethod(vmValue, methodName, *vmArguments);
   }
 }

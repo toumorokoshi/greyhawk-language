@@ -11,10 +11,6 @@ using namespace VM;
 
 namespace parser {
 
-  bool isBinaryOperator(const Token& token) {
-    return token.type >= PLUS && token.type <= IS;
-  }
-
   void Parser::_validateToken(L type, std::string message) {
     debug("validateToken");
 
@@ -137,7 +133,7 @@ namespace parser {
 
         case LPAREN:
           token_position--;
-          return parseFunctionCall();
+          return parseCall();
 
         default:
           break;
@@ -254,140 +250,13 @@ namespace parser {
     return new PForLoop(variableName, expression, block);
   }
 
-  PExpression* Parser::parseExpression() {
-    debug("parseExpression");
-    auto lhs = parseValue();
-    while (token_position != tokens.end() && isBinaryOperator(**token_position)) {
-      auto token = **token_position;
-      token_position++;
-      auto rhs = parseValue();
-      lhs = new PBinaryOperation(lhs, token.type, rhs);
-    }
-    return lhs;
-  }
-
-  PExpression* Parser::parseValue() {
-    auto baseValue = parseBaseValue();
-
-    if (token_position != tokens.end() && (*token_position)->type == DOT) {
-      return parseMethodCall(baseValue);
-    }
-
-    return baseValue;
-  }
-
-  PExpression* Parser::parseBaseValue() {
-    debug("parseBaseValue");
-    auto token = *token_position;
-    token_position++;
-    switch(token->type) {
-
-    case L_BRACKET:
-      debug("parseBaseValue: return array.");
-      token_position--;
-      return parseArray();
-
-    case TYPE:
-      debug("parseBaseValue: returning class.");
-      token_position--;
-      return parseClassInstantiation();
-
-    case STRING:
-      debug("parseBaseValue: returning string.");
-      return new PConstantString(token->value);
-
-    case INT:
-      debug("parseBaseValue: returning int.");
-      return new PConstantInt(std::stoi(token->value));
-
-    case IDENTIFIER: {
-      if (token_position != tokens.end()) {
-        debug("parseBaseValue: switch on identifier");
-
-        switch((*token_position)->type) {
-
-        case LPAREN:
-          token_position--;
-          return parseFunctionCall();
-
-        default:
-          break;
-
-        }
-      }
-
-      debug("parseBaseValue: return identifier.");
-      return new PIdentifier(token->value);
-    }
-
-    case TRUE:
-      debug("parseBaseValue: return true.");
-      return new PConstantBool(true);
-
-    case FALSE:
-      debug("parseBaseValue: return false.");
-      return new PConstantBool(false);
-
-    default:
-      throw ParserException(*token, "expected value!");
-    }
-  };
-
-  PFunctionCall* Parser::parseClassInstantiation() {
+  PCall* Parser::parseClassInstantiation() {
     auto className = (*token_position)->value;
     token_position++;
 
     auto arguments = parseArgumentsParens();
 
-    return new PFunctionCall(className, *arguments);
+    return new PCall(className, *arguments);
 
   }
-
-  PMethodCall* Parser::parseMethodCall(PExpression* currentValue) {
-    debug("parseMethodCall");
-
-    debug("parseMethodCall: top of the while");
-    // debug(std::to_string(*token_position));
-    debug(std::to_string((*token_position)->type));
-    while(token_position != tokens.end() && (*token_position)->type == DOT) {
-
-      _validateToken(DOT, "expected a . for a method call");
-      token_position++;
-
-      _validateToken(IDENTIFIER, "expected an identifier for a method call");
-      debug("parsing identifier...");
-      auto methodName = (*token_position)->value;
-      token_position++;
-
-      if (token_position != tokens.end() && (*token_position)->type == LPAREN) {
-        auto arguments = parseArgumentsParens();
-
-        debug("parseMethodCall: found method call, creating VMCallMethod..");
-        currentValue = new PMethodCall(currentValue, methodName, *arguments);
-        continue;
-
-      } else {
-        // this is something like a.foo,
-        // which directly translates to a.foo()
-        debug("parseMethodCall: found property, implicitly creating VMCallMethod..");
-        debug(methodName);
-        currentValue = new PMethodCall(currentValue, methodName, *new PExpressions());
-        continue;
-      }
-
-    }
-
-    debug("parseMethodCall: found all chained instantiations.");
-
-    auto methodCall = dynamic_cast<PMethodCall*>(currentValue);
-
-    if (methodCall == NULL) {
-      throw ParserException("could not parse method call!");
-    }
-
-    debug("parseMethodCall: finished");
-    return methodCall;
-
-  }
-
 };
