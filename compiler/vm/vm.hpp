@@ -1,20 +1,45 @@
-#include "basic_types/array.hpp"
-#include "basic_types/bool.hpp"
-#include "basic_types/int.hpp"
-#include "basic_types/string.hpp"
-#include "builtins.hpp"
-#include "class.hpp"
-#include "block.hpp"
-#include "exceptions.hpp"
-#include "expression.hpp"
-#include "expressions/arrayexpression.hpp"
-#include "function.hpp"
-#include "interface.hpp"
+/*
+  This is a new VM implementation that utilizes llvm for as the jit component
+
+  This should use c as much as possible. c++ is only used due to the fact that
+  it's the language the LLVM interface is written in.
+
+  This is a register-based vm. The reasoning being fewer instructions, and
+  matches llvm a bit better (a future choice for a jit)
+ */
+
+#include "llvm.hpp"
+#include "type.hpp"
 #include "object.hpp"
-#include "scope.hpp"
-#include "statement.hpp"
-#include "statements/assign.hpp"
-#include "statements/declare.hpp"
-#include "statements/for.hpp"
-#include "statements/ifelse.hpp"
-#include "statements/return.hpp"
+
+#ifndef VM2_VM_HPP
+#define VM2_VM_HPP
+
+// no validation occurs in the vm: only execution
+namespace VM {
+
+  // these are all the instruction supported by the vm.
+  enum GOPCODE {
+    ADD,
+    BRANCH,
+    EXECUTE,
+    END,
+    LABEL,
+    LESS_THAN,
+    PRINT,
+    RETURN
+  };
+
+  typedef struct {
+    GOPCODE op;
+    GObject** values;
+  } GInstruction;
+
+  typedef struct {
+    GType* returnType;
+    GInstruction* instructions; // array
+    int instructionCount;
+  } GFunction;
+};
+
+#endif
