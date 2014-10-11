@@ -57,11 +57,11 @@ namespace VM {
     }
   }
 
-  llvm::Value* JIT::toValue(GValue& value) {
-    switch (value.type->classifier) {
+  llvm::Value* JIT::toValue(GObject* object) {
+    switch (object->type->classifier) {
     case INT32:
       return ConstantInt::get(Type::getInt32Ty(getGlobalContext()),
-                              *(int *)value.value);
+                              object->value.asInt32);
 
     case CLASS:
       return ConstantPointerNull::get(PointerType::getUnqual(Type::getVoidTy(getGlobalContext())));

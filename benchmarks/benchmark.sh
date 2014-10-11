@@ -25,6 +25,15 @@ time {
 
 echo
 echo
+echo "Greyhawk VM2:"
+time {
+    for run in {1..$COUNT}; do
+        ./bin/vm2 > /dev/null
+    done
+}
+
+echo
+echo
 echo "Python:"
 time {
     for run in {1..$COUNT}; do

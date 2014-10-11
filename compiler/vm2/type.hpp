@@ -6,8 +6,10 @@
 namespace VM {
 
   enum BASICTYPES {
+    BOOL,
     CLASS,
     INT32,
+    STRING,
     NONE
   };
 

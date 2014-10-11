@@ -1,6 +1,6 @@
 #include "llvm.hpp"
 #include "exception.hpp"
-#include "value.hpp"
+#include "object.hpp"
 #include "vm.hpp"
 
 #ifndef CODEGEN_JIT_HPP
@@ -29,7 +29,7 @@ namespace VM {
     }
 
     llvm::Function* compile(GFunction*);
-    llvm::Value* toValue(GValue&);
+    llvm::Value* toValue(GObject*);
     void writeInstruction(GInstruction&);
   };
 

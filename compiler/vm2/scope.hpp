@@ -1,5 +1,6 @@
 #include <map>
 #include "type.hpp"
+#include "object.hpp"
 
 #ifndef VM_CONTEXT_HPP
 #define VM_CONTEXT_HPP
@@ -8,6 +9,7 @@ namespace VM {
 
   class GScope {
   public:
+    std::map<std::string, GObject*> locals;
 
     GScope(GScope* parent) : _parentScope(parent) {}
     GScope() {}

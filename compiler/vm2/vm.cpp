@@ -1,4 +1,6 @@
 #include "jit.hpp"
+#include "execution_engine.hpp"
+#include <iostream>
 
 using namespace VM;
 
@@ -11,24 +13,37 @@ void initializeLLVM() {
 
 int main(int argc, char const *argv[]) {
 
-  auto jit = new JIT();
+  // auto jit = new JIT();
+  auto intType = new GType { BASICTYPES::INT32, "Int" };
+  auto stringType = new GType { BASICTYPES::STRING, "String" };
+  auto boolType = new GType { BASICTYPES::BOOL, "Bool" };
 
-  // our return value
-  auto arguments = new GValue[1] {
-    GValue { new GType { BASICTYPES::INT32, "Int"},
-             new int(10)
-    }
+  auto one = new GObject { intType , { 1 }};
+  auto iterator = new GObject { intType, { 0 } };
+  auto oneHundred = new GObject { intType, { 10000 } };
+
+  auto branchPosition = new GObject { intType, { 0 } };
+  auto donePosition = new GObject { intType, { 4 } };
+
+  auto helloWorld = new GObject { stringType, { 0 }};
+  helloWorld->value.asString = "hello, world";
+
+  auto iteratorCond = new GObject { boolType, { false }};
+
+
+  auto instructions = new GInstruction[5]{
+    GInstruction { GOPCODE::PRINT , new GObject*[1]{ helloWorld }},
+    GInstruction { GOPCODE::ADD, new GObject*[3]{ iterator, one, iterator }},
+    GInstruction { GOPCODE::LESS_THAN, new GObject*[3]{ iterator, oneHundred, iteratorCond }},
+    GInstruction { GOPCODE::BRANCH, new GObject*[3] { iteratorCond, branchPosition, donePosition }},
+    GInstruction { GOPCODE::END , new GObject*[3] {}}
   };
 
-  auto instructions = new GInstruction {
-   GOPCODE::RETURN,
-   arguments
+  auto printFunction = new GFunction {
+    .returnType = new GType { BASICTYPES::NONE, "None" },
+    .instructions = instructions,
+    .instructionCount = 2
   };
 
-  auto returnFunction = new GFunction {
-    new GType { BASICTYPES::NONE, "None" },
-    instructions, 1
-  };
-
-  jit->compile(returnFunction);
+  executeFunction(printFunction);
 }

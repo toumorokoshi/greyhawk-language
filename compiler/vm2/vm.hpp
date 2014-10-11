@@ -3,11 +3,14 @@
 
   This should use c as much as possible. c++ is only used due to the fact that
   it's the language the LLVM interface is written in.
+
+  This is a register-based vm. The reasoning being fewer instructions, and
+  matches llvm a bit better (a future choice for a jit)
  */
 
 #include "llvm.hpp"
 #include "type.hpp"
-#include "value.hpp"
+#include "object.hpp"
 
 #ifndef VM2_VM_HPP
 #define VM2_VM_HPP
@@ -18,12 +21,18 @@ namespace VM {
   // these are all the instruction supported by the vm.
   enum GOPCODE {
     ADD,
+    BRANCH,
+    EXECUTE,
+    END,
+    LABEL,
+    LESS_THAN,
+    PRINT,
     RETURN
   };
 
   typedef struct {
     GOPCODE op;
-    GValue* values;
+    GObject** values;
   } GInstruction;
 
   typedef struct {
