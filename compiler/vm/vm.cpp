@@ -4,13 +4,13 @@
 using namespace VM;
 
 void initializeLLVM() {
-  llvm::InitializeNativeTargetAsmPrinter();
-  llvm::InitializeNativeTargetAsmParser();
+  // llvm::InitializeNativeTargetAsmPrinter();
+  // llvm::InitializeNativeTargetAsmParser();
 }
 
 
 
-int main(int argc, char const *argv[]) {
+int _main(int argc, char const *argv[]) {
 
   // auto jit = new JIT();
   auto intType = new GType { BASICTYPES::INT32, "Int" };

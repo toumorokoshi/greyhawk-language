@@ -17,6 +17,11 @@ namespace VM {
     BASICTYPES classifier;
     std::string name;
   } GType;
+
+  GType* getBoolType();
+  GType* getInt32Type();
+  GType* getStringType();
+  GType* getNoneType();
 }
 
 #endif

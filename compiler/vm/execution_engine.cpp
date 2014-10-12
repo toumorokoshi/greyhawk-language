@@ -1,6 +1,9 @@
 #include "execution_engine.hpp"
 #include <iostream>
 
+// #define debug(s) std::cout << s << std::endl;
+#define debug(s)
+
 namespace VM {
 
   inline void addInt(GObject* lhs, GObject* rhs, GObject* result) {
@@ -30,22 +33,29 @@ namespace VM {
 
   void executeFunction(GFunction* function) {
     GInstruction* instruction = function->instructions;
+    executeInstructions(function->instructions);
+  }
+
+  void executeInstructions(GInstruction* instructions) {
+    auto instruction = instructions;
     bool done = false;
     while (!done) {
       switch (instruction->op) {
       case ADD:
+        debug("add");
         addInt(instruction->values[0], instruction->values[1], instruction->values[2]);
         break;
 
       case BRANCH:
         if (instruction->values[0]->value.asBool) {
-          instruction = &function->instructions[instruction->values[1]->value.asInt32 - 1];
+          instruction = &instructions[instruction->values[1]->value.asInt32 - 1];
         } else {
-          instruction = &function->instructions[instruction->values[2]->value.asInt32 - 1];
+          instruction = &instructions[instruction->values[2]->value.asInt32 - 1];
         }
         break;
 
       case END:
+        debug("end");
         done = true;
         break;
 
@@ -54,6 +64,7 @@ namespace VM {
         break;
 
       case PRINT:
+        debug("print");
         print(instruction->values[0]);
         break;
       }

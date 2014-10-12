@@ -9,7 +9,38 @@ using namespace lexer;
 
 namespace parser {
 
-  VMClass* evaluateType(std::string typeName) {
+  GType* evaluateType(std::string typeName) {
+    if (typeName == "Int") { return getInt32Type(); }
+    else if (typeName == "Bool") { return getBoolType(); }
+    else if (typeName == "String") { return getStringType(); }
+    else if (typeName == "None") { return getNoneType(); }
+
+    throw ParserException("Cannot find class " + typeName);
+  }
+
+  GInstruction* PBlock::generate(VM::GScope* scope) {
+    auto instructions = new GInstructionVector;
+    for (auto statement : statements) {
+      statement->generateStatement(scope, *instructions);
+    }
+    instructions->push_back(GInstruction { END, NULL });
+    return &(*instructions)[0];
+  }
+
+  GObject* PCall::generateExpression(VM::GScope* scope,
+                                     GInstructionVector& instructions) {
+    if (name == "print") {
+      instructions.push_back(GInstruction {
+          PRINT,
+            new GObject*[1] {
+            arguments[0]->generateExpression(scope, instructions)
+              }});
+      return getNoneObject();
+    }
+    return getNoneObject();
+  }
+
+  /* VMClass* evaluateType(std::string typeName) {
     if (typeName == "Int") {
       return getVMIntClass();
     } else if (typeName == "Bool") {
@@ -183,5 +214,5 @@ namespace parser {
       vmArguments->push_back(argument->generateExpression(scope));
     }
     return new VMCallMethod(vmValue, methodName, *vmArguments);
-  }
+    } */
 }

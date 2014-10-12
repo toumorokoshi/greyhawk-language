@@ -8,9 +8,9 @@
   matches llvm a bit better (a future choice for a jit)
  */
 
-#include "llvm.hpp"
 #include "type.hpp"
 #include "object.hpp"
+#include "scope.hpp"
 
 #ifndef VM2_VM_HPP
 #define VM2_VM_HPP

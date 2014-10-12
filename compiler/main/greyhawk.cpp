@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "../lexer/tokenizer.hpp"
 #include "../vm/vm.hpp"
+#include "../vm/execution_engine.hpp"
 #include "../parser/parser.hpp"
 #include <boost/program_options.hpp>
 #include <sstream>
@@ -16,7 +17,7 @@ using namespace VM;
 
 // these are initialized in main
 static Tokenizer* tokenizer;
-static VMScope* globalScope;
+static GScope* globalScope;
 
 typedef struct CommandLineArguments {
   std::string fileName;
@@ -76,7 +77,7 @@ void interpreter() {
       TokenVector tokens = tokenizer->tokenize(input_stream);
       Parser parser(tokens);
       auto pstatement = parser.parseStatement();
-      auto statement = pstatement->generateStatement(globalScope);
+      /*  auto statement = pstatement->generateStatement(globalScope);
 
       if (auto expression = dynamic_cast<VMExpression*>(statement)) {
         auto value = expression->evaluate(*globalScope);
@@ -87,7 +88,8 @@ void interpreter() {
       } else {
         statement->execute(*globalScope);
 
-      }
+        } */
+      printf("interpreter not currently implemented.");
 
       //parseTokens(tokens);
     } catch (LexerException& e) {
@@ -96,16 +98,13 @@ void interpreter() {
     } catch (ParserException& e) {
       std::cout << e.message << std::endl;
       continue;
-    } catch (VMException& e) {
-      std::cout << e.message << std::endl;
-      continue;
     }
   }
 }
 
 int main(int argc, char *argv[]) {
   tokenizer = new Tokenizer();
-  globalScope = new VMScope(getBuiltinScope());
+  globalScope = new GScope(NULL);
   CommandLineArguments& args = getArguments(argc, argv);
 
   try {
@@ -114,8 +113,9 @@ int main(int argc, char *argv[]) {
       TokenVector tokens = tokenizer->tokenize(input_stream);
       Parser parser(tokens);
       auto pBlock = parser.parseBlock();
-      auto block = pBlock->generate(globalScope);
-      block->execute(*globalScope);
+      auto instructions = pBlock->generate(globalScope);
+
+      executeInstructions(instructions);
 
     } else {
       interpreter();

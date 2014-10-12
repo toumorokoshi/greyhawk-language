@@ -16,6 +16,8 @@ namespace VM {
     GType* type;
     GValue value;
   } GObject;
+
+  GObject* getNoneObject();
 }
 
 #endif

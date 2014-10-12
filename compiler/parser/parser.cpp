@@ -155,7 +155,7 @@ namespace parser {
     case FOR:
       return parseForLoop();
 
-    case RETURN:
+    case L::RETURN:
       return parseReturn();
 
     default:
@@ -215,7 +215,7 @@ namespace parser {
   }
 
   PReturn* Parser::parseReturn() {
-    _validateToken(RETURN, "expected a return for a return statment");
+    _validateToken(L::RETURN, "expected a return for a return statment");
     token_position++;
 
     auto expression = parseExpression();

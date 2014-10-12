@@ -1,4 +1,5 @@
 SHELL := /bin/bash
+# remember, libs go AFTER source files
 LLVM_CONFIG=`llvm-config --libs core native mcjit interpreter x86` `llvm-config --cxxflags --ldflags` -fexceptions
 BOOST_OPTIONS=-lboost_program_options
 YAML_OPTIONS=-lyaml-cpp
@@ -26,9 +27,7 @@ lexer:
 
 PARSER_FILES=parser/*.cpp
 
-
-CODEGEN_FILES=codegen/*.cpp
-VM_FILES=vm/*.cpp vm/basic_types/*.cpp vm/builtins/*.cpp vm/statements/*.cpp vm/expressions/*.cpp
+VM_FILES=vm/*.cpp
 
 parser:
 	clang++ main/parser.cpp $(VM_FILES) $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(OPTIONS) -o ../bin/parser

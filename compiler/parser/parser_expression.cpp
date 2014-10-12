@@ -130,7 +130,7 @@ namespace parser {
       token_position--;
       return parseClassInstantiation();
 
-    case STRING:
+    case L::STRING:
       debug("parseBaseValue: returning string.");
       return new PConstantString(token->value);
 
