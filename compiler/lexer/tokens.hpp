@@ -44,6 +44,8 @@ namespace lexer {
     L_CURLY,
     R_CURLY,
     SEMICOLON,
+    INCREMENT,
+    DECREMENT,
     // binary operators
     PLUS,
     MINUS,
@@ -56,8 +58,6 @@ namespace lexer {
     LESS_THAN,
     GREATER_THAN,
     IS,
-    INCREMENT,
-    DECREMENT
     // end binary ops
   };
 

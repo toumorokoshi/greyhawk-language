@@ -17,6 +17,20 @@ namespace parser {
     return root;
   }
 
+  YAML::Node* PIncrement::toYaml() {
+    auto root = new YAML::Node();
+    (*root)["increment"]["identifier"] = *identifier->toYaml();
+    (*root)["increment"]["expression"] = *expression->toYaml();
+    return root;
+  }
+
+  YAML::Node* PDecrement::toYaml() {
+    auto root = new YAML::Node();
+    (*root)["decrement"]["identifier"] = *identifier->toYaml();
+    (*root)["decrement"]["expression"] = *expression->toYaml();
+    return root;
+  }
+
   YAML::Node* PDeclare::toYaml() {
     auto root = new YAML::Node();
     (*root)["declare"]["name"] = name;
@@ -26,9 +40,18 @@ namespace parser {
 
   YAML::Node* PForLoop::toYaml() {
     auto root = new YAML::Node();
-    (*root)["for_loop"]["variable_name"] = variableName;
-    (*root)["for_loop"]["iterable"] = *iterableExpression->toYaml();
-    (*root)["for_loop"]["block"] = *block->toYaml();
+    (*root)["for_loop"]["initializer"] = *initializer->toYaml();
+    (*root)["for_loop"]["condition"] = *condition->toYaml();
+    (*root)["for_loop"]["incrementer"] = *incrementer->toYaml();
+    (*root)["for_loop"]["body"] = *body->toYaml();
+    return root;
+  }
+
+  YAML::Node* PForeachLoop::toYaml() {
+    auto root = new YAML::Node();
+    (*root)["foreach_loop"]["variable_name"] = variableName;
+    (*root)["foreach_loop"]["iterable"] = *iterableExpression->toYaml();
+    (*root)["foreach_loop"]["block"] = *block->toYaml();
     return root;
   }
 

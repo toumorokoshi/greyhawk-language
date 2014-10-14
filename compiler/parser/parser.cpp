@@ -143,6 +143,14 @@ namespace parser {
         token_position++;
         return new PAssign(expression, parseExpression());
 
+      case INCREMENT:
+        token_position++;
+        return new PIncrement(expression, parseExpression());
+
+      case DECREMENT:
+        token_position++;
+        return new PDecrement(expression, parseExpression());
+
       default:
         return expression;
       }
@@ -153,7 +161,7 @@ namespace parser {
       return parseIfElse();
 
     case FOR:
-      return parseForLoop();
+      return parseForStatement();
 
     case L::RETURN:
       return parseReturn();
@@ -223,11 +231,24 @@ namespace parser {
     return new PReturn(expression);
   }
 
-  PForLoop* Parser::parseForLoop() {
-   debug("parseForLoop");
+  PStatement* Parser::parseForStatement() {
+    debug("parseForStatement");
 
-    _validateToken(FOR, "expected a for a for loop");
+    _validateToken(FOR, "expected a 'for' for a for loop");
     token_position++;
+
+    switch((*token_position)->type) {
+    case IDENTIFIER:
+      if ((*(token_position + 1))->type == IN) {
+        return parseForeachLoop();
+      }
+    default:
+      return parseForLoop();
+    }
+  }
+
+  PForeachLoop* Parser::parseForeachLoop() {
+    debug("parseForLoop");
 
     _validateToken(IDENTIFIER, "expected a identifier for a for loop");
     auto variableName = (*token_position)->value;
@@ -249,7 +270,34 @@ namespace parser {
     _validateToken(UNINDENT, "expected an unindent for a for loop");
     token_position++;
 
-    return new PForLoop(variableName, expression, block);
+    return new PForeachLoop(variableName, expression, block);
+  }
+
+  PForLoop* Parser::parseForLoop() {
+    auto initializer = parseStatement();
+
+    _validateToken(SEMICOLON, "expected a ';' for a for loop");
+    token_position++;
+
+    auto condition = parseExpression();
+
+    _validateToken(SEMICOLON, "expected a ';' for a for loop");
+    token_position++;
+
+    auto incrementer = parseStatement();
+
+    _validateToken(COLON, "expected a ':' for a for loop");
+    token_position++;
+
+    _validateToken(INDENT, "expected an indent for a for loop");
+    token_position++;
+
+    auto block = parseBlock();
+
+    _validateToken(UNINDENT, "expected an unindent for a for loop");
+    token_position++;
+
+    return new PForLoop(initializer, condition, incrementer, block);
   }
 
   PCall* Parser::parseClassInstantiation() {

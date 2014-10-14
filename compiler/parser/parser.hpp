@@ -27,7 +27,9 @@ namespace parser {
     PStatement* parseStatement();
     PFunctionDeclaration* parseFunctionDeclaration();
     PReturn* parseReturn();
+    PStatement* parseForStatement();
     PForLoop* parseForLoop();
+    PForeachLoop* parseForeachLoop();
     PIfElse* parseIfElse();
     PArray* parseArray();
     PExpression* parseExpression();

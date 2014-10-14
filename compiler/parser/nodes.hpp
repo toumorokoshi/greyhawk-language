@@ -56,6 +56,30 @@ namespace parser {
       identifier(_identifier), expression(_expression) {}
   };
 
+  class PIncrement : public PStatement {
+  public:
+    PExpression* identifier;
+    PExpression* expression;
+
+    virtual YAML::Node* toYaml();
+    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+
+    PIncrement(PExpression* _identifier, PExpression* _expression) :
+      identifier(_identifier), expression(_expression) {}
+  };
+
+  class PDecrement: public PStatement {
+  public:
+    PExpression* identifier;
+    PExpression* expression;
+
+    virtual YAML::Node* toYaml();
+    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+
+    PDecrement(PExpression* _identifier, PExpression* _expression) :
+      identifier(_identifier), expression(_expression) {}
+  };
+
   class PDeclare : public PStatement {
   public:
     std::string name;
@@ -69,7 +93,7 @@ namespace parser {
       name(_name), expression(_expression) {}
   };
 
-  class PForLoop : public PStatement {
+  class PForeachLoop : public PStatement {
   public:
     std::string variableName;
     PExpression* iterableExpression;
@@ -78,12 +102,30 @@ namespace parser {
     virtual YAML::Node* toYaml();
     virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
 
-    PForLoop(std::string _variableName,
+    PForeachLoop(std::string _variableName,
              PExpression* _iterableExpression,
              PBlock* _block) :
       variableName(_variableName),
       iterableExpression(_iterableExpression),
       block(_block) {}
+  };
+
+  class PForLoop : public PStatement {
+  public:
+    PStatement* initializer;
+    PExpression* condition;
+    PStatement* incrementer;
+    PBlock* body;
+
+    virtual YAML::Node* toYaml();
+    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+
+    PForLoop(PStatement* _initializer,
+             PExpression* _condition,
+             PStatement* _incrementer,
+             PBlock* _body) :
+      initializer(_initializer), condition(_condition),
+      incrementer(_incrementer), body(_body) {}
   };
 
   typedef std::pair<std::string, std::string> PArgumentDefinition;
