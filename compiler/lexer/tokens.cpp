@@ -25,6 +25,7 @@ namespace lexer {
     {R_BRACKET, "]"},
     {L_CURLY, "{"},
     {R_CURLY, "}"},
+    {SEMICOLON, ";"},
     {COMMA, ","},
     {PLUS, "+"},
     {MINUS, "-"},
@@ -40,7 +41,9 @@ namespace lexer {
     {GREATER_THAN, ">"},
     {COLON, ":"},
     {DOT, "."},
-    {IS, "is"}
+    {IS, "is"},
+    {INCREMENT, "+="},
+    {DECREMENT, "-="},
   };
 
   KeywordPair& pairFromType(L type) {
@@ -70,6 +73,7 @@ namespace lexer {
     pairFromType(COLON),
     pairFromType(COMMA),
     pairFromType(DOT),
+    pairFromType(SEMICOLON),
     // binary operators
     pairFromType(PLUS),
     pairFromType(MINUS),
@@ -84,6 +88,8 @@ namespace lexer {
     pairFromType(LESS_THAN),
     pairFromType(GREATER_THAN),
     pairFromType(IS),
+    pairFromType(INCREMENT),
+    pairFromType(DECREMENT),
  };
 
 }
