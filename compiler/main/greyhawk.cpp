@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
       TokenVector tokens = tokenizer->tokenize(input_stream);
       Parser parser(tokens);
       auto pBlock = parser.parseBlock();
-      auto instructions = pBlock->generate(globalScope);
+      auto instructions = generateRoot(globalScope, pBlock);
 
       executeInstructions(instructions);
 

@@ -62,7 +62,7 @@ namespace parser {
     PExpression* expression;
 
     virtual YAML::Node* toYaml();
-    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+    virtual void generateStatement(VM::GScope*, GInstructionVector&);
 
     PIncrement(PExpression* _identifier, PExpression* _expression) :
       identifier(_identifier), expression(_expression) {}
@@ -86,7 +86,7 @@ namespace parser {
     PExpression* expression;
 
     virtual YAML::Node* toYaml();
-    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+    virtual void generateStatement(VM::GScope*, GInstructionVector&);
 
     PDeclare(std::string _name,
              PExpression* _expression) :
@@ -118,7 +118,7 @@ namespace parser {
     PBlock* body;
 
     virtual YAML::Node* toYaml();
-    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+    virtual void generateStatement(VM::GScope*, GInstructionVector&);
 
     PForLoop(PStatement* _initializer,
              PExpression* _condition,
@@ -231,7 +231,7 @@ namespace parser {
       return scope->getObjectType(name);
     }
 
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&) { return NULL; }
+    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&);
 
     PIdentifier(std::string _name) : name(_name) {}
   };
@@ -303,7 +303,7 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope* s) { return lhs->getType(s); }
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&) { return NULL; }
+    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&);
 
     PBinaryOperation(PExpression* _lhs,
                      lexer::L _op,
@@ -317,8 +317,11 @@ namespace parser {
   public:
     PStatements statements;
     virtual YAML::Node* toYaml();
-    VM::GInstruction* generate(VM::GScope*);
+    GInstructionVector* generate(VM::GScope*);
   };
+
+  // we'll stick it here for now, move it somewhere else later
+  VM::GInstruction* generateRoot(VM::GScope*, PBlock*);
 
 }
 

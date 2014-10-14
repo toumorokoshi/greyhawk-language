@@ -47,6 +47,7 @@ namespace VM {
         break;
 
       case BRANCH:
+        debug("branch");
         if (instruction->values[0]->value.asBool) {
           instruction = &instructions[instruction->values[1]->value.asInt32 - 1];
         } else {
@@ -60,6 +61,7 @@ namespace VM {
         break;
 
       case LESS_THAN:
+        debug("less_than");
         lessThan(instruction->values[0], instruction->values[1], instruction->values[2]);
         break;
 

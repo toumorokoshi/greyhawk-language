@@ -18,13 +18,18 @@ namespace parser {
     throw ParserException("Cannot find class " + typeName);
   }
 
-  GInstruction* PBlock::generate(VM::GScope* scope) {
+  GInstruction* generateRoot(VM::GScope* scope, PBlock* block) {
+    auto instructions = block->generate(scope);
+    instructions->push_back(GInstruction { END, NULL });
+    return &(*instructions)[0];
+  }
+
+  GInstructionVector* PBlock::generate(VM::GScope* scope) {
     auto instructions = new GInstructionVector;
     for (auto statement : statements) {
       statement->generateStatement(scope, *instructions);
     }
-    instructions->push_back(GInstruction { END, NULL });
-    return &(*instructions)[0];
+    return instructions;
   }
 
   GObject* PCall::generateExpression(VM::GScope* scope,
@@ -39,6 +44,84 @@ namespace parser {
     }
     return getNoneObject();
   }
+
+  void PDeclare::generateStatement(VM::GScope* scope,
+                                   GInstructionVector& instructions) {
+    scope->locals[name] = expression->generateExpression(scope, instructions);
+  }
+
+  GObject* PBinaryOperation::generateExpression(VM::GScope* scope,
+                                                GInstructionVector& instructions) {
+    auto lhsObject = lhs->generateExpression(scope, instructions);
+    auto rhsObject = rhs->generateExpression(scope, instructions);
+    switch (op) {
+    case L::LESS_THAN: {
+      auto iteratorCond = new GObject {
+        getBoolType(), { false }
+      };
+      instructions.push_back(GInstruction {
+          GOPCODE::LESS_THAN, new GObject*[3] {
+            lhsObject, rhsObject, iteratorCond
+          }
+        });
+      return iteratorCond;
+    }
+    default:
+      throw ParserException("binary op not implemented");
+    }
+  }
+
+  void PIncrement::generateStatement(VM::GScope* scope,
+                                     GInstructionVector& instructions) {
+    auto toIncrement = identifier->generateExpression(scope, instructions);
+    if (toIncrement->type != getInt32Type()) {
+      throw ParserException("only supporting int32 for increment ATM");
+    }
+
+    auto incrementer = expression->generateExpression(scope, instructions);
+    if (incrementer->type != getInt32Type()) {
+      throw ParserException("only supporting int32 for increment ATM");
+    }
+
+    instructions.push_back(GInstruction{
+        GOPCODE::ADD, new GObject*[3] {
+          toIncrement, incrementer, toIncrement
+        }
+      });
+  }
+
+  GObject* PIdentifier::generateExpression(VM::GScope* scope,
+                                           GInstructionVector& instructions) {
+    auto object = scope->getObject(name);
+
+    if (object == NULL) {
+      throw ParserException("Object " + name + " is not defined in this scope!");
+    }
+    return object;
+  }
+
+  void PForLoop::generateStatement(VM::GScope* scope,
+                                   GInstructionVector& instructions) {
+    initializer->generateStatement(scope, instructions);
+    auto statements = body->generate(scope);
+    auto forLoopStart = instructions.size();
+    instructions.reserve(instructions.size()
+                         + distance(statements->begin(), statements->end()));
+    instructions.insert(instructions.end(),
+                        statements->begin(),
+                        statements->end());
+    incrementer->generateStatement(scope, instructions);
+    auto conditionObject = condition->generateExpression(scope, instructions);
+    instructions.push_back(GInstruction {
+        GOPCODE::BRANCH, new GObject*[3] {
+          conditionObject,
+            new GObject { getInt32Type(), { (int) forLoopStart } },
+            new GObject { getInt32Type(), { ((int) instructions.size()) + 1 }}
+        }
+      });
+  }
+
+
 
   /* VMClass* evaluateType(std::string typeName) {
     if (typeName == "Int") {

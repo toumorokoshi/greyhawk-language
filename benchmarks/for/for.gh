@@ -1,2 +1,2 @@
-for i in IntRange(10000):
+for i := 0; i < 10000; i += 1:
 	print(i)

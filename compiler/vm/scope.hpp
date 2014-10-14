@@ -26,6 +26,18 @@ namespace VM {
       return NULL;
     }
 
+    GObject* getObject(std::string name) {
+      if (locals.find(name) != locals.end()) {
+        return locals[name];
+      }
+
+      if (_parentScope != NULL) {
+        return _parentScope->getObject(name);
+      }
+
+      return NULL;
+    }
+
     void setType(std::string name, GType* type) {
       types[name] = type;
     }
