@@ -241,9 +241,7 @@ namespace parser {
     std::vector<PExpression*>& elements;
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope*) { return VM::getNoneType(); }
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&) {
-      return NULL;
-    }
+    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&);
 
     PArray(std::vector<PExpression*>& _elements) :
       elements(_elements) {}

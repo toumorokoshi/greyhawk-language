@@ -6,6 +6,7 @@
 namespace VM {
 
   enum BASICTYPES {
+    ARRAY,
     BOOL,
     CLASS,
     INT32,
@@ -18,6 +19,7 @@ namespace VM {
     std::string name;
   } GType;
 
+  GType* getArrayType();
   GType* getBoolType();
   GType* getInt32Type();
   GType* getStringType();

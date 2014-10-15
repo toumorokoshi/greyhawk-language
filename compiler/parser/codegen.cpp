@@ -121,6 +121,19 @@ namespace parser {
       });
   }
 
+  GObject* PArray::generateExpression(VM::GScope* scope,
+                                      GInstructionVector& instructions) {
+    auto array = new GObject*[elements.size()];
+    for (int i = 0; i < elements.size(); i++) {
+      array[i] = elements[i]->generateExpression(scope, instructions);
+    }
+    auto arrayObject = new GObject { getArrayType(), { 0 } };
+    arrayObject->value.asArray = new GArray {
+      array, (int) elements.size()
+    };
+    return arrayObject;
+  }
+
 
 
   /* VMClass* evaluateType(std::string typeName) {

@@ -1,5 +1,5 @@
 #include "execution_engine.hpp"
-#include <iostream>
+#include <string>
 
 // #define debug(s) std::cout << s << std::endl;
 #define debug(s)
@@ -14,25 +14,39 @@ namespace VM {
     result->value.asBool = lhs->value.asInt32 < rhs->value.asInt32;
   }
 
-  void print(GObject* object) {
+  inline std::string toString(GObject* object) {
     switch (object->type->classifier) {
-    case CLASS:
-      printf("class (not yet implemented)\n");
-      break;
-    case INT32:
-      printf("%d\n", object->value.asInt32);
-      break;
-    case NONE:
-      printf("None\n");
-      break;
-    case STRING:
-      printf("%s\n", object->value.asString);
-      break;
+    case ARRAY: {
+      std::string arrayString = "[";
+      auto array = object->value.asArray->elements;
+      auto size = object->value.asArray->size;
+      for (int i = 0; i < size; i++) {
+        arrayString += toString(array[i]);
+        if (i < size - 1) {
+          arrayString += ", ";
+        }
+      }
+      return arrayString += "]";
     }
+    case BOOL:
+      return object->value.asBool ? "true" : "false";
+    case CLASS:
+      return "class (not yet implemented)\n";
+    case INT32:
+      return std::to_string(object->value.asInt32).c_str();
+    case NONE:
+      return "None";
+    case STRING:
+      return object->value.asString;
+    }
+    return "unable to eval type";
+  }
+
+  void print(GObject* object) {
+    printf((toString(object) + "\n").c_str());
   }
 
   void executeFunction(GFunction* function) {
-    GInstruction* instruction = function->instructions;
     executeInstructions(function->instructions);
   }
 

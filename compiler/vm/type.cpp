@@ -2,6 +2,11 @@
 
 namespace VM {
 
+  GType* getArrayType() {
+    auto static arrayType = new GType { ARRAY, "Array" };
+    return arrayType;
+  }
+
   GType* getBoolType() {
     auto static boolType = new GType { BOOL, "Bool" };
     return boolType;
