@@ -20,6 +20,7 @@ namespace VM {
 
   // these are all the instruction supported by the vm.
   enum GOPCODE {
+    ACCESS_ELEMENT,
     ADD,
     BRANCH,
     EXECUTE,
@@ -27,6 +28,7 @@ namespace VM {
     LABEL,
     LESS_THAN,
     PRINT,
+    SET,
     RETURN
   };
 

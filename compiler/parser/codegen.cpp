@@ -124,15 +124,54 @@ namespace parser {
   GObject* PArray::generateExpression(VM::GScope* scope,
                                       GInstructionVector& instructions) {
     auto array = new GObject*[elements.size()];
+    auto type = getNoneType();
     for (int i = 0; i < elements.size(); i++) {
       array[i] = elements[i]->generateExpression(scope, instructions);
+      type = array[i]->type;
     }
     auto arrayObject = new GObject { getArrayType(), { 0 } };
     arrayObject->value.asArray = new GArray {
-      array, (int) elements.size()
+      array, type, (int) elements.size()
     };
     return arrayObject;
   }
+
+  GObject* PArrayAccess::generateExpression(VM::GScope* scope,
+                                            GInstructionVector& instructions) {
+    auto valueObject = value->generateExpression(scope, instructions);
+    auto indexObject = index->generateExpression(scope, instructions);
+    auto objectRegister = new GObject { valueObject->value.asArray->elementType, {0} };
+    if (indexObject->type->classifier != INT32) {
+      throw ParserException("index on array is not an int");
+    }
+    instructions.push_back(GInstruction {
+        GOPCODE::ACCESS_ELEMENT, new GObject*[3] {
+          valueObject, indexObject, objectRegister
+        }
+      });
+    return objectRegister;
+  }
+
+  // generates the instructions to parse the array
+  void parseArrayIterator(std::string varName, GArray* array, GScope* scope,
+                          GInstructionVector& instructions) {
+    GScope forScope(scope);
+    auto iteratorObject = new GObject { array->elementType, {0}};
+    // initialize statement
+    forScope.locals[varName] = iteratorObject;
+  }
+
+  void PForeachLoop::generateStatement(VM::GScope* scope,
+                                       GInstructionVector& instructions) {
+    auto iterableValue = iterableExpression->generateExpression(scope, instructions);
+    // if the value is an array, we iterate through the array first
+    if (iterableValue->type == getArrayType()) {
+      instructions.push_back(GInstruction {
+          GOPCODE::
+      });
+    }
+  }
+
 
 
 
@@ -214,14 +253,6 @@ namespace parser {
     arguments->push_back(lhs->generateExpression(scope));
     arguments->push_back(rhs->generateExpression(scope));
     return new VMCall(methodName, *arguments);
-  }
-
-  VMStatement* PForLoop::generateStatement(VMScope* scope) {
-    VMScope forScope(scope);
-    auto expression = iterableExpression->generateExpression(scope);
-    forScope.localTypes[variableName] = iterableExpression->getType(scope);
-    auto vmBlock = block->generate(&forScope);
-    return new VMForLoop(vmBlock, variableName, expression);
   }
 
   VMStatement* PFunctionDeclaration::generateStatement(VMScope* scope) {

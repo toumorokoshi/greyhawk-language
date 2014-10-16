@@ -6,6 +6,10 @@
 
 namespace VM {
 
+  inline void accessElement(GObject* array, GObject* index, GObject* result) {
+    result->value = array->value.asArray->elements[index->value.asInt32]->value;
+  }
+
   inline void addInt(GObject* lhs, GObject* rhs, GObject* result) {
     result->value.asInt32 = lhs->value.asInt32 + rhs->value.asInt32;
   }
@@ -55,6 +59,10 @@ namespace VM {
     bool done = false;
     while (!done) {
       switch (instruction->op) {
+      case ACCESS_ELEMENT:
+        debug("access element");
+        accessElement(instruction->values[0], instruction->values[1], instruction->values[2]);
+        break;
       case ADD:
         debug("add");
         addInt(instruction->values[0], instruction->values[1], instruction->values[2]);
