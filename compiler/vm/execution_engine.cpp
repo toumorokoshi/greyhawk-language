@@ -18,6 +18,10 @@ namespace VM {
     result->value.asBool = lhs->value.asInt32 < rhs->value.asInt32;
   }
 
+  inline void set(GObject* source, GObject* result) {
+    result->value = source->value;
+  }
+
   inline std::string toString(GObject* object) {
     switch (object->type->classifier) {
     case ARRAY: {
@@ -63,6 +67,7 @@ namespace VM {
         debug("access element");
         accessElement(instruction->values[0], instruction->values[1], instruction->values[2]);
         break;
+
       case ADD:
         debug("add");
         addInt(instruction->values[0], instruction->values[1], instruction->values[2]);
@@ -91,6 +96,12 @@ namespace VM {
         debug("print");
         print(instruction->values[0]);
         break;
+
+      case SET:
+        debug("set");
+        set(instruction->values[0], instruction->values[1]);
+        break;
+
       }
 
       instruction++;

@@ -153,12 +153,39 @@ namespace parser {
   }
 
   // generates the instructions to parse the array
-  void parseArrayIterator(std::string varName, GArray* array, GScope* scope,
-                          GInstructionVector& instructions) {
+  void parseArrayIterator(std::string varName, GArray* array, PBlock* body,
+                          GScope* scope, GInstructionVector& instructions) {
     GScope forScope(scope);
     auto iteratorObject = new GObject { array->elementType, {0}};
+    auto zero = new GObject { getInt32Type(), { 0 }};
+    auto one = new GObject { getInt32Type(), { 1 }};
+    auto arraySize = new GObject { getInt32Type(), { array->size }};
     // initialize statement
     forScope.locals[varName] = iteratorObject;
+    instructions.push_back(GInstruction { GOPCODE::SET, new GObject*[2] { zero, iteratorObject } });
+    instructions.push_back(GInstruction { GOPCODE::SET, new GObject*[2] { zero, iteratorObject } });
+
+    auto forLoopStart = instructions.size();
+    auto statements = body->generate(&forScope);
+    instructions.reserve(instructions.size()
+                         + distance(statements->begin(), statements->end()));
+    instructions.insert(instructions.end(),
+                        statements->begin(),
+                        statements->end());
+    auto conditionObject = new GObject { getBoolType(), { 0 }};
+    instructions.push_back(GInstruction {
+        GOPCODE::ADD, new GObject*[3] { iteratorObject, one, iteratorObject }
+      });
+    instructions.push_back(GInstruction {
+        GOPCODE::LESS_THAN, new GObject*[3] { iteratorObject, arraySize, conditionObject }
+      });
+    instructions.push_back(GInstruction {
+        GOPCODE::BRANCH, new GObject*[3] {
+          conditionObject,
+            new GObject { getInt32Type(), { (int) forLoopStart }},
+            new GObject { getInt32Type(), { ((int) instructions.size()) + 1 }}
+        }
+      });
   }
 
   void PForeachLoop::generateStatement(VM::GScope* scope,
@@ -166,9 +193,10 @@ namespace parser {
     auto iterableValue = iterableExpression->generateExpression(scope, instructions);
     // if the value is an array, we iterate through the array first
     if (iterableValue->type == getArrayType()) {
-      instructions.push_back(GInstruction {
-          GOPCODE::
-      });
+      parseArrayIterator(variableName, iterableValue->value.asArray, block,
+                         scope, instructions);
+    } else {
+      throw ParserException("foreach loop not yet implemented!");
     }
   }
 

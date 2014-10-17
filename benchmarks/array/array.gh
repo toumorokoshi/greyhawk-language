@@ -1,4 +1,4 @@
-for i in IntRange(10000):
+for i := 0; i < 10000; i += 1:
 	x := [1, 2, 3]
 	x[0] = 10
 	print(x)
