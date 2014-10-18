@@ -1,2 +1,3 @@
-for i in [0, 1, 2]:
+y := ["test", "this", "thing"]
+for i in y:
 	print(i)
