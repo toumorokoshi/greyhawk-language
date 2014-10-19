@@ -14,12 +14,15 @@ namespace VM {
     NONE
   };
 
-  typedef struct {
+  struct GType;
+
+  typedef struct GType {
     BASICTYPES classifier;
     std::string name;
+    GType* subTypes;
   } GType;
 
-  GType* getArrayType();
+  GType* getArrayType(GType* elementType);
   GType* getBoolType();
   GType* getInt32Type();
   GType* getStringType();

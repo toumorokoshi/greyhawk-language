@@ -26,6 +26,7 @@ namespace VM {
     EXECUTE,
     END,
     LABEL,
+    LENGTH,
     LESS_THAN,
     PRINT,
     SET,
@@ -42,6 +43,8 @@ namespace VM {
     GInstruction* instructions; // array
     int instructionCount;
   } GFunction;
+
+  void printInstructions(GInstruction*);
 };
 
 #endif

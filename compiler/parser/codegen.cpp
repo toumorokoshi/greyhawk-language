@@ -1,5 +1,6 @@
 #include "nodes.hpp"
 #include "exceptions.hpp"
+#include <iostream>
 
 #define debug(s);
 // #define debug(s) std::cout << s << std::endl;
@@ -47,7 +48,12 @@ namespace parser {
 
   void PDeclare::generateStatement(VM::GScope* scope,
                                    GInstructionVector& instructions) {
-    scope->locals[name] = expression->generateExpression(scope, instructions);
+    auto value = expression->generateExpression(scope, instructions);
+    auto newValue = new GObject { value->type, {0} };
+    scope->locals[name] = newValue;
+    instructions.push_back(GInstruction {
+        SET, new GObject*[2] { value, newValue }
+      });
   }
 
   GObject* PBinaryOperation::generateExpression(VM::GScope* scope,
@@ -115,8 +121,8 @@ namespace parser {
     instructions.push_back(GInstruction {
         GOPCODE::BRANCH, new GObject*[3] {
           conditionObject,
-            new GObject { getInt32Type(), { (int) forLoopStart } },
-            new GObject { getInt32Type(), { ((int) instructions.size()) + 1 }}
+            new GObject { getInt32Type(), { (int) forLoopStart - ((int) instructions.size()) }},
+            new GObject { getInt32Type(), { 1 }}
         }
       });
   }
@@ -129,9 +135,9 @@ namespace parser {
       array[i] = elements[i]->generateExpression(scope, instructions);
       type = array[i]->type;
     }
-    auto arrayObject = new GObject { getArrayType(), { 0 } };
+    auto arrayObject = new GObject { getArrayType(type), { 0 } };
     arrayObject->value.asArray = new GArray {
-      array, type, (int) elements.size()
+      array, (int) elements.size()
     };
     return arrayObject;
   }
@@ -140,7 +146,7 @@ namespace parser {
                                             GInstructionVector& instructions) {
     auto valueObject = value->generateExpression(scope, instructions);
     auto indexObject = index->generateExpression(scope, instructions);
-    auto objectRegister = new GObject { valueObject->value.asArray->elementType, {0} };
+    auto objectRegister = new GObject { valueObject->type->subTypes, {0} };
     if (indexObject->type->classifier != INT32) {
       throw ParserException("index on array is not an int");
     }
@@ -156,14 +162,14 @@ namespace parser {
   void parseArrayIterator(std::string varName, GObject* array, PBlock* body,
                           GScope* scope, GInstructionVector& instructions) {
     GScope forScope(scope);
-    auto arrayValue = array->value.asArray;
     auto iteratorIndex = new GObject { getInt32Type(), {0}};
-    auto iteratorObject = new GObject { arrayValue->elementType, {0}};
+    auto iteratorObject = new GObject { array->type->subTypes, {0}};
     auto zero = new GObject { getInt32Type(), { 0 }};
     auto one = new GObject { getInt32Type(), { 1 }};
-    auto arraySize = new GObject { getInt32Type(), { arrayValue->size }};
+    auto arraySize = new GObject { getInt32Type(), { 0 }};
     // initialize statement
     forScope.locals[varName] = iteratorObject;
+    instructions.push_back(GInstruction { GOPCODE::LENGTH, new GObject*[2] { array, arraySize }});
     instructions.push_back(GInstruction { GOPCODE::SET, new GObject*[2] { zero, iteratorIndex }});
 
     auto forLoopStart = instructions.size();
@@ -173,9 +179,7 @@ namespace parser {
     auto statements = body->generate(&forScope);
     instructions.reserve(instructions.size()
                          + distance(statements->begin(), statements->end()));
-    instructions.insert(instructions.end(),
-                        statements->begin(),
-                        statements->end());
+    instructions.insert(instructions.end(), statements->begin(), statements->end());
     auto conditionObject = new GObject { getBoolType(), { 0 }};
     instructions.push_back(GInstruction {
         GOPCODE::ADD, new GObject*[3] { iteratorIndex, one, iteratorIndex }
@@ -186,8 +190,8 @@ namespace parser {
     instructions.push_back(GInstruction {
         GOPCODE::BRANCH, new GObject*[3] {
           conditionObject,
-            new GObject { getInt32Type(), { (int) forLoopStart }},
-            new GObject { getInt32Type(), { ((int) instructions.size()) + 1 }}
+            new GObject { getInt32Type(), { (int) forLoopStart - (int) instructions.size() }},
+            new GObject { getInt32Type(), { 1 }}
         }
       });
   }
@@ -196,7 +200,7 @@ namespace parser {
                                        GInstructionVector& instructions) {
     auto iterableValue = iterableExpression->generateExpression(scope, instructions);
     // if the value is an array, we iterate through the array first
-    if (iterableValue->type == getArrayType()) {
+    if (iterableValue->type->classifier == ARRAY) {
       parseArrayIterator(variableName, iterableValue, block,
                          scope, instructions);
     } else {
@@ -310,23 +314,6 @@ namespace parser {
 
   VMStatement* PReturn::generateStatement(VMScope* scope) {
     return new VMReturn(expression->generateExpression(scope));
-  }
-
-  VMExpression* PArray::generateExpression(VMScope* scope) {
-    VMClass* elementType = getNoneType();
-    if (elements.size() > 0) { elementType = elements[0]->getType(scope); }
-
-    auto vmElements = new std::vector<VMExpression*>;
-
-    for (auto element : elements) {
-      if (!elementType->matches(element->getType(scope))) {
-        throw ParserException("array Element does not match type!");
-      }
-
-      vmElements->push_back(element->generateExpression(scope));
-    }
-
-    return new VMArrayExpression(elementType, *vmElements);
   }
 
   VMClass* PCall::getType(VM::VMScope* scope) {

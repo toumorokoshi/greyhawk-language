@@ -22,6 +22,7 @@ static GScope* globalScope;
 typedef struct CommandLineArguments {
   std::string fileName;
   bool ast;
+  bool bytecode;
   bool llvm;
 } CommandLineArguments;
 
@@ -37,6 +38,7 @@ CommandLineArguments& getArguments(int argc, char*argv[]) {
   desc.add_options()
     ("help", "Print help message")
     ("ast", "print the ast")
+    ("bytecode", "print the bytecode")
     ("file_name", po::value<std::string>()->required(), "path to the file to compile");
 
   po::variables_map vm;
@@ -53,6 +55,7 @@ CommandLineArguments& getArguments(int argc, char*argv[]) {
     }
 
     args->ast = vm.count("ast") > 0;
+    args->bytecode = vm.count("bytecode") > 0;
     return *args;
 
   } catch (po::error& e) {
@@ -115,7 +118,11 @@ int main(int argc, char *argv[]) {
       auto pBlock = parser.parseBlock();
       auto instructions = generateRoot(globalScope, pBlock);
 
-      executeInstructions(instructions);
+      if (args.bytecode) {
+        printInstructions(instructions);
+      } else {
+        executeInstructions(instructions);
+      }
 
     } else {
       interpreter();

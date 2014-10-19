@@ -1,29 +1,34 @@
 #include "type.hpp"
+#include <map>
 
 namespace VM {
 
-  GType* getArrayType() {
-    auto static arrayType = new GType { ARRAY, "Array" };
-    return arrayType;
+  GType* getArrayType(GType* elementType) {
+    static std::map<GType*, GType*> arrayTypes;
+    if (arrayTypes.find(elementType) == arrayTypes.end()) {
+      arrayTypes[elementType] = new GType { ARRAY, "Array<" + elementType->name + ">",
+                                            elementType };
+    }
+    return arrayTypes[elementType];
   }
 
   GType* getBoolType() {
-    auto static boolType = new GType { BOOL, "Bool" };
+    auto static boolType = new GType { BOOL, "Bool", NULL };
     return boolType;
   }
 
   GType* getInt32Type() {
-    auto static intType = new GType { INT32, "Int32" };
+    auto static intType = new GType { INT32, "Int32", NULL };
     return intType;
   }
 
   GType* getStringType() {
-    auto static stringType = new GType { STRING, "String" };
+    auto static stringType = new GType { STRING, "String", NULL };
     return stringType;
   }
 
   GType* getNoneType() {
-    auto static noneType = new GType { NONE, "None" };
+    auto static noneType = new GType { NONE, "None", NULL };
     return noneType;
   }
 }

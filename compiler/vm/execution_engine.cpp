@@ -15,6 +15,14 @@ namespace VM {
     result->value.asInt32 = lhs->value.asInt32 + rhs->value.asInt32;
   }
 
+  inline void length(GObject* value, GObject* result) {
+    switch (value->type->classifier) {
+    case ARRAY:
+      result->value.asInt32 = value->value.asArray->size;
+      break;
+    }
+  }
+
   inline void lessThan(GObject* lhs, GObject* rhs, GObject* result) {
     result->value.asBool = lhs->value.asInt32 < rhs->value.asInt32;
   }
@@ -65,21 +73,21 @@ namespace VM {
     while (!done) {
       switch (instruction->op) {
       case ACCESS_ELEMENT:
-        debug("access element");
+        debug("access element: " << instruction->values[0] << ", " << instruction->values[1] << ", " << instruction->values[2]);
         accessElement(instruction->values[0], instruction->values[1], instruction->values[2]);
         break;
 
       case ADD:
-        debug("add");
+        debug("add: " << instruction->values[0] << ", " << instruction->values[1] << ", " << instruction->values[2]);
         addInt(instruction->values[0], instruction->values[1], instruction->values[2]);
         break;
 
       case BRANCH:
-        debug("branch");
+        debug("branch:" << instruction->values[0] << ", " << instruction->values[1] << ", " << instruction->values[2]);
         if (instruction->values[0]->value.asBool) {
-          instruction = &instructions[instruction->values[1]->value.asInt32 - 1];
+          instruction += instruction->values[1]->value.asInt32 - 1;
         } else {
-          instruction = &instructions[instruction->values[2]->value.asInt32 - 1];
+          instruction += instruction->values[2]->value.asInt32 - 1;
         }
         break;
 
@@ -88,18 +96,23 @@ namespace VM {
         done = true;
         break;
 
+      case LENGTH:
+        debug("length: " << instruction->values[0] << ", " << instruction->values[1]);
+        length(instruction->values[0], instruction->values[1]);
+        break;
+
       case LESS_THAN:
-        debug("less_than");
+        debug("less_than: " << instruction->values[0] << ", " << instruction->values[1] << ", " << instruction->values[2]);
         lessThan(instruction->values[0], instruction->values[1], instruction->values[2]);
         break;
 
       case PRINT:
-        debug("print");
+        debug("print: " << instruction->values[0]);
         print(instruction->values[0]);
         break;
 
       case SET:
-        debug("set");
+        debug("set: " << instruction->values[0] << ", " << instruction->values[1]);
         set(instruction->values[0], instruction->values[1]);
         break;
 

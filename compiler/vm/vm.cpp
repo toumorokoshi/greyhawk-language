@@ -3,6 +3,58 @@
 
 using namespace VM;
 
+
+void VM::printInstructions(GInstruction* firstInstruction) {
+  auto done = false;
+  int instructionCount = 0;
+  while (!done) {
+    if (instructionCount < 10) {
+      std::cout << "0";
+    }
+    std::cout << instructionCount << ", ";
+    auto values = firstInstruction->values;
+
+    switch(firstInstruction->op) {
+    case ACCESS_ELEMENT:
+      std::cout << "ACCESS_ELEMENT: " << values[0] << ", " << values[1] << ", " << values[2];
+      break;
+
+    case ADD:
+      std::cout << "ADD: " << values[0] << ", " << values[1] << ", " << values[2];
+      break;
+
+    case BRANCH:
+      std::cout << "BRANCH: " << values[0] << ", " << values[1]->value.asInt32 << ", " << values[2]->value.asInt32;
+      break;
+
+    case END:
+      done = true;
+      std::cout << "END";
+      break;
+
+    case LENGTH:
+      std::cout << "LENGTH: " << values[0] << ", " << values[1];
+      break;
+
+    case LESS_THAN:
+      std::cout << "LESS_THAN: " << values[0] << ", " << values[1] << ", " << values[2];
+      break;
+
+    case PRINT:
+      std::cout << "PRINT: " << values[0];
+      break;
+
+    case SET:
+      std::cout << "SET: " << values[0] << ", " << values[1];
+      break;
+
+    }
+    firstInstruction++;
+    instructionCount++;
+    std::cout << std::endl;
+  }
+}
+
 void initializeLLVM() {
   // llvm::InitializeNativeTargetAsmPrinter();
   // llvm::InitializeNativeTargetAsmParser();

@@ -9,7 +9,6 @@ namespace VM {
 
   typedef struct {
     GObject** elements;
-    GType* elementType;
     int size;
   } GArray;
 

@@ -1,3 +1,4 @@
-y := ["test", "this", "thing"]
+y := [[0, 1], [2, 3], [4, 5]]
 for i in y:
-	print(i)
+	for j in i:
+		print(j)
