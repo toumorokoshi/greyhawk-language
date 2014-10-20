@@ -9,6 +9,7 @@ namespace VM {
     ARRAY,
     BOOL,
     CLASS,
+    FLOAT,
     INT32,
     STRING,
     NONE
@@ -24,6 +25,7 @@ namespace VM {
 
   GType* getArrayType(GType* elementType);
   GType* getBoolType();
+  GType* getFloatType();
   GType* getInt32Type();
   GType* getStringType();
   GType* getNoneType();

@@ -56,25 +56,63 @@ namespace parser {
       });
   }
 
+  GObject* intToFloat(GObject* integer, GInstructionVector& instructions) {
+    auto castResult = new GObject { getFloatType(), {0}};
+    instructions.push_back(GInstruction {
+        GOPCODE::INT_TO_FLOAT, new GObject*[2] { integer, castResult }
+      });
+    return castResult;
+  }
+
   GObject* PBinaryOperation::generateExpression(VM::GScope* scope,
                                                 GInstructionVector& instructions) {
     auto lhsObject = lhs->generateExpression(scope, instructions);
     auto rhsObject = rhs->generateExpression(scope, instructions);
-    switch (op) {
-    case L::LESS_THAN: {
-      auto iteratorCond = new GObject {
-        getBoolType(), { false }
-      };
-      instructions.push_back(GInstruction {
-          GOPCODE::LESS_THAN, new GObject*[3] {
-            lhsObject, rhsObject, iteratorCond
-          }
-        });
-      return iteratorCond;
+
+    // cast as necessary
+    if (lhsObject->type == getFloatType() && rhsObject->type == getInt32Type()) {
+      rhsObject = intToFloat(rhsObject, instructions);
     }
+    if (lhsObject->type == getInt32Type() && rhsObject->type == getFloatType()) {
+      lhsObject = intToFloat(lhsObject, instructions);
+    }
+
+    if (lhsObject->type != rhsObject->type) {
+      throw ParserException("type mismatch during binary operation!");
+    }
+
+    GObject* resultObject;
+    GOPCODE opCode;
+
+    switch (op) {
+    case L::LESS_THAN:
+      resultObject = new GObject { getBoolType(), { 0 }};
+      opCode = GOPCODE::LESS_THAN;
+      break;
+
+    case L::PLUS: {
+      if (lhsObject->type == getFloatType()) {
+        resultObject = new GObject { getFloatType(), { 0 }};
+        opCode = GOPCODE::ADD_FLOAT;
+        break;
+
+      } else if (lhsObject->type == getInt32Type()) {
+        resultObject = new GObject { getInt32Type(), { 0 }};
+        opCode = GOPCODE::ADD_INT;
+        break;
+
+      }
+
+    }
+
     default:
       throw ParserException("binary op not implemented");
     }
+
+    instructions.push_back(GInstruction { opCode, new GObject*[3] {
+          lhsObject, rhsObject, resultObject
+        }});
+    return resultObject;
   }
 
   void PIncrement::generateStatement(VM::GScope* scope,
@@ -90,7 +128,7 @@ namespace parser {
     }
 
     instructions.push_back(GInstruction{
-        GOPCODE::ADD, new GObject*[3] {
+        GOPCODE::ADD_INT, new GObject*[3] {
           toIncrement, incrementer, toIncrement
         }
       });
@@ -182,7 +220,7 @@ namespace parser {
     instructions.insert(instructions.end(), statements->begin(), statements->end());
     auto conditionObject = new GObject { getBoolType(), { 0 }};
     instructions.push_back(GInstruction {
-        GOPCODE::ADD, new GObject*[3] { iteratorIndex, one, iteratorIndex }
+        GOPCODE::ADD_INT, new GObject*[3] { iteratorIndex, one, iteratorIndex }
       });
     instructions.push_back(GInstruction {
         GOPCODE::LESS_THAN, new GObject*[3] { iteratorIndex, arraySize, conditionObject }

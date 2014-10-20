@@ -15,6 +15,18 @@ namespace VM {
     result->value.asInt32 = lhs->value.asInt32 + rhs->value.asInt32;
   }
 
+  inline void addFloat(GObject* lhs, GObject* rhs, GObject* result) {
+    debug("lhs: " << lhs->value.asFloat);
+    debug("rhs: " << rhs->value.asFloat);
+    result->value.asFloat = lhs->value.asFloat + rhs->value.asFloat;
+    debug("result: " << result->value.asFloat);
+  }
+
+  inline void intToFloat(GObject* integer, GObject* result) {
+    result->value.asFloat = (float) integer->value.asInt32;
+    debug(result->value.asFloat);
+  }
+
   inline void length(GObject* value, GObject* result) {
     switch (value->type->classifier) {
     case ARRAY:
@@ -49,6 +61,8 @@ namespace VM {
       return object->value.asBool ? "true" : "false";
     case CLASS:
       return "class (not yet implemented)\n";
+    case FLOAT:
+      return std::to_string(object->value.asFloat).c_str();
     case INT32:
       return std::to_string(object->value.asInt32).c_str();
     case NONE:
@@ -77,9 +91,14 @@ namespace VM {
         accessElement(instruction->values[0], instruction->values[1], instruction->values[2]);
         break;
 
-      case ADD:
-        debug("add: " << instruction->values[0] << ", " << instruction->values[1] << ", " << instruction->values[2]);
+      case ADD_INT:
+        debug("add float: " << instruction->values[0] << ", " << instruction->values[1] << ", " << instruction->values[2]);
         addInt(instruction->values[0], instruction->values[1], instruction->values[2]);
+        break;
+
+      case ADD_FLOAT:
+        debug("add float: " << instruction->values[0] << ", " << instruction->values[1] << ", " << instruction->values[2]);
+        addFloat(instruction->values[0], instruction->values[1], instruction->values[2]);
         break;
 
       case BRANCH:
@@ -94,6 +113,10 @@ namespace VM {
       case END:
         debug("end");
         done = true;
+        break;
+
+      case INT_TO_FLOAT:
+        intToFloat(instruction->values[0], instruction->values[1]);
         break;
 
       case LENGTH:

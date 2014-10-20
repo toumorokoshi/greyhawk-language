@@ -204,6 +204,22 @@ namespace parser {
     PConstantInt(int _value) : value(_value) {}
   };
 
+  class PConstantFloat : public PExpression {
+  public:
+    double value;
+
+    virtual YAML::Node* toYaml();
+    virtual VM::GType* getType(VM::GScope*) { return VM::getFloatType(); }
+
+    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&) {
+      auto object = new VM::GObject { VM::getFloatType(), { 0 }};
+      object->value.asFloat = value;
+      return object;
+    }
+
+    PConstantFloat(double _value) : value(_value) {}
+  };
+
   class PConstantString : public PExpression {
   public:
     std::string value;

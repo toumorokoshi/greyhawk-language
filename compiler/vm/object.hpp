@@ -15,6 +15,7 @@ namespace VM {
   typedef union {
     int asInt32;
     bool asBool;
+    double asFloat;
     char* asString;
     void* asNone;
     GArray* asArray;

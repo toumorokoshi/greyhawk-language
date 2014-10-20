@@ -19,8 +19,12 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "ACCESS_ELEMENT: " << values[0] << ", " << values[1] << ", " << values[2];
       break;
 
-    case ADD:
-      std::cout << "ADD: " << values[0] << ", " << values[1] << ", " << values[2];
+    case ADD_INT:
+      std::cout << "ADD_INT: " << values[0] << ", " << values[1] << ", " << values[2];
+      break;
+
+    case ADD_FLOAT:
+      std::cout << "ADD_FLOAT: " << values[0] << ", " << values[1] << ", " << values[2];
       break;
 
     case BRANCH:
@@ -30,6 +34,10 @@ void VM::printInstructions(GInstruction* firstInstruction) {
     case END:
       done = true;
       std::cout << "END";
+      break;
+
+    case INT_TO_FLOAT:
+      std::cout << "INT_TO_FLOAT: " << values[0] << ", " << values[1];
       break;
 
     case LENGTH:
@@ -84,7 +92,7 @@ int _main(int argc, char const *argv[]) {
 
   auto instructions = new GInstruction[5]{
     GInstruction { GOPCODE::PRINT , new GObject*[1]{ helloWorld }},
-    GInstruction { GOPCODE::ADD, new GObject*[3]{ iterator, one, iterator }},
+    GInstruction { GOPCODE::ADD_INT, new GObject*[3]{ iterator, one, iterator }},
     GInstruction { GOPCODE::LESS_THAN, new GObject*[3]{ iterator, oneHundred, iteratorCond }},
     GInstruction { GOPCODE::BRANCH, new GObject*[3] { iteratorCond, branchPosition, donePosition }},
     GInstruction { GOPCODE::END , new GObject*[3] {}}

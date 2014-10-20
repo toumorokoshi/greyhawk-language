@@ -21,10 +21,12 @@ namespace VM {
   // these are all the instruction supported by the vm.
   enum GOPCODE {
     ACCESS_ELEMENT,
-    ADD,
+    ADD_INT,
+    ADD_FLOAT,
     BRANCH,
     EXECUTE,
     END,
+    INT_TO_FLOAT,
     LABEL,
     LENGTH,
     LESS_THAN,

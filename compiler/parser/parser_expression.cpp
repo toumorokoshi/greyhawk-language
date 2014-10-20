@@ -138,6 +138,10 @@ namespace parser {
       debug("parseBaseValue: returning int.");
       return new PConstantInt(std::stoi(token->value));
 
+    case DOUBLE:
+      debug("parseBaseValue: returning double.");
+      return new PConstantFloat(std::stod(token->value));
+
     case IDENTIFIER: {
       debug("parseBaseValue: return identifier.");
 

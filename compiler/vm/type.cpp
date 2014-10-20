@@ -17,6 +17,11 @@ namespace VM {
     return boolType;
   }
 
+  GType* getFloatType() {
+    auto static floatType = new GType { FLOAT, "Float", NULL };
+    return floatType;
+  }
+
   GType* getInt32Type() {
     auto static intType = new GType { INT32, "Int32", NULL };
     return intType;

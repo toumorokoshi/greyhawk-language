@@ -79,7 +79,10 @@ void interpreter() {
       std::istringstream input_stream(input);
       TokenVector tokens = tokenizer->tokenize(input_stream);
       Parser parser(tokens);
-      auto pstatement = parser.parseStatement();
+      auto pBlock = parser.parseBlock();
+      auto instructions = generateRoot(globalScope, pBlock);
+      executeInstructions(instructions);
+      // auto pstatement = parser.parseStatement();
       /*  auto statement = pstatement->generateStatement(globalScope);
 
       if (auto expression = dynamic_cast<VMExpression*>(statement)) {
@@ -92,7 +95,7 @@ void interpreter() {
         statement->execute(*globalScope);
 
         } */
-      printf("interpreter not currently implemented.");
+      // printf("interpreter not currently implemented.");
 
       //parseTokens(tokens);
     } catch (LexerException& e) {

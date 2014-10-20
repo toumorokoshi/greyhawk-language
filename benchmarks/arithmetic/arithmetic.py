@@ -1,4 +1,2 @@
-def do_math(a, b):
-    return a * b + 5
-
-print(do_math(5 + 7, 6))
+for i in range(10000):
+    print(1 + 1 * 2.0)

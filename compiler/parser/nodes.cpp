@@ -93,6 +93,10 @@ namespace parser {
     return new YAML::Node(value);
   }
 
+  YAML::Node* PConstantFloat::toYaml() {
+    return new YAML::Node(value);
+  }
+
   YAML::Node* PConstantString::toYaml() {
     auto node = new YAML::Node();
     (*node)["string"] = value;

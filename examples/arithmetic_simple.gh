@@ -1,5 +1,2 @@
-Int doMath(a Int, b Int):
-	x := a + b
-	return x
-
-print(doMath(1, 2) + 10)
+for i := 0; i < 10; i += 1:
+	print(i + 1)
