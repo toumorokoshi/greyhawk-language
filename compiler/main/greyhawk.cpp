@@ -66,7 +66,32 @@ CommandLineArguments& getArguments(int argc, char*argv[]) {
   }
 }
 
-void interpreter() {
+void dumpAST(PNode* node) {
+  auto yaml = node->toYaml();
+  std::cout << (*yaml) << std::endl;
+}
+
+void run(CommandLineArguments& args, std::istream& input_stream) {
+  TokenVector tokens = tokenizer->tokenize(input_stream);
+  Parser parser(tokens);
+  auto pBlock = parser.parseBlock();
+
+  if (args.ast) {
+    dumpAST(pBlock);
+  } else {
+    auto instructions = generateRoot(globalScope, pBlock);
+
+    if (args.bytecode) {
+      printInstructions(instructions);
+    } else {
+      executeInstructions(instructions);
+    }
+
+  }
+}
+
+
+void interpreter(CommandLineArguments& args) {
   std::string input;
   std::cout << "Greyhawk 0.0.1" << std::endl;
   while (true) {
@@ -77,28 +102,9 @@ void interpreter() {
     }
     try {
       std::istringstream input_stream(input);
-      TokenVector tokens = tokenizer->tokenize(input_stream);
-      Parser parser(tokens);
-      auto pBlock = parser.parseBlock();
-      auto instructions = generateRoot(globalScope, pBlock);
-      executeInstructions(instructions);
-      // auto pstatement = parser.parseStatement();
-      /*  auto statement = pstatement->generateStatement(globalScope);
+      run(args, input_stream);
 
-      if (auto expression = dynamic_cast<VMExpression*>(statement)) {
-        auto value = expression->evaluate(*globalScope);
-        if (value != NULL) {
-          VM::vm_print(*new std::vector<VMObject*>{value});
-        }
-
-      } else {
-        statement->execute(*globalScope);
-
-        } */
-      // printf("interpreter not currently implemented.");
-
-      //parseTokens(tokens);
-    } catch (LexerException& e) {
+   } catch (LexerException& e) {
       std::cout << e.message << std::endl;
       continue;
     } catch (ParserException& e) {
@@ -116,19 +122,10 @@ int main(int argc, char *argv[]) {
   try {
     if (args.fileName != "") {
       std::ifstream input_stream(args.fileName);
-      TokenVector tokens = tokenizer->tokenize(input_stream);
-      Parser parser(tokens);
-      auto pBlock = parser.parseBlock();
-      auto instructions = generateRoot(globalScope, pBlock);
-
-      if (args.bytecode) {
-        printInstructions(instructions);
-      } else {
-        executeInstructions(instructions);
-      }
+      run(args, input_stream);
 
     } else {
-      interpreter();
+      interpreter(args);
     }
 
   } catch (parser::ParserException& e) {

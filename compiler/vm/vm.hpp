@@ -26,6 +26,7 @@ namespace VM {
     BRANCH,
     EXECUTE,
     END,
+    GO,
     INT_TO_FLOAT,
     LABEL,
     LENGTH,

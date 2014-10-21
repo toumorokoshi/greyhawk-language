@@ -165,6 +165,44 @@ namespace parser {
       });
   }
 
+  void PIfElse::generateStatement(VM::GScope* scope,
+                                  GInstructionVector& instructions) {
+    auto conditionObject = condition->generateExpression(scope, instructions);
+    auto trueJump = new GObject { getInt32Type(), {1}};
+    auto falseJump = new GObject { getInt32Type(), {0}};
+    instructions.push_back(GInstruction {
+        GOPCODE::BRANCH, new GObject*[3] { conditionObject, trueJump, falseJump }
+      });
+    auto startInstruction = (int) instructions.size();
+
+    GScope trueScope(scope);
+    auto trueInstructions = trueBlock->generate(&trueScope);
+
+    instructions.reserve(instructions.size()
+                         + distance(trueInstructions->begin(),
+                                    trueInstructions->end()));
+    instructions.insert(instructions.end(),
+                        trueInstructions->begin(),
+                        trueInstructions->end());
+
+    auto trueToFinish = new GObject { getInt32Type(), {1}};
+    auto endOfTBlock = instructions.size();
+    instructions.push_back(GInstruction { GOPCODE::GO, new GObject*[1] { trueToFinish } });
+
+    falseJump->value.asInt32 = (int) instructions.size() - startInstruction + 1;
+    GScope falseScope(scope);
+    auto falseInstructions = falseBlock->generate(&falseScope);
+
+    instructions.reserve(instructions.size()
+                         + distance(falseInstructions->begin(),
+                                    falseInstructions->end()));
+    instructions.insert(instructions.end(),
+                        falseInstructions->begin(),
+                        falseInstructions->end());
+
+    trueToFinish->value.asInt32 = (int) instructions.size() - endOfTBlock;
+  }
+
   GObject* PArray::generateExpression(VM::GScope* scope,
                                       GInstructionVector& instructions) {
     auto array = new GObject*[elements.size()];

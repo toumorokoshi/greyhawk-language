@@ -5,6 +5,7 @@
 #include "../vm/vm.hpp"
 #include "yaml-cpp/yaml.h"
 #include <string.h>
+#include <iostream>
 
 #ifndef PARSER_NODES_HPP
 #define PARSER_NODES_HPP
@@ -156,7 +157,7 @@ namespace parser {
     PBlock* falseBlock;
 
     virtual YAML::Node* toYaml();
-    virtual void generateStatement(VM::GScope*, GInstructionVector&) { }
+    virtual void generateStatement(VM::GScope*, GInstructionVector&);
 
     PIfElse(PExpression* _condition,
             PBlock* _trueBlock,

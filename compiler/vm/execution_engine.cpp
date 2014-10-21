@@ -104,8 +104,10 @@ namespace VM {
       case BRANCH:
         debug("branch:" << instruction->values[0] << ", " << instruction->values[1] << ", " << instruction->values[2]);
         if (instruction->values[0]->value.asBool) {
+          debug("branch true")
           instruction += instruction->values[1]->value.asInt32 - 1;
         } else {
+          debug("branch false")
           instruction += instruction->values[2]->value.asInt32 - 1;
         }
         break;
@@ -113,6 +115,10 @@ namespace VM {
       case END:
         debug("end");
         done = true;
+        break;
+
+      case GO:
+        instruction += instruction->values[0]->value.asInt32 - 1;
         break;
 
       case INT_TO_FLOAT:

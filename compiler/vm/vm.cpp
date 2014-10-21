@@ -36,6 +36,10 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "END";
       break;
 
+    case GO:
+      std::cout << "GO: " << values[0]->value.asInt32;
+      break;
+
     case INT_TO_FLOAT:
       std::cout << "INT_TO_FLOAT: " << values[0] << ", " << values[1];
       break;
@@ -105,4 +109,5 @@ int _main(int argc, char const *argv[]) {
   };
 
   executeFunction(printFunction);
+  return 0;
 }
