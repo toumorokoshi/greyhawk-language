@@ -77,11 +77,17 @@ namespace VM {
     printf((toString(object) + "\n").c_str());
   }
 
-  void executeFunction(GFunction* function) {
-    executeInstructions(function->instructions);
+  void executeFunction(GFunction* function, GObject** arguments) {
+    GObject* registers[function->registerCount];
+    auto argumentCount = function->argumentCount;
+    // TODO: better copy logic
+    for (int i = 0; i < argumentCount; i++) {
+      registers[i] = arguments[i];
+    }
+    executeInstructions(function->instructions, registers);
   }
 
-  void executeInstructions(GInstruction* instructions) {
+  void executeInstructions(GInstruction* instructions, GObject** registers) {
     auto instruction = instructions;
     bool done = false;
     while (!done) {

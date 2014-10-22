@@ -36,6 +36,10 @@ namespace VM {
     RETURN
   };
 
+  typedef union {
+    int asInt;
+  };
+
   typedef struct {
     GOPCODE op;
     GObject** values;
@@ -44,7 +48,8 @@ namespace VM {
   typedef struct {
     GType* returnType;
     GInstruction* instructions; // array
-    int instructionCount;
+    int registerCount;
+    int argumentCount;
   } GFunction;
 
   void printInstructions(GInstruction*);

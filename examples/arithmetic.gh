@@ -1,6 +1,5 @@
-Double doMath(a Double, b Double):
-	x Double := a * b + 5
-	return x
+Float doMath(a Float, b Float):
+	return a + b + 5
 
 print("Final number: ")
 print(doMath(5 + 7, 6))
