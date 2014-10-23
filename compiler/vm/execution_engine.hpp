@@ -5,8 +5,8 @@
 
 namespace VM {
 
-  void executeFunction(GFunction*, GObject**, int);
-  void executeInstructions(GInstruction*, GObject**);
+  GValue executeFunction(GFunction*, GValue* arguments);
+  GValue executeInstructions(GInstruction*, GValue*);
 }
 
 

@@ -11,7 +11,7 @@
 namespace VM {
 
   struct GFrame {
-    GObject* registers;
+    GObject** registers;
   };
 }
 

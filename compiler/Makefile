@@ -4,7 +4,7 @@ LLVM_CONFIG=`llvm-config --libs core native mcjit interpreter x86` `llvm-config 
 BOOST_OPTIONS=-lboost_program_options
 YAML_OPTIONS=-lyaml-cpp
 OPTIONS=--std=c++11 -L/usr/lib -I/usr/include
-.PHONY: lexer parser compiler vm2
+.PHONY: lexer parser compiler vm2 tests
 
 # deprecated, lexers and parsers are by hand now
 all:
@@ -36,8 +36,10 @@ parser:
 compiler:
 	clang++ main/greyhawk.cpp $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(BOOST_OPTIONS) $(OPTIONS) $(VM_FILES) -g -o ../bin/greyhawk
 
+GTEST_FILES=./gtest/lib/.libs/libgtest*.a -I./gtest/include
+
 tests:
-	clang++ -o ../bin/unit_tests $(LEXER_FILES) $(PARSER_FILES) vm/*.cpp lexer/tests/*.cpp vm/tests/*.cpp parser/tests/*.cpp main/tests.cpp $(OPTIONS) -lgtest $(YAML_OPTIONS)
+	clang++ tests/**/*.cpp -o ../bin/unit_tests $(OPTIONS) $(GTEST_FILES) $(VM_FILES)
 
 clean:
 	rm -r build

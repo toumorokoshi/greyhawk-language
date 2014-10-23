@@ -12,23 +12,23 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "0";
     }
     std::cout << instructionCount << ", ";
-    auto values = firstInstruction->values;
+    auto values = firstInstruction->args;
 
     switch(firstInstruction->op) {
     case ACCESS_ELEMENT:
-      std::cout << "ACCESS_ELEMENT: " << values[0] << ", " << values[1] << ", " << values[2];
+      // std::cout << "ACCESS_ELEMENT: " << values[0] << ", " << values[1] << ", " << values[2];
       break;
 
     case ADD_INT:
-      std::cout << "ADD_INT: " << values[0] << ", " << values[1] << ", " << values[2];
+      // std::cout << "ADD_INT: " << values[0] << ", " << values[1] << ", " << values[2];
       break;
 
     case ADD_FLOAT:
-      std::cout << "ADD_FLOAT: " << values[0] << ", " << values[1] << ", " << values[2];
+      // std::cout << "ADD_FLOAT: " << values[0] << ", " << values[1] << ", " << values[2];
       break;
 
     case BRANCH:
-      std::cout << "BRANCH: " << values[0] << ", " << values[1]->value.asInt32 << ", " << values[2]->value.asInt32;
+      // std::cout << "BRANCH: " << values[0] << ", " << values[1]->value.asInt32 << ", " << values[2]->value.asInt32;
       break;
 
     case END:
@@ -37,27 +37,27 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       break;
 
     case GO:
-      std::cout << "GO: " << values[0]->value.asInt32;
+      // std::cout << "GO: " << values[0]->value.asInt32;
       break;
 
     case INT_TO_FLOAT:
-      std::cout << "INT_TO_FLOAT: " << values[0] << ", " << values[1];
+      // std::cout << "INT_TO_FLOAT: " << values[0] << ", " << values[1];
       break;
 
     case LENGTH:
-      std::cout << "LENGTH: " << values[0] << ", " << values[1];
+      // std::cout << "LENGTH: " << values[0] << ", " << values[1];
       break;
 
     case LESS_THAN:
-      std::cout << "LESS_THAN: " << values[0] << ", " << values[1] << ", " << values[2];
+      // std::cout << "LESS_THAN: " << values[0] << ", " << values[1] << ", " << values[2];
       break;
 
     case PRINT:
-      std::cout << "PRINT: " << values[0];
+      // std::cout << "PRINT: " << values[0];
       break;
 
     case SET:
-      std::cout << "SET: " << values[0] << ", " << values[1];
+      // std::cout << "SET: " << values[0] << ", " << values[1];
       break;
 
     }
@@ -94,20 +94,14 @@ int _main(int argc, char const *argv[]) {
   auto iteratorCond = new GObject { boolType, { false }};
 
 
-  auto instructions = new GInstruction[5]{
+  /* auto instructions = new GInstruction[5]{
     GInstruction { GOPCODE::PRINT , new GObject*[1]{ helloWorld }},
     GInstruction { GOPCODE::ADD_INT, new GObject*[3]{ iterator, one, iterator }},
     GInstruction { GOPCODE::LESS_THAN, new GObject*[3]{ iterator, oneHundred, iteratorCond }},
     GInstruction { GOPCODE::BRANCH, new GObject*[3] { iteratorCond, branchPosition, donePosition }},
     GInstruction { GOPCODE::END , new GObject*[3] {}}
-  };
+    }; */
 
-  auto printFunction = new GFunction {
-    .returnType = new GType { BASICTYPES::NONE, "None" },
-    .instructions = instructions,
-    .instructionCount = 2
-  };
-
-  executeFunction(printFunction);
+  // executeFunction(printFunction, new GObject*[0] {}, 0);
   return 0;
 }

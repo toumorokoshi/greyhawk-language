@@ -8,42 +8,16 @@
   matches llvm a bit better (a future choice for a jit)
  */
 
-#include "type.hpp"
 #include "object.hpp"
+#include "ops.hpp"
 #include "scope.hpp"
+#include "type.hpp"
 
 #ifndef VM2_VM_HPP
 #define VM2_VM_HPP
 
 // no validation occurs in the vm: only execution
 namespace VM {
-
-  // these are all the instruction supported by the vm.
-  enum GOPCODE {
-    ACCESS_ELEMENT,
-    ADD_INT,
-    ADD_FLOAT,
-    BRANCH,
-    EXECUTE,
-    END,
-    GO,
-    INT_TO_FLOAT,
-    LABEL,
-    LENGTH,
-    LESS_THAN,
-    PRINT,
-    SET,
-    RETURN
-  };
-
-  typedef union {
-    int asInt;
-  };
-
-  typedef struct {
-    GOPCODE op;
-    GObject** values;
-  } GInstruction;
 
   typedef struct {
     GType* returnType;

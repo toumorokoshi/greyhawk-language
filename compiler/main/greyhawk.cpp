@@ -84,7 +84,7 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
     if (args.bytecode) {
       printInstructions(instructions);
     } else {
-      executeInstructions(instructions);
+      executeInstructions(instructions, new GObject*[0]{});
     }
 
   }
