@@ -39,7 +39,7 @@ compiler:
 GTEST_FILES=./gtest/lib/.libs/libgtest*.a -I./gtest/include
 
 tests:
-	clang++ tests/**/*.cpp -o ../bin/unit_tests $(OPTIONS) $(GTEST_FILES) $(VM_FILES)
+	clang++ -g tests/**/*.cpp -o ../bin/unit_tests $(OPTIONS) $(GTEST_FILES) $(VM_FILES)
 
 clean:
 	rm -r build

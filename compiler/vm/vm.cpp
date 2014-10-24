@@ -48,11 +48,11 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       // std::cout << "LENGTH: " << values[0] << ", " << values[1];
       break;
 
-    case LESS_THAN:
+    case LESS_THAN_INT:
       // std::cout << "LESS_THAN: " << values[0] << ", " << values[1] << ", " << values[2];
       break;
 
-    case PRINT:
+    case PRINT_STRING:
       // std::cout << "PRINT: " << values[0];
       break;
 
@@ -74,34 +74,24 @@ void initializeLLVM() {
 
 
 
-int _main(int argc, char const *argv[]) {
+int main(int argc, char const *argv[]) {
 
-  // auto jit = new JIT();
-  auto intType = new GType { BASICTYPES::INT32, "Int" };
-  auto stringType = new GType { BASICTYPES::STRING, "String" };
-  auto boolType = new GType { BASICTYPES::BOOL, "Bool" };
+  auto function = new GFunction {
+    getNoneType(),
+    new GInstruction[9] {
+      GInstruction { GOPCODE::LOAD_CONSTANT_INT, new GOPARG[2] { 0, 0 } },
+      GInstruction { GOPCODE::LOAD_CONSTANT_INT, new GOPARG[2] { 1, 1 } },
+      GInstruction { GOPCODE::LOAD_CONSTANT_INT, new GOPARG[2] { 2, 10000 } },
+      GInstruction { GOPCODE::LOAD_CONSTANT_STRING, new GOPARG[2] { 3, GOPARG { .asString = (char*) "hello world" }}},
+      GInstruction { GOPCODE::PRINT_STRING, new GOPARG[1] { 3 } },
+      GInstruction { GOPCODE::ADD_INT, new GOPARG[3] { 0, 1, 0 } },
+      GInstruction { GOPCODE::LESS_THAN_INT, new GOPARG[3] { 0, 2, 4 } },
+      GInstruction { GOPCODE::BRANCH, new GOPARG[3] { 4, -3, 1 } },
+      GInstruction { GOPCODE::RETURN_NONE, NULL}
+    }, 5, 0
+  };
 
-  auto one = new GObject { intType , { 1 }};
-  auto iterator = new GObject { intType, { 0 } };
-  auto oneHundred = new GObject { intType, { 10000 } };
+  executeFunction(function, new GValue[0]);
 
-  auto branchPosition = new GObject { intType, { 0 } };
-  auto donePosition = new GObject { intType, { 4 } };
-
-  auto helloWorld = new GObject { stringType, { 0 }};
-  helloWorld->value.asString = "hello, world";
-
-  auto iteratorCond = new GObject { boolType, { false }};
-
-
-  /* auto instructions = new GInstruction[5]{
-    GInstruction { GOPCODE::PRINT , new GObject*[1]{ helloWorld }},
-    GInstruction { GOPCODE::ADD_INT, new GObject*[3]{ iterator, one, iterator }},
-    GInstruction { GOPCODE::LESS_THAN, new GObject*[3]{ iterator, oneHundred, iteratorCond }},
-    GInstruction { GOPCODE::BRANCH, new GObject*[3] { iteratorCond, branchPosition, donePosition }},
-    GInstruction { GOPCODE::END , new GObject*[3] {}}
-    }; */
-
-  // executeFunction(printFunction, new GObject*[0] {}, 0);
   return 0;
 }

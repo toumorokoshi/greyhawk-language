@@ -16,3 +16,4 @@ bin/unit_tests
 bin/greyhawk.dSYM
 bin/vm2
 compiler/gtest
+*.dSYM

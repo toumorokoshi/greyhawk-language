@@ -17,16 +17,22 @@ namespace VM {
     GO,
     INT_TO_FLOAT,
     LABEL,
+    LOAD_CONSTANT_INT,
+    LOAD_CONSTANT_STRING,
     LENGTH,
-    LESS_THAN,
-    PRINT,
+    LESS_THAN_INT,
+    PRINT_STRING,
     SET,
-    RETURN
+    RETURN,
+    RETURN_NONE,
   };
 
   typedef union {
     int registerNum;
+    int positionDiff;
+    int asInt32;
     GFunction* function;
+    char* asString;
   } GOPARG;
 
   typedef struct {

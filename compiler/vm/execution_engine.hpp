@@ -1,4 +1,5 @@
 #include "vm.hpp"
+#include <map>
 
 #ifndef VM2_EXECUTIONENGINE_HPP
 #define VM2_EXECUTIONENGINE_HPP

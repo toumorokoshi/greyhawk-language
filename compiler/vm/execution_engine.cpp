@@ -109,7 +109,7 @@ namespace VM {
       case ADD_INT:
         registers[instruction->args[2].registerNum].asInt32 =
           registers[instruction->args[0].registerNum].asInt32 +
-          registers[instructions->args[1].registerNum].asInt32;
+          registers[instruction->args[1].registerNum].asInt32;
         break;
 
       case ADD_FLOAT:
@@ -118,14 +118,11 @@ namespace VM {
         break;
 
       case BRANCH:
-        /* debug("branch:" << instruction->values[0] << ", " << instruction->values[1] << ", " << instruction->values[2]);
-        if (instruction->values[0]->value.asBool) {
-          debug("branch true")
-          instruction += instruction->values[1]->value.asInt32 - 1;
+        if (registers[args[0].registerNum].asBool) {
+          instruction += args[1].positionDiff - 1;
         } else {
-          debug("branch false")
-          instruction += instruction->values[2]->value.asInt32 - 1;
-          } */
+          instruction += args[2].positionDiff - 1;
+        }
         break;
 
       case CALL: {
@@ -146,27 +143,36 @@ namespace VM {
         // intToFloat(instruction->values[0], instruction->values[1]);
         break;
 
+      case LOAD_CONSTANT_INT:
+        registers[args[0].registerNum].asInt32 = args[1].asInt32;
+        break;
+
+      case LOAD_CONSTANT_STRING:
+        registers[args[0].registerNum].asString = args[1].asString;
+        break;
+
       case LENGTH:
         debug("length: " << instruction->values[0] << ", " << instruction->values[1]);
         // length(instruction->values[0], instruction->values[1]);
         break;
 
-      case LESS_THAN:
-        debug("less_than: " << instruction->values[0] << ", " << instruction->values[1] << ", " << instruction->values[2]);
-        // lessThan(instruction->values[0], instruction->values[1], instruction->values[2]);
+      case LESS_THAN_INT:
+        registers[args[2].registerNum].asBool =
+          registers[args[0].registerNum].asInt32 < registers[args[1].registerNum].asInt32;
         break;
 
-      case PRINT:
-        debug("print: " << instruction->values[0]);
-        // print(instruction->values[0]);
+      case PRINT_STRING:
+        printf("%s\n", registers[args[0].registerNum].asString);
         break;
 
       case RETURN:
         return registers[instruction->args[0].registerNum];
 
+      case RETURN_NONE:
+        return { 0 };
+
       case SET:
-        debug("set: " << instruction->values[0] << ", " << instruction->values[1]);
-        // set(instruction->values[0], instruction->values[1]);
+        registers[args[1].registerNum] = registers[args[0].registerNum];
         break;
 
       }
