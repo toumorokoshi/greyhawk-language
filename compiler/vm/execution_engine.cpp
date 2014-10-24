@@ -83,10 +83,24 @@ namespace VM {
     return executeInstructions(function->instructions, registers);
   }
 
+  inline GValue executeSubfunction(GFunction* function, GValue* parentRegisters,
+                                   GOPARG* values) {
+    GValue registers[function->registerCount];
+    auto argumentCount = function->argumentCount;
+    for (int i = 0; i <= argumentCount; i++) {
+      // we increment by two because first two args is function pointer, return value register
+      auto value = parentRegisters[values[i + 2].registerNum];
+      registers[i] = value;
+    }
+    return executeInstructions(function->instructions, registers);
+  }
+
   GValue executeInstructions(GInstruction* instructions, GValue* registers) {
     auto instruction = instructions;
     bool done = false;
     while (!done) {
+      auto args = instruction->args;
+
       switch (instruction->op) {
       case ACCESS_ELEMENT:
         // accessElement(instruction->values[0], instruction->values[1], instruction->values[2]);
@@ -113,6 +127,11 @@ namespace VM {
           instruction += instruction->values[2]->value.asInt32 - 1;
           } */
         break;
+
+      case CALL: {
+        auto function = args[0].function;
+        registers[args[1].registerNum] = executeSubfunction(function, registers, args);
+      }
 
       case END:
         debug("end");

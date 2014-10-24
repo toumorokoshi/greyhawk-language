@@ -19,13 +19,6 @@
 // no validation occurs in the vm: only execution
 namespace VM {
 
-  typedef struct {
-    GType* returnType;
-    GInstruction* instructions; // array
-    int registerCount;
-    int argumentCount;
-  } GFunction;
-
   void printInstructions(GInstruction*);
 };
 
