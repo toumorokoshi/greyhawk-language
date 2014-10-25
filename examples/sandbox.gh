@@ -9,3 +9,17 @@ None printHelloWorld():
 	print("hello, world")
 
 printHelloWorld()
+
+
+a := 10
+a = "string"
+
+a Int := None
+
+<None, Int> a := None
+
+switch a:
+	case None:
+		print("I'm none!")
+	case Int:
+		print("This is an int:")

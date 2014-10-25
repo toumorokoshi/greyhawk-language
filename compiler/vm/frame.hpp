@@ -10,8 +10,14 @@
 
 namespace VM {
 
-  struct GFrame {
-    GObject** registers;
+  class GFrame {
+  public:
+    // the total # of
+    int registerCount;
+    // if one 'deallocates', you can re-assign existing registers.
+    // this is the current available registers
+    int currentRegister;
+
   };
 }
 

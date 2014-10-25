@@ -74,7 +74,7 @@ void initializeLLVM() {
 
 
 
-int main(int argc, char const *argv[]) {
+int _main(int argc, char const *argv[]) {
 
   auto function = new GFunction {
     getNoneType(),

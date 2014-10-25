@@ -19,16 +19,18 @@ namespace parser {
     throw ParserException("Cannot find class " + typeName);
   }
 
-  GInstruction* generateRoot(VM::GScope* scope, PBlock* block) {
-    auto instructions = block->generate(scope);
-    instructions->push_back(GInstruction { END, NULL });
-    return &(*instructions)[0];
+  GInstructionVector* generateRoot(VM::GScope* scope, PBlock* block) {
+    FunctionBuilder functionBuilder(getNoneType(), 0);
+    block->generate(scope, functionBuilder);
+
+    functionBuilder->instructions.push_back(GInstruction { RETURN_NONE, NULL });
+    return functionBuilder->generateFunction();
   }
 
   GInstructionVector* PBlock::generate(VM::GScope* scope) {
     auto instructions = new GInstructionVector;
     for (auto statement : statements) {
-      statement->generateStatement(scope, *instructions);
+      statement->generateStatement(scope, funcBuilder);
     }
     return instructions;
   }

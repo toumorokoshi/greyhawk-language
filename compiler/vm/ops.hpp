@@ -1,5 +1,8 @@
+#include "object.hpp"
+
 #ifndef VM_OP_HPP
 #define VM_OP_HPP
+
 
 namespace VM {
 

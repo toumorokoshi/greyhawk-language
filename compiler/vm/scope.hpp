@@ -7,44 +7,32 @@
 
 namespace VM {
 
+  // NOTE: resizing registers is dangerous!
+  // do not allow this as a method until we can
+  // figure out how to make this thread safe.
   class GScope {
   public:
-    std::map<std::string, GObject*> locals;
+    int registerCount;
+    int subRegisterCount;
 
     GScope(GScope* parent) : _parentScope(parent) {}
     GScope() {}
 
-    GType* getObjectType(std::string name) {
-      if (types.find(name) != types.end()) {
-        return types[name];
-      }
-
-      if (_parentScope != NULL) {
-        return _parentScope->getObjectType(name);
-      }
-
-      return NULL;
+    bool hasObject(std::string name) {
+      return symbolTable.find(name) != symbolTable.end();
     }
 
     GObject* getObject(std::string name) {
-      if (locals.find(name) != locals.end()) {
-        return locals[name];
-      }
-
-      if (_parentScope != NULL) {
-        return _parentScope->getObject(name);
-      }
-
-      return NULL;
+      return symbolTable[name];
     }
 
-    void setType(std::string name, GType* type) {
-      types[name] = type;
+    void addObject(std::string name, GType* type) {
+      symbolTable[name] = new GObject { type, registerCount++ };
     }
 
   private:
+    std::map<std::string, GObject*> symbolTable;
     GScope* _parentScope;
-    std::map<std::string, GType*> types;
   };
 
 }

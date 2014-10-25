@@ -7,7 +7,7 @@
 
 namespace VM {
 
-  inline void accessElement(GObject* array, GObject* index, GObject* result) {
+  /*inline void accessElement(GObject* array, GObject* index, GObject* result) {
     result->value = array->value.asArray->elements[index->value.asInt32]->value;
   }
 
@@ -29,17 +29,9 @@ namespace VM {
       result->value.asInt32 = value->value.asArray->size;
       break;
     }
-  }
+    } */
 
-  inline void lessThan(GObject* lhs, GObject* rhs, GObject* result) {
-    result->value.asBool = lhs->value.asInt32 < rhs->value.asInt32;
-  }
-
-  inline void set(GObject* source, GObject* result) {
-    result->value = source->value;
-  }
-
-  inline std::string toString(GObject* object) {
+  /* inline std::string toString(GObject* object) {
     switch (object->type->classifier) {
     case ARRAY: {
       std::string arrayString = "[";
@@ -71,7 +63,7 @@ namespace VM {
 
   void print(GObject* object) {
     printf((toString(object) + "\n").c_str());
-  }
+    } */
 
   GValue executeFunction(GFunction* function, GValue* arguments) {
     GValue registers[function->registerCount];

@@ -23,7 +23,7 @@ namespace VM {
 
   typedef struct GObject {
     GType* type;
-    GValue value;
+    int registerNum;
   } GObject;
 
   GObject* getNoneObject();

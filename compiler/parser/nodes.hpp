@@ -13,6 +13,7 @@
 namespace parser {
 
   typedef std::vector<VM::GInstruction> GInstructionVector;
+  class FunctionBuilder;
 
   class PNode {
   public:
@@ -26,7 +27,7 @@ namespace parser {
 
   class PStatement : public PNode {
   public:
-    virtual void generateStatement(VM::GScope*, GInstructionVector&) = 0;
+    virtual void generateStatement(VM::GScope*) = 0;
   };
 
   typedef std::vector<PStatement*> PStatements;
@@ -34,11 +35,11 @@ namespace parser {
   class PExpression : public PStatement {
   public:
 
-    virtual void generateStatement(VM::GScope* s, GInstructionVector& v) {
-      generateExpression(s, v);
+    virtual void generateStatement(VM::GScope* s, FunctionBuilder& f) {
+      generateExpression(s, f);
     }
 
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&) = 0;
+    virtual VM::GObject* generateExpression(VM::GScope*, FunctionBuilder&) = 0;
     virtual VM::GType* getType(VM::GScope*) = 0;
   };
 
@@ -227,7 +228,8 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope*) { return VM::getStringType(); }
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&) {
+    virtual VM::GObject* generateExpression(VM::GScope*, FunctionBuilder&);
+
       auto object = new VM::GObject { VM::getStringType(), {0} };
       auto str = new char[value.size()];
       strcpy(str, value.c_str());
@@ -332,11 +334,23 @@ namespace parser {
   public:
     PStatements statements;
     virtual YAML::Node* toYaml();
-    GInstructionVector* generate(VM::GScope*);
+    GInstructionVector* generate(VM::GScope*, FunctionBuilder*);
   };
 
   // we'll stick it here for now, move it somewhere else later
-  VM::GInstruction* generateRoot(VM::GScope*, PBlock*);
+  VM::GFunction* generateRoot(VM::GScope*, PBlock*);
+
+  class FunctionBuilder {
+  public:
+    GType* returnType;
+    GScope* scope;
+    int registerCount; // number of registers needed for instructions
+    GInstructionVector instructions;
+
+    FunctionBuilder(Gtype* returnType, int _argumentCount) : argumentCount(_argumentCount) {}
+    GFunction* generateFunction() { return NULL; }
+    int getNextFreeRegister() { return registerCount++; }
+  };
 
 }
 
