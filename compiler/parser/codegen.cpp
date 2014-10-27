@@ -20,18 +20,18 @@ namespace parser {
   }
 
   GInstruction* generateRoot(VM::GScope* scope, PBlock* block) {
-    auto instructions = new GInstructionVector;
-    block->generate(scope, *instructions);
+    auto instructions = block->generate(scope);
 
-    instructions->push_back(GInstruction { RETURN_NONE, NULL });
-    return &(*instructions)[0];
+    instructions.push_back(GInstruction { RETURN_NONE, NULL });
+    return &instructions[0];
   }
 
-  void PBlock::generate(VM::GScope* scope,
-                        GInstructionVector& instructions) {
+  GInstructionVector& PBlock::generate(VM::GScope* scope) {
+    auto instructions = new GInstructionVector;
     for (auto statement : statements) {
-      statement->generateStatement(scope, instructions);
+      statement->generateStatement(scope, *instructions);
     }
+    return *instructions;
   }
 
   VM::GObject* PCall::generateExpression(VM::GScope* scope,
@@ -41,11 +41,14 @@ namespace parser {
       GOPCODE op;
       switch (argument->type->classifier) {
       case BASICTYPES::STRING:
-        op = PRINT_STRING;
+        op = GOPCODE::PRINT_STRING;
+        break;
+      case BASICTYPES::INT32:
+        op = GOPCODE::PRINT_INT;
         break;
       }
       instructions.push_back(GInstruction {
-          PRINT_STRING, new GOPARG[1] { { argument->registerNum } }
+          op, new GOPARG[1] { { argument->registerNum } }
         });
       return getNoneObject();
     }
@@ -69,30 +72,30 @@ namespace parser {
     return castResult;
     } */
 
-  /* GObject* PBinaryOperation::generateExpression(VM::GScope* scope,
+  GObject* PBinaryOperation::generateExpression(VM::GScope* scope,
                                                 GInstructionVector& instructions) {
     auto lhsObject = lhs->generateExpression(scope, instructions);
     auto rhsObject = rhs->generateExpression(scope, instructions);
 
     // cast as necessary
-    if (lhsObject->type == getFloatType() && rhsObject->type == getInt32Type()) {
+    /* if (lhsObject->type == getFloatType() && rhsObject->type == getInt32Type()) {
       rhsObject = intToFloat(rhsObject, instructions);
     }
     if (lhsObject->type == getInt32Type() && rhsObject->type == getFloatType()) {
       lhsObject = intToFloat(lhsObject, instructions);
-    }
+      } */
 
     if (lhsObject->type != rhsObject->type) {
       throw ParserException("type mismatch during binary operation!");
     }
 
     GObject* resultObject;
-    GOPCODE opCode;
+    VM::GOPCODE opCode;
 
     switch (op) {
     case L::LESS_THAN:
-      resultObject = new GObject { getBoolType(), { 0 }};
-      opCode = GOPCODE::LESS_THAN;
+      resultObject = scope->frame->allocateObject(getBoolType());
+      opCode = GOPCODE::LESS_THAN_INT;
       break;
 
     case L::PLUS: {
@@ -102,25 +105,23 @@ namespace parser {
         break;
 
       } else if (lhsObject->type == getInt32Type()) {
-        resultObject = new GObject { getInt32Type(), { 0 }};
+        resultObject = scope->frame->allocateObject(getInt32Type());
         opCode = GOPCODE::ADD_INT;
         break;
-
       }
-
     }
 
     default:
       throw ParserException("binary op not implemented");
     }
 
-    instructions.push_back(GInstruction { opCode, new GObject*[3] {
-          lhsObject, rhsObject, resultObject
-        }});
+    instructions.push_back(GInstruction { opCode, new GOPARG[3] {
+          lhsObject->registerNum, rhsObject->registerNum, resultObject->registerNum }
+      });
     return resultObject;
-    } */
+  }
 
-  /* void PIncrement::generateStatement(VM::GScope* scope,
+  void PIncrement::generateStatement(VM::GScope* scope,
                                      GInstructionVector& instructions) {
     auto toIncrement = identifier->generateExpression(scope, instructions);
     if (toIncrement->type != getInt32Type()) {
@@ -133,11 +134,11 @@ namespace parser {
     }
 
     instructions.push_back(GInstruction{
-        GOPCODE::ADD_INT, new GObject*[3] {
-          toIncrement, incrementer, toIncrement
-        }
+        GOPCODE::ADD_INT, new GOPARG[3] {
+          toIncrement->registerNum, incrementer->registerNum, toIncrement->registerNum
+            }
       });
-      } */
+  }
 
   GObject* PIdentifier::generateExpression(VM::GScope* scope, GInstructionVector&) {
     auto object = scope->getObject(name);
@@ -148,26 +149,20 @@ namespace parser {
     return object;
   }
 
-  /* void PForLoop::generateStatement(VM::GScope* scope,
+  void PForLoop::generateStatement(VM::GScope* scope,
                                    GInstructionVector& instructions) {
     initializer->generateStatement(scope, instructions);
     auto statements = body->generate(scope);
     auto forLoopStart = instructions.size();
-    instructions.reserve(instructions.size()
-                         + distance(statements->begin(), statements->end()));
-    instructions.insert(instructions.end(),
-                        statements->begin(),
-                        statements->end());
+    instructions.reserve(instructions.size() + distance(statements.begin(), statements.end()));
+    instructions.insert(instructions.end(), statements.begin(), statements.end());
     incrementer->generateStatement(scope, instructions);
     auto conditionObject = condition->generateExpression(scope, instructions);
     instructions.push_back(GInstruction {
-        GOPCODE::BRANCH, new GObject*[3] {
-          conditionObject,
-            new GObject { getInt32Type(), { (int) forLoopStart - ((int) instructions.size()) }},
-            new GObject { getInt32Type(), { 1 }}
-        }
+        GOPCODE::BRANCH,
+          new GOPARG[3] { conditionObject->registerNum, (int) forLoopStart - ((int) instructions.size()), 1 }
       });
-      } */
+  }
 
   /* void PIfElse::generateStatement(VM::GScope* scope,
                                   GInstructionVector& instructions) {

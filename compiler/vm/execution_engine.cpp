@@ -148,6 +148,10 @@ namespace VM {
           registers[args[0].registerNum].asInt32 < registers[args[1].registerNum].asInt32;
         break;
 
+      case PRINT_INT:
+        printf("%d\n", registers[args[0].registerNum].asInt32);
+        break;
+
       case PRINT_STRING:
         printf("%s\n", registers[args[0].registerNum].asString);
         break;

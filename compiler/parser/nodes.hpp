@@ -64,7 +64,7 @@ namespace parser {
     PExpression* expression;
 
     virtual YAML::Node* toYaml();
-    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+    virtual void generateStatement(VM::GScope*, GInstructionVector&);
 
     PIncrement(PExpression* _identifier, PExpression* _expression) :
       identifier(_identifier), expression(_expression) {}
@@ -120,7 +120,7 @@ namespace parser {
     PBlock* body;
 
     virtual YAML::Node* toYaml();
-    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+    virtual void generateStatement(VM::GScope*, GInstructionVector&);
 
     PForLoop(PStatement* _initializer,
              PExpression* _condition,
@@ -333,7 +333,7 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope* s) { return lhs->getType(s); }
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&) { return NULL; }
+    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&);
 
     PBinaryOperation(PExpression* _lhs,
                      lexer::L _op,
@@ -347,7 +347,7 @@ namespace parser {
   public:
     PStatements statements;
     virtual YAML::Node* toYaml();
-    void generate(VM::GScope*, GInstructionVector&);
+    GInstructionVector& generate(VM::GScope*);
   };
 
   // we'll stick it here for now, move it somewhere else later

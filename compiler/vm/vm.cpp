@@ -20,7 +20,7 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       break;
 
     case ADD_INT:
-      std::cout << "ADD_INT";
+      std::cout << "ADD_INT: " << values[0].registerNum << ", " << values[1].registerNum << ", " << values[2].registerNum;
       break;
 
     case ADD_FLOAT:
@@ -28,7 +28,7 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       break;
 
     case BRANCH:
-      std::cout << "BRANCH";
+      std::cout << "BRANCH: " << values[0].registerNum << " ? " << values[1].positionDiff << " : " << values[2].positionDiff;
       break;
 
     case GO:
@@ -43,12 +43,20 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "LENGTH:";
       break;
 
+    case LOAD_CONSTANT_INT:
+      std::cout << "LOAD_CONSTANT_INT: " << values[0].registerNum << " <- " << values[1].asInt32;
+      break;
+
     case LOAD_CONSTANT_STRING:
-      std::cout << "LOAD_CONSTANT_STRING: " << values[0].registerNum << ", \"" << values[1].asString << "\"";
+      std::cout << "LOAD_CONSTANT_STRING: " << values[0].registerNum << " <- \"" << values[1].asString << "\"";
       break;
 
     case LESS_THAN_INT:
-      std::cout << "LESS_THAN_INT";
+      std::cout << "LESS_THAN_INT: " << values[0].registerNum << " < " << values[1].registerNum << " -> " << values[2].registerNum;
+      break;
+
+    case PRINT_INT:
+      std::cout << "PRINT_INT: " << values[0].registerNum;
       break;
 
     case PRINT_STRING:
@@ -62,7 +70,7 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       break;
 
     case SET:
-      std::cout << "SET";
+      std::cout << "SET: " << values[0].registerNum << ", " << values[1].registerNum;
       break;
 
     default:
