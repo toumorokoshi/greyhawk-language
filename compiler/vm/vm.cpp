@@ -16,50 +16,58 @@ void VM::printInstructions(GInstruction* firstInstruction) {
 
     switch(firstInstruction->op) {
     case ACCESS_ELEMENT:
-      // std::cout << "ACCESS_ELEMENT: " << values[0] << ", " << values[1] << ", " << values[2];
+      std::cout << "ACCESS_ELEMENT";
       break;
 
     case ADD_INT:
-      // std::cout << "ADD_INT: " << values[0] << ", " << values[1] << ", " << values[2];
+      std::cout << "ADD_INT";
       break;
 
     case ADD_FLOAT:
-      // std::cout << "ADD_FLOAT: " << values[0] << ", " << values[1] << ", " << values[2];
+      std::cout << "ADD_FLOAT";
       break;
 
     case BRANCH:
-      // std::cout << "BRANCH: " << values[0] << ", " << values[1]->value.asInt32 << ", " << values[2]->value.asInt32;
-      break;
-
-    case END:
-      done = true;
-      std::cout << "END";
+      std::cout << "BRANCH";
       break;
 
     case GO:
-      // std::cout << "GO: " << values[0]->value.asInt32;
+      std::cout << "GO:";
       break;
 
     case INT_TO_FLOAT:
-      // std::cout << "INT_TO_FLOAT: " << values[0] << ", " << values[1];
+      std::cout << "INT_TO_FLOAT:";
       break;
 
     case LENGTH:
-      // std::cout << "LENGTH: " << values[0] << ", " << values[1];
+      std::cout << "LENGTH:";
+      break;
+
+    case LOAD_CONSTANT_STRING:
+      std::cout << "LOAD_CONSTANT_STRING: " << values[0].registerNum << ", \"" << values[1].asString << "\"";
       break;
 
     case LESS_THAN_INT:
-      // std::cout << "LESS_THAN: " << values[0] << ", " << values[1] << ", " << values[2];
+      std::cout << "LESS_THAN_INT";
       break;
 
     case PRINT_STRING:
-      // std::cout << "PRINT: " << values[0];
+      std::cout << "PRINT_STRING: " << values[0].registerNum;
+      break;
+
+    case RETURN_NONE:
+      std::cout << "RETURN_NONE";
+      done = true;
+
       break;
 
     case SET:
-      // std::cout << "SET: " << values[0] << ", " << values[1];
+      std::cout << "SET";
       break;
 
+    default:
+      std::cout << "unable to print opcode!";
+      break;
     }
     firstInstruction++;
     instructionCount++;

@@ -122,11 +122,6 @@ namespace VM {
         registers[args[1].registerNum] = executeSubfunction(function, registers, args);
       }
 
-      case END:
-        debug("end");
-        done = true;
-        break;
-
       case GO:
         // instruction += instruction->values[0]->value.asInt32 - 1;
         break;

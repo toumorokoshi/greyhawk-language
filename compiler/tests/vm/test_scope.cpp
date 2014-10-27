@@ -5,7 +5,9 @@ using namespace VM;
 
 TEST(VM, test_scope_access) {
 
-  GScope myScope(NULL);
+  GFrame topFrame;
+
+  GScope myScope(&topFrame);
 
   myScope.addObject("foo", getInt32Type());
   EXPECT_EQ(myScope.getObject("foo")->type, getInt32Type());

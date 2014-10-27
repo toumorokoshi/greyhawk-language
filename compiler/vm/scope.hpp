@@ -1,6 +1,7 @@
 #include <map>
 #include "type.hpp"
 #include "object.hpp"
+#include "frame.hpp"
 
 #ifndef VM_CONTEXT_HPP
 #define VM_CONTEXT_HPP
@@ -12,27 +13,31 @@ namespace VM {
   // figure out how to make this thread safe.
   class GScope {
   public:
-    int registerCount;
-    int subRegisterCount;
+    GFrame* frame;
 
-    GScope(GScope* parent) : _parentScope(parent) {}
-    GScope() {}
+    GScope(GFrame* _frame, GScope* parent) : frame(_frame), _parent(parent) {}
 
-    bool hasObject(std::string name) {
-      return symbolTable.find(name) != symbolTable.end();
-    }
+    GScope(GFrame* _frame) : frame(_frame) {}
 
     GObject* getObject(std::string name) {
-      return symbolTable[name];
+      if (_symbolTable.find(name) != _symbolTable.end()) {
+        return _symbolTable[name];
+      } else if (_parent != NULL) {
+        return _parent->getObject(name);
+      } else {
+        return frame->getObject(name);
+      }
     }
 
-    void addObject(std::string name, GType* type) {
-      symbolTable[name] = new GObject { type, registerCount++ };
+    GObject* addObject(std::string name, GType* type) {
+      auto newObject = frame->allocateObject(type);
+      _symbolTable[name] = newObject;
+      return newObject;
     }
 
   private:
-    std::map<std::string, GObject*> symbolTable;
-    GScope* _parentScope;
+    std::map<std::string, GObject*> _symbolTable;
+    GScope* _parent;
   };
 
 }

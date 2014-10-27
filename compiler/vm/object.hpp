@@ -16,7 +16,7 @@ namespace VM {
     int asInt32;
     bool asBool;
     double asFloat;
-    char* asString;
+    const char* asString;
     void* asNone;
     GArray* asArray;
   } GValue;

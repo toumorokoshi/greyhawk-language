@@ -19,30 +19,34 @@ namespace parser {
     throw ParserException("Cannot find class " + typeName);
   }
 
-  GInstructionVector* generateRoot(VM::GScope* scope, PBlock* block) {
-    FunctionBuilder functionBuilder(getNoneType(), 0);
-    block->generate(scope, functionBuilder);
-
-    functionBuilder->instructions.push_back(GInstruction { RETURN_NONE, NULL });
-    return functionBuilder->generateFunction();
-  }
-
-  GInstructionVector* PBlock::generate(VM::GScope* scope) {
+  GInstruction* generateRoot(VM::GScope* scope, PBlock* block) {
     auto instructions = new GInstructionVector;
-    for (auto statement : statements) {
-      statement->generateStatement(scope, funcBuilder);
-    }
-    return instructions;
+    block->generate(scope, *instructions);
+
+    instructions->push_back(GInstruction { RETURN_NONE, NULL });
+    return &(*instructions)[0];
   }
 
-  GObject* PCall::generateExpression(VM::GScope* scope,
-                                     GInstructionVector& instructions) {
+  void PBlock::generate(VM::GScope* scope,
+                        GInstructionVector& instructions) {
+    for (auto statement : statements) {
+      statement->generateStatement(scope, instructions);
+    }
+  }
+
+  VM::GObject* PCall::generateExpression(VM::GScope* scope,
+                                         GInstructionVector& instructions) {
     if (name == "print") {
+      auto argument = arguments[0]->generateExpression(scope, instructions);
+      GOPCODE op;
+      switch (argument->type->classifier) {
+      case BASICTYPES::STRING:
+        op = PRINT_STRING;
+        break;
+      }
       instructions.push_back(GInstruction {
-          PRINT,
-            new GObject*[1] {
-            arguments[0]->generateExpression(scope, instructions)
-              }});
+          PRINT_STRING, new GOPARG[1] { { argument->registerNum } }
+        });
       return getNoneObject();
     }
     return getNoneObject();
@@ -51,22 +55,21 @@ namespace parser {
   void PDeclare::generateStatement(VM::GScope* scope,
                                    GInstructionVector& instructions) {
     auto value = expression->generateExpression(scope, instructions);
-    auto newValue = new GObject { value->type, {0} };
-    scope->locals[name] = newValue;
+    auto newVar = scope->addObject(name, value->type);
     instructions.push_back(GInstruction {
-        SET, new GObject*[2] { value, newValue }
+        SET, new GOPARG[2] { value->registerNum, newVar->registerNum }
       });
   }
 
-  GObject* intToFloat(GObject* integer, GInstructionVector& instructions) {
+  /* GObject* intToFloat(GObject* integer, GInstructionVector& instructions) {
     auto castResult = new GObject { getFloatType(), {0}};
     instructions.push_back(GInstruction {
         GOPCODE::INT_TO_FLOAT, new GObject*[2] { integer, castResult }
       });
     return castResult;
-  }
+    } */
 
-  GObject* PBinaryOperation::generateExpression(VM::GScope* scope,
+  /* GObject* PBinaryOperation::generateExpression(VM::GScope* scope,
                                                 GInstructionVector& instructions) {
     auto lhsObject = lhs->generateExpression(scope, instructions);
     auto rhsObject = rhs->generateExpression(scope, instructions);
@@ -115,9 +118,9 @@ namespace parser {
           lhsObject, rhsObject, resultObject
         }});
     return resultObject;
-  }
+    } */
 
-  void PIncrement::generateStatement(VM::GScope* scope,
+  /* void PIncrement::generateStatement(VM::GScope* scope,
                                      GInstructionVector& instructions) {
     auto toIncrement = identifier->generateExpression(scope, instructions);
     if (toIncrement->type != getInt32Type()) {
@@ -134,10 +137,9 @@ namespace parser {
           toIncrement, incrementer, toIncrement
         }
       });
-  }
+      } */
 
-  GObject* PIdentifier::generateExpression(VM::GScope* scope,
-                                           GInstructionVector& instructions) {
+  GObject* PIdentifier::generateExpression(VM::GScope* scope, GInstructionVector&) {
     auto object = scope->getObject(name);
 
     if (object == NULL) {
@@ -146,7 +148,7 @@ namespace parser {
     return object;
   }
 
-  void PForLoop::generateStatement(VM::GScope* scope,
+  /* void PForLoop::generateStatement(VM::GScope* scope,
                                    GInstructionVector& instructions) {
     initializer->generateStatement(scope, instructions);
     auto statements = body->generate(scope);
@@ -165,9 +167,9 @@ namespace parser {
             new GObject { getInt32Type(), { 1 }}
         }
       });
-  }
+      } */
 
-  void PIfElse::generateStatement(VM::GScope* scope,
+  /* void PIfElse::generateStatement(VM::GScope* scope,
                                   GInstructionVector& instructions) {
     auto conditionObject = condition->generateExpression(scope, instructions);
     auto trueJump = new GObject { getInt32Type(), {1}};
@@ -203,9 +205,9 @@ namespace parser {
                         falseInstructions->end());
 
     trueToFinish->value.asInt32 = (int) instructions.size() - endOfTBlock;
-  }
+    } */
 
-  GObject* PArray::generateExpression(VM::GScope* scope,
+  /* GObject* PArray::generateExpression(VM::GScope* scope,
                                       GInstructionVector& instructions) {
     auto array = new GObject*[elements.size()];
     auto type = getNoneType();
@@ -218,9 +220,9 @@ namespace parser {
       array, (int) elements.size()
     };
     return arrayObject;
-  }
+    } */
 
-  GObject* PArrayAccess::generateExpression(VM::GScope* scope,
+  /* GObject* PArrayAccess::generateExpression(VM::GScope* scope,
                                             GInstructionVector& instructions) {
     auto valueObject = value->generateExpression(scope, instructions);
     auto indexObject = index->generateExpression(scope, instructions);
@@ -234,10 +236,10 @@ namespace parser {
         }
       });
     return objectRegister;
-  }
+    } */
 
   // generates the instructions to parse the array
-  void parseArrayIterator(std::string varName, GObject* array, PBlock* body,
+  /* void parseArrayIterator(std::string varName, GObject* array, PBlock* body,
                           GScope* scope, GInstructionVector& instructions) {
     GScope forScope(scope);
     auto iteratorIndex = new GObject { getInt32Type(), {0}};
@@ -272,9 +274,9 @@ namespace parser {
             new GObject { getInt32Type(), { 1 }}
         }
       });
-  }
+      } */
 
-  void PForeachLoop::generateStatement(VM::GScope* scope,
+  /* void PForeachLoop::generateStatement(VM::GScope* scope,
                                        GInstructionVector& instructions) {
     auto iterableValue = iterableExpression->generateExpression(scope, instructions);
     // if the value is an array, we iterate through the array first
@@ -284,7 +286,7 @@ namespace parser {
     } else {
       throw ParserException("foreach loop not yet implemented!");
     }
-  }
+    } */
 
 
 

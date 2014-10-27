@@ -4,20 +4,32 @@
  */
 
 #include "object.hpp"
+#include <map>
 
 #ifndef VM_FRAME_HPP
 #define VM_FRAME_HPP
 
 namespace VM {
 
+  // TODO: figure out a way to re-use old registers
   class GFrame {
   public:
-    // the total # of
     int registerCount;
-    // if one 'deallocates', you can re-assign existing registers.
-    // this is the current available registers
-    int currentRegister;
 
+    GObject* getObject(std::string name) {
+      return symbolTable.find(name) != symbolTable.end() ? symbolTable[name] : NULL;
+    }
+
+    void addObject(std::string name, GType* type) {
+      symbolTable[name] = allocateObject(type);
+    }
+
+    GObject* allocateObject (GType* type) {
+      return new GObject { type, registerCount++ };
+    }
+
+  private:
+    std::map<std::string, GObject*> symbolTable;
   };
 }
 

@@ -16,10 +16,11 @@ namespace VM {
     CALL,
     BRANCH,
     EXECUTE,
-    END,
     GO,
     INT_TO_FLOAT,
     LABEL,
+    LOAD_CONSTANT_BOOL,
+    LOAD_CONSTANT_FLOAT,
     LOAD_CONSTANT_INT,
     LOAD_CONSTANT_STRING,
     LENGTH,
@@ -34,8 +35,10 @@ namespace VM {
     int registerNum;
     int positionDiff;
     int asInt32;
+    bool asBool;
+    double asFloat;
     GFunction* function;
-    char* asString;
+    const char* asString;
   } GOPARG;
 
   typedef struct {

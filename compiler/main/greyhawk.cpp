@@ -84,7 +84,9 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
     if (args.bytecode) {
       printInstructions(instructions);
     } else {
-      executeInstructions(instructions, new GObject*[0]{});
+      // for now, we build temp registers
+      GValue registers[globalScope->frame->registerCount];
+      executeInstructions(instructions, registers);
     }
 
   }
@@ -116,7 +118,7 @@ void interpreter(CommandLineArguments& args) {
 
 int main(int argc, char *argv[]) {
   tokenizer = new Tokenizer();
-  globalScope = new GScope(NULL);
+  globalScope = new GScope(new GFrame());
   CommandLineArguments& args = getArguments(argc, argv);
 
   try {
