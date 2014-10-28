@@ -2,8 +2,8 @@
 #include "exceptions.hpp"
 #include <iostream>
 
-#define debug(s);
-// #define debug(s) std::cout << s << std::endl;
+// #define debug(s);
+#define debug(s) std::cout << s << std::endl;
 
 using namespace VM;
 using namespace lexer;
@@ -22,16 +22,16 @@ namespace parser {
   GInstruction* generateRoot(VM::GScope* scope, PBlock* block) {
     auto instructions = block->generate(scope);
 
-    instructions.push_back(GInstruction { RETURN_NONE, NULL });
-    return &instructions[0];
+    instructions->push_back(GInstruction { RETURN_NONE, NULL });
+    return &(*instructions)[0];
   }
 
-  GInstructionVector& PBlock::generate(VM::GScope* scope) {
+  GInstructionVector* PBlock::generate(VM::GScope* scope) {
     auto instructions = new GInstructionVector;
     for (auto statement : statements) {
       statement->generateStatement(scope, *instructions);
     }
-    return *instructions;
+    return instructions;
   }
 
   VM::GObject* PCall::generateExpression(VM::GScope* scope,
@@ -140,6 +140,15 @@ namespace parser {
       });
   }
 
+  GObject* PConstantString::generateExpression(VM::GScope* s, GInstructionVector& i) {
+    auto target = s->frame->allocateObject(getStringType());
+    i.push_back(GInstruction {
+        GOPCODE::LOAD_CONSTANT_STRING, new VM::GOPARG[2] {
+          { target->registerNum }, GOPARG { .asString = value.c_str() }
+        }});
+    return target;
+  }
+
   GObject* PIdentifier::generateExpression(VM::GScope* scope, GInstructionVector&) {
     auto object = scope->getObject(name);
 
@@ -154,8 +163,8 @@ namespace parser {
     initializer->generateStatement(scope, instructions);
     auto statements = body->generate(scope);
     auto forLoopStart = instructions.size();
-    instructions.reserve(instructions.size() + distance(statements.begin(), statements.end()));
-    instructions.insert(instructions.end(), statements.begin(), statements.end());
+    instructions.reserve(instructions.size() + distance(statements->begin(), statements->end()));
+    instructions.insert(instructions.end(), statements->begin(), statements->end());
     incrementer->generateStatement(scope, instructions);
     auto conditionObject = condition->generateExpression(scope, instructions);
     instructions.push_back(GInstruction {

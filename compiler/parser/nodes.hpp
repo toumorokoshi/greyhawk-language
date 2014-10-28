@@ -241,14 +241,7 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope*) { return VM::getStringType(); }
-    virtual VM::GObject* generateExpression(VM::GScope* s, GInstructionVector& i) {
-      auto target = s->frame->allocateObject(VM::getFloatType());
-      i.push_back(VM::GInstruction {
-          VM::LOAD_CONSTANT_STRING, new VM::GOPARG[2] {
-            { target->registerNum }, VM::GOPARG { .asString = value.c_str() }
-          }});
-      return target;
-    }
+    virtual VM::GObject* generateExpression(VM::GScope* s, GInstructionVector& i);
 
     PConstantString(std::string _value) : value(_value) {};
   };
@@ -347,7 +340,7 @@ namespace parser {
   public:
     PStatements statements;
     virtual YAML::Node* toYaml();
-    GInstructionVector& generate(VM::GScope*);
+    GInstructionVector* generate(VM::GScope*);
   };
 
   // we'll stick it here for now, move it somewhere else later
