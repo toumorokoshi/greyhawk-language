@@ -22,7 +22,7 @@ namespace parser {
   GInstruction* generateRoot(VM::GScope* scope, PBlock* block) {
     auto instructions = block->generate(scope);
 
-    instructions->push_back(GInstruction { RETURN_NONE, NULL });
+    instructions->push_back(GInstruction { END, NULL });
     return &(*instructions)[0];
   }
 
@@ -51,7 +51,26 @@ namespace parser {
           op, new GOPARG[1] { { argument->registerNum } }
         });
       return getNoneObject();
+
+    } else if (auto function = scope->getFunction(name)) {
+      auto opArgs = new std::vector<GOPARG>;
+      // first OPARG is the function pointer
+      opArgs->push_back(GOPARG{ .function = function });
+
+      // second OPARG is the return object
+      auto returnObject = scope->frame->allocateObject(function->returnType);
+      opArgs->push_back(GOPARG{ returnObject->registerNum });
+
+      // third on are the actual arguments
+      for (auto argument : arguments) {
+        auto object = argument->generateExpression(scope, instructions);
+        opArgs->push_back(GOPARG { object->registerNum });
+      }
+
+      instructions.push_back(GInstruction { GOPCODE::CALL, &(*opArgs)[0] });
+      return returnObject;
     }
+
     return getNoneObject();
   }
 
@@ -140,6 +159,14 @@ namespace parser {
       });
   }
 
+  void PReturn::generateStatement(GScope* scope,
+                                  GInstructionVector& instructions) {
+    auto returnObject = expression->generateExpression(scope, instructions);
+    instructions.push_back(GInstruction {
+        GOPCODE::RETURN, new GOPARG[1] { { returnObject->registerNum }}
+    });
+  }
+
   GObject* PConstantString::generateExpression(VM::GScope* s, GInstructionVector& i) {
     auto target = s->frame->allocateObject(getStringType());
     i.push_back(GInstruction {
@@ -171,6 +198,32 @@ namespace parser {
         GOPCODE::BRANCH,
           new GOPARG[3] { conditionObject->registerNum, (int) forLoopStart - ((int) instructions.size()), 1 }
       });
+  }
+
+  void PFunctionDeclaration::generateStatement(GScope* scope,
+                                               GInstructionVector& instructions) {
+
+    if (scope->getObject(name) != NULL) {
+      throw ParserException("Cannot redeclare " + name);
+    }
+
+    auto frame = new GFrame();
+    GScope functionScope(frame);
+    for (auto argument : arguments) {
+      functionScope.addObject(argument->first, evaluateType(argument->second));
+    }
+
+    auto vmBody = body->generate(&functionScope);
+    vmBody->push_back(GInstruction { END, { 0 }});
+
+    auto function = new GFunction {
+      .returnType = evaluateType(returnType),
+      .instructions = &(*vmBody)[0],
+      .registerCount = frame->registerCount,
+      .argumentCount = (int) arguments.size()
+    };
+
+    scope->addFunction(name, function);
   }
 
   /* void PIfElse::generateStatement(VM::GScope* scope,
@@ -373,31 +426,6 @@ namespace parser {
     arguments->push_back(lhs->generateExpression(scope));
     arguments->push_back(rhs->generateExpression(scope));
     return new VMCall(methodName, *arguments);
-  }
-
-  VMStatement* PFunctionDeclaration::generateStatement(VMScope* scope) {
-    if (scope->localTypes.find(name) != scope->localTypes.end()) {
-      throw ParserException("Cannot redeclare " + name);
-    }
-
-    VMScope functionScope(scope);
-    for (auto argument : arguments) {
-      functionScope.localTypes[argument->first] = evaluateType(argument->second);
-    }
-
-    auto vmBody = body->generate(&functionScope);
-
-    scope->localTypes[name] = getVMFunctionClass();
-    auto function = new VMFunctionDeclaration(name,
-                                              evaluateType(returnType),
-                                              arguments,
-                                              vmBody);
-    scope->locals[name] = function;
-    return function;
-  }
-
-  VMStatement* PReturn::generateStatement(VMScope* scope) {
-    return new VMReturn(expression->generateExpression(scope));
   }
 
   VMClass* PCall::getType(VM::VMScope* scope) {

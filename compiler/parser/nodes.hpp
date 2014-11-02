@@ -13,7 +13,6 @@
 namespace parser {
 
   typedef std::vector<VM::GInstruction> GInstructionVector;
-  class FunctionBuilder;
 
   class PNode {
   public:
@@ -141,7 +140,7 @@ namespace parser {
     PBlock* body;
 
     virtual YAML::Node* toYaml();
-    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+    virtual void generateStatement(VM::GScope*, GInstructionVector&);
 
     PFunctionDeclaration(std::string _returnType,
                          std::string _name,
@@ -172,7 +171,7 @@ namespace parser {
     PExpression* expression;
 
     virtual YAML::Node* toYaml();
-    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+    virtual void generateStatement(VM::GScope*, GInstructionVector&);
 
     PReturn(PExpression* _expression) :
       expression(_expression) {}

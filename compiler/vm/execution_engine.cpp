@@ -120,7 +120,12 @@ namespace VM {
       case CALL: {
         auto function = args[0].function;
         registers[args[1].registerNum] = executeSubfunction(function, registers, args);
+        break;
       }
+
+      case END:
+        return { 0 };
+        break;
 
       case GO:
         // instruction += instruction->values[0]->value.asInt32 - 1;

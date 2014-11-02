@@ -31,6 +31,15 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "BRANCH: [" << values[0].registerNum << "] ? " << values[1].positionDiff << " : " << values[2].positionDiff;
       break;
 
+    case CALL:
+      std::cout << "CALL: " << values[0].function << "() -> [" << values[1].registerNum << "]";
+      break;
+
+    case END:
+      std::cout << "END";
+      done = true;
+      break;
+
     case GO:
       std::cout << "GO:";
       break;
@@ -63,10 +72,12 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "PRINT_STRING: [" << values[0].registerNum << "]";
       break;
 
+    case RETURN:
+      std::cout << "RETURN: [" << values[0].registerNum << "]";
+      break;
+
     case RETURN_NONE:
       std::cout << "RETURN_NONE";
-      done = true;
-
       break;
 
     case SET:

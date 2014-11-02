@@ -16,6 +16,7 @@ namespace VM {
     CALL,
     BRANCH,
     EXECUTE,
+    END,
     GO,
     INT_TO_FLOAT,
     LABEL,

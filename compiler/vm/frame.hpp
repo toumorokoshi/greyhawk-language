@@ -15,6 +15,7 @@ namespace VM {
   class GFrame {
   public:
     int registerCount;
+    std::map<std::string, GObject*> symbolTable;
 
     GObject* getObject(std::string name) {
       return symbolTable.find(name) != symbolTable.end() ? symbolTable[name] : NULL;
@@ -27,9 +28,6 @@ namespace VM {
     GObject* allocateObject (GType* type) {
       return new GObject { type, registerCount++ };
     }
-
-  private:
-    std::map<std::string, GObject*> symbolTable;
   };
 }
 

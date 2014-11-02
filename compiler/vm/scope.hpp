@@ -1,4 +1,5 @@
 #include <map>
+#include "ops.hpp"
 #include "type.hpp"
 #include "object.hpp"
 #include "frame.hpp"
@@ -14,8 +15,9 @@ namespace VM {
   class GScope {
   public:
     GFrame* frame;
+    std::map<std::string, GFunction*> functionTable;
 
-    GScope(GFrame* _frame, GScope* parent) : frame(_frame), _parent(parent) {}
+    GScope(GScope* parent) : frame(parent->frame), _parent(parent) {}
 
     GScope(GFrame* _frame) : frame(_frame) {}
 
@@ -33,6 +35,19 @@ namespace VM {
       auto newObject = frame->allocateObject(type);
       _symbolTable[name] = newObject;
       return newObject;
+    }
+
+    GFunction* getFunction(std::string name) {
+      if (functionTable.find(name) != functionTable.end()) {
+        return functionTable[name];
+      } else if (_parent != NULL) {
+        return _parent->getFunction(name);
+      }
+      return NULL;
+    }
+
+    void addFunction(std::string name, GFunction* function) {
+      functionTable[name] = function;
     }
 
   private:
