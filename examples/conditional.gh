@@ -6,9 +6,15 @@ Int testIfElse(x Bool):
 		return 2
 	return 0
 
-Void main():
+None printHelloWorld():
+	print("hello world")
+
+None main():
+
 	print(testIfElse(true))
 	print(testIfElse(false))
+	printHelloWorld()
 	print(1)
 
+print("Running main..")
 main()

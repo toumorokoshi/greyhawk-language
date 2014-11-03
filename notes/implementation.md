@@ -16,3 +16,14 @@ We should probably do something like:
   * scope errors, etc, are checked here
 * VM: reads AST and creates a vm objects which can execute code
   * vm contains the ability to JIT things as necessary
+
+
+Examples That Don't Work:
+
+* arrays.gh
+* class.gh
+* foreach.gh
+* for.gh
+* sandbox.gh
+* stdin.gh
+* yaml.gh

@@ -18,7 +18,7 @@ namespace VM {
     std::map<std::string, GFunction*> functionTable;
 
     GScope(GScope* parent) : frame(parent->frame), _parent(parent) {}
-
+    GScope(GScope* parent, GFrame* _frame) : frame(_frame), _parent(parent) {}
     GScope(GFrame* _frame) : frame(_frame) {}
 
     GObject* getObject(std::string name) {
@@ -37,14 +37,7 @@ namespace VM {
       return newObject;
     }
 
-    GFunction* getFunction(std::string name) {
-      if (functionTable.find(name) != functionTable.end()) {
-        return functionTable[name];
-      } else if (_parent != NULL) {
-        return _parent->getFunction(name);
-      }
-      return NULL;
-    }
+    GFunction* getFunction(std::string name);
 
     void addFunction(std::string name, GFunction* function) {
       functionTable[name] = function;

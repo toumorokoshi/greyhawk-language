@@ -34,8 +34,8 @@ namespace parser {
     return instructions;
   }
 
-  VM::GObject* PCall::generateExpression(VM::GScope* scope,
-                                         GInstructionVector& instructions) {
+  GObject* PCall::generateExpression(VM::GScope* scope,
+                                     GInstructionVector& instructions) {
     if (name == "print") {
       auto argument = arguments[0]->generateExpression(scope, instructions);
       GOPCODE op;
@@ -208,7 +208,7 @@ namespace parser {
     }
 
     auto frame = new GFrame();
-    GScope functionScope(frame);
+    GScope functionScope(scope, frame);
     for (auto argument : arguments) {
       functionScope.addObject(argument->first, evaluateType(argument->second));
     }
@@ -226,18 +226,23 @@ namespace parser {
     scope->addFunction(name, function);
   }
 
-  /* void PIfElse::generateStatement(VM::GScope* scope,
+  void PIfElse::generateStatement(VM::GScope* scope,
                                   GInstructionVector& instructions) {
     auto conditionObject = condition->generateExpression(scope, instructions);
-    auto trueJump = new GObject { getInt32Type(), {1}};
-    auto falseJump = new GObject { getInt32Type(), {0}};
-    instructions.push_back(GInstruction {
-        GOPCODE::BRANCH, new GObject*[3] { conditionObject, trueJump, falseJump }
-      });
-    auto startInstruction = (int) instructions.size();
 
     GScope trueScope(scope);
     auto trueInstructions = trueBlock->generate(&trueScope);
+
+    GScope falseScope(scope);
+    auto falseInstructions = falseBlock->generate(&falseScope);
+
+    instructions.push_back(GInstruction { GOPCODE::BRANCH, new GOPARG[3] {
+          { conditionObject->registerNum },
+          { 1 },
+          // go up by two: one to iterate passed the last instruction
+          // one to increment passed the GO op
+          { (int) trueInstructions->size() + 2 }}
+    });
 
     instructions.reserve(instructions.size()
                          + distance(trueInstructions->begin(),
@@ -246,13 +251,9 @@ namespace parser {
                         trueInstructions->begin(),
                         trueInstructions->end());
 
-    auto trueToFinish = new GObject { getInt32Type(), {1}};
-    auto endOfTBlock = instructions.size();
-    instructions.push_back(GInstruction { GOPCODE::GO, new GObject*[1] { trueToFinish } });
-
-    falseJump->value.asInt32 = (int) instructions.size() - startInstruction + 1;
-    GScope falseScope(scope);
-    auto falseInstructions = falseBlock->generate(&falseScope);
+    instructions.push_back(GInstruction { GOPCODE::GO, new GOPARG[1] {
+          { (int) falseInstructions->size() + 1 }
+    }});
 
     instructions.reserve(instructions.size()
                          + distance(falseInstructions->begin(),
@@ -260,9 +261,7 @@ namespace parser {
     instructions.insert(instructions.end(),
                         falseInstructions->begin(),
                         falseInstructions->end());
-
-    trueToFinish->value.asInt32 = (int) instructions.size() - endOfTBlock;
-    } */
+  }
 
   /* GObject* PArray::generateExpression(VM::GScope* scope,
                                       GInstructionVector& instructions) {
@@ -343,134 +342,5 @@ namespace parser {
     } else {
       throw ParserException("foreach loop not yet implemented!");
     }
-    } */
-
-
-
-
-  /* VMClass* evaluateType(std::string typeName) {
-    if (typeName == "Int") {
-      return getVMIntClass();
-    } else if (typeName == "Bool") {
-      return getVMBoolClass();
-    } else if (typeName == "String") {
-      return getVMStringClass();
-    } else if (typeName == "None") {
-      return getNoneType();
-    }
-    throw ParserException("Cannot find class " + typeName);
-  }
-
-  VMBlock* PBlock::generate(VMScope* scope) {
-    auto block = new VMBlock();
-    for (auto statement : statements) {
-      block->statements.push_back(statement->generateStatement(scope));
-    }
-    return block;
-  }
-
-  VMStatement* PDeclare::generateStatement(VMScope* scope) {
-    if (scope->getObjectType(name)) {
-      throw ParserException("Cannot redeclare variable " + name);
-    }
-
-    auto vmExpression = expression->generateExpression(scope);
-
-    scope->localTypes[name] = expression->getType(scope);
-    return new VMDeclare(name, vmExpression);
-  }
-
-  VMStatement* PAssign::generateStatement(VMScope* scope) {
-    auto vmExpression = expression->generateExpression(scope);
-
-    if (auto pIdentifier = dynamic_cast<PIdentifier*>(identifier)) {
-      if (!scope->getObjectType(pIdentifier->name)) {
-        throw ParserException("Cannot assign undeclared variable " + pIdentifier->name);
-      }
-
-      if (!expression->getType(scope)->matches(scope->localTypes[pIdentifier->name])) {
-        throw ParserException("type mismatch in assignment!");
-      }
-
-      return new VMAssign(pIdentifier->name, vmExpression);
-    } else if (auto pArrayAccess = dynamic_cast<PArrayAccess*>(identifier)) {
-      return new VMCallMethod(pArrayAccess->value->generateExpression(scope),
-                              "__set",
-                              *new std::vector<VMExpression*> {
-                                pArrayAccess->index->generateExpression(scope),
-                                  vmExpression
-                                  });
-
-    }
-    throw ParserException("Cannot assign value!");
-  }
-
-  VMExpression* PBinaryOperation::generateExpression(VM::VMScope* scope) {
-    if (!lhs->getType(scope)->matches(rhs->getType(scope))) {
-      throw ParserException("Type mismatch for binary operation!");
-    }
-
-    std::string methodName = "";
-    switch(op) {
-
-    case PLUS: methodName =  "__add"; break;
-    case MINUS: methodName = "__sub"; break;
-    case MUL: methodName =   "__mul"; break;
-    case DIV: methodName =   "__div"; break;
-
-    default:
-      throw ParserException("Cannot find operator!");
-    }
-
-    auto arguments = new std::vector<VMExpression*>;
-    arguments->push_back(lhs->generateExpression(scope));
-    arguments->push_back(rhs->generateExpression(scope));
-    return new VMCall(methodName, *arguments);
-  }
-
-  VMClass* PCall::getType(VM::VMScope* scope) {
-    auto function = dynamic_cast<VMFunction*>(scope->getObject(name));
-    return function->getType();
-  }
-
-  VMExpression* PCall::generateExpression(VMScope* scope) {
-    if (!scope->getObjectType(name)) {
-      throw ParserException("function does not exist in scope: " + name);
-    }
-
-    auto scopeType = scope->getObjectType(name);
-
-    if (!getVMFunctionClass()->matches(scopeType)) {
-      throw ParserException(name + " is not a function");
-    }
-
-    auto function = dynamic_cast<VMFunction*>(scope->getObject(name));
-
-
-    std::vector<VMClass*> argumentTypes;
-    auto argumentExpressions = new std::vector<VMExpression*>;
-    for (auto argument : arguments) {
-      argumentTypes.push_back(argument->getType(scope));
-      argumentExpressions->push_back(argument->generateExpression(scope));
-    }
-
-    function->validateTypes(argumentTypes);
-
-    return new VMCall(name, *argumentExpressions);
-  }
-
-  VMExpression* PArrayAccess::generateExpression(VM::VMScope* scope) {
-    return new VMCallMethod(value->generateExpression(scope),
-                            "__get",
-                            *new std::vector<VMExpression*> { index->generateExpression(scope) });
-  }
-
-  VMExpression* PMethodCall::generateExpression(VM::VMScope* scope) {
-    auto vmValue = currentValue->generateExpression(scope);
-    auto vmArguments = new std::vector<VMExpression*>;
-    for (auto argument : arguments) {
-      vmArguments->push_back(argument->generateExpression(scope));
-    }
-    return new VMCallMethod(vmValue, methodName, *vmArguments);
     } */
 }

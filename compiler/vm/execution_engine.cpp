@@ -2,8 +2,8 @@
 #include <string>
 #include <iostream>
 
-// #define debug(s) std::cout << s << std::endl;
-#define debug(s)
+#define debug(s) std::cout << s << std::endl;
+// #define debug(s)
 
 namespace VM {
 
@@ -79,7 +79,7 @@ namespace VM {
                                    GOPARG* values) {
     GValue registers[function->registerCount];
     auto argumentCount = function->argumentCount;
-    for (int i = 0; i <= argumentCount; i++) {
+    for (int i = 0; i < argumentCount; i++) {
       // we increment by two because first two args is function pointer, return value register
       auto value = parentRegisters[values[i + 2].registerNum];
       registers[i] = value;
@@ -105,7 +105,6 @@ namespace VM {
         break;
 
       case ADD_FLOAT:
-        debug("add float: " << instruction->values[0] << ", " << instruction->values[1] << ", " << instruction->values[2]);
         // addFloat(instruction->values[0], instruction->values[1], instruction->values[2]);
         break;
 
@@ -128,11 +127,15 @@ namespace VM {
         break;
 
       case GO:
-        // instruction += instruction->values[0]->value.asInt32 - 1;
+        instruction += args[0].positionDiff- 1;
         break;
 
       case INT_TO_FLOAT:
         // intToFloat(instruction->values[0], instruction->values[1]);
+        break;
+
+      case LOAD_CONSTANT_BOOL:
+        registers[args[0].registerNum].asBool = args[1].asBool;
         break;
 
       case LOAD_CONSTANT_INT:
@@ -144,7 +147,6 @@ namespace VM {
         break;
 
       case LENGTH:
-        debug("length: " << instruction->values[0] << ", " << instruction->values[1]);
         // length(instruction->values[0], instruction->values[1]);
         break;
 

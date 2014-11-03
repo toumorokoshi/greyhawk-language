@@ -1,4 +1,4 @@
-Float doMath(a Float, b Float):
+Int doMath(a Int, b Int):
 	return a + b + 5
 
 print("Final number: ")

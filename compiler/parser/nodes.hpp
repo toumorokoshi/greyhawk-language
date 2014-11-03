@@ -157,7 +157,7 @@ namespace parser {
     PBlock* falseBlock;
 
     virtual YAML::Node* toYaml();
-    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+    virtual void generateStatement(VM::GScope*, GInstructionVector&);
 
     PIfElse(PExpression* _condition,
             PBlock* _trueBlock,
