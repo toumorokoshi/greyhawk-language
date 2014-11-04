@@ -94,14 +94,30 @@ namespace VM {
       auto args = instruction->args;
 
       switch (instruction->op) {
-      case ACCESS_ELEMENT:
-        // accessElement(instruction->values[0], instruction->values[1], instruction->values[2]);
+
+      case ARRAY_ALLOCATE:
+        registers[args[0].registerNum].asArray =
+          new GArray{ new GValue[args[1].size], args[1].size };
+        break;
+
+      case ARRAY_SET_VALUE:
+        registers[args[0].registerNum].asArray->elements[registers[args[1].registerNum].asInt32] =
+          registers[args[2].registerNum];
+        break;
+
+      case ARRAY_LOAD_VALUE:
+        registers[args[2].registerNum] =
+          registers[args[0].registerNum].asArray->elements[registers[args[1].registerNum].asInt32];
+        break;
+
+      case ARRAY_LOAD_LENGTH:
+        registers[args[1].registerNum].asInt32 =
+          registers[args[0].registerNum].asArray->size;
         break;
 
       case ADD_INT:
-        registers[instruction->args[2].registerNum].asInt32 =
-          registers[instruction->args[0].registerNum].asInt32 +
-          registers[instruction->args[1].registerNum].asInt32;
+        registers[args[2].registerNum].asInt32 =
+          registers[args[0].registerNum].asInt32 + registers[args[1].registerNum].asInt32;
         break;
 
       case ADD_FLOAT:

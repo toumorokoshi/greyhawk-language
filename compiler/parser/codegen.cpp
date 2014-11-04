@@ -263,76 +263,118 @@ namespace parser {
                         falseInstructions->end());
   }
 
-  /* GObject* PArray::generateExpression(VM::GScope* scope,
+  GObject* PArray::generateExpression(VM::GScope* scope,
                                       GInstructionVector& instructions) {
-    auto array = new GObject*[elements.size()];
+    auto arrayObject = scope->frame->allocateObject(getNoneType());
     auto type = getNoneType();
-    for (int i = 0; i < elements.size(); i++) {
-      array[i] = elements[i]->generateExpression(scope, instructions);
-      type = array[i]->type;
-    }
-    auto arrayObject = new GObject { getArrayType(type), { 0 } };
-    arrayObject->value.asArray = new GArray {
-      array, (int) elements.size()
-    };
-    return arrayObject;
-    } */
+    instructions.push_back(GInstruction {
+        ARRAY_ALLOCATE, new GOPARG[2] { arrayObject->registerNum, (int) elements.size() }
+    });
+    auto indexObject = scope->frame->allocateObject(getInt32Type());
 
-  /* GObject* PArrayAccess::generateExpression(VM::GScope* scope,
+    for (int i = 0; i < elements.size(); i++) {
+      auto element = elements[i]->generateExpression(scope, instructions);
+
+      instructions.push_back(GInstruction {
+          LOAD_CONSTANT_INT, new GOPARG[2] { indexObject->registerNum, i }
+      });
+
+      instructions.push_back(GInstruction { ARRAY_SET_VALUE, new GOPARG[3] {
+            arrayObject->registerNum, indexObject->registerNum, element->registerNum
+      }});
+
+      type = element->type;
+    }
+    arrayObject->type = getArrayType(type);
+    return arrayObject;
+  }
+
+  GObject* PArrayAccess::generateExpression(VM::GScope* scope,
                                             GInstructionVector& instructions) {
     auto valueObject = value->generateExpression(scope, instructions);
     auto indexObject = index->generateExpression(scope, instructions);
-    auto objectRegister = new GObject { valueObject->type->subTypes, {0} };
+    auto objectRegister = scope->frame->allocateObject(valueObject->type->subTypes[0]);
     if (indexObject->type->classifier != INT32) {
       throw ParserException("index on array is not an int");
     }
     instructions.push_back(GInstruction {
-        GOPCODE::ACCESS_ELEMENT, new GObject*[3] {
-          valueObject, indexObject, objectRegister
+        GOPCODE::ARRAY_LOAD_VALUE, new GOPARG[3] {
+          valueObject->registerNum,
+          indexObject->registerNum,
+          objectRegister->registerNum
         }
       });
     return objectRegister;
-    } */
+  }
 
   // generates the instructions to parse the array
-  /* void parseArrayIterator(std::string varName, GObject* array, PBlock* body,
+  void parseArrayIterator(std::string varName, GObject* array, PBlock* body,
                           GScope* scope, GInstructionVector& instructions) {
     GScope forScope(scope);
-    auto iteratorIndex = new GObject { getInt32Type(), {0}};
-    auto iteratorObject = new GObject { array->type->subTypes, {0}};
-    auto zero = new GObject { getInt32Type(), { 0 }};
-    auto one = new GObject { getInt32Type(), { 1 }};
-    auto arraySize = new GObject { getInt32Type(), { 0 }};
+    auto iteratorIndex = scope->frame->allocateObject(getInt32Type());
+    instructions.push_back(GInstruction {
+        LOAD_CONSTANT_INT, new GOPARG[2] { iteratorIndex->registerNum, 0 }
+    });
+
+    auto iteratorObject = scope->frame->allocateObject(array->type->subTypes[0]);
+
+    auto zero = scope->frame->allocateObject(getInt32Type());
+    instructions.push_back(GInstruction {
+        LOAD_CONSTANT_INT, new GOPARG[2] { zero->registerNum, 0 }
+    });
+
+    auto one = scope->frame->allocateObject(getInt32Type());
+    instructions.push_back(GInstruction {
+        LOAD_CONSTANT_INT, new GOPARG[2] { one->registerNum, 1 }
+    });
+
+    auto arraySize = scope->frame->allocateObject(getInt32Type());
+    instructions.push_back(GInstruction {
+        ARRAY_LOAD_LENGTH, new GOPARG[2] { array->registerNum, arraySize->registerNum }
+    });
+
+    auto conditionObject = scope->frame->allocateObject(getBoolType());
+
     // initialize statement
-    forScope.locals[varName] = iteratorObject;
-    instructions.push_back(GInstruction { GOPCODE::LENGTH, new GObject*[2] { array, arraySize }});
-    instructions.push_back(GInstruction { GOPCODE::SET, new GObject*[2] { zero, iteratorIndex }});
+    forScope.symbolTable[varName] = iteratorObject;
 
     auto forLoopStart = instructions.size();
-    instructions.push_back(GInstruction { GOPCODE::ACCESS_ELEMENT, new GObject*[3] {
-          array, iteratorIndex, iteratorObject
-        }});
+    instructions.push_back(GInstruction {
+        ARRAY_LOAD_VALUE, new GOPARG[3] {
+          array->registerNum,
+          iteratorIndex->registerNum,
+          iteratorObject->registerNum
+        }
+    });
+
     auto statements = body->generate(&forScope);
     instructions.reserve(instructions.size()
                          + distance(statements->begin(), statements->end()));
     instructions.insert(instructions.end(), statements->begin(), statements->end());
-    auto conditionObject = new GObject { getBoolType(), { 0 }};
-    instructions.push_back(GInstruction {
-        GOPCODE::ADD_INT, new GObject*[3] { iteratorIndex, one, iteratorIndex }
-      });
-    instructions.push_back(GInstruction {
-        GOPCODE::LESS_THAN, new GObject*[3] { iteratorIndex, arraySize, conditionObject }
-      });
-    instructions.push_back(GInstruction {
-        GOPCODE::BRANCH, new GObject*[3] {
-          conditionObject,
-            new GObject { getInt32Type(), { (int) forLoopStart - (int) instructions.size() }},
-            new GObject { getInt32Type(), { 1 }}
-        }
-      });
-      } */
 
-  /* void PForeachLoop::generateStatement(VM::GScope* scope,
+    instructions.push_back(GInstruction {
+        GOPCODE::ADD_INT, new GOPARG[3] {
+          iteratorIndex->registerNum,
+          one->registerNum,
+          iteratorIndex->registerNum
+        }
+    });
+
+    instructions.push_back(GInstruction {
+        LESS_THAN_INT, new GOPARG[3] {
+          iteratorIndex->registerNum, arraySize->registerNum, conditionObject->registerNum }
+      });
+
+    instructions.push_back(GInstruction {
+        BRANCH, new GOPARG[3] {
+          conditionObject->registerNum,
+          (int) forLoopStart - (int) instructions.size(),
+          { 1 }
+        }
+    });
+  }
+
+  void PForeachLoop::generateStatement(VM::GScope* scope,
                                        GInstructionVector& instructions) {
     auto iterableValue = iterableExpression->generateExpression(scope, instructions);
     // if the value is an array, we iterate through the array first
@@ -342,5 +384,5 @@ namespace parser {
     } else {
       throw ParserException("foreach loop not yet implemented!");
     }
-    } */
+  }
 }

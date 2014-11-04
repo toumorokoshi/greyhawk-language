@@ -15,9 +15,6 @@ void VM::printInstructions(GInstruction* firstInstruction) {
     auto values = firstInstruction->args;
 
     switch(firstInstruction->op) {
-    case ACCESS_ELEMENT:
-      std::cout << "ACCESS_ELEMENT";
-      break;
 
     case ADD_INT:
       std::cout << "ADD_INT: [" << values[0].registerNum << "] + [" << values[1].registerNum << "] -> " << values[2].registerNum;

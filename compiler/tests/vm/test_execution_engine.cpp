@@ -11,7 +11,7 @@ TEST(VM, hello_world) {
     new GInstruction[3] {
       GInstruction { GOPCODE::LOAD_CONSTANT_STRING, new GOPARG[2] {0, GOPARG { .asString = (char*) "hello world" }}},
       GInstruction { GOPCODE::PRINT_STRING, new GOPARG[1] { 0 } },
-      GInstruction { GOPCODE::RETURN_NONE, NULL }
+      GInstruction { END, NULL }
     }, 1, 0
   };
 

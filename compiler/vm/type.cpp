@@ -7,7 +7,7 @@ namespace VM {
     static std::map<GType*, GType*> arrayTypes;
     if (arrayTypes.find(elementType) == arrayTypes.end()) {
       arrayTypes[elementType] = new GType { ARRAY, "Array<" + elementType->name + ">",
-                                            elementType };
+                                            new GType*[1] { elementType }};
     }
     return arrayTypes[elementType];
   }

@@ -20,7 +20,7 @@ namespace VM {
   typedef struct GType {
     BASICTYPES classifier;
     std::string name;
-    GType* subTypes;
+    GType** subTypes;
   } GType;
 
   GType* getArrayType(GType* elementType);

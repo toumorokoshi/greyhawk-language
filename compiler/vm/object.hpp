@@ -5,14 +5,14 @@
 
 namespace VM {
 
-  struct GObject;
+  union GValue;
 
   typedef struct {
-    GObject** elements;
+    GValue* elements;
     int size;
   } GArray;
 
-  typedef union {
+  typedef union GValue {
     int asInt32;
     bool asBool;
     double asFloat;

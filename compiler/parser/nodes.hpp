@@ -101,7 +101,7 @@ namespace parser {
     PBlock* block;
 
     virtual YAML::Node* toYaml();
-    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+    virtual void generateStatement(VM::GScope*, GInstructionVector&);
 
     PForeachLoop(std::string _variableName,
              PExpression* _iterableExpression,
@@ -265,7 +265,7 @@ namespace parser {
     std::vector<PExpression*>& elements;
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope*) { return VM::getNoneType(); }
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&) { return NULL; }
+    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&);
 
     PArray(std::vector<PExpression*>& _elements) :
       elements(_elements) {}
@@ -292,7 +292,7 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope*) { return VM::getNoneType(); };
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&) { return NULL; }
+    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&);
 
     PArrayAccess(PExpression* _value,
                  PExpression* _index) :

@@ -16,14 +16,15 @@ namespace VM {
   public:
     GFrame* frame;
     std::map<std::string, GFunction*> functionTable;
+    std::map<std::string, GObject*> symbolTable;
 
     GScope(GScope* parent) : frame(parent->frame), _parent(parent) {}
     GScope(GScope* parent, GFrame* _frame) : frame(_frame), _parent(parent) {}
     GScope(GFrame* _frame) : frame(_frame) {}
 
     GObject* getObject(std::string name) {
-      if (_symbolTable.find(name) != _symbolTable.end()) {
-        return _symbolTable[name];
+      if (symbolTable.find(name) != symbolTable.end()) {
+        return symbolTable[name];
       } else if (_parent != NULL) {
         return _parent->getObject(name);
       } else {
@@ -33,7 +34,7 @@ namespace VM {
 
     GObject* addObject(std::string name, GType* type) {
       auto newObject = frame->allocateObject(type);
-      _symbolTable[name] = newObject;
+      symbolTable[name] = newObject;
       return newObject;
     }
 
@@ -44,7 +45,6 @@ namespace VM {
     }
 
   private:
-    std::map<std::string, GObject*> _symbolTable;
     GScope* _parent;
   };
 

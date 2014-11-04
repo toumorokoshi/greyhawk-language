@@ -10,7 +10,10 @@ namespace VM {
 
   // these are all the instruction supported by the vm.
   enum GOPCODE {
-    ACCESS_ELEMENT,
+    ARRAY_ALLOCATE,
+    ARRAY_SET_VALUE,
+    ARRAY_LOAD_VALUE,
+    ARRAY_LOAD_LENGTH,
     ADD_INT,
     ADD_FLOAT,
     CALL,
@@ -36,6 +39,7 @@ namespace VM {
   typedef union {
     int registerNum;
     int positionDiff;
+    int size;
     int asInt32;
     bool asBool;
     double asFloat;
