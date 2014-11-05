@@ -50,7 +50,7 @@ namespace parser {
     PExpression* expression;
 
     virtual YAML::Node* toYaml();
-    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+    virtual void generateStatement(VM::GScope*, GInstructionVector&);
 
     PAssign(PExpression* _identifier,
             PExpression* _expression) :

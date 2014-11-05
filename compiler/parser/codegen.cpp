@@ -83,6 +83,17 @@ namespace parser {
       });
   }
 
+  void PAssign::generateStatement(VM::GScope* scope,
+                                  GInstructionVector& instructions) {
+    auto identValue = identifier->generateExpression(scope, instructions);
+    auto value = expression->generateExpression(scope, instructions);
+    instructions.push_back(GInstruction {
+        SET, new GOPARG[2] { value->registerNum, identValue->registerNum }
+    });
+  }
+
+
+
   /* GObject* intToFloat(GObject* integer, GInstructionVector& instructions) {
     auto castResult = new GObject { getFloatType(), {0}};
     instructions.push_back(GInstruction {
@@ -130,8 +141,23 @@ namespace parser {
       }
     }
 
+    case L::MINUS: {
+      if (lhsObject->type == getFloatType()) {
+        resultObject = new GObject { getFloatType(), { 0 }};
+        opCode = GOPCODE::SUBTRACT_FLOAT;
+        break;
+
+      } else if (lhsObject->type == getInt32Type()) {
+        resultObject = scope->frame->allocateObject(getInt32Type());
+        opCode = GOPCODE::SUBTRACT_INT;
+        break;
+      }
+    }
+
+
+
     default:
-      throw ParserException("binary op not implemented");
+      throw ParserException("binary op not implemented: " + lexer::tokenMap[op]);
     }
 
     instructions.push_back(GInstruction { opCode, new GOPARG[3] {
@@ -208,7 +234,14 @@ namespace parser {
     }
 
     auto frame = new GFrame();
+    auto function = new GFunction {
+      .returnType = evaluateType(returnType),
+      .argumentCount = (int) arguments.size()
+    };
+    scope->addFunction(name, function);
+
     GScope functionScope(scope, frame);
+
     for (auto argument : arguments) {
       functionScope.addObject(argument->first, evaluateType(argument->second));
     }
@@ -216,14 +249,8 @@ namespace parser {
     auto vmBody = body->generate(&functionScope);
     vmBody->push_back(GInstruction { END, { 0 }});
 
-    auto function = new GFunction {
-      .returnType = evaluateType(returnType),
-      .instructions = &(*vmBody)[0],
-      .registerCount = frame->registerCount,
-      .argumentCount = (int) arguments.size()
-    };
-
-    scope->addFunction(name, function);
+    function->instructions = &(*vmBody)[0];
+    function->registerCount = frame->registerCount;
   }
 
   void PIfElse::generateStatement(VM::GScope* scope,

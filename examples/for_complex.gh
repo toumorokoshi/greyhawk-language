@@ -1,0 +1,7 @@
+Int doMath(a Int):
+	return a + 12
+
+x := [[0, 1], [2, 3], [4, 5]]
+for i := 0; i < 3; i += 1:
+	for j := 0; j < 2; j += 1:
+		print(doMath(x[i][j]))

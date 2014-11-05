@@ -7,64 +7,6 @@
 
 namespace VM {
 
-  /*inline void accessElement(GObject* array, GObject* index, GObject* result) {
-    result->value = array->value.asArray->elements[index->value.asInt32]->value;
-  }
-
-  inline void addFloat(GObject* lhs, GObject* rhs, GObject* result) {
-    debug("lhs: " << lhs->value.asFloat);
-    debug("rhs: " << rhs->value.asFloat);
-    result->value.asFloat = lhs->value.asFloat + rhs->value.asFloat;
-    debug("result: " << result->value.asFloat);
-  }
-
-  inline void intToFloat(GObject* integer, GObject* result) {
-    result->value.asFloat = (float) integer->value.asInt32;
-    debug(result->value.asFloat);
-  }
-
-  inline void length(GObject* value, GObject* result) {
-    switch (value->type->classifier) {
-    case ARRAY:
-      result->value.asInt32 = value->value.asArray->size;
-      break;
-    }
-    } */
-
-  /* inline std::string toString(GObject* object) {
-    switch (object->type->classifier) {
-    case ARRAY: {
-      std::string arrayString = "[";
-      auto array = object->value.asArray->elements;
-      auto size = object->value.asArray->size;
-      for (int i = 0; i < size; i++) {
-        arrayString += toString(array[i]);
-        if (i < size - 1) {
-          arrayString += ", ";
-        }
-      }
-      return arrayString += "]";
-    }
-    case BOOL:
-      return object->value.asBool ? "true" : "false";
-    case CLASS:
-      return "class (not yet implemented)\n";
-    case FLOAT:
-      return std::to_string(object->value.asFloat).c_str();
-    case INT32:
-      return std::to_string(object->value.asInt32).c_str();
-    case NONE:
-      return "None";
-    case STRING:
-      return object->value.asString;
-    }
-    return "unable to eval type";
-  }
-
-  void print(GObject* object) {
-    printf((toString(object) + "\n").c_str());
-    } */
-
   GValue executeFunction(GFunction* function, GValue* arguments) {
     GValue registers[function->registerCount];
     auto argumentCount = function->argumentCount;
@@ -189,7 +131,15 @@ namespace VM {
         registers[args[1].registerNum] = registers[args[0].registerNum];
         break;
 
+      case SUBTRACT_INT:
+        registers[args[2].registerNum].asInt32 =
+          registers[args[0].registerNum].asInt32 - registers[args[1].registerNum].asInt32;
+        break;
+
+      case SUBTRACT_FLOAT:
+        break;
       }
+
 
       instruction++;
     }

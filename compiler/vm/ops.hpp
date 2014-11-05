@@ -32,6 +32,8 @@ namespace VM {
     PRINT_INT,
     PRINT_STRING,
     SET,
+    SUBTRACT_FLOAT,
+    SUBTRACT_INT,
     RETURN,
     RETURN_NONE,
   };
