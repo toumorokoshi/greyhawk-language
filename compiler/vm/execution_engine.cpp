@@ -104,9 +104,6 @@ namespace VM {
         registers[args[0].registerNum].asString = args[1].asString;
         break;
 
-      case LENGTH:
-        // length(instruction->values[0], instruction->values[1]);
-        break;
 
       case LESS_THAN_INT:
         registers[args[2].registerNum].asBool =

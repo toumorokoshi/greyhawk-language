@@ -16,8 +16,24 @@ void VM::printInstructions(GInstruction* firstInstruction) {
 
     switch(firstInstruction->op) {
 
+    case ARRAY_ALLOCATE:
+      std::cout << "ARRAY_ALLOCATE: [" << values[1].size << "] -> {" << values[0].registerNum << "}";
+      break;
+
+    case ARRAY_SET_VALUE:
+      std::cout << "ARRAY_SET_VALUE: {" << values[2].registerNum << "} -> {"  << values[0].registerNum << "}[{" << values[1].registerNum << "}]";
+      break;
+
+    case ARRAY_LOAD_VALUE:
+      std::cout << "ARRAY_LOAD_VALUE: {" << values[2].registerNum << "} <- {"  << values[0].registerNum << "}[{" << values[1].registerNum << "}]";
+      break;
+
+    case ARRAY_LOAD_LENGTH:
+      std::cout << "ARRAY_LOAD_LENGTH: {" << values[0].registerNum << "}.length -> {"  << values[1].registerNum << "}";
+      break;
+
     case ADD_INT:
-      std::cout << "ADD_INT: [" << values[0].registerNum << "] + [" << values[1].registerNum << "] -> " << values[2].registerNum;
+      std::cout << "ADD_INT: {" << values[0].registerNum << "} + {" << values[1].registerNum << "} -> {" << values[2].registerNum << "}";
       break;
 
     case ADD_FLOAT:
@@ -25,7 +41,7 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       break;
 
     case BRANCH:
-      std::cout << "BRANCH: [" << values[0].registerNum << "] ? " << values[1].positionDiff << " : " << values[2].positionDiff;
+      std::cout << "BRANCH: {" << values[0].registerNum << "} ? " << values[1].positionDiff << " : " << values[2].positionDiff;
       break;
 
     case CALL: {
@@ -61,7 +77,7 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       break;
 
     case LOAD_CONSTANT_INT:
-      std::cout << "LOAD_CONSTANT_INT: [" << values[0].registerNum << "] <- " << values[1].asInt32;
+      std::cout << "LOAD_CONSTANT_INT: {" << values[0].registerNum << "} <- " << values[1].asInt32;
       break;
 
     case LOAD_CONSTANT_STRING:
@@ -69,11 +85,11 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       break;
 
     case LESS_THAN_INT:
-      std::cout << "LESS_THAN_INT: [" << values[0].registerNum << "] < [" << values[1].registerNum << "] -> " << values[2].registerNum;
+      std::cout << "LESS_THAN_INT: {" << values[0].registerNum << "} < {" << values[1].registerNum << "} -> " << values[2].registerNum;
       break;
 
     case PRINT_INT:
-      std::cout << "PRINT_INT: [" << values[0].registerNum << "]";
+      std::cout << "PRINT_INT: {" << values[0].registerNum << "}";
       break;
 
     case PRINT_STRING:
@@ -89,7 +105,7 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       break;
 
     case SET:
-      std::cout << "SET: [" << values[0].registerNum << "] -> [" << values[1].registerNum << "]";
+      std::cout << "SET: {" << values[0].registerNum << "} -> {" << values[1].registerNum << "}";
       break;
 
     default:
@@ -105,28 +121,4 @@ void VM::printInstructions(GInstruction* firstInstruction) {
 void initializeLLVM() {
   // llvm::InitializeNativeTargetAsmPrinter();
   // llvm::InitializeNativeTargetAsmParser();
-}
-
-
-
-int _main(int argc, char const *argv[]) {
-
-  auto function = new GFunction {
-    getNoneType(),
-    new GInstruction[9] {
-      GInstruction { GOPCODE::LOAD_CONSTANT_INT, new GOPARG[2] { 0, 0 } },
-      GInstruction { GOPCODE::LOAD_CONSTANT_INT, new GOPARG[2] { 1, 1 } },
-      GInstruction { GOPCODE::LOAD_CONSTANT_INT, new GOPARG[2] { 2, 10000 } },
-      GInstruction { GOPCODE::LOAD_CONSTANT_STRING, new GOPARG[2] { 3, GOPARG { .asString = (char*) "hello world" }}},
-      GInstruction { GOPCODE::PRINT_STRING, new GOPARG[1] { 3 } },
-      GInstruction { GOPCODE::ADD_INT, new GOPARG[3] { 0, 1, 0 } },
-      GInstruction { GOPCODE::LESS_THAN_INT, new GOPARG[3] { 0, 2, 4 } },
-      GInstruction { GOPCODE::BRANCH, new GOPARG[3] { 4, -3, 1 } },
-      GInstruction { GOPCODE::RETURN_NONE, NULL}
-    }, 5, 0
-  };
-
-  executeFunction(function, new GValue[0]);
-
-  return 0;
 }

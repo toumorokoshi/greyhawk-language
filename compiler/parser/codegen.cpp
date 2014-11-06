@@ -83,13 +83,29 @@ namespace parser {
       });
   }
 
+  void setArrayElement(VM::GScope* scope, GInstructionVector& instructions,
+                       PArrayAccess* arrayAccess, GObject* value) {
+    auto array = arrayAccess->value->generateExpression(scope, instructions);
+    auto index = arrayAccess->index->generateExpression(scope, instructions);
+    instructions.push_back(GInstruction { ARRAY_SET_VALUE, new GOPARG[3] {
+          array->registerNum, index->registerNum, value->registerNum
+    }});
+  }
+
   void PAssign::generateStatement(VM::GScope* scope,
                                   GInstructionVector& instructions) {
-    auto identValue = identifier->generateExpression(scope, instructions);
+    // if the value is an array, we set it differently
     auto value = expression->generateExpression(scope, instructions);
-    instructions.push_back(GInstruction {
-        SET, new GOPARG[2] { value->registerNum, identValue->registerNum }
-    });
+
+    if (auto arrayAccess = dynamic_cast<PArrayAccess*>(identifier)) {
+      setArrayElement(scope, instructions, arrayAccess, value);
+
+    } else {
+      auto identValue = identifier->generateExpression(scope, instructions);
+      instructions.push_back(GInstruction {
+          SET, new GOPARG[2] { value->registerNum, identValue->registerNum }
+        });
+    }
   }
 
 

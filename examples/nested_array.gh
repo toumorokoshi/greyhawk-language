@@ -1,0 +1,7 @@
+array := [[0, 1], [2, 3], [4, 5]]
+
+array[0][1] = 12
+
+for element in array:
+	for sub_element in element:
+		print(sub_element)
