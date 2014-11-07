@@ -81,11 +81,15 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       break;
 
     case LOAD_CONSTANT_STRING:
-      std::cout << "LOAD_CONSTANT_STRING: [" << values[0].registerNum << "] <- \"" << values[1].asString << "\"";
+      std::cout << "LOAD_CONSTANT_STRING: {" << values[0].registerNum << "} <- \"" << values[1].asString << "\"";
       break;
 
     case LESS_THAN_INT:
       std::cout << "LESS_THAN_INT: {" << values[0].registerNum << "} < {" << values[1].registerNum << "} -> " << values[2].registerNum;
+      break;
+
+    case PRINT_CHAR:
+      std::cout << "PRINT_CHAR: {" << values[0].registerNum << "}";
       break;
 
     case PRINT_INT:
@@ -93,7 +97,7 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       break;
 
     case PRINT_STRING:
-      std::cout << "PRINT_STRING: [" << values[0].registerNum << "]";
+      std::cout << "PRINT_STRING: {" << values[0].registerNum << "}";
       break;
 
     case RETURN:

@@ -15,8 +15,8 @@ namespace VM {
   typedef union GValue {
     int asInt32;
     bool asBool;
+    char asChar;
     double asFloat;
-    const char* asString;
     void* asNone;
     GArray* asArray;
   } GValue;

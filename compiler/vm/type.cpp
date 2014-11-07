@@ -17,6 +17,11 @@ namespace VM {
     return boolType;
   }
 
+  GType* getCharType() {
+    auto static charType = new GType { CHAR, "Char", NULL };
+    return charType;
+  };
+
   GType* getFloatType() {
     auto static floatType = new GType { FLOAT, "Float", NULL };
     return floatType;
@@ -28,8 +33,9 @@ namespace VM {
   }
 
   GType* getStringType() {
-    auto static stringType = new GType { STRING, "String", NULL };
-    return stringType;
+    // auto static stringType = new GType { STRING, "String", NULL };
+    // return stringType;
+    return getArrayType(getCharType());
   }
 
   GType* getNoneType() {

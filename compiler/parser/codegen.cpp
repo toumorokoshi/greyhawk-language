@@ -39,13 +39,15 @@ namespace parser {
     if (name == "print") {
       auto argument = arguments[0]->generateExpression(scope, instructions);
       GOPCODE op;
-      switch (argument->type->classifier) {
-      case BASICTYPES::STRING:
+      auto type = argument->type;
+      if (type == getStringType()) {
         op = GOPCODE::PRINT_STRING;
-        break;
-      case BASICTYPES::INT32:
+      } else if (type == getInt32Type()) {
         op = GOPCODE::PRINT_INT;
-        break;
+      } else if (type == getCharType()) {
+        op = GOPCODE::PRINT_CHAR;
+      } else {
+        throw ParserException("Unable to print class " + type->name);
       }
       instructions.push_back(GInstruction {
           op, new GOPARG[1] { { argument->registerNum } }

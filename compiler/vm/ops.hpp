@@ -29,6 +29,7 @@ namespace VM {
     LOAD_CONSTANT_STRING,
     LENGTH,
     LESS_THAN_INT,
+    PRINT_CHAR,
     PRINT_INT,
     PRINT_STRING,
     SET,

@@ -1,0 +1,5 @@
+a := "test"
+print(a[0])
+
+for c in "hello, world":
+	print(c)

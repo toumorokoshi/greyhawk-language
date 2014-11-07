@@ -8,10 +8,10 @@ namespace VM {
   enum BASICTYPES {
     ARRAY,
     BOOL,
+    CHAR,
     CLASS,
     FLOAT,
     INT32,
-    STRING,
     NONE
   };
 
@@ -25,6 +25,7 @@ namespace VM {
 
   GType* getArrayType(GType* elementType);
   GType* getBoolType();
+  GType* getCharType();
   GType* getFloatType();
   GType* getInt32Type();
   GType* getStringType();

@@ -1,4 +1,5 @@
 #include "execution_engine.hpp"
+#include <string.h>
 #include <string>
 #include <iostream>
 
@@ -100,23 +101,40 @@ namespace VM {
         registers[args[0].registerNum].asInt32 = args[1].asInt32;
         break;
 
-      case LOAD_CONSTANT_STRING:
-        registers[args[0].registerNum].asString = args[1].asString;
+      case LOAD_CONSTANT_STRING: {
+        auto constantString = args[1].asString;
+        auto length = (int) strlen(constantString);
+        auto elements = new GValue[length];
+        for (int i = 0; i < length; i++) {
+          elements[i].asChar = constantString[i];
+        }
+        registers[args[0].registerNum].asArray =
+          new GArray { .elements = elements, .size = length };
         break;
-
+      }
 
       case LESS_THAN_INT:
         registers[args[2].registerNum].asBool =
           registers[args[0].registerNum].asInt32 < registers[args[1].registerNum].asInt32;
         break;
 
+      case PRINT_CHAR:
+        printf("%c\n", registers[args[0].registerNum].asChar);
+        break;
+
       case PRINT_INT:
         printf("%d\n", registers[args[0].registerNum].asInt32);
         break;
 
-      case PRINT_STRING:
-        printf("%s\n", registers[args[0].registerNum].asString);
+      case PRINT_STRING: {
+        auto str = registers[args[0].registerNum].asArray;
+        auto elements = str->elements;
+        for (int i = 0; i < str->size; i++) {
+          printf("%c", elements[i].asChar);
+        }
+        printf("\n");
         break;
+      }
 
       case RETURN:
         return registers[instruction->args[0].registerNum];
