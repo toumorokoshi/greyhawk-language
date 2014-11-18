@@ -18,6 +18,8 @@ using namespace VM;
 // these are initialized in main
 static Tokenizer* tokenizer;
 static GScope* globalScope;
+static GValue* globalRegisters;
+static int globalRegistersCount;
 
 typedef struct CommandLineArguments {
   std::string fileName;
@@ -71,6 +73,33 @@ void dumpAST(PNode* node) {
   std::cout << (*yaml) << std::endl;
 }
 
+// for debug purposes mainly
+void printValues() {
+  for (auto symbol : globalScope->symbolTable) {
+    auto name = symbol.first;
+    auto object = symbol.second;
+    auto value = globalRegisters[object->registerNum];
+    std::cout << name << ": ";
+    if (object->type == getNoneType()) {
+      std::cout << "none";
+    } else if (object->type == getBoolType()) {
+      std::cout << "bool " << (value.asBool ? "true" : "false");
+    } else if (object->type == getFloatType()) {
+      std::cout << "float " << value.asFloat;
+    } else if (object->type == getInt32Type()) {
+      std::cout << "int32 " << value.asInt32;
+    } else if (object->type == getStringType()) {
+      std::cout << "string ";
+      auto str = value.asArray;
+      auto elements = str->elements;
+      for (int i = 0; i < str->size; i++) {
+        printf("%c", elements[i].asChar);
+      }
+    }
+    std::cout << std::endl;
+  }
+}
+
 void run(CommandLineArguments& args, std::istream& input_stream) {
   TokenVector tokens = tokenizer->tokenize(input_stream);
   Parser parser(tokens);
@@ -91,8 +120,18 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
       printInstructions(instructions);
     } else {
       // for now, we build temp registers
-      GValue registers[globalScope->frame->registerCount];
+      auto registers = new GValue[globalScope->frame->registerCount];
+
+      // copy values into new longer register array if necessary
+      if (globalRegisters != NULL) {
+        for (int i = 0; i < globalRegistersCount; i++) {
+          registers[i] = globalRegisters[i];
+        }
+      }
+
       executeInstructions(instructions, registers);
+      globalRegisters = registers;
+      globalRegistersCount = globalScope->frame->registerCount;
     }
 
   }

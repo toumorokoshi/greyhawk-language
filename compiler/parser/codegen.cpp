@@ -104,6 +104,9 @@ namespace parser {
 
     } else {
       auto identValue = identifier->generateExpression(scope, instructions);
+      if (identValue->type != value->type) {
+        throw ParserException("type mismatch in assignment!");
+      }
       instructions.push_back(GInstruction {
           SET, new GOPARG[2] { value->registerNum, identValue->registerNum }
         });

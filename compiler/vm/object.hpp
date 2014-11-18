@@ -27,6 +27,8 @@ namespace VM {
   } GObject;
 
   GObject* getNoneObject();
+
+  std::string getValueDebugInfo(GValue v);
 }
 
 #endif
