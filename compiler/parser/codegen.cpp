@@ -46,6 +46,8 @@ namespace parser {
         op = GOPCODE::PRINT_INT;
       } else if (type == getCharType()) {
         op = GOPCODE::PRINT_CHAR;
+      } else if (type == getFloatType()) {
+        op = GOPCODE::PRINT_FLOAT;
       } else {
         throw ParserException("Unable to print class " + type->name);
       }
@@ -113,8 +115,6 @@ namespace parser {
     }
   }
 
-
-
   /* GObject* intToFloat(GObject* integer, GInstructionVector& instructions) {
     auto castResult = new GObject { getFloatType(), {0}};
     instructions.push_back(GInstruction {
@@ -151,7 +151,7 @@ namespace parser {
 
     case L::PLUS: {
       if (lhsObject->type == getFloatType()) {
-        resultObject = new GObject { getFloatType(), { 0 }};
+        resultObject = new GObject { getFloatType(), 0 };
         opCode = GOPCODE::ADD_FLOAT;
         break;
 
@@ -164,7 +164,7 @@ namespace parser {
 
     case L::MINUS: {
       if (lhsObject->type == getFloatType()) {
-        resultObject = new GObject { getFloatType(), { 0 }};
+        resultObject = new GObject { getFloatType(), 0 };
         opCode = GOPCODE::SUBTRACT_FLOAT;
         break;
 
@@ -175,7 +175,31 @@ namespace parser {
       }
     }
 
+    case L::MUL: {
+      if (lhsObject->type == getFloatType()) {
+        resultObject = new GObject { getFloatType(),  0 };
+        opCode = GOPCODE::MULTIPLY_FLOAT;
+        break;
 
+      } else if (lhsObject->type == getInt32Type()) {
+        resultObject = scope->frame->allocateObject(getInt32Type());
+        opCode = GOPCODE::MULTIPLY_INT;
+        break;
+      }
+    }
+
+    case L::DIV: {
+      if (lhsObject->type == getFloatType()) {
+        resultObject = new GObject { getFloatType(), 0 };
+        opCode = GOPCODE::DIVIDE_FLOAT;
+        break;
+
+      } else if (lhsObject->type == getInt32Type()) {
+        resultObject = scope->frame->allocateObject(getInt32Type());
+        opCode = GOPCODE::DIVIDE_INT;
+        break;
+      }
+    }
 
     default:
       throw ParserException("binary op not implemented: " + lexer::tokenMap[op]);
@@ -268,7 +292,7 @@ namespace parser {
     }
 
     auto vmBody = body->generate(&functionScope);
-    vmBody->push_back(GInstruction { END, { 0 }});
+    vmBody->push_back(GInstruction { END, 0 });
 
     function->instructions = &(*vmBody)[0];
     function->registerCount = frame->registerCount;

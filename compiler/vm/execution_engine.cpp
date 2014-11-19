@@ -81,6 +81,16 @@ namespace VM {
         break;
       }
 
+      case DIVIDE_FLOAT:
+        registers[args[2].registerNum].asFloat =
+          registers[args[0].registerNum].asFloat / registers[args[1].registerNum].asFloat;
+        break;
+
+      case DIVIDE_INT:
+        registers[args[2].registerNum].asInt32 =
+          registers[args[0].registerNum].asInt32 / registers[args[1].registerNum].asInt32;
+        break;
+
       case END:
         return { 0 };
         break;
@@ -95,6 +105,10 @@ namespace VM {
 
       case LOAD_CONSTANT_BOOL:
         registers[args[0].registerNum].asBool = args[1].asBool;
+        break;
+
+      case LOAD_CONSTANT_FLOAT:
+        registers[args[0].registerNum].asFloat = args[1].asFloat;
         break;
 
       case LOAD_CONSTANT_INT:
@@ -118,8 +132,22 @@ namespace VM {
           registers[args[0].registerNum].asInt32 < registers[args[1].registerNum].asInt32;
         break;
 
+      case MULTIPLY_FLOAT:
+        registers[args[2].registerNum].asFloat =
+          registers[args[0].registerNum].asFloat * registers[args[1].registerNum].asFloat;
+        break;
+
+      case MULTIPLY_INT:
+        registers[args[2].registerNum].asInt32 =
+          registers[args[0].registerNum].asInt32 * registers[args[1].registerNum].asInt32;
+        break;
+
       case PRINT_CHAR:
         printf("%c\n", registers[args[0].registerNum].asChar);
+        break;
+
+      case PRINT_FLOAT:
+        printf("%f\n", registers[args[0].registerNum].asFloat);
         break;
 
       case PRINT_INT:

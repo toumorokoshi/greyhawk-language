@@ -76,6 +76,10 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "LOAD_CONSTANT_BOOL: [" << values[0].registerNum << "] <- " << (values[1].asBool == true ? "true" : "false");
       break;
 
+    case LOAD_CONSTANT_FLOAT:
+      std::cout << "LOAD_CONSTANT_FLOAT: [" << values[0].registerNum << "] <- " << values[1].asFloat;
+      break;
+
     case LOAD_CONSTANT_INT:
       std::cout << "LOAD_CONSTANT_INT: {" << values[0].registerNum << "} <- " << values[1].asInt32;
       break;
@@ -88,8 +92,16 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "LESS_THAN_INT: {" << values[0].registerNum << "} < {" << values[1].registerNum << "} -> " << values[2].registerNum;
       break;
 
+    case MULTIPLY_FLOAT:
+      std::cout << "MULTIPLY_FLOAT: {" << values[0].registerNum << "} * {" << values[1].registerNum << "} -> " << values[2].registerNum;
+      break;
+
     case PRINT_CHAR:
       std::cout << "PRINT_CHAR: {" << values[0].registerNum << "}";
+      break;
+
+    case PRINT_FLOAT:
+      std::cout << "PRINT_FLOAT: {" << values[0].registerNum << "}";
       break;
 
     case PRINT_INT:
