@@ -19,6 +19,10 @@
 // no validation occurs in the vm: only execution
 namespace VM {
 
+  typedef struct GVM {
+    std::map<std::string, GModule*> modules;
+  } GVM;
+
   void printInstructions(GInstruction*);
 };
 

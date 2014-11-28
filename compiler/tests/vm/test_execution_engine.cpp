@@ -15,7 +15,7 @@ TEST(VM, hello_world) {
     }, 1, 0
   };
 
-  executeFunction(function, new GValue[0]);
+  executeFunction(NULL, function, new GValue[0]);
 }
 
 TEST(VM, for_loop) {
@@ -34,7 +34,7 @@ TEST(VM, for_loop) {
     }, 5, 0
   };
 
-  executeFunction(function, new GValue[0]);
+  executeFunction(NULL, function, new GValue[0]);
 
 }
 
@@ -50,7 +50,7 @@ TEST(VM, basic_function_test) {
   };
 
   auto arguments = new GValue[3] { 159, 73 };
-  EXPECT_EQ(executeFunction(function, arguments).asInt32, 232);
+  EXPECT_EQ(executeFunction(NULL, function, arguments).asInt32, 232);
 }
 
 TEST(VM, invoke_function_in_method) {
@@ -77,5 +77,5 @@ TEST(VM, invoke_function_in_method) {
 
 
   auto arguments = new GValue[2] { 159, 73 };
-  EXPECT_EQ(executeFunction(function, arguments).asInt32, 232);
+  EXPECT_EQ(executeFunction(NULL, function, arguments).asInt32, 232);
 }

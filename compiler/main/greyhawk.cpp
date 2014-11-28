@@ -19,6 +19,7 @@ using namespace VM;
 static Tokenizer* tokenizer;
 static GScope* globalScope;
 static GValue* globalRegisters;
+static GVM* vm;
 static int globalRegistersCount;
 
 typedef struct CommandLineArguments {
@@ -164,6 +165,7 @@ void interpreter(CommandLineArguments& args) {
 int main(int argc, char *argv[]) {
   tokenizer = new Tokenizer();
   globalScope = new GScope(new GFrame());
+  vm = new GVM();
   CommandLineArguments& args = getArguments(argc, argv);
 
   try {

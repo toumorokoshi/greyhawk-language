@@ -8,17 +8,18 @@
 
 namespace VM {
 
-  GValue executeFunction(GFunction* function, GValue* arguments) {
+  GValue executeFunction(GVM* vm, GFunction* function, GValue* arguments) {
     GValue registers[function->registerCount];
     auto argumentCount = function->argumentCount;
     // TODO: better copy logic
     for (int i = 0; i < argumentCount; i++) {
       registers[i] = arguments[i];
     }
-    return executeInstructions(function->instructions, registers);
+    return executeInstructions(vm, function->instructions, registers);
   }
 
-  inline GValue executeSubfunction(GFunction* function, GValue* parentRegisters,
+  inline GValue executeSubfunction(GVM* vm, GFunction* function,
+                                   GValue* parentRegisters,
                                    GOPARG* values) {
     GValue registers[function->registerCount];
     auto argumentCount = function->argumentCount;
@@ -27,10 +28,10 @@ namespace VM {
       auto value = parentRegisters[values[i + 2].registerNum];
       registers[i] = value;
     }
-    return executeInstructions(function->instructions, registers);
+    return executeInstructions(vm, function->instructions, registers);
   }
 
-  GValue executeInstructions(GInstruction* instructions, GValue* registers) {
+  GValue executeInstructions(GVM* vm, GInstruction* instructions, GValue* registers) {
     auto instruction = instructions;
     bool done = false;
     while (!done) {
@@ -77,7 +78,7 @@ namespace VM {
 
       case CALL: {
         auto function = args[0].function;
-        registers[args[1].registerNum] = executeSubfunction(function, registers, args);
+        registers[args[1].registerNum] = executeSubfunction(vm, function, registers, args);
         break;
       }
 
@@ -124,6 +125,19 @@ namespace VM {
         }
         registers[args[0].registerNum].asArray =
           new GArray { .elements = elements, .size = length };
+        break;
+      }
+
+      case LOAD_MODULE: {
+        auto moduleName = args[1].asString;
+        registers[args[0].registerNum].asModule = vm->modules[moduleName];
+        break;
+      }
+
+      case LOAD_MODULE_VALUE: {
+        auto name = args[1].asString;
+        registers[args[2].registerNum] =
+          registers[args[0].registerNum].asModule->globals[name];
         break;
       }
 
