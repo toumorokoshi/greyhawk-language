@@ -22,6 +22,7 @@ namespace VM {
     void* asNone;
     GArray* asArray;
     GModule* asModule;
+    FILE* asFile;
   } GValue;
 
   typedef struct GObject {

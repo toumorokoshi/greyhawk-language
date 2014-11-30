@@ -96,6 +96,16 @@ namespace VM {
         return { 0 };
         break;
 
+      case FILE_WRITE: {
+        auto file = registers[args[0].registerNum].asFile;
+        auto str = registers[args[1].registerNum].asArray;
+        auto elements = str->elements;
+        for (int i = 0; i < str->size; i++) {
+          fprintf(file, "%c", elements[i].asChar);
+        }
+        break;
+      }
+
       case GO:
         instruction += args[0].positionDiff- 1;
         break;
@@ -106,6 +116,10 @@ namespace VM {
 
       case LOAD_CONSTANT_BOOL:
         registers[args[0].registerNum].asBool = args[1].asBool;
+        break;
+
+      case LOAD_CONSTANT_FILE:
+        registers[args[0].registerNum].asFile = args[1].asFile;
         break;
 
       case LOAD_CONSTANT_FLOAT:

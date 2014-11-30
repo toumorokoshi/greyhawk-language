@@ -17,5 +17,5 @@ TEST(VM, module_load) {
   auto registers = new GValue[2];
 
   executeInstructions(vm, instructions, registers);
-  // EXPECT_EQ(registers[1].asInt32, 10);
+  EXPECT_EQ(registers[1].asInt32, 10);
 }
