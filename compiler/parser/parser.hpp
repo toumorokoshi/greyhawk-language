@@ -25,6 +25,7 @@ namespace parser {
 
     PBlock* parseBlock();
     PStatement* parseStatement();
+    PClassDeclaration* parseClassDeclaration();
     PFunctionDeclaration* parseFunctionDeclaration();
     PReturn* parseReturn();
     PStatement* parseForStatement();

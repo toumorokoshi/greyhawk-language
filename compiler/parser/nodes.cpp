@@ -17,6 +17,27 @@ namespace parser {
     return root;
   }
 
+  YAML::Node* PClassDeclaration::toYaml() {
+    auto root = new YAML::Node();
+    (*root)["class"]["name"] = name;
+
+    auto attributesYaml = new YAML::Node();
+    for (auto attributeName: attributes) {
+      (*attributesYaml)[attributeName.first] = attributeName.second;
+    }
+
+    (*root)["class"]["attributes"] = *attributesYaml;
+
+    auto methodsYaml = new YAML::Node();
+    for (auto method : methods) {
+      methodsYaml->push_back(*method->toYaml());
+    }
+
+    (*root)["class"]["methods"] = *methodsYaml;
+
+    return root;
+  }
+
   YAML::Node* PIncrement::toYaml() {
     auto root = new YAML::Node();
     (*root)["increment"]["identifier"] = *identifier->toYaml();

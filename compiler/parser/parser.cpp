@@ -40,6 +40,64 @@ namespace parser {
     return block;
   }
 
+  PClassDeclaration* Parser::parseClassDeclaration() {
+    debug("parseClassDeclaration");
+
+    _validateToken(L::CLASS, "expected a 'class' for a class declaration");
+    token_position++;
+
+    _validateToken(L::TYPE, "expected a class name for a class declaration");
+    auto name = (*token_position)->value;
+    token_position++;
+
+    _validateToken(L::COLON, "expected a ':' for a class declaration");
+    token_position++;
+
+    _validateToken(L::INDENT, "expected a ':' for a class declaration");
+    token_position++;
+
+    auto pclass = new PClassDeclaration(name);
+
+    while (token_position != tokens.end() && (*token_position)->type != UNINDENT) {
+      auto token = *token_position;
+      switch (token->type) {
+
+      case TYPE: {
+
+        if (token_position + 1 == tokens.end() || token_position + 2 == tokens.end()) {
+          throw ParserException(**token_position, "reached EOF while parsing class declaration");
+        }
+
+        auto next_token = *(token_position + 2);
+        switch (next_token->type) {
+
+        case LPAREN:
+          pclass->methods.push_back(parseFunctionDeclaration());
+          break;
+
+        default: {
+          auto typeName = token->value;
+          auto attributeName = (*(token_position + 1))->value;
+          pclass->attributes[attributeName] = typeName;
+          token_position += 2;
+        }
+
+        }
+
+        break;
+      }
+
+      default:
+        throw ParserException(**token_position,
+                              "not recognized as the start of a statement in a class declaration!");
+      }
+    }
+
+    token_position++; // we know this is unindent
+
+    return pclass;
+  }
+
   PIfElse* Parser::parseIfElse() {
     debug("parseIfElse");
 
@@ -157,6 +215,9 @@ namespace parser {
 
     }
 
+    case L::CLASS:
+      return parseClassDeclaration();
+
     case IF:
       return parseIfElse();
 
@@ -192,7 +253,7 @@ namespace parser {
       auto variableName = (*token_position)->value;
       token_position++;
 
-      _validateToken(TYPE, "expected a variable name for a function declaration");
+      _validateToken(TYPE, "expected a class name for a function declaration");
       auto typeName = (*token_position)->value;
       token_position++;
 

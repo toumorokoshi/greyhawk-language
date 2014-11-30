@@ -32,9 +32,12 @@ namespace VM {
     return intType;
   }
 
+  GType* getFileHandleType() {
+    auto static fileHandleType = new GType { FILEHANDLE, "FileHandle", NULL };
+    return fileHandleType;
+  }
+
   GType* getStringType() {
-    // auto static stringType = new GType { STRING, "String", NULL };
-    // return stringType;
     return getArrayType(getCharType());
   }
 

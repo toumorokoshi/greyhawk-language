@@ -1,0 +1,6 @@
+class File:
+
+	FileHandle _handle
+
+	None write(msg String):
+		_handle.write(msg)

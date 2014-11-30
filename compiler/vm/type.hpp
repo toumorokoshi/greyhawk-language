@@ -12,6 +12,7 @@ namespace VM {
     CLASS,
     FLOAT,
     INT32,
+    FILEHANDLE,
     NONE
   };
 
@@ -28,8 +29,9 @@ namespace VM {
   GType* getCharType();
   GType* getFloatType();
   GType* getInt32Type();
-  GType* getStringType();
   GType* getNoneType();
+  GType* getFileHandleType();
+  GType* getStringType();
 }
 
 #endif

@@ -150,6 +150,18 @@ namespace parser {
       arguments(_arguments), body(_body) {}
   };
 
+  class PClassDeclaration : public PStatement {
+  public:
+    std::string name;
+    std::map<std::string, std::string> attributes;
+    std::vector<PFunctionDeclaration*> methods;
+
+    virtual YAML::Node* toYaml();
+    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+
+    PClassDeclaration(std::string _name): name(_name) {}
+  };
+
   class PIfElse : public PStatement {
   public:
     PExpression* condition;

@@ -96,7 +96,7 @@ namespace VM {
         return { 0 };
         break;
 
-      case FILE_WRITE: {
+      case FILEHANDLE_WRITE: {
         auto file = registers[args[0].registerNum].asFile;
         auto str = registers[args[1].registerNum].asArray;
         auto elements = str->elements;
@@ -118,7 +118,7 @@ namespace VM {
         registers[args[0].registerNum].asBool = args[1].asBool;
         break;
 
-      case LOAD_CONSTANT_FILE:
+      case LOAD_CONSTANT_FILEHANDLE:
         registers[args[0].registerNum].asFile = args[1].asFile;
         break;
 

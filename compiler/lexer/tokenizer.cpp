@@ -27,6 +27,20 @@ TokenVector Tokenizer::tokenize(std::istream& input) {
   while (scanner.hasNext()) {
 
     if (isNewLine) {
+      /* when we see an empty line, (newline followed by newline)
+         it doesn't count toward the indentation calculation.
+         this allows empty lines to be used for code organization:
+
+         if x:
+           x = "test"
+
+           x = "not test"
+      */
+      while(scanner.peek() == '\n') {
+        scanner.next();
+        line++;
+      }
+
       line++;
       isNewLine = false;
       isComment = false;
