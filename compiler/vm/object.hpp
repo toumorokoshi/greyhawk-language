@@ -22,6 +22,7 @@ namespace VM {
     void* asNone;
     GArray* asArray;
     GModule* asModule;
+    GValue* asClassInstance;
     FILE* asFile;
   } GValue;
 

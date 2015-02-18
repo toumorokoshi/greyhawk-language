@@ -17,6 +17,11 @@ namespace VM {
     return boolType;
   }
 
+  GType* getClassType() {
+    auto static classType = new GType { CLASS, "Class", NULL };
+    return classType;
+  };
+
   GType* getCharType() {
     auto static charType = new GType { CHAR, "Char", NULL };
     return charType;

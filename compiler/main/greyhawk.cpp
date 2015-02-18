@@ -130,7 +130,7 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
         }
       }
 
-      executeInstructions(instructions, registers);
+      executeInstructions(vm, instructions, registers);
       globalRegisters = registers;
       globalRegistersCount = globalScope->frame->registerCount;
     }
