@@ -82,18 +82,18 @@ namespace VM {
         break;
       }
 
-      case CLASS_INSTANTIATE:
-        break;
+        /* case CLASS_INSTANTIATE:
+           break; */
 
-      case CLASS_STORE_ATTRIBUTE:
+      /* case CLASS_STORE_ATTRIBUTE:
         registers[args[1].registerNum].asClassInstance[args[2].registerNum] =
           registers[args[0].registerNum];
-        break;
+        break; */
 
-      case CLASS_LOAD_ATTRIBUTE:
+      /* case CLASS_LOAD_ATTRIBUTE:
         registers[args[2].registerNum] =
           registers[args[0].registerNum].asClassInstance[args[1].registerNum];
-        break;
+          break; */
 
       case DIVIDE_FLOAT:
         registers[args[2].registerNum].asFloat =
@@ -122,6 +122,19 @@ namespace VM {
       case GO:
         instruction += args[0].positionDiff- 1;
         break;
+
+      case INSTANCE_CREATE: {
+        auto type = registers[args[1].registerNum].asType;
+        auto attributes = new GValue[type->subTypeCount];
+        for (int i = 0; i < type->subTypeCount; i++) {
+          attributes[i] = registers[args[i + 2].registerNum];
+        }
+        registers[args[0].registerNum].asInstance = new GInstance{
+          .type = type,
+          .attributes = attributes
+        };
+        break;
+      }
 
       case INT_TO_FLOAT:
         // intToFloat(instruction->values[0], instruction->values[1]);

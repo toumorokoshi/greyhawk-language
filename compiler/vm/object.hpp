@@ -14,6 +14,14 @@ namespace VM {
     int size;
   } GArray;
 
+  // this represents an instance of a class.
+  // all it needs are explicit set of values for each
+  // attribute it has.
+  typedef struct {
+    GType* type;
+    GValue* attributes;
+  } GInstance;
+
   typedef union GValue {
     int asInt32;
     bool asBool;
@@ -22,7 +30,8 @@ namespace VM {
     void* asNone;
     GArray* asArray;
     GModule* asModule;
-    GValue* asClassInstance;
+    GInstance* asInstance;
+    GType* asType;
     FILE* asFile;
   } GValue;
 

@@ -11,6 +11,7 @@ namespace VM {
     CHAR,
     CLASS,
     FLOAT,
+    INSTANCE,
     INT32,
     FILEHANDLE,
     NONE
@@ -22,6 +23,7 @@ namespace VM {
     BASICTYPES classifier;
     std::string name;
     GType** subTypes;
+    int subTypeCount;
   } GType;
 
   GType* getArrayType(GType* elementType);
