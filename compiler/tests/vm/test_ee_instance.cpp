@@ -22,6 +22,50 @@ TEST(VM, create_instance) {
   };
 
   executeInstructions(NULL, instructions, registers);
-  EXPECT_EQ(registers[0].asInstance->type, fooType);
-  EXPECT_EQ(registers[0].asInstance->attributes[0].asBool, true);
+  EXPECT_EQ(fooType, registers[0].asInstance->type);
+  EXPECT_EQ(true, registers[0].asInstance->attributes[0].asBool);
+}
+
+TEST(VM, test_load_attribute) {
+
+  auto fooType = new GType {
+    BASICTYPES::INSTANCE, "FooType", new GType*[1] { getBoolType() }, 1
+  };
+  auto instance = new GInstance { fooType, new GValue[1] {true} };
+
+  auto instructions = new GInstruction[4] {
+    GInstruction { GOPCODE::INSTANCE_LOAD_ATTRIBUTE, new GOPARG[3] {
+        // [0] = [1]([2])
+        {0}, {1}, {0}
+    }},
+    GInstruction { END, NULL }
+  };
+  auto registers = new GValue[2] {
+    {0}, {.asInstance = instance}
+  };
+
+  executeInstructions(NULL, instructions, registers);
+  EXPECT_EQ(true, registers[0].asBool);
+}
+
+TEST(VM, test_write_attribute) {
+
+  auto fooType = new GType {
+    BASICTYPES::INSTANCE, "FooType", new GType*[1] { getBoolType() }, 1
+  };
+  auto instance = new GInstance { fooType, new GValue[1] {true} };
+
+  auto instructions = new GInstruction[4] {
+    GInstruction { GOPCODE::INSTANCE_STORE_ATTRIBUTE, new GOPARG[3] {
+        // [0] = [1]([2])
+        {0}, {0}, {1}
+    }},
+    GInstruction { END, NULL }
+  };
+  auto registers = new GValue[2] {
+    {.asInstance = instance}, {.asBool = false}
+  };
+
+  executeInstructions(NULL, instructions, registers);
+  EXPECT_EQ(false, registers[0].asInstance->attributes[0].asBool);
 }

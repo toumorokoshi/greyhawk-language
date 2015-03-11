@@ -123,6 +123,8 @@ namespace VM {
         instruction += args[0].positionDiff- 1;
         break;
 
+      // INSTANCE METHODS
+
       case INSTANCE_CREATE: {
         auto type = registers[args[1].registerNum].asType;
         auto attributes = new GValue[type->subTypeCount];
@@ -135,6 +137,16 @@ namespace VM {
         };
         break;
       }
+
+      case INSTANCE_LOAD_ATTRIBUTE:
+        registers[args[0].registerNum] = \
+          registers[args[1].registerNum].asInstance->attributes[args[2].registerNum];
+        break;
+
+      case INSTANCE_STORE_ATTRIBUTE:
+        registers[args[0].registerNum].asInstance->attributes[args[1].registerNum] = \
+          registers[args[2].registerNum];
+        break;
 
       case INT_TO_FLOAT:
         // intToFloat(instruction->values[0], instruction->values[1]);
