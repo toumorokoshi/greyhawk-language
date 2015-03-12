@@ -82,19 +82,6 @@ namespace VM {
         break;
       }
 
-        /* case CLASS_INSTANTIATE:
-           break; */
-
-      /* case CLASS_STORE_ATTRIBUTE:
-        registers[args[1].registerNum].asClassInstance[args[2].registerNum] =
-          registers[args[0].registerNum];
-        break; */
-
-      /* case CLASS_LOAD_ATTRIBUTE:
-        registers[args[2].registerNum] =
-          registers[args[0].registerNum].asClassInstance[args[1].registerNum];
-          break; */
-
       case DIVIDE_FLOAT:
         registers[args[2].registerNum].asFloat =
           registers[args[0].registerNum].asFloat / registers[args[1].registerNum].asFloat;
@@ -121,6 +108,11 @@ namespace VM {
 
       case GO:
         instruction += args[0].positionDiff- 1;
+        break;
+
+      case GLOBAL_LOAD:
+        registers[args[0].registerNum] = \
+          vm->currentModule->globals[args[1].asString];
         break;
 
       // INSTANCE METHODS

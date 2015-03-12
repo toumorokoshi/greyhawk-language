@@ -4,4 +4,4 @@ class Foo():
 
 f Foo := Foo(1, 2)
 
-print(f.attribute)
+// print(f.attribute)

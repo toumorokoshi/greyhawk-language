@@ -48,7 +48,7 @@ TEST(VM, test_load_attribute) {
   EXPECT_EQ(true, registers[0].asBool);
 }
 
-TEST(VM, test_write_attribute) {
+TEST(VM, test_store_attribute) {
 
   auto fooType = new GType {
     BASICTYPES::INSTANCE, "FooType", new GType*[1] { getBoolType() }, 1

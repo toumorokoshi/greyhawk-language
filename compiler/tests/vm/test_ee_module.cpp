@@ -19,3 +19,27 @@ TEST(VM, module_load) {
   executeInstructions(vm, instructions, registers);
   EXPECT_EQ(registers[1].asInt32, 10);
 }
+
+TEST(VM, default_module_load) {
+  auto module = new GModule();
+
+  auto fooType = new GType {
+    BASICTYPES::INSTANCE, "FooType", new GType*[1] { getBoolType() }, 1
+  };
+  module->globals["Foo"].asType = fooType;
+
+  auto vm = new GVM();
+  vm->currentModule = module;
+
+  auto instructions = new GInstruction[2] {
+    GInstruction {GOPCODE::GLOBAL_LOAD, new GOPARG[2] {
+        {0}, GOPARG {.asString = (char*) "Foo"}}
+    },
+    GInstruction { END, NULL }
+  };
+
+  auto registers = new GValue[1];
+
+  executeInstructions(vm, instructions, registers);
+  EXPECT_EQ(registers[0].asType, fooType);
+}
