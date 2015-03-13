@@ -157,7 +157,7 @@ namespace parser {
     std::vector<PFunctionDeclaration*> methods;
 
     virtual YAML::Node* toYaml();
-    virtual void generateStatement(VM::GScope*, GInstructionVector&) {}
+    virtual void generateStatement(VM::GScope*, GInstructionVector&);
 
     PClassDeclaration(std::string _name): name(_name) {}
   };

@@ -22,7 +22,9 @@ namespace VM {
   typedef struct GType {
     BASICTYPES classifier;
     std::string name;
+    // todo: rename to attributeTypes
     GType** subTypes;
+    std::string* attributeNames;
     int subTypeCount;
   } GType;
 

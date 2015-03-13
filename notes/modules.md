@@ -14,3 +14,16 @@ to build a module:
 - execute the code within the module
 - iterate through the scope, retrieve the values from the
   registers, and create a module map.
+
+
+# How the file is loaded
+
+* when a file is compiled, it becomes a module:
+    execFile(fileName) -> GModule.
+
+* execFile:
+
+    * parser loads the file into a PBlock
+    * compiles the file to a list of instructions + a module file.
+    * executes the instructions.
+    * returns the module.

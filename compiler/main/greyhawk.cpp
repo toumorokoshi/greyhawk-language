@@ -18,6 +18,7 @@ using namespace VM;
 // these are initialized in main
 static Tokenizer* tokenizer;
 static GScope* globalScope;
+static GModule* globalModule;
 static GValue* globalRegisters;
 static GVM* vm;
 static int globalRegistersCount;

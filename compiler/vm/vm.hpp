@@ -12,6 +12,7 @@
 #include "ops.hpp"
 #include "scope.hpp"
 #include "type.hpp"
+#include "module.hpp"
 
 #ifndef VM2_VM_HPP
 #define VM2_VM_HPP

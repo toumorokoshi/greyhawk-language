@@ -298,6 +298,26 @@ namespace parser {
     function->registerCount = frame->registerCount;
   }
 
+  void PClassDeclaration::generateStatement(VM::GScope* scope,
+                                            GInstructionVector& instructions) {
+    int attributeSize = attributes.size();
+    auto attributeTypes = new GType*[attributeSize];
+    auto attributeNames = new std::string[attributeSize];
+
+    int i = 0;
+    for (auto& kv: attributes) {
+      attributeNames[i] = kv.first;
+      attributeTypes[i] = evaluateType(kv.second);
+    }
+
+    auto type = new GType{
+      .name = name,
+      .subTypes = attributeTypes,
+      .attributeNames = attributeNames,
+      .subTypeCount = attributeSize
+    };
+  }
+
   void PIfElse::generateStatement(VM::GScope* scope,
                                   GInstructionVector& instructions) {
     auto conditionObject = condition->generateExpression(scope, instructions);

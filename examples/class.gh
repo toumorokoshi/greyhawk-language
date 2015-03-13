@@ -1,7 +1,7 @@
-class Foo():
+class Foo:
 	attribute Double
 	attribute2 Double
 
-f Foo := Foo(1, 2)
+f := Foo(1, 2)
 
 // print(f.attribute)

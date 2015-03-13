@@ -40,10 +40,6 @@ namespace VM {
     int registerNum;
   } GObject;
 
-  typedef struct GModule {
-    std::map<std::string, GValue> globals;
-  } GModule;
-
   GObject* getNoneObject();
 
   std::string getValueDebugInfo(GValue v);
