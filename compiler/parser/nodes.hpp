@@ -356,6 +356,12 @@ namespace parser {
 
   // we'll stick it here for now, move it somewhere else later
   VM::GInstruction* generateRoot(VM::GScope*, PBlock*);
+
+  // this is the compiler part of it.
+  // take a file (stream of tokens)
+  // -> lexer -> parser -> compileModule => GModule
+  // then exec GModule's instructions, to run the program!
+  VM::GModule* compileModule(PBlock*);
 }
 
 #endif

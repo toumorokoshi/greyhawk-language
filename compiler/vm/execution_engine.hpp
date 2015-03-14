@@ -1,4 +1,4 @@
-#include "vm.hpp"
+#include "function.hpp"
 #include <map>
 
 #ifndef VM2_EXECUTIONENGINE_HPP
@@ -6,8 +6,8 @@
 
 namespace VM {
 
-  GValue executeFunction(GVM*, GFunction*, GValue* arguments);
-  GValue executeInstructions(GVM*, GInstruction*, GValue*);
+  GValue executeFunction(GModules*, GFunction*, GValue* arguments);
+  GValue executeInstructions(GModules*, GInstruction*, G2ScopeInstance&);
 }
 
 

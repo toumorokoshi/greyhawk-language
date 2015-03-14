@@ -10,6 +10,10 @@ using namespace lexer;
 
 namespace parser {
 
+  GModule* compileModule(PBlock* block) {
+    auto module = new GModule();
+  }
+
   GType* evaluateType(std::string typeName) {
     if (typeName == "Int") { return getInt32Type(); }
     else if (typeName == "Bool") { return getBoolType(); }
@@ -279,7 +283,7 @@ namespace parser {
     }
 
     auto frame = new GFrame();
-    auto function = new GFunction {
+    auto function = new GOldFunction {
       .returnType = evaluateType(returnType),
       .argumentCount = (int) arguments.size()
     };

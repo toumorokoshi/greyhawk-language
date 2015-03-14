@@ -9,13 +9,15 @@
 
 namespace VM {
 
+  struct G2ScopeInstance;
+
   // NOTE: resizing registers is dangerous!
   // do not allow this as a method until we can
   // figure out how to make this thread safe.
   class GScope {
   public:
     GFrame* frame;
-    std::map<std::string, GFunction*> functionTable;
+    std::map<std::string, GOldFunction*> functionTable;
     std::map<std::string, GObject*> symbolTable;
 
     GScope(GScope* parent) : frame(parent->frame), _parent(parent) {}
@@ -38,14 +40,33 @@ namespace VM {
       return newObject;
     }
 
-    GFunction* getFunction(std::string name);
+    GOldFunction* getFunction(std::string name);
 
-    void addFunction(std::string name, GFunction* function) {
+    void addFunction(std::string name, GOldFunction* function) {
       functionTable[name] = function;
     }
 
   private:
     GScope* _parent;
+  };
+
+
+  // we use a class instead of a struct
+  // so we can encapsulate things for now,
+  // until a good mechanism is decided.
+  class G2Scope {
+  public:
+    std::map<std::string, GValue*> globals;
+    std::map<std::string, int> locals;
+    int registerCount;
+
+    void addLocal(std::string);
+    G2ScopeInstance createInstance();
+  };
+
+  struct G2ScopeInstance {
+    G2Scope* scope;
+    GValue* values;
   };
 
 }

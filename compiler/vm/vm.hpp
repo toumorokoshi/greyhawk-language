@@ -12,7 +12,7 @@
 #include "ops.hpp"
 #include "scope.hpp"
 #include "type.hpp"
-#include "module.hpp"
+#include "function.hpp"
 
 #ifndef VM2_VM_HPP
 #define VM2_VM_HPP
@@ -21,8 +21,7 @@
 namespace VM {
 
   typedef struct GVM {
-    std::map<std::string, GModule*> modules;
-    GModule* currentModule;
+    std::map<std::string, G2ScopeInstance*> modules;
   } GVM;
 
   void printInstructions(GInstruction*);

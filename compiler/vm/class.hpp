@@ -9,7 +9,7 @@ namespace VM {
 
   typedef struct GClass {
     std::map<std::string, GObject> attributes;
-    std::map<std::string, GFunction*> methods;
+    std::map<std::string, GOldFunction*> methods;
   } GClass;
 
   void runMethod(GClass* object, std::string methodName);

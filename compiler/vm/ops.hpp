@@ -6,7 +6,7 @@
 
 namespace VM {
 
-  struct GFunction;
+  struct GOldFunction;
 
   // these are all the instruction supported by the vm.
   enum GOPCODE {
@@ -59,7 +59,7 @@ namespace VM {
     int asInt32;
     bool asBool;
     double asFloat;
-    GFunction* function;
+    GOldFunction* function;
     FILE* asFile;
     const char* asString;
   } GOPARG;
@@ -69,12 +69,12 @@ namespace VM {
     GOPARG* args;
   } GInstruction;
 
-  typedef struct GFunction {
+  typedef struct GOldFunction {
     GType* returnType;
     GInstruction* instructions; // array
     int registerCount;
     int argumentCount;
-  } GFunction;
+  } GOldFunction;
 }
 
 #endif

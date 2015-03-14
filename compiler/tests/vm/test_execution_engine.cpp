@@ -6,7 +6,7 @@ using namespace VM;
 
 
 TEST(VM, hello_world) {
-  auto function = new GFunction {
+  auto function = new GOldFunction {
     getNoneType(),
     new GInstruction[3] {
       GInstruction { GOPCODE::LOAD_CONSTANT_STRING, new GOPARG[2] {0, GOPARG { .asString = (char*) "hello world" }}},
@@ -19,7 +19,7 @@ TEST(VM, hello_world) {
 }
 
 TEST(VM, for_loop) {
-  auto function = new GFunction {
+  auto function = new GOldFunction {
     getNoneType(),
     new GInstruction[9] {
       GInstruction { GOPCODE::LOAD_CONSTANT_INT, new GOPARG[2] { 0, 0 } },
@@ -39,7 +39,7 @@ TEST(VM, for_loop) {
 }
 
 TEST(VM, basic_function_test) {
-  auto function = new GFunction {
+  auto function = new GOldFunction {
     getInt32Type(),
     new GInstruction[2]{
       GInstruction { GOPCODE::ADD_INT, new GOPARG[3] { 0, 1, 2 } },
@@ -54,7 +54,7 @@ TEST(VM, basic_function_test) {
 }
 
 TEST(VM, invoke_function_in_method) {
-  auto function = new GFunction {
+  auto function = new GOldFunction {
     getInt32Type(),
     new GInstruction[2]{
       GInstruction { GOPCODE::ADD_INT, new GOPARG[3] { 0, 1, 2 } },
@@ -64,7 +64,7 @@ TEST(VM, invoke_function_in_method) {
     2
   };
 
-  auto functionWrapper = new GFunction {
+  auto functionWrapper = new GOldFunction {
     getInt32Type(),
     new GInstruction[2]{
       GInstruction { GOPCODE::CALL, new GOPARG[4] { GOPARG { .function = function }, 2, 0, 1 }},
