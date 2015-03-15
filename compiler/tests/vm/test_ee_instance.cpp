@@ -6,7 +6,8 @@ using namespace VM;
 TEST(VM, create_instance) {
 
   auto fooType = new GType {
-    BASICTYPES::INSTANCE, "FooType", new GType*[1] { getBoolType() }, 1
+    BASICTYPES::INSTANCE, "FooType", new GType*[1] { getBoolType() },
+    new std::string[0], 1
   };
   // auto instance = new GInstance { fooType, new GValue[2] {1, 2} };
 
@@ -21,7 +22,11 @@ TEST(VM, create_instance) {
     {0}, {.asType = fooType}, { .asBool = true}
   };
 
-  executeInstructions(NULL, instructions, registers);
+  G2ScopeInstance scope {
+    .values = registers
+  };
+
+  executeInstructions(NULL, instructions, scope);
   EXPECT_EQ(fooType, registers[0].asInstance->type);
   EXPECT_EQ(true, registers[0].asInstance->attributes[0].asBool);
 }
@@ -29,7 +34,8 @@ TEST(VM, create_instance) {
 TEST(VM, test_load_attribute) {
 
   auto fooType = new GType {
-    BASICTYPES::INSTANCE, "FooType", new GType*[1] { getBoolType() }, 1
+    BASICTYPES::INSTANCE, "FooType", new GType*[1] { getBoolType() },
+    new std::string[0], 1
   };
   auto instance = new GInstance { fooType, new GValue[1] {true} };
 
@@ -44,14 +50,19 @@ TEST(VM, test_load_attribute) {
     {0}, {.asInstance = instance}
   };
 
-  executeInstructions(NULL, instructions, registers);
+  G2ScopeInstance scope {
+    .values = registers
+  };
+
+  executeInstructions(NULL, instructions, scope);
   EXPECT_EQ(true, registers[0].asBool);
 }
 
 TEST(VM, test_store_attribute) {
 
   auto fooType = new GType {
-    BASICTYPES::INSTANCE, "FooType", new GType*[1] { getBoolType() }, 1
+    BASICTYPES::INSTANCE, "FooType", new GType*[1] { getBoolType() },
+    new std::string[0], 1
   };
   auto instance = new GInstance { fooType, new GValue[1] {true} };
 
@@ -66,6 +77,10 @@ TEST(VM, test_store_attribute) {
     {.asInstance = instance}, {.asBool = false}
   };
 
-  executeInstructions(NULL, instructions, registers);
+  G2ScopeInstance scope {
+    .values = registers
+  };
+
+  executeInstructions(NULL, instructions, scope);
   EXPECT_EQ(false, registers[0].asInstance->attributes[0].asBool);
 }

@@ -22,5 +22,8 @@ TEST(VM, array_access) {
     GInstruction { END, NULL }
   };
   auto registers = new GValue[6];
-  executeInstructions(NULL, instructions, registers);
+  G2ScopeInstance scope {
+    .values = registers
+  };
+  executeInstructions(NULL, instructions, scope);
 }

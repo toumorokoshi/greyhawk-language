@@ -4,7 +4,7 @@
 using namespace VM;
 
 // a test for a hello world execution
-TEST(VM, hello_world) {
+TEST(VM, hello_world_new_execution) {
 
   auto modules = new GModules();
 
@@ -35,5 +35,5 @@ TEST(VM, hello_world) {
   // executing again will modify the results.
   *scope->globals[0] = GValue{.asInt32 = 12};
   function->execute(modules, scopeInstance);
-  EXPECT_EQ(scopeInstance.values[0].asInt32, 10);
+  EXPECT_EQ(scopeInstance.values[0].asInt32, 12);
 }

@@ -2,7 +2,7 @@
 #include "../../vm/execution_engine.hpp"
 
 using namespace VM;
-
+/*
 TEST(VM, filehandle_write) {
 
   auto instructions = new GInstruction[4] {
@@ -15,3 +15,4 @@ TEST(VM, filehandle_write) {
 
   executeInstructions(NULL, instructions, registers);
 }
+*/
