@@ -1,4 +1,5 @@
 #include "execution_engine.hpp"
+#include "vm.hpp"
 #include <iostream>
 
 using namespace VM;

@@ -12,7 +12,25 @@ namespace VM {
   }
 
   void G2Scope::addLocal(std::string name) {
-    locals[name] = registerCount++;
+    localsTable[name] = localsCount++;
   }
 
+  G2ScopeInstance G2Scope::createInstance() {
+    return G2ScopeInstance {
+      .scope = this, .values = new GValue[localsCount]
+    };
+  }
+
+  GValue G2ScopeInstance::getValue(std::string name) {
+
+    if (scope->localsTable.find(name) != scope->localsTable.end()) {
+      return values[scope->localsTable[name]];
+    }
+
+    if (scope->globalsTable.find(name) != scope->globalsTable.end()) {
+      return *(scope->globals[scope->globalsTable[name]]);
+    }
+
+    return GValue {0};
+  }
 }

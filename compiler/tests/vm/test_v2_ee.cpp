@@ -10,7 +10,9 @@ TEST(VM, hello_world) {
 
   // we have a top level function that is basically the 'main' program.
   auto scope = new G2Scope();
-  scope->globals["global_value"] = new GValue {.asInt32 = 10};
+  scope->globals = new GValue*[1] { new GValue {.asInt32 = 10}};
+  scope->globalsTable["global_value"] = 0;
+  scope->globalsCount = 1;
   scope->addLocal("local_value");
 
   // auto scopeInstance = scope->createInstance();
@@ -26,8 +28,12 @@ TEST(VM, hello_world) {
   };
 
   auto scopeInstance = scope->createInstance();
-
   function->execute(modules, scopeInstance);
+  EXPECT_EQ(scopeInstance.values[0].asInt32, 10);
 
-  EXPECT_EQ(
+  // validate that, after we modify the global values,
+  // executing again will modify the results.
+  *scope->globals[0] = GValue{.asInt32 = 12};
+  function->execute(modules, scopeInstance);
+  EXPECT_EQ(scopeInstance.values[0].asInt32, 10);
 }

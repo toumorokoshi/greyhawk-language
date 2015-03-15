@@ -8,17 +8,17 @@
 
 namespace VM {
 
-  GValue executeFunction(GVM* vm, GFunction* function, GValue* arguments) {
-    GValue registers[function->registerCount];
+  GValue executeFunction(GModules* vm, GFunction* function, GValue* arguments) {
+    auto scopeInstance = function->scope->createInstance();
     auto argumentCount = function->argumentCount;
     // TODO: better copy logic
     for (int i = 0; i < argumentCount; i++) {
-      registers[i] = arguments[i];
+      scopeInstance.values[i] = arguments[i];
     }
-    return executeInstructions(vm, function->instructions, registers);
+    return executeInstructions(vm, function->instructions, scopeInstance);
   }
 
-  inline GValue executeSubfunction(GVM* vm, GFunction* function,
+  /* inline GValue executeSubfunction(GModules*, GFunction* function,
                                    GValue* parentRegisters,
                                    GOPARG* values) {
     GValue registers[function->registerCount];
@@ -29,9 +29,11 @@ namespace VM {
       registers[i] = value;
     }
     return executeInstructions(vm, function->instructions, registers);
-  }
+    } */
 
-  GValue executeInstructions(GVM* vm, GInstruction* instructions, GValue* registers) {
+  GValue executeInstructions(GModules* modules, GInstruction* instructions, G2ScopeInstance& scopeInstance) {
+    auto registers = scopeInstance.values;
+    auto scope = scopeInstance.scope;
     auto instruction = instructions;
     bool done = false;
     while (!done) {
@@ -76,11 +78,11 @@ namespace VM {
         }
         break;
 
-      case CALL: {
+        /* case CALL: {
         auto function = args[0].function;
         registers[args[1].registerNum] = executeSubfunction(vm, function, registers, args);
         break;
-      }
+        } */
 
       case DIVIDE_FLOAT:
         registers[args[2].registerNum].asFloat =
@@ -112,7 +114,7 @@ namespace VM {
 
       case GLOBAL_LOAD:
         registers[args[0].registerNum] = \
-          vm->currentModule->globals[args[1].asString];
+          *(scope->globals[args[1].registerNum]);
         break;
 
       // INSTANCE METHODS
@@ -174,14 +176,14 @@ namespace VM {
 
       case LOAD_MODULE: {
         auto moduleName = args[1].asString;
-        registers[args[0].registerNum].asModule = vm->modules[moduleName];
+        registers[args[0].registerNum].asModule = (*modules)[moduleName];
         break;
       }
 
       case LOAD_MODULE_VALUE: {
         auto name = args[1].asString;
         registers[args[2].registerNum] =
-          registers[args[0].registerNum].asModule->globals[name];
+          registers[args[0].registerNum].asModule->getValue(name);
         break;
       }
 

@@ -7,7 +7,7 @@
 namespace VM {
 
   union GValue;
-  struct GModule;
+  struct G2ScopeInstance;
 
   typedef struct {
     GValue* elements;
@@ -29,7 +29,7 @@ namespace VM {
     double asFloat;
     void* asNone;
     GArray* asArray;
-    GModule* asModule;
+    G2ScopeInstance* asModule;
     GInstance* asInstance;
     GType* asType;
     FILE* asFile;

@@ -18,7 +18,6 @@ using namespace VM;
 // these are initialized in main
 static Tokenizer* tokenizer;
 static GScope* globalScope;
-static GModule* globalModule;
 static GValue* globalRegisters;
 static GVM* vm;
 static int globalRegistersCount;
@@ -131,7 +130,12 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
         }
       }
 
-      executeInstructions(vm, instructions, registers);
+      G2ScopeInstance scopeInstance {
+        .values = registers,
+        .scope = NULL
+      };
+
+      executeInstructions(vm->modules, instructions, scopeInstance);
       globalRegisters = registers;
       globalRegistersCount = globalScope->frame->registerCount;
     }
@@ -167,6 +171,7 @@ int main(int argc, char *argv[]) {
   tokenizer = new Tokenizer();
   globalScope = new GScope(new GFrame());
   vm = new GVM();
+  vm->modules = new GModules();
   CommandLineArguments& args = getArguments(argc, argv);
 
   try {

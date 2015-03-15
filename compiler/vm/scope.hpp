@@ -56,10 +56,16 @@ namespace VM {
   // until a good mechanism is decided.
   class G2Scope {
   public:
-    std::map<std::string, GValue*> globals;
-    std::map<std::string, int> locals;
-    int registerCount;
+    // globals data
+    GValue** globals;
+    std::map<std::string, int> globalsTable;
+    int globalsCount;
 
+    // locals data
+    std::map<std::string, int> localsTable;
+    int localsCount;
+
+    void addGlobal(std::string, GValue*);
     void addLocal(std::string);
     G2ScopeInstance createInstance();
   };
@@ -67,6 +73,8 @@ namespace VM {
   struct G2ScopeInstance {
     G2Scope* scope;
     GValue* values;
+
+    GValue getValue(std::string);
   };
 
 }

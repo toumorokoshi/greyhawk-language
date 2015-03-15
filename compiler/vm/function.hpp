@@ -8,7 +8,7 @@ namespace VM {
 
   class GFunction;
 
-  typedef std::map<std::string, GFunction> GModules;
+  typedef std::map<std::string, G2ScopeInstance*> GModules;
 
   // the function is the top-level object.
   class GFunction {

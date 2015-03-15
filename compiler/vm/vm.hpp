@@ -21,7 +21,7 @@
 namespace VM {
 
   typedef struct GVM {
-    std::map<std::string, G2ScopeInstance*> modules;
+    GModules* modules;
   } GVM;
 
   void printInstructions(GInstruction*);
