@@ -6,8 +6,8 @@ using namespace VM;
 
 
 TEST(VM, hello_world) {
-  auto scope = new G2Scope();
-  scope->addLocal("foo");
+  auto scope = new GScope();
+  scope->allocateObject();
 
   auto function = new GFunction {
     .returnType = getNoneType(),
@@ -24,13 +24,13 @@ TEST(VM, hello_world) {
 }
 
 TEST(VM, for_loop) {
-  auto scope = new G2Scope();
+  auto scope = new GScope();
   // temporary workraound to fill registers
-  scope->addLocal("foo1");
-  scope->addLocal("foo2");
-  scope->addLocal("foo3");
-  scope->addLocal("foo4");
-  scope->addLocal("foo5");
+  scope->allocateObject();
+  scope->allocateObject();
+  scope->allocateObject();
+  scope->allocateObject();
+  scope->allocateObject();
 
   auto function = new GFunction {
     .returnType = getNoneType(),
@@ -54,11 +54,11 @@ TEST(VM, for_loop) {
 }
 
 TEST(VM, basic_function_test) {
-  auto scope = new G2Scope();
+  auto scope = new GScope();
   // temporary workraound to fill registers
-  scope->addLocal("foo1");
-  scope->addLocal("foo2");
-  scope->addLocal("foo3");
+  scope->allocateObject();
+  scope->allocateObject();
+  scope->allocateObject();
 
   auto function = new GFunction {
     .returnType = getInt32Type(),

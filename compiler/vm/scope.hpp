@@ -9,12 +9,12 @@
 
 namespace VM {
 
-  struct G2ScopeInstance;
+  struct GScopeInstance;
 
   // NOTE: resizing registers is dangerous!
   // do not allow this as a method until we can
   // figure out how to make this thread safe.
-  class GScope {
+  /* class GScope {
   public:
     GFrame* frame;
     std::map<std::string, GOldFunction*> functionTable;
@@ -48,13 +48,13 @@ namespace VM {
 
   private:
     GScope* _parent;
-  };
+    }; */
 
 
   // we use a class instead of a struct
   // so we can encapsulate things for now,
   // until a good mechanism is decided.
-  class G2Scope {
+  class GScope {
   public:
     // globals data
     GValue** globals;
@@ -65,13 +65,36 @@ namespace VM {
     std::map<std::string, int> localsTable;
     int localsCount;
 
-    void addGlobal(std::string, GValue*);
-    void addLocal(std::string);
-    G2ScopeInstance createInstance();
+    // get the index of an object
+    // negative = global scope (GLOBAL_LOAD)
+    // positive = local scope (LOAD)
+    int getObject(std::string name) {
+      if (localsTable.find(name) != localsTable.end()) {
+        return localsTable[name];
+      }
+
+      if (globalsTable.find(name) != globalsTable.end()) {
+        return - globalsTable[name];
+      }
+
+      return -1000;
+    }
+
+    GObject* addObject(std::string name, GType* type) {
+      int index = allocateObject();
+      localsTable[name] = index;
+      return new GObject {
+        .registerNum = index,
+        .type = type
+      };
+    }
+
+    int allocateObject() { return localsCount++; }
+    GScopeInstance createInstance();
   };
 
-  struct G2ScopeInstance {
-    G2Scope* scope;
+  struct GScopeInstance {
+    GScope* scope;
     GValue* values;
 
     GValue getValue(std::string);

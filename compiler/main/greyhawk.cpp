@@ -130,7 +130,7 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
         }
       }
 
-      G2ScopeInstance scopeInstance {
+      GScopeInstance scopeInstance {
         .values = registers,
         .scope = NULL
       };

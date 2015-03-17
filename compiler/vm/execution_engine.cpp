@@ -31,7 +31,7 @@ namespace VM {
     return executeInstructions(vm, function->instructions, registers);
     } */
 
-  GValue executeInstructions(GModules* modules, GInstruction* instructions, G2ScopeInstance& scopeInstance) {
+  GValue executeInstructions(GModules* modules, GInstruction* instructions, GScopeInstance& scopeInstance) {
     auto registers = scopeInstance.values;
     auto scope = scopeInstance.scope;
     auto instruction = instructions;

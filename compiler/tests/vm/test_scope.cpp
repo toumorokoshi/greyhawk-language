@@ -3,6 +3,7 @@
 
 using namespace VM;
 
+/*
 TEST(VM, test_scope_access) {
 
   GFrame topFrame;
@@ -12,3 +13,4 @@ TEST(VM, test_scope_access) {
   myScope.addObject("foo", getInt32Type());
   EXPECT_EQ(myScope.getObject("foo")->type, getInt32Type());
 }
+*/

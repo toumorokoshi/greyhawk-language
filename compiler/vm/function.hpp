@@ -8,17 +8,17 @@ namespace VM {
 
   class GFunction;
 
-  typedef std::map<std::string, G2ScopeInstance*> GModules;
+  typedef std::map<std::string, GScopeInstance*> GModules;
 
   // the function is the top-level object.
   class GFunction {
   public:
     GType* returnType;
     GInstruction* instructions;
-    G2Scope* scope;
+    GScope* scope;
     int argumentCount;
 
-    GValue* execute(GModules*, G2ScopeInstance&);
+    GValue* execute(GModules*, GScopeInstance&);
   };
 
 }

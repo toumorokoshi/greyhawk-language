@@ -9,11 +9,11 @@ TEST(VM, hello_world_new_execution) {
   auto modules = new GModules();
 
   // we have a top level function that is basically the 'main' program.
-  auto scope = new G2Scope();
+  auto scope = new GScope();
   scope->globals = new GValue*[1] { new GValue {.asInt32 = 10}};
   scope->globalsTable["global_value"] = 0;
   scope->globalsCount = 1;
-  scope->addLocal("local_value");
+  scope->allocateObject();
 
   // auto scopeInstance = scope->createInstance();
 
