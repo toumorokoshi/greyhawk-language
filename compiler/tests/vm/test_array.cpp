@@ -21,7 +21,7 @@ TEST(VM, array_access) {
     GInstruction { PRINT_INT, new GOPARG[1] { 5 } },
     GInstruction { END, NULL }
   };
-  auto registers = new GValue[6];
+  auto registers = new GObject[6];
   GScopeInstance scope {
     .values = registers
   };

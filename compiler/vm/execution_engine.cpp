@@ -8,7 +8,7 @@
 
 namespace VM {
 
-  GValue executeFunction(GModules* vm, GFunction* function, GValue* arguments) {
+  GObject executeFunction(GModules* vm, GFunction* function, GObject* arguments) {
     auto scopeInstance = function->scope->createInstance();
     auto argumentCount = function->argumentCount;
     // TODO: better copy logic
@@ -31,7 +31,7 @@ namespace VM {
     return executeInstructions(vm, function->instructions, registers);
     } */
 
-  GValue executeInstructions(GModules* modules, GInstruction* instructions, GScopeInstance& scopeInstance) {
+  GObject executeInstructions(GModules* modules, GInstruction* instructions, GScopeInstance& scopeInstance) {
     auto registers = scopeInstance.values;
     auto scope = scopeInstance.scope;
     auto instruction = instructions;
@@ -42,28 +42,28 @@ namespace VM {
       switch (instruction->op) {
 
       case ARRAY_ALLOCATE:
-        registers[args[0].registerNum].asArray =
+        registers[args[0].registerNum].value.asArray =
           new GArray{ new GValue[args[1].size], args[1].size };
         break;
 
       case ARRAY_SET_VALUE:
-        registers[args[0].registerNum].asArray->elements[registers[args[1].registerNum].asInt32] =
+        registers[args[0].registerNum].value.asArray->elements[registers[args[1].registerNum].asInt32] =
           registers[args[2].registerNum];
         break;
 
       case ARRAY_LOAD_VALUE:
         registers[args[2].registerNum] =
-          registers[args[0].registerNum].asArray->elements[registers[args[1].registerNum].asInt32];
+          registers[args[0].registerNum].value.asArray->elements[registers[args[1].registerNum].asInt32];
         break;
 
       case ARRAY_LOAD_LENGTH:
-        registers[args[1].registerNum].asInt32 =
-          registers[args[0].registerNum].asArray->size;
+        registers[args[1].registerNum].value.asInt32 =
+          registers[args[0].registerNum].value.asArray->size;
         break;
 
       case ADD_INT:
-        registers[args[2].registerNum].asInt32 =
-          registers[args[0].registerNum].asInt32 + registers[args[1].registerNum].asInt32;
+        registers[args[2].registerNum].value.asInt32 =
+          registers[args[0].registerNum].value.asInt32 + registers[args[1].registerNum].value.asInt32;
         break;
 
       case ADD_FLOAT:
@@ -71,7 +71,7 @@ namespace VM {
         break;
 
       case BRANCH:
-        if (registers[args[0].registerNum].asBool) {
+        if (registers[args[0].registerNum].value.asBool) {
           instruction += args[1].positionDiff - 1;
         } else {
           instruction += args[2].positionDiff - 1;
@@ -85,13 +85,15 @@ namespace VM {
         } */
 
       case DIVIDE_FLOAT:
-        registers[args[2].registerNum].asFloat =
-          registers[args[0].registerNum].asFloat / registers[args[1].registerNum].asFloat;
+        registers[args[2].registerNum].value.asFloat =
+          registers[args[0].registerNum].value.asFloat /
+          registers[args[1].registerNum].value.asFloat;
         break;
 
       case DIVIDE_INT:
-        registers[args[2].registerNum].asInt32 =
-          registers[args[0].registerNum].asInt32 / registers[args[1].registerNum].asInt32;
+        registers[args[2].registerNum].value.asInt32 =
+          registers[args[0].registerNum].value.asInt32 /
+          registers[args[1].registerNum].value.asInt32;
         break;
 
       case END:
@@ -99,8 +101,8 @@ namespace VM {
         break;
 
       case FILEHANDLE_WRITE: {
-        auto file = registers[args[0].registerNum].asFile;
-        auto str = registers[args[1].registerNum].asArray;
+        auto file = registers[args[0].registerNum].value.asFile;
+        auto str = registers[args[1].registerNum].value.asArray;
         auto elements = str->elements;
         for (int i = 0; i < str->size; i++) {
           fprintf(file, "%c", elements[i].asChar);
@@ -120,12 +122,12 @@ namespace VM {
       // INSTANCE METHODS
 
       case INSTANCE_CREATE: {
-        auto type = registers[args[1].registerNum].asType;
+        auto type = registers[args[1].registerNum].value.asType;
         auto attributes = new GValue[type->subTypeCount];
         for (int i = 0; i < type->subTypeCount; i++) {
           attributes[i] = registers[args[i + 2].registerNum];
         }
-        registers[args[0].registerNum].asInstance = new GInstance{
+        registers[args[0].registerNum].value.asInstance = new GInstance{
           .type = type,
           .attributes = attributes
         };
@@ -134,11 +136,11 @@ namespace VM {
 
       case INSTANCE_LOAD_ATTRIBUTE:
         registers[args[0].registerNum] = \
-          registers[args[1].registerNum].asInstance->attributes[args[2].registerNum];
+          registers[args[1].registerNum].value.asInstance->attributes[args[2].registerNum];
         break;
 
       case INSTANCE_STORE_ATTRIBUTE:
-        registers[args[0].registerNum].asInstance->attributes[args[1].registerNum] = \
+        registers[args[0].registerNum].value.asInstance->attributes[args[1].registerNum] = \
           registers[args[2].registerNum];
         break;
 
@@ -147,19 +149,19 @@ namespace VM {
         break;
 
       case LOAD_CONSTANT_BOOL:
-        registers[args[0].registerNum].asBool = args[1].asBool;
+        registers[args[0].registerNum].value.asBool = args[1].asBool;
         break;
 
       case LOAD_CONSTANT_FILEHANDLE:
-        registers[args[0].registerNum].asFile = args[1].asFile;
+        registers[args[0].registerNum].value.asFile = args[1].asFile;
         break;
 
       case LOAD_CONSTANT_FLOAT:
-        registers[args[0].registerNum].asFloat = args[1].asFloat;
+        registers[args[0].registerNum].value.asFloat = args[1].asFloat;
         break;
 
       case LOAD_CONSTANT_INT:
-        registers[args[0].registerNum].asInt32 = args[1].asInt32;
+        registers[args[0].registerNum].value.asInt32 = args[1].asInt32;
         break;
 
       case LOAD_CONSTANT_STRING: {
@@ -169,53 +171,56 @@ namespace VM {
         for (int i = 0; i < length; i++) {
           elements[i].asChar = constantString[i];
         }
-        registers[args[0].registerNum].asArray =
+        registers[args[0].registerNum].value.asArray =
           new GArray { .elements = elements, .size = length };
         break;
       }
 
       case LOAD_MODULE: {
         auto moduleName = args[1].asString;
-        registers[args[0].registerNum].asModule = (*modules)[moduleName];
+        registers[args[0].registerNum].value.asModule = (*modules)[moduleName];
         break;
       }
 
       case LOAD_MODULE_VALUE: {
         auto name = args[1].asString;
         registers[args[2].registerNum] =
-          registers[args[0].registerNum].asModule->getValue(name);
+          registers[args[0].registerNum].value.asModule->getValue(name);
         break;
       }
 
       case LESS_THAN_INT:
-        registers[args[2].registerNum].asBool =
-          registers[args[0].registerNum].asInt32 < registers[args[1].registerNum].asInt32;
+        registers[args[2].registerNum].value.asBool =
+          registers[args[0].registerNum].value.asInt32 <
+          registers[args[1].registerNum].value.asInt32;
         break;
 
       case MULTIPLY_FLOAT:
-        registers[args[2].registerNum].asFloat =
-          registers[args[0].registerNum].asFloat * registers[args[1].registerNum].asFloat;
+        registers[args[2].registerNum].value.asFloat =
+          registers[args[0].registerNum].value.asFloat *
+          registers[args[1].registerNum].value.asFloat;
         break;
 
       case MULTIPLY_INT:
-        registers[args[2].registerNum].asInt32 =
-          registers[args[0].registerNum].asInt32 * registers[args[1].registerNum].asInt32;
+        registers[args[2].registerNum].value.asInt32 =
+          registers[args[0].registerNum].value.asInt32 *
+          registers[args[1].registerNum].value.asInt32;
         break;
 
       case PRINT_CHAR:
-        printf("%c\n", registers[args[0].registerNum].asChar);
+        printf("%c\n", registers[args[0].registerNum].value.asChar);
         break;
 
       case PRINT_FLOAT:
-        printf("%f\n", registers[args[0].registerNum].asFloat);
+        printf("%f\n", registers[args[0].registerNum].value.asFloat);
         break;
 
       case PRINT_INT:
-        printf("%d\n", registers[args[0].registerNum].asInt32);
+        printf("%d\n", registers[args[0].registerNum].value.asInt32);
         break;
 
       case PRINT_STRING: {
-        auto str = registers[args[0].registerNum].asArray;
+        auto str = registers[args[0].registerNum].value.asArray;
         auto elements = str->elements;
         for (int i = 0; i < str->size; i++) {
           printf("%c", elements[i].asChar);
@@ -235,8 +240,9 @@ namespace VM {
         break;
 
       case SUBTRACT_INT:
-        registers[args[2].registerNum].asInt32 =
-          registers[args[0].registerNum].asInt32 - registers[args[1].registerNum].asInt32;
+        registers[args[2].registerNum].value.asInt32 =
+          registers[args[0].registerNum].value.asInt32 -
+          registers[args[1].registerNum].value.asInt32;
         break;
 
       case SUBTRACT_FLOAT:

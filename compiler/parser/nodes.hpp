@@ -38,7 +38,7 @@ namespace parser {
       generateExpression(s, i);
     }
 
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&) = 0;
+    virtual VM::GIndex* generateExpression(VM::GScope*, GInstructionVector&) = 0;
     virtual VM::GType* getType(VM::GScope*) = 0;
   };
 
@@ -197,13 +197,13 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope*) { return VM::getBoolType(); }
-    virtual VM::GObject* generateExpression(VM::GScope* scope, GInstructionVector& instructions) {
-      auto target = scope->frame->allocateObject(VM::getBoolType());
+    virtual VM::GIndex* generateExpression(VM::GScope* scope, GInstructionVector& instructions) {
+      auto target = scope->allocateObject(VM::getBoolType());
       instructions.push_back(VM::GInstruction {
           VM::LOAD_CONSTANT_BOOL, new VM::GOPARG[2] {
-            { target->registerNum }, VM::GOPARG { .asBool = value }
+            { target }, VM::GOPARG { .asBool = value }
           }});
-      return target;
+      return new int(target);
     }
 
     PConstantBool(bool _value) : value(_value) {}
@@ -215,13 +215,13 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope*) { return VM::getInt32Type(); }
-    virtual VM::GObject* generateExpression(VM::GScope* s, GInstructionVector& i) {
-      auto target = s->frame->allocateObject(VM::getInt32Type());
+    virtual VM::GIndex* generateExpression(VM::GScope* s, GInstructionVector& i) {
+      auto target = s->allocateObject(VM::getInt32Type());
       i.push_back(VM::GInstruction {
           VM::LOAD_CONSTANT_INT, new VM::GOPARG[2] {
-            { target->registerNum }, { value }
+            { target }, { value }
           }});
-      return target;
+      return new int(target);
     }
 
     PConstantInt(int _value) : value(_value) {}
@@ -234,13 +234,13 @@ namespace parser {
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope*) { return VM::getFloatType(); }
 
-    virtual VM::GObject* generateExpression(VM::GScope* s, GInstructionVector& instructions) {
-      auto target = s->frame->allocateObject(VM::getFloatType());
+    virtual VM::GIndex* generateExpression(VM::GScope* s, GInstructionVector& instructions) {
+      auto target = s->allocateObject(VM::getFloatType());
         instructions.push_back(VM::GInstruction {
             VM::LOAD_CONSTANT_FLOAT, new VM::GOPARG[2] {
-              { target->registerNum }, VM::GOPARG{ .asFloat = value }
+              { target }, VM::GOPARG{ .asFloat = value }
             }});
-        return target;
+        return new int(target);
     }
 
     PConstantFloat(double _value) : value(_value) {}
@@ -252,7 +252,7 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope*) { return VM::getStringType(); }
-    virtual VM::GObject* generateExpression(VM::GScope* s, GInstructionVector& i);
+    virtual VM::GIndex* generateExpression(VM::GScope* s, GInstructionVector& i);
 
     PConstantString(std::string _value) : value(_value) {};
   };
@@ -264,10 +264,11 @@ namespace parser {
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope* scope) {
       auto object = scope->getObject(name);
-      return object != NULL ? object->type : VM::getNoneType();
+      if (object == NULL) { return VM::getNoneType(); }
+      // return object != NULL ? object->type : VM::getNoneType();
     }
 
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&);
+    virtual VM::GIndex* generateExpression(VM::GScope*, GInstructionVector&);
 
     PIdentifier(std::string _name) : name(_name) {}
   };
@@ -277,7 +278,7 @@ namespace parser {
     std::vector<PExpression*>& elements;
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope*) { return VM::getNoneType(); }
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&);
+    virtual VM::GIndex* generateExpression(VM::GScope*, GInstructionVector&);
 
     PArray(std::vector<PExpression*>& _elements) :
       elements(_elements) {}
@@ -290,7 +291,7 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope*) { return VM::getNoneType(); }
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&);
+    virtual VM::GIndex* generateExpression(VM::GScope*, GInstructionVector&);
 
     PCall(std::string _name,
           PExpressions& _arguments) :
@@ -304,7 +305,7 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope*) { return VM::getNoneType(); };
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&);
+    virtual VM::GIndex* generateExpression(VM::GScope*, GInstructionVector&);
 
     PArrayAccess(PExpression* _value,
                  PExpression* _index) :
@@ -319,7 +320,7 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope*) { return NULL; }
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&) { return NULL; }
+    virtual VM::GIndex* generateExpression(VM::GScope*, GInstructionVector&) { return NULL; }
 
     PMethodCall(PExpression* _currentValue,
                 std::string _methodName,
@@ -337,7 +338,7 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope* s) { return lhs->getType(s); }
-    virtual VM::GObject* generateExpression(VM::GScope*, GInstructionVector&);
+    virtual VM::GIndex* generateExpression(VM::GScope*, GInstructionVector&);
 
     PBinaryOperation(PExpression* _lhs,
                      lexer::L _op,

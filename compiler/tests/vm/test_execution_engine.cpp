@@ -7,7 +7,7 @@ using namespace VM;
 
 TEST(VM, hello_world) {
   auto scope = new GScope();
-  scope->allocateObject();
+  scope->allocateObject(getNoneType());
 
   auto function = new GFunction {
     .returnType = getNoneType(),
@@ -26,11 +26,11 @@ TEST(VM, hello_world) {
 TEST(VM, for_loop) {
   auto scope = new GScope();
   // temporary workraound to fill registers
-  scope->allocateObject();
-  scope->allocateObject();
-  scope->allocateObject();
-  scope->allocateObject();
-  scope->allocateObject();
+  scope->allocateObject(getNoneType());
+  scope->allocateObject(getNoneType());
+  scope->allocateObject(getNoneType());
+  scope->allocateObject(getNoneType());
+  scope->allocateObject(getNoneType());
 
   auto function = new GFunction {
     .returnType = getNoneType(),
@@ -56,9 +56,9 @@ TEST(VM, for_loop) {
 TEST(VM, basic_function_test) {
   auto scope = new GScope();
   // temporary workraound to fill registers
-  scope->allocateObject();
-  scope->allocateObject();
-  scope->allocateObject();
+  scope->allocateObject(getNoneType());
+  scope->allocateObject(getNoneType());
+  scope->allocateObject(getNoneType());
 
   auto function = new GFunction {
     .returnType = getInt32Type(),
@@ -71,7 +71,7 @@ TEST(VM, basic_function_test) {
   };
 
   auto arguments = new GValue[3] { 159, 73 };
-  EXPECT_EQ(executeFunction(NULL, function, arguments).asInt32, 232);
+  EXPECT_EQ(executeFunction(NULL, function, arguments).value.asInt32, 232);
 }
 
 /* TEST(VM, invoke_function_in_method) {

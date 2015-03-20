@@ -18,9 +18,8 @@ using namespace VM;
 // these are initialized in main
 static Tokenizer* tokenizer;
 static GScope* globalScope;
-static GValue* globalRegisters;
+static GScopeInstance globalScopeInstance;
 static GVM* vm;
-static int globalRegistersCount;
 
 typedef struct CommandLineArguments {
   std::string fileName;
@@ -76,22 +75,22 @@ void dumpAST(PNode* node) {
 
 // for debug purposes mainly
 void printValues() {
-  for (auto symbol : globalScope->symbolTable) {
+  for (auto symbol : globalScope->localsTable) {
     auto name = symbol.first;
-    auto object = symbol.second;
-    auto value = globalRegisters[object->registerNum];
+    auto object = globalScopeInstance.values[symbol.second];
+    // auto value = globalScopeInstance[object->registerNum];
     std::cout << name << ": ";
-    if (object->type == getNoneType()) {
+    if (object.type == getNoneType()) {
       std::cout << "none";
-    } else if (object->type == getBoolType()) {
-      std::cout << "bool " << (value.asBool ? "true" : "false");
-    } else if (object->type == getFloatType()) {
-      std::cout << "float " << value.asFloat;
-    } else if (object->type == getInt32Type()) {
-      std::cout << "int32 " << value.asInt32;
-    } else if (object->type == getStringType()) {
+    } else if (object.type == getBoolType()) {
+      std::cout << "bool " << (object.value.asBool ? "true" : "false");
+    } else if (object.type == getFloatType()) {
+      std::cout << "float " << object.value.asFloat;
+    } else if (object.type == getInt32Type()) {
+      std::cout << "int32 " << object.value.asInt32;
+    } else if (object.type == getStringType()) {
       std::cout << "string ";
-      auto str = value.asArray;
+      auto str = object.value.asArray;
       auto elements = str->elements;
       for (int i = 0; i < str->size; i++) {
         printf("%c", elements[i].asChar);
@@ -109,35 +108,29 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
   if (args.ast) {
     dumpAST(pBlock);
   } else {
+    int oldLocalsCount = globalScope->localsCount;
     auto instructions = generateRoot(globalScope, pBlock);
 
     if (args.bytecode) {
-      for (auto function : globalScope->functionTable) {
+      /* for (auto function : globalScope->functionTable) {
         std::cout << function.first << " (" << function.second << "):" << std::endl;
         printInstructions(function.second->instructions);
         std::cout << std::endl;
-      }
+        } */
       std::cout << "main:" << std::endl;
       printInstructions(instructions);
     } else {
       // for now, we build temp registers
-      auto registers = new GValue[globalScope->frame->registerCount];
+      auto registers = new GObject[globalScope->localsCount];
 
       // copy values into new longer register array if necessary
-      if (globalRegisters != NULL) {
-        for (int i = 0; i < globalRegistersCount; i++) {
-          registers[i] = globalRegisters[i];
-        }
+      for (int i = 0; i < oldLocalsCount; i++) {
+        registers[i] = globalScopeInstance.values[i];
       }
 
-      GScopeInstance scopeInstance {
-        .values = registers,
-        .scope = NULL
-      };
+      globalScopeInstance.values = registers;
 
-      executeInstructions(vm->modules, instructions, scopeInstance);
-      globalRegisters = registers;
-      globalRegistersCount = globalScope->frame->registerCount;
+      executeInstructions(vm->modules, instructions, globalScopeInstance);
     }
 
   }
@@ -169,7 +162,8 @@ void interpreter(CommandLineArguments& args) {
 
 int main(int argc, char *argv[]) {
   tokenizer = new Tokenizer();
-  globalScope = new GScope(new GFrame());
+  globalScope = new GScope();
+  globalScopeInstance = globalScope->createInstance();
   vm = new GVM();
   vm->modules = new GModules();
   CommandLineArguments& args = getArguments(argc, argv);

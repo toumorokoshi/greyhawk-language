@@ -37,8 +37,18 @@ namespace VM {
 
   typedef struct GObject {
     GType* type;
-    int registerNum;
+    GValue value;
   } GObject;
+
+  typedef struct GIndex {
+    int registerNum;
+    GType* type;
+  } GIndex;
+
+  /*typedef struct GObject {
+    GType* type;
+    int registerNum;
+  } GObject; */
 
   GObject* getNoneObject();
 
