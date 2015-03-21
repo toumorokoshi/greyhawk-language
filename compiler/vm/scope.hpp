@@ -69,7 +69,7 @@ namespace VM {
     GScope* scope;
     GObject* values;
 
-    GObject* getValue(std::string);
+    GObject getValue(std::string);
 
     GScope* createChildScope();
   };

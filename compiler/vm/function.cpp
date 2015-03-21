@@ -3,8 +3,8 @@
 
 namespace VM {
 
-  GValue* GFunction::execute(GModules* modules, GScopeInstance& scope) {
+  GObject GFunction::execute(GModules* modules, GScopeInstance& scope) {
     executeInstructions(modules, instructions, scope);
-    return new GValue{.asNone = 0};
+    return *getNoneObject();
   }
 }

@@ -1,4 +1,5 @@
 #include <vector>
+#include "../exceptions.hpp"
 #include "scope.hpp"
 
 namespace VM {
@@ -9,17 +10,17 @@ namespace VM {
     };
   }
 
-  GObject* GScopeInstance::getValue(std::string name) {
+  GObject GScopeInstance::getValue(std::string name) {
 
     if (scope->localsTable.find(name) != scope->localsTable.end()) {
-      return &values[scope->localsTable[name]];
+      return values[scope->localsTable[name]];
     }
 
     if (scope->globalsTable.find(name) != scope->globalsTable.end()) {
-      return scope->globals[scope->globalsTable[name]];
+      return *(scope->globals[scope->globalsTable[name]]);
     }
 
-    return NULL;
+    throw 1;
   }
 
   GScope* GScopeInstance::createChildScope() {

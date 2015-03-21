@@ -47,13 +47,13 @@ namespace VM {
         break;
 
       case ARRAY_SET_VALUE:
-        registers[args[0].registerNum].value.asArray->elements[registers[args[1].registerNum].asInt32] =
-          registers[args[2].registerNum];
+        registers[args[0].registerNum].value.asArray->elements[registers[args[1].registerNum].value.asInt32] =
+          registers[args[2].registerNum].value;
         break;
 
       case ARRAY_LOAD_VALUE:
-        registers[args[2].registerNum] =
-          registers[args[0].registerNum].value.asArray->elements[registers[args[1].registerNum].asInt32];
+        registers[args[2].registerNum].value =
+          registers[args[0].registerNum].value.asArray->elements[registers[args[1].registerNum].value.asInt32];
         break;
 
       case ARRAY_LOAD_LENGTH:
@@ -123,7 +123,7 @@ namespace VM {
 
       case INSTANCE_CREATE: {
         auto type = registers[args[1].registerNum].value.asType;
-        auto attributes = new GValue[type->subTypeCount];
+        auto attributes = new GObject[type->subTypeCount];
         for (int i = 0; i < type->subTypeCount; i++) {
           attributes[i] = registers[args[i + 2].registerNum];
         }
@@ -135,13 +135,13 @@ namespace VM {
       }
 
       case INSTANCE_LOAD_ATTRIBUTE:
-        registers[args[0].registerNum] = \
-          registers[args[1].registerNum].value.asInstance->attributes[args[2].registerNum];
+        registers[args[0].registerNum].value = \
+          registers[args[1].registerNum].value.asInstance->attributes[args[2].registerNum].value;
         break;
 
       case INSTANCE_STORE_ATTRIBUTE:
-        registers[args[0].registerNum].value.asInstance->attributes[args[1].registerNum] = \
-          registers[args[2].registerNum];
+        registers[args[0].registerNum].value.asInstance->attributes[args[1].registerNum].value = \
+          registers[args[2].registerNum].value;
         break;
 
       case INT_TO_FLOAT:

@@ -18,7 +18,7 @@ namespace VM {
     GScope* scope;
     int argumentCount;
 
-    GObject* execute(GModules*, GScopeInstance&);
+    GObject execute(GModules*, GScopeInstance&);
   };
 
 }

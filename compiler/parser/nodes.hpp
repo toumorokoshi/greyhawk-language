@@ -201,9 +201,9 @@ namespace parser {
       auto target = scope->allocateObject(VM::getBoolType());
       instructions.push_back(VM::GInstruction {
           VM::LOAD_CONSTANT_BOOL, new VM::GOPARG[2] {
-            { target }, VM::GOPARG { .asBool = value }
+            { target->registerNum }, VM::GOPARG { .asBool = value }
           }});
-      return new int(target);
+      return target;
     }
 
     PConstantBool(bool _value) : value(_value) {}
@@ -219,9 +219,9 @@ namespace parser {
       auto target = s->allocateObject(VM::getInt32Type());
       i.push_back(VM::GInstruction {
           VM::LOAD_CONSTANT_INT, new VM::GOPARG[2] {
-            { target }, { value }
+            { target->registerNum }, { value }
           }});
-      return new int(target);
+      return target;
     }
 
     PConstantInt(int _value) : value(_value) {}
@@ -238,9 +238,9 @@ namespace parser {
       auto target = s->allocateObject(VM::getFloatType());
         instructions.push_back(VM::GInstruction {
             VM::LOAD_CONSTANT_FLOAT, new VM::GOPARG[2] {
-              { target }, VM::GOPARG{ .asFloat = value }
+              { target->registerNum }, VM::GOPARG{ .asFloat = value }
             }});
-        return new int(target);
+        return target;
     }
 
     PConstantFloat(double _value) : value(_value) {}
@@ -264,8 +264,7 @@ namespace parser {
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(VM::GScope* scope) {
       auto object = scope->getObject(name);
-      if (object == NULL) { return VM::getNoneType(); }
-      // return object != NULL ? object->type : VM::getNoneType();
+      return object != NULL ? object->type : VM::getNoneType();
     }
 
     virtual VM::GIndex* generateExpression(VM::GScope*, GInstructionVector&);

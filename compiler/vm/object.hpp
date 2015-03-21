@@ -7,6 +7,7 @@
 namespace VM {
 
   union GValue;
+  struct GObject;
   struct GScopeInstance;
 
   typedef struct {
@@ -19,7 +20,7 @@ namespace VM {
   // attribute it has.
   typedef struct {
     GType* type;
-    GValue* attributes;
+    GObject* attributes;
   } GInstance;
 
   typedef union GValue {

@@ -84,7 +84,7 @@ namespace parser {
     auto value = expression->generateExpression(scope, instructions);
     auto newVar = scope->addObject(name, value->type);
     instructions.push_back(GInstruction {
-        SET, new GOPARG[2] { {value->registerNum}, {newVar} }
+        SET, new GOPARG[2] { {value->registerNum}, {newVar->registerNum} }
     });
   }
 
@@ -323,6 +323,7 @@ namespace parser {
 
   void PIfElse::generateStatement(VM::GScope* scope,
                                   GInstructionVector& instructions) {
+    /*
     auto conditionObject = condition->generateExpression(scope, instructions);
 
     GScope trueScope(scope);
@@ -356,6 +357,7 @@ namespace parser {
     instructions.insert(instructions.end(),
                         falseInstructions->begin(),
                         falseInstructions->end());
+    */
   }
 
   GIndex* PArray::generateExpression(VM::GScope* scope,
