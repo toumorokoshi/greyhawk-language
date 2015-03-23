@@ -6,8 +6,8 @@
 
 namespace VM {
 
-  GObject executeFunction(GModules*, GFunction*, GValue* arguments);
-  GObject executeInstructions(GModules*, GInstruction*, GScopeInstance&);
+  GValue executeFunction(GModules*, GFunction*, GValue* arguments);
+  GValue executeInstructions(GModules*, GInstruction*, GScopeInstance&);
 }
 
 

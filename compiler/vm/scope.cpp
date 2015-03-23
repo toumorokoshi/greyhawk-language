@@ -6,11 +6,11 @@ namespace VM {
 
   GScopeInstance GScope::createInstance() {
     return GScopeInstance {
-      .scope = this, .values = new GObject[localsCount]
+      .scope = this, .values = new GValue[localsCount]
     };
   }
 
-  GObject GScopeInstance::getValue(std::string name) {
+  GValue GScopeInstance::getValue(std::string name) {
 
     if (scope->localsTable.find(name) != scope->localsTable.end()) {
       return values[scope->localsTable[name]];
@@ -26,18 +26,20 @@ namespace VM {
   GScope* GScopeInstance::createChildScope() {
     auto childScope = new GScope();
 
-    auto globals = new std::vector<GObject*>();
+    auto globals = new std::vector<GValue*>();
     int globalsCount = 0;
 
     for (auto& kv: scope->localsTable) {
       childScope->globalsTable[kv.first] = globalsCount++;
       globals->push_back(&(values[kv.second]));
+      childScope->localsTypes.push_back(scope->localsTypes[kv.second]);
     }
 
     for (auto& kv : scope->globalsTable) {
       if (childScope->globalsTable.find(kv.first) != childScope->globalsTable.end()) {
         childScope->globalsTable[kv.first] = globalsCount++;
         globals->push_back(scope->globals[kv.second]);
+        childScope->globalsTypes.push_back(scope->globalsTypes[kv.second]);
       }
     }
 

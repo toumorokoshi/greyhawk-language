@@ -2,8 +2,8 @@
 
 namespace VM {
 
-  GObject* getNoneObject() {
-    auto noneObject = new GObject { getNoneType(),  {0}};
+  GValue* getNoneObject() {
+    auto noneObject = new GValue{ {0} };
     return noneObject;
   }
 }

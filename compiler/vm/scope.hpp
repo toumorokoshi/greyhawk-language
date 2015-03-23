@@ -17,8 +17,9 @@ namespace VM {
   class GScope {
   public:
     // globals data
-    GObject** globals;
+    GValue** globals;
     std::map<std::string, int> globalsTable;
+    std::vector<GType*> globalsTypes;
     int globalsCount;
 
     // locals data
@@ -42,7 +43,7 @@ namespace VM {
         int index = -globalsTable[name];
         return new GIndex {
           .registerNum = index,
-          .type = globals[index]->type
+          .type = globalsTypes[index]
         };
       }
 
@@ -67,9 +68,9 @@ namespace VM {
 
   struct GScopeInstance {
     GScope* scope;
-    GObject* values;
+    GValue* values;
 
-    GObject getValue(std::string);
+    GValue getValue(std::string);
 
     GScope* createChildScope();
   };

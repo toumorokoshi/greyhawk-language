@@ -20,7 +20,7 @@ namespace VM {
   // attribute it has.
   typedef struct {
     GType* type;
-    GObject* attributes;
+    GValue* attributes;
   } GInstance;
 
   typedef union GValue {
@@ -51,7 +51,7 @@ namespace VM {
     int registerNum;
   } GObject; */
 
-  GObject* getNoneObject();
+  GValue* getNoneObject();
 
   std::string getValueDebugInfo(GValue v);
 }

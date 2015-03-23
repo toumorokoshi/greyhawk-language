@@ -78,19 +78,20 @@ void printValues() {
   for (auto symbol : globalScope->localsTable) {
     auto name = symbol.first;
     auto object = globalScopeInstance.values[symbol.second];
+    auto type = globalScope->localsTypes[symbol.second];
     // auto value = globalScopeInstance[object->registerNum];
     std::cout << name << ": ";
-    if (object.type == getNoneType()) {
+    if (type == getNoneType()) {
       std::cout << "none";
-    } else if (object.type == getBoolType()) {
-      std::cout << "bool " << (object.value.asBool ? "true" : "false");
-    } else if (object.type == getFloatType()) {
-      std::cout << "float " << object.value.asFloat;
-    } else if (object.type == getInt32Type()) {
-      std::cout << "int32 " << object.value.asInt32;
-    } else if (object.type == getStringType()) {
+    } else if (type == getBoolType()) {
+      std::cout << "bool " << (object.asBool ? "true" : "false");
+    } else if (type == getFloatType()) {
+      std::cout << "float " << object.asFloat;
+    } else if (type == getInt32Type()) {
+      std::cout << "int32 " << object.asInt32;
+    } else if (type == getStringType()) {
       std::cout << "string ";
-      auto str = object.value.asArray;
+      auto str = object.asArray;
       auto elements = str->elements;
       for (int i = 0; i < str->size; i++) {
         printf("%c", elements[i].asChar);
@@ -121,7 +122,7 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
       printInstructions(instructions);
     } else {
       // for now, we build temp registers
-      auto registers = new GObject[globalScope->localsCount];
+      auto registers = new GValue[globalScope->localsCount];
 
       // copy values into new longer register array if necessary
       for (int i = 0; i < oldLocalsCount; i++) {
