@@ -23,7 +23,7 @@ TEST(VM, array_access) {
   };
   auto registers = new GValue[6];
   GScopeInstance scope {
-    .values = registers
+    .locals = registers
   };
   executeInstructions(NULL, instructions, scope);
 }

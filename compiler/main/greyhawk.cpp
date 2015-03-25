@@ -77,7 +77,7 @@ void dumpAST(PNode* node) {
 void printValues() {
   for (auto symbol : globalScope->localsTable) {
     auto name = symbol.first;
-    auto object = globalScopeInstance.values[symbol.second];
+    auto object = globalScopeInstance.locals[symbol.second];
     auto type = globalScope->localsTypes[symbol.second];
     // auto value = globalScopeInstance[object->registerNum];
     std::cout << name << ": ";
@@ -126,10 +126,10 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
 
       // copy values into new longer register array if necessary
       for (int i = 0; i < oldLocalsCount; i++) {
-        registers[i] = globalScopeInstance.values[i];
+        registers[i] = globalScopeInstance.locals[i];
       }
 
-      globalScopeInstance.values = registers;
+      globalScopeInstance.locals = registers;
 
       executeInstructions(vm->modules, instructions, globalScopeInstance);
     }
@@ -164,7 +164,7 @@ void interpreter(CommandLineArguments& args) {
 int main(int argc, char *argv[]) {
   tokenizer = new Tokenizer();
   globalScope = new GScope();
-  globalScopeInstance = globalScope->createInstance();
+  globalScopeInstance = globalScope->createInstance(*new GScopeInstance());
   vm = new GVM();
   vm->modules = new GModules();
   CommandLineArguments& args = getArguments(argc, argv);

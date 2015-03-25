@@ -8,12 +8,10 @@ TEST(VM, hello_world_new_execution) {
 
   auto modules = new GModules();
 
-  // we have a top level function that is basically the 'main' program.
-  auto scope = new GScope();
-  scope->globals = new GValue*[1] { new GValue {.asInt32 = 10}};
-  scope->globalsTable["global_value"] = 0;
-  scope->globalsCount = 1;
-  scope->allocateObject();
+  auto parentScope = new GScope();
+  parentScope->addObject("foo", getInt32Type());
+
+  auto scope = parentScope->createChild();
 
   // auto scopeInstance = scope->createInstance();
 
@@ -27,13 +25,16 @@ TEST(VM, hello_world_new_execution) {
     }
   };
 
-  auto scopeInstance = scope->createInstance();
+  auto parentScopeInstance = parentScope->createInstance(*new GScopeInstance());
+  auto scopeInstance = scope.createInstance(parentScopeInstance);
+
+  parentScopeInstance.locals[0].asInt32 = 10;
   function->execute(modules, scopeInstance);
-  EXPECT_EQ(scopeInstance.values[0].asInt32, 10);
+  EXPECT_EQ(scopeInstance.locals[0].asInt32, 10);
 
   // validate that, after we modify the global values,
   // executing again will modify the results.
-  *scope->globals[0] = GValue{.asInt32 = 12};
+  parentScopeInstance.locals[0].asInt32 = 12;
   function->execute(modules, scopeInstance);
-  EXPECT_EQ(scopeInstance.values[0].asInt32, 12);
+  EXPECT_EQ(scopeInstance.locals[0].asInt32, 12);
 }

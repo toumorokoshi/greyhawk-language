@@ -15,7 +15,7 @@ namespace VM {
   public:
     GType* returnType;
     GInstruction* instructions;
-    GScope* scope;
+    GScope scope;
     int argumentCount;
 
     GValue execute(GModules*, GScopeInstance&);

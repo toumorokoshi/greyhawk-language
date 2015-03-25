@@ -23,7 +23,7 @@ TEST(VM, create_instance) {
   };
 
   GScopeInstance scope {
-    .values = registers
+    .locals = registers
   };
 
   executeInstructions(NULL, instructions, scope);
@@ -51,7 +51,7 @@ TEST(VM, test_load_attribute) {
   };
 
   GScopeInstance scope {
-    .values = registers
+    .locals = registers
   };
 
   executeInstructions(NULL, instructions, scope);
@@ -78,7 +78,7 @@ TEST(VM, test_store_attribute) {
   };
 
   GScopeInstance scope {
-    .values = registers
+    .locals = registers
   };
 
   executeInstructions(NULL, instructions, scope);
