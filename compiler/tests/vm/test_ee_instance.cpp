@@ -22,7 +22,7 @@ TEST(VM, create_instance) {
     {0}, {.asType = fooType}, { .asBool = true}
   };
 
-  GScopeInstance scope {
+  GEnvironmentInstance scope {
     .locals = registers
   };
 
@@ -50,7 +50,7 @@ TEST(VM, test_load_attribute) {
     {0}, {.asInstance = instance}
   };
 
-  GScopeInstance scope {
+  GEnvironmentInstance scope {
     .locals = registers
   };
 
@@ -77,7 +77,7 @@ TEST(VM, test_store_attribute) {
     {.asInstance = instance}, {.asBool = false}
   };
 
-  GScopeInstance scope {
+  GEnvironmentInstance scope {
     .locals = registers
   };
 

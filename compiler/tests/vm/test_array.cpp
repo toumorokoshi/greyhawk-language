@@ -22,7 +22,7 @@ TEST(VM, array_access) {
     GInstruction { END, NULL }
   };
   auto registers = new GValue[6];
-  GScopeInstance scope {
+  GEnvironmentInstance scope {
     .locals = registers
   };
   executeInstructions(NULL, instructions, scope);

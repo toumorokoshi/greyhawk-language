@@ -8,7 +8,7 @@ TEST(VM, hello_world_new_execution) {
 
   auto modules = new GModules();
 
-  auto parentScope = new GScope();
+  auto parentScope = new GEnvironment();
   parentScope->addObject("foo", getInt32Type());
 
   auto scope = parentScope->createChild();
@@ -25,7 +25,7 @@ TEST(VM, hello_world_new_execution) {
     }
   };
 
-  auto parentScopeInstance = parentScope->createInstance(*new GScopeInstance());
+  auto parentScopeInstance = parentScope->createInstance(*new GEnvironmentInstance());
   auto scopeInstance = scope.createInstance(parentScopeInstance);
 
   parentScopeInstance.locals[0].asInt32 = 10;

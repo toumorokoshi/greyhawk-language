@@ -6,12 +6,15 @@ the VM class actually contains the context of the current
 execution.
 
 * it has the ability to execute functions
-* it contains the context of the modules (scopeInstances) to import
+* it contains the context of the modules (environmentInstances) to import
 
 
-## The Scope
+## Environment
 
-The scope is basically an archetype for an actual set of registers
+The environment is named as such to remove any ambiguity in it's implementation: it
+is not based on Stack Frames, nor is it a representation of scope.
+
+The environment is basically an archetype for an actual set of registers
 that code can interact with. It contains information about:
 
 * it's parent
@@ -20,12 +23,12 @@ that code can interact with. It contains information about:
       and keep the stack small.
 * the locals it has
 
-## The ScopeInstance object
+## The EnvironmentInstance
 
-The ScopeInstance is basically a struct with the following:
+The EnivornmentInstance is basically a struct with the following:
 
-* a pointer to the current scope (if lookup by name is ever necessary)
-* an array of pointers to values in the parent scopes
+* a pointer to the current environment (if lookup by name is ever necessary)
+* an array of pointers to values in the parent environments
 * an array of values for the locals ('registers')
 
 The vm mainly operates on these values.
@@ -33,8 +36,8 @@ The vm mainly operates on these values.
 ## The Function
 
 * functions have:
-    * a scope object, from which to generate a scopeInstance to work with
+    * a environment object, from which to generate a environmentInstance to work with
     * a set of instructions to execute against the following locations of data:
-        * locals (scopeInstance.locals)
-        * globals (scopeInstance.globals)
+        * locals (environmentInstance.locals)
+        * globals (environmentInstance.globals)
         * modules (vm->modules)

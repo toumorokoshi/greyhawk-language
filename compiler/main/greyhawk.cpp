@@ -17,8 +17,8 @@ using namespace VM;
 
 // these are initialized in main
 static Tokenizer* tokenizer;
-static GScope* globalScope;
-static GScopeInstance globalScopeInstance;
+static GEnvironment* globalScope;
+static GEnvironmentInstance globalScopeInstance;
 static GVM* vm;
 
 typedef struct CommandLineArguments {
@@ -163,8 +163,8 @@ void interpreter(CommandLineArguments& args) {
 
 int main(int argc, char *argv[]) {
   tokenizer = new Tokenizer();
-  globalScope = new GScope();
-  globalScopeInstance = globalScope->createInstance(*new GScopeInstance());
+  globalScope = new GEnvironment();
+  globalScopeInstance = globalScope->createInstance(*new GEnvironmentInstance());
   vm = new GVM();
   vm->modules = new GModules();
   CommandLineArguments& args = getArguments(argc, argv);

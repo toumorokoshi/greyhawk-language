@@ -3,7 +3,7 @@
 
 namespace VM {
 
-  GValue GFunction::execute(GModules* modules, GScopeInstance& scope) {
+  GValue GFunction::execute(GModules* modules, GEnvironmentInstance& scope) {
     executeInstructions(modules, instructions, scope);
     return *getNoneObject();
   }

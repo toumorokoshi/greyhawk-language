@@ -1,10 +1,10 @@
 #include <vector>
 #include "../exceptions.hpp"
-#include "scope.hpp"
+#include "environment.hpp"
 
 namespace VM {
 
-  GScope GScope::createChild() {
+  GEnvironment GEnvironment::createChild() {
     std::map<std::string, int> childGlobalsTable;
     auto childGlobalsTypes = new std::vector<GType*>();
     auto childIndicesInParent = new std::vector<int>();
@@ -25,7 +25,7 @@ namespace VM {
       }
     }
 
-    return GScope {
+    return GEnvironment {
       .globalsTable = childGlobalsTable,
       .globalsTypes = &((*childGlobalsTypes)[0]),
       .indicesInParent = &((*childIndicesInParent)[0]),
@@ -33,7 +33,7 @@ namespace VM {
     };
   }
 
-  GScopeInstance GScope::createInstance(GScopeInstance& parent) {
+  GEnvironmentInstance GEnvironment::createInstance(GEnvironmentInstance& parent) {
     auto globals = new GValue*[globalsCount];
 
     for (int i = 0; i < globalsCount; i++) {
@@ -46,14 +46,14 @@ namespace VM {
       }
     }
 
-    return GScopeInstance {
+    return GEnvironmentInstance {
       .scope = this,
       .globals = globals,
       .locals = new GValue[localsCount]
     };
   }
 
-  GValue GScopeInstance::getValue(std::string name) {
+  GValue GEnvironmentInstance::getValue(std::string name) {
 
     if (scope->localsTable.find(name) != scope->localsTable.end()) {
       return locals[scope->localsTable[name]];

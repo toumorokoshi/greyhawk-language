@@ -10,7 +10,7 @@ namespace VM {
 
   GValue executeFunction(GModules* vm,
                          GFunction* function,
-                         GScopeInstance& parent,
+                         GEnvironmentInstance& parent,
                          GValue* arguments) {
     auto scopeInstance = function->scope.createInstance(parent);
     auto argumentCount = function->argumentCount;
@@ -34,7 +34,7 @@ namespace VM {
     return executeInstructions(vm, function->instructions, registers);
     } */
 
-  GValue executeInstructions(GModules* modules, GInstruction* instructions, GScopeInstance& scopeInstance) {
+  GValue executeInstructions(GModules* modules, GInstruction* instructions, GEnvironmentInstance& scopeInstance) {
     auto locals = scopeInstance.locals;
     auto globals = scopeInstance.globals;
     auto scope = scopeInstance.scope;

@@ -10,7 +10,7 @@
 
 #include "object.hpp"
 #include "ops.hpp"
-#include "scope.hpp"
+#include "environment.hpp"
 #include "type.hpp"
 #include "function.hpp"
 

@@ -6,7 +6,7 @@ using namespace VM;
 
 
 TEST(VM, hello_world) {
-  auto scope = new GScope();
+  auto scope = new GEnvironment();
   scope->allocateObject(getNoneType());
 
   auto function = new GFunction {
@@ -20,11 +20,11 @@ TEST(VM, hello_world) {
     }
   };
 
-  executeFunction(NULL, function, *new GScopeInstance(), new GValue[0]);
+  executeFunction(NULL, function, *new GEnvironmentInstance(), new GValue[0]);
 }
 
 TEST(VM, for_loop) {
-  auto scope = new GScope();
+  auto scope = new GEnvironment();
   // temporary workraound to fill registers
   scope->allocateObject(getNoneType());
   scope->allocateObject(getNoneType());
@@ -49,12 +49,12 @@ TEST(VM, for_loop) {
     },
   };
 
-  executeFunction(NULL, function, *new GScopeInstance(), new GValue[0]);
+  executeFunction(NULL, function, *new GEnvironmentInstance(), new GValue[0]);
 
 }
 
 TEST(VM, basic_function_test) {
-  auto scope = new GScope();
+  auto scope = new GEnvironment();
   // temporary workraound to fill registers
   scope->allocateObject(getNoneType());
   scope->allocateObject(getNoneType());
@@ -71,7 +71,7 @@ TEST(VM, basic_function_test) {
   };
 
   auto arguments = new GValue[3] { 159, 73 };
-  EXPECT_EQ(executeFunction(NULL, function, *new GScopeInstance(), arguments).asInt32, 232);
+  EXPECT_EQ(executeFunction(NULL, function, *new GEnvironmentInstance(), arguments).asInt32, 232);
 }
 
 /* TEST(VM, invoke_function_in_method) {

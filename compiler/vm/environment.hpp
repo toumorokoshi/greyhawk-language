@@ -9,12 +9,12 @@
 
 namespace VM {
 
-  struct GScopeInstance;
+  struct GEnvironmentInstance;
 
   // we use a class instead of a struct
   // so we can encapsulate things for now,
   // until a good mechanism is decided.
-  class GScope {
+  class GEnvironment {
   public:
     // globals data
     std::map<std::string, int> globalsTable;
@@ -63,18 +63,18 @@ namespace VM {
         .type = type
       };
     }
-    GScopeInstance createInstance(GScopeInstance& parent);
-    GScope createChild();
+    GEnvironmentInstance createInstance(GEnvironmentInstance& parent);
+    GEnvironment createChild();
   };
 
-  struct GScopeInstance {
-    GScope* scope;
+  struct GEnvironmentInstance {
+    GEnvironment* scope;
     GValue** globals;
     GValue* locals;
 
     GValue getValue(std::string);
 
-    GScopeInstance createChildScope(GScopeInstance&);
+    GEnvironmentInstance createChildScope(GEnvironmentInstance&);
   };
 
 }
