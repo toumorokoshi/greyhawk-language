@@ -6,8 +6,6 @@
 
 namespace VM {
 
-  struct GOldFunction;
-
   // these are all the instruction supported by the vm.
   enum GOPCODE {
     ARRAY_ALLOCATE,
@@ -16,15 +14,17 @@ namespace VM {
     ARRAY_LOAD_LENGTH,
     ADD_INT,
     ADD_FLOAT,
-    CALL,
     DIVIDE_FLOAT,
     DIVIDE_INT,
     BRANCH,
     EXECUTE,
     END,
     FILEHANDLE_WRITE,
+    FUNCTION_CREATE,
+    FUNCTION_CALL,
     GO,
     GLOBAL_LOAD,
+    GLOBAL_WRITE,
     INSTANCE_CREATE,
     INSTANCE_LOAD_ATTRIBUTE,
     INSTANCE_STORE_ATTRIBUTE,
@@ -59,7 +59,6 @@ namespace VM {
     int asInt32;
     bool asBool;
     double asFloat;
-    GOldFunction* function;
     FILE* asFile;
     const char* asString;
   } GOPARG;
@@ -68,13 +67,6 @@ namespace VM {
     GOPCODE op;
     GOPARG* args;
   } GInstruction;
-
-  typedef struct GOldFunction {
-    GType* returnType;
-    GInstruction* instructions; // array
-    int registerCount;
-    int argumentCount;
-  } GOldFunction;
 }
 
 #endif

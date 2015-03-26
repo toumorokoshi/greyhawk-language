@@ -18,7 +18,7 @@ using namespace VM;
 // these are initialized in main
 static Tokenizer* tokenizer;
 static GEnvironment* globalScope;
-static GEnvironmentInstance globalScopeInstance;
+static GEnvironmentInstance* globalScopeInstance;
 static GVM* vm;
 
 typedef struct CommandLineArguments {
@@ -77,7 +77,7 @@ void dumpAST(PNode* node) {
 void printValues() {
   for (auto symbol : globalScope->localsTable) {
     auto name = symbol.first;
-    auto object = globalScopeInstance.locals[symbol.second];
+    auto object = globalScopeInstance->locals[symbol.second];
     auto type = globalScope->localsTypes[symbol.second];
     // auto value = globalScopeInstance[object->registerNum];
     std::cout << name << ": ";
@@ -126,12 +126,12 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
 
       // copy values into new longer register array if necessary
       for (int i = 0; i < oldLocalsCount; i++) {
-        registers[i] = globalScopeInstance.locals[i];
+        registers[i] = globalScopeInstance->locals[i];
       }
 
-      globalScopeInstance.locals = registers;
+      globalScopeInstance->locals = registers;
 
-      executeInstructions(vm->modules, instructions, globalScopeInstance);
+      executeInstructions(vm->modules, instructions, *globalScopeInstance);
     }
 
   }

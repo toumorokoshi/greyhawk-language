@@ -9,6 +9,7 @@ namespace VM {
   union GValue;
   struct GObject;
   struct GEnvironmentInstance;
+  struct GFunctionInstance;
 
   typedef struct {
     GValue* elements;
@@ -32,6 +33,7 @@ namespace VM {
     GArray* asArray;
     GEnvironmentInstance* asModule;
     GInstance* asInstance;
+    GFunctionInstance* asFunction;
     GType* asType;
     FILE* asFile;
   } GValue;

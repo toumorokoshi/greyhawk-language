@@ -45,7 +45,7 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "BRANCH: {" << values[0].registerNum << "} ? " << values[1].positionDiff << " : " << values[2].positionDiff;
       break;
 
-    case CALL: {
+      /* case CALL: {
       auto function = values[0].function;
       std::cout << "CALL: " << values[0].function << "(";
       for (int i = 0; i < function->argumentCount; i++) {
@@ -54,7 +54,7 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       }
       std::cout << ") -> [" << values[1].registerNum << "]";
       break;
-    }
+      } */
 
     case END:
       std::cout << "END";

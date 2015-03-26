@@ -12,13 +12,13 @@ namespace VM {
                          GFunction* function,
                          GEnvironmentInstance& parent,
                          GValue* arguments) {
-    auto scopeInstance = function->scope.createInstance(parent);
+    auto scopeInstance = function->environment.createInstance(parent);
     auto argumentCount = function->argumentCount;
     // TODO: better copy logic
     for (int i = 0; i < argumentCount; i++) {
-      scopeInstance.locals[i] = arguments[i];
+      scopeInstance->locals[i] = arguments[i];
     }
-    return executeInstructions(vm, function->instructions, scopeInstance);
+    return executeInstructions(vm, function->instructions, *scopeInstance);
   }
 
   /* inline GValue executeSubfunction(GModules*, GFunction* function,
@@ -34,10 +34,10 @@ namespace VM {
     return executeInstructions(vm, function->instructions, registers);
     } */
 
-  GValue executeInstructions(GModules* modules, GInstruction* instructions, GEnvironmentInstance& scopeInstance) {
-    auto locals = scopeInstance.locals;
-    auto globals = scopeInstance.globals;
-    auto scope = scopeInstance.scope;
+  GValue executeInstructions(GModules* modules, GInstruction* instructions, GEnvironmentInstance& environmentInstance) {
+    auto locals = environmentInstance.locals;
+    auto globals = environmentInstance.globals;
+    auto environment = environmentInstance.environment;
     auto instruction = instructions;
     bool done = false;
     while (!done) {
@@ -114,12 +114,30 @@ namespace VM {
         break;
       }
 
+      case FUNCTION_CREATE: {
+        auto function = environment->functionTable[args[1].asString];
+        locals[args[0].registerNum].asFunction = \
+          function->createInstance(environmentInstance);
+        break;
+      }
+
+      case FUNCTION_CALL: {
+        locals[args[0].registerNum].asFunction->execute(modules);
+        break;
+      }
+
       case GO:
         instruction += args[0].positionDiff- 1;
         break;
 
+      // GLOBAL METHODS
+
       case GLOBAL_LOAD:
         locals[args[0].registerNum] = *(globals[args[1].registerNum]);
+        break;
+
+      case GLOBAL_WRITE:
+        *(globals[args[0].registerNum]) = locals[args[1].registerNum];
         break;
 
       // INSTANCE METHODS

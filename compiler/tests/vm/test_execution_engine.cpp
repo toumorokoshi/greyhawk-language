@@ -12,7 +12,7 @@ TEST(VM, hello_world) {
   auto function = new GFunction {
     .returnType = getNoneType(),
     .argumentCount = 0,
-    .scope = *scope,
+    .environment = *scope,
     .instructions = new GInstruction[3] {
       GInstruction { GOPCODE::LOAD_CONSTANT_STRING, new GOPARG[2] {0, GOPARG { .asString = (char*) "hello world" }}},
       GInstruction { GOPCODE::PRINT_STRING, new GOPARG[1] { 0 } },
@@ -35,7 +35,7 @@ TEST(VM, for_loop) {
   auto function = new GFunction {
     .returnType = getNoneType(),
     .argumentCount = 0,
-    .scope = *scope,
+    .environment = *scope,
     .instructions = new GInstruction[9] {
       GInstruction { GOPCODE::LOAD_CONSTANT_INT, new GOPARG[2] { 0, 0 } },
       GInstruction { GOPCODE::LOAD_CONSTANT_INT, new GOPARG[2] { 1, 1 } },
@@ -63,7 +63,7 @@ TEST(VM, basic_function_test) {
   auto function = new GFunction {
     .returnType = getInt32Type(),
     .argumentCount = 2,
-    .scope = *scope,
+    .environment = *scope,
     .instructions = new GInstruction[2]{
       GInstruction { GOPCODE::ADD_INT, new GOPARG[3] { 0, 1, 2 } },
       GInstruction { GOPCODE::RETURN, new GOPARG[1] { 2 }}

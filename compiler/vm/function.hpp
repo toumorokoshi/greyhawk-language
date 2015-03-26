@@ -6,19 +6,25 @@
 
 namespace VM {
 
-  class GFunction;
+  struct GFunctionInstance;
 
   typedef std::map<std::string, GEnvironmentInstance*> GModules;
 
   // the function is the top-level object.
-  class GFunction {
-  public:
+  struct GFunction {
     GType* returnType;
     GInstruction* instructions;
-    GEnvironment scope;
+    GEnvironment environment;
     int argumentCount;
 
-    GValue execute(GModules*, GEnvironmentInstance&);
+    GFunctionInstance* createInstance(GEnvironmentInstance&);
+  };
+
+  struct GFunctionInstance {
+  public:
+    GFunction* function;
+    GEnvironmentInstance* environmentInstance;
+    GValue execute(GModules*);
   };
 
 }

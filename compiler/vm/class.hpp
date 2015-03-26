@@ -1,3 +1,4 @@
+#include "function.hpp"
 #include "object.hpp"
 #include "ops.hpp"
 #include <map>
@@ -9,7 +10,7 @@ namespace VM {
 
   typedef struct GClass {
     std::map<std::string, GObject> attributes;
-    std::map<std::string, GOldFunction*> methods;
+    std::map<std::string, GFunction*> methods;
   } GClass;
 
   void runMethod(GClass* object, std::string methodName);

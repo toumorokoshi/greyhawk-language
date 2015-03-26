@@ -3,8 +3,16 @@
 
 namespace VM {
 
-  GValue GFunction::execute(GModules* modules, GEnvironmentInstance& scope) {
-    executeInstructions(modules, instructions, scope);
-    return *getNoneObject();
+  GValue GFunctionInstance::execute(GModules* modules) {
+    return executeInstructions(modules,function->instructions,
+                               *environmentInstance);
+  }
+
+  GFunctionInstance* GFunction::createInstance(GEnvironmentInstance& parentEnvironment) {
+    auto environmentInstance = environment.createInstance(parentEnvironment);
+    return new GFunctionInstance {
+      .function = this,
+      .environmentInstance = environmentInstance
+    };
   }
 }

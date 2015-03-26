@@ -7,6 +7,7 @@
 
 using namespace VM;
 using namespace lexer;
+using namespace codegen;
 
 namespace parser {
 
@@ -19,14 +20,15 @@ namespace parser {
     throw ParserException("Cannot find class " + typeName);
   }
 
-  GInstruction* generateRoot(VM::GEnvironment* scope, PBlock* block) {
+  GInstruction* generateRoot(VM::GEnvironment* environment, PBlock* block) {
+    auto scope = new GScope { .environment = environment };
     auto instructions = block->generate(scope);
 
     instructions->push_back(GInstruction { END, NULL });
     return &(*instructions)[0];
   }
 
-  GInstructionVector* PBlock::generate(VM::GEnvironment* scope) {
+  GInstructionVector* PBlock::generate(GScope* scope) {
     auto instructions = new GInstructionVector;
     for (auto statement : statements) {
       statement->generateStatement(scope, *instructions);
@@ -34,7 +36,7 @@ namespace parser {
     return instructions;
   }
 
-  GIndex* PCall::generateExpression(VM::GEnvironment* scope,
+  GIndex* PCall::generateExpression(GScope* scope,
                                      GInstructionVector& instructions) {
     if (name == "print") {
       auto argument = arguments[0]->generateExpression(scope, instructions);
@@ -79,7 +81,7 @@ namespace parser {
     return NULL;
   }
 
-  void PDeclare::generateStatement(VM::GEnvironment* scope,
+  void PDeclare::generateStatement(GScope* scope,
                                    GInstructionVector& instructions) {
     auto value = expression->generateExpression(scope, instructions);
     auto newVar = scope->addObject(name, value->type);
@@ -88,7 +90,7 @@ namespace parser {
     });
   }
 
-  void setArrayElement(VM::GEnvironment* scope, GInstructionVector& instructions,
+  void setArrayElement(GScope* scope, GInstructionVector& instructions,
                        PArrayAccess* arrayAccess, GIndex* value) {
     auto array = arrayAccess->value->generateExpression(scope, instructions);
     auto index = arrayAccess->index->generateExpression(scope, instructions);
@@ -97,7 +99,7 @@ namespace parser {
     }});
   }
 
-  void PAssign::generateStatement(VM::GEnvironment* scope,
+  void PAssign::generateStatement(GScope* scope,
                                   GInstructionVector& instructions) {
     // if the value is an array, we set it differently
     auto value = expression->generateExpression(scope, instructions);
@@ -126,7 +128,7 @@ namespace parser {
     return castResult;
     } */
 
-  GIndex* PBinaryOperation::generateExpression(VM::GEnvironment* scope,
+  GIndex* PBinaryOperation::generateExpression(GScope* scope,
                                                 GInstructionVector& instructions) {
     auto lhsObject = lhs->generateExpression(scope, instructions);
     auto rhsObject = rhs->generateExpression(scope, instructions);
@@ -214,7 +216,7 @@ namespace parser {
     return resultObject;
   }
 
-  void PIncrement::generateStatement(VM::GEnvironment* scope,
+  void PIncrement::generateStatement(GScope* scope,
                                      GInstructionVector& instructions) {
     auto toIncrement = identifier->generateExpression(scope, instructions);
     if (toIncrement->type != getInt32Type()) {
@@ -233,7 +235,7 @@ namespace parser {
       });
   }
 
-  void PReturn::generateStatement(GEnvironment* scope,
+  void PReturn::generateStatement(GScope* scope,
                                   GInstructionVector& instructions) {
     auto returnObject = expression->generateExpression(scope, instructions);
     instructions.push_back(GInstruction {
@@ -241,7 +243,7 @@ namespace parser {
     });
   }
 
-  GIndex* PConstantString::generateExpression(VM::GEnvironment* s, GInstructionVector& i) {
+  GIndex* PConstantString::generateExpression(GScope* s, GInstructionVector& i) {
     auto target = s->allocateObject(getStringType());
     i.push_back(GInstruction {
         GOPCODE::LOAD_CONSTANT_STRING, new VM::GOPARG[2] {
@@ -250,7 +252,7 @@ namespace parser {
     return target;
   }
 
-  GIndex* PIdentifier::generateExpression(VM::GEnvironment* scope, GInstructionVector&) {
+  GIndex* PIdentifier::generateExpression(GScope* scope, GInstructionVector&) {
     auto object = scope->getObject(name);
 
     if (object == NULL) {
@@ -259,7 +261,7 @@ namespace parser {
     return object;
   }
 
-  void PForLoop::generateStatement(VM::GEnvironment* scope,
+  void PForLoop::generateStatement(GScope* scope,
                                    GInstructionVector& instructions) {
     initializer->generateStatement(scope, instructions);
     auto statements = body->generate(scope);
@@ -274,7 +276,7 @@ namespace parser {
       });
   }
 
-  void PFunctionDeclaration::generateStatement(GEnvironment* scope,
+  void PFunctionDeclaration::generateStatement(GScope* scope,
                                                GInstructionVector& instructions) {
 
     if (scope->getObject(name) != NULL) {
@@ -289,7 +291,7 @@ namespace parser {
     };
     scope->addFunction(name, function);
 
-    GEnvironment functionScope(scope, frame);
+    GScope functionScope(scope, frame);
 
     for (auto argument : arguments) {
       functionScope.addObject(argument->first, evaluateType(argument->second));
@@ -302,7 +304,7 @@ namespace parser {
     function->registerCount = frame->registerCount; */
   }
 
-  void PClassDeclaration::generateStatement(VM::GEnvironment*, GInstructionVector&) {
+  void PClassDeclaration::generateStatement(GScope*, GInstructionVector&) {
     int attributeSize = attributes.size();
     auto attributeTypes = new GType*[attributeSize];
     auto attributeNames = new std::string[attributeSize];
@@ -321,15 +323,15 @@ namespace parser {
     };
   }
 
-  void PIfElse::generateStatement(VM::GEnvironment* scope,
+  void PIfElse::generateStatement(GScope* scope,
                                   GInstructionVector& instructions) {
     /*
     auto conditionObject = condition->generateExpression(scope, instructions);
 
-    GEnvironment trueScope(scope);
+    GScope trueScope(scope);
     auto trueInstructions = trueBlock->generate(&trueScope);
 
-    GEnvironment falseScope(scope);
+    GScope falseScope(scope);
     auto falseInstructions = falseBlock->generate(&falseScope);
 
     instructions.push_back(GInstruction { GOPCODE::BRANCH, new GOPARG[3] {
@@ -360,7 +362,7 @@ namespace parser {
     */
   }
 
-  GIndex* PArray::generateExpression(VM::GEnvironment* scope,
+  GIndex* PArray::generateExpression(GScope* scope,
                                       GInstructionVector& instructions) {
     auto arrayObject = scope->allocateObject(getNoneType());
     auto type = getNoneType();
@@ -386,7 +388,7 @@ namespace parser {
     return arrayObject;
   }
 
-  GIndex* PArrayAccess::generateExpression(VM::GEnvironment* scope,
+  GIndex* PArrayAccess::generateExpression(GScope* scope,
                                             GInstructionVector& instructions) {
     auto valueObject = value->generateExpression(scope, instructions);
     auto indexObject = index->generateExpression(scope, instructions);
@@ -406,9 +408,9 @@ namespace parser {
 
   // generates the instructions to parse the array
   void parseArrayIterator(std::string varName, GIndex* array, PBlock* body,
-                          GEnvironment* scope, GInstructionVector& instructions) {
+                          GScope* scope, GInstructionVector& instructions) {
     /*
-    GEnvironment forScope(scope);
+    GScope forScope(scope);
     auto iteratorIndex = scope->allocateObject(getInt32Type());
     instructions.push_back(GInstruction {
         LOAD_CONSTANT_INT, new GOPARG[2] { iteratorIndex->registerNum, 0 }
@@ -473,7 +475,7 @@ namespace parser {
     */
   }
 
-  void PForeachLoop::generateStatement(VM::GEnvironment* scope,
+  void PForeachLoop::generateStatement(GScope* scope,
                                        GInstructionVector& instructions) {
     auto iterableValue = iterableExpression->generateExpression(scope, instructions);
     // if the value is an array, we iterate through the array first

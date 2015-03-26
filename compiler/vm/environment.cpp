@@ -12,7 +12,7 @@ namespace VM {
 
     // locals become globals
     for (auto &kv: localsTable) {
-      childGlobalsTypes->push_back(globalsTypes[kv.second]);
+      childGlobalsTypes->push_back(localsTypes[kv.second]);
       childIndicesInParent->push_back(-kv.second);
       childGlobalsTable[kv.first] = childGlobalsCount++;
     }
@@ -25,15 +25,20 @@ namespace VM {
       }
     }
 
-    return GEnvironment {
+    auto environment = GEnvironment {
       .globalsTable = childGlobalsTable,
-      .globalsTypes = &((*childGlobalsTypes)[0]),
-      .indicesInParent = &((*childIndicesInParent)[0]),
       .globalsCount = childGlobalsCount
     };
+
+    if (childGlobalsCount > 0) {
+      environment.globalsTypes = &((*childGlobalsTypes)[0]);
+      environment.indicesInParent = &((*childIndicesInParent)[0]);
+    }
+    return environment;
+      // return GEnvironment();
   }
 
-  GEnvironmentInstance GEnvironment::createInstance(GEnvironmentInstance& parent) {
+  GEnvironmentInstance* GEnvironment::createInstance(GEnvironmentInstance& parent) {
     auto globals = new GValue*[globalsCount];
 
     for (int i = 0; i < globalsCount; i++) {
@@ -46,8 +51,8 @@ namespace VM {
       }
     }
 
-    return GEnvironmentInstance {
-      .scope = this,
+    return new GEnvironmentInstance {
+      .environment = this,
       .globals = globals,
       .locals = new GValue[localsCount]
     };
@@ -55,14 +60,22 @@ namespace VM {
 
   GValue GEnvironmentInstance::getValue(std::string name) {
 
-    if (scope->localsTable.find(name) != scope->localsTable.end()) {
-      return locals[scope->localsTable[name]];
+    if (environment->localsTable.find(name) != environment->localsTable.end()) {
+      return locals[environment->localsTable[name]];
     }
 
-    if (scope->globalsTable.find(name) != scope->globalsTable.end()) {
-      return *(globals[scope->globalsTable[name]]);
+    if (environment->globalsTable.find(name) != environment->globalsTable.end()) {
+      return *(globals[environment->globalsTable[name]]);
     }
 
     throw 1;
+  }
+
+  GEnvironment* getEmptyEnvironment() {
+    auto static environment = new GEnvironment();
+    auto static _initialized = false;
+    if (!_initialized) {
+      environment->globalsTypes = new GType*[0];
+    }
   }
 }

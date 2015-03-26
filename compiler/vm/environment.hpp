@@ -10,6 +10,7 @@
 namespace VM {
 
   struct GEnvironmentInstance;
+  struct GFunction;
 
   // we use a class instead of a struct
   // so we can encapsulate things for now,
@@ -21,6 +22,8 @@ namespace VM {
     GType** globalsTypes;
     int* indicesInParent;
     int globalsCount;
+
+    std::map<std::string, GFunction*> functionTable;
 
     // locals data
     std::map<std::string, int> localsTable;
@@ -51,7 +54,7 @@ namespace VM {
     }
 
     GIndex* addObject(std::string name, GType* type) {
-      GIndex* index = allocateObject(type);
+      auto index = allocateObject(type);
       localsTable[name] = index->registerNum;
       return index;
     }
@@ -63,19 +66,21 @@ namespace VM {
         .type = type
       };
     }
-    GEnvironmentInstance createInstance(GEnvironmentInstance& parent);
+    GEnvironmentInstance* createInstance(GEnvironmentInstance&);
     GEnvironment createChild();
   };
 
   struct GEnvironmentInstance {
-    GEnvironment* scope;
+    GEnvironment* environment;
     GValue** globals;
     GValue* locals;
 
     GValue getValue(std::string);
 
-    GEnvironmentInstance createChildScope(GEnvironmentInstance&);
+    GEnvironmentInstance* createChildScope(GEnvironmentInstance&);
   };
+
+  GEnvironment* getEmptyEnvironment();
 
 }
 #endif
