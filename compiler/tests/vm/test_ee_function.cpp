@@ -27,7 +27,7 @@ TEST(VM, test_function_instantiation) {
   auto childFunction = new GFunction {
     .returnType = getNoneType(),
     .argumentCount = 0,
-    .environment = childEnvironment,
+    .environment = *childEnvironment,
     .instructions = new GInstruction[3] {
       GInstruction { GOPCODE::LOAD_CONSTANT_INT, new GOPARG[2] {{0}, {10}}},
       GInstruction { GOPCODE::GLOBAL_WRITE, new GOPARG[2] {{0}, {0}}},

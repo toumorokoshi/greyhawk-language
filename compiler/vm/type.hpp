@@ -11,6 +11,7 @@ namespace VM {
     CHAR,
     CLASS,
     FLOAT,
+    FUNCTION,
     INSTANCE,
     INT32,
     FILEHANDLE,
@@ -33,6 +34,7 @@ namespace VM {
   GType* getCharType();
   GType* getClassType();
   GType* getFloatType();
+  GType* getFunctionType();
   GType* getInt32Type();
   GType* getNoneType();
   GType* getFileHandleType();

@@ -132,9 +132,10 @@ namespace VM {
 
       // GLOBAL METHODS
 
-      case GLOBAL_LOAD:
+      case GLOBAL_LOAD: {
         locals[args[0].registerNum] = *(globals[args[1].registerNum]);
         break;
+      }
 
       case GLOBAL_WRITE:
         *(globals[args[0].registerNum]) = locals[args[1].registerNum];

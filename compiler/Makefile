@@ -29,12 +29,14 @@ PARSER_FILES=parser/*.cpp
 
 VM_FILES=vm/*.cpp
 
+CODEGEN_FILES=codegen/*.cpp
+
 parser:
-	clang++ main/parser.cpp $(VM_FILES) $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(OPTIONS) -o ../bin/parser
+	clang++ main/parser.cpp $(VM_FILES) $(LEXER_FILES) $(PARSER_FILES) $(CODEGEN_FILES) $(YAML_OPTIONS) $(OPTIONS) -o ../bin/parser
 
 # note: llvm_config must come after source files
 compiler:
-	clang++ main/greyhawk.cpp $(LEXER_FILES) $(PARSER_FILES) $(YAML_OPTIONS) $(BOOST_OPTIONS) $(OPTIONS) $(VM_FILES) -g -o ../bin/greyhawk
+	clang++ main/greyhawk.cpp $(LEXER_FILES) $(PARSER_FILES) $(CODEGEN_FILES) $(YAML_OPTIONS) $(BOOST_OPTIONS) $(OPTIONS) $(VM_FILES) -g -o ../bin/greyhawk
 
 GTEST_FILES=./gtest/lib/.libs/libgtest*.a -I./gtest/include
 

@@ -44,6 +44,7 @@ namespace VM {
   } GObject;
 
   typedef struct GIndex {
+    bool isGlobal;
     int registerNum;
     GType* type;
   } GIndex;

@@ -59,10 +59,17 @@ namespace parser {
           op, new GOPARG[1] { { argument->registerNum } }
       });
 
-    } /* else if (auto function = scope->getFunction(name)) {
+    } else if (auto functionIndex = scope->getObject(name)) {
+
+      if (functionIndex->type != getFunctionType()) {
+        throw ParserException("" + name + " is not a function!");
+      }
+
+      auto function = scope->getFunction(name);
+
       auto opArgs = new std::vector<GOPARG>;
       // first OPARG is the function pointer
-      opArgs->push_back(GOPARG{ .function = function });
+      opArgs->push_back(GOPARG{ .registerNum = functionIndex->registerNum });
 
       // second OPARG is the return object
       auto returnObject = scope->allocateObject(function->returnType);
@@ -74,9 +81,11 @@ namespace parser {
         opArgs->push_back(GOPARG { object->registerNum });
       }
 
-      instructions.push_back(GInstruction { GOPCODE::CALL, &(*opArgs)[0] });
+      instructions.push_back(GInstruction { GOPCODE::FUNCTION_CALL, &(*opArgs)[0] });
       return returnObject;
-      } */
+    } else {
+      throw ParserException("Unable to call method " + name);
+    }
 
     return NULL;
   }
@@ -252,8 +261,17 @@ namespace parser {
     return target;
   }
 
-  GIndex* PIdentifier::generateExpression(GScope* scope, GInstructionVector&) {
+  GIndex* PIdentifier::generateExpression(GScope* scope,
+                                          GInstructionVector& instructions) {
     auto object = scope->getObject(name);
+    if (object->isGlobal) {
+      auto newObject = scope->allocateObject(object->type);
+      instructions.push_back({
+          GOPCODE::GLOBAL_LOAD,
+          new VM::GOPARG[2] { {newObject->registerNum}, {object->registerNum} }
+      });
+      return newObject;
+    }
 
     if (object == NULL) {
       throw ParserException("Object " + name + " is not defined in this scope!");
@@ -283,25 +301,44 @@ namespace parser {
       throw ParserException("Cannot redeclare " + name);
     }
 
-    /* auto functionScope;
+    GScope* functionScope = scope->createChild(true);
 
-    auto function = new GOldFunction {
+    auto function = new GFunction {
       .returnType = evaluateType(returnType),
-      .argumentCount = (int) arguments.size()
+      .argumentCount = (int) arguments.size(),
+      .environment = *(functionScope->environment)
     };
     scope->addFunction(name, function);
 
-    GScope functionScope(scope, frame);
+    auto argumentNames = new std::string[arguments.size()];
+    auto argumentTypes = new GType*[arguments.size()];
 
+    int i = 0;
     for (auto argument : arguments) {
-      functionScope.addObject(argument->first, evaluateType(argument->second));
+      auto type = evaluateType(argument->second);
+
+      functionScope->addObject(argument->first, type);
+      argumentNames[i] = argument->first;
+      argumentTypes[i] = type;
+      i++;
     }
 
-    auto vmBody = body->generate(&functionScope);
+    auto vmBody = body->generate(functionScope);
     vmBody->push_back(GInstruction { END, 0 });
 
-    function->instructions = &(*vmBody)[0];
-    function->registerCount = frame->registerCount; */
+    auto index = scope->addFunction(name, new GFunction {
+        .argumentCount = (int) arguments.size(),
+        .argumentNames = argumentNames,
+        .argumentTypes = argumentTypes,
+        .environment = *(functionScope->environment),
+        .instructions = &(*vmBody)[0],
+        .returnType = evaluateType(returnType),
+    });
+
+    instructions.push_back(GInstruction {
+        GOPCODE::FUNCTION_CREATE, new VM::GOPARG[2] {
+          { index->registerNum }, GOPARG { .asString = name.c_str() }
+        }});
   }
 
   void PClassDeclaration::generateStatement(GScope*, GInstructionVector&) {

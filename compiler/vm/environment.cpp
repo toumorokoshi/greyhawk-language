@@ -4,7 +4,7 @@
 
 namespace VM {
 
-  GEnvironment GEnvironment::createChild() {
+  GEnvironment* GEnvironment::createChild() {
     std::map<std::string, int> childGlobalsTable;
     auto childGlobalsTypes = new std::vector<GType*>();
     auto childIndicesInParent = new std::vector<int>();
@@ -13,29 +13,28 @@ namespace VM {
     // locals become globals
     for (auto &kv: localsTable) {
       childGlobalsTypes->push_back(localsTypes[kv.second]);
-      childIndicesInParent->push_back(-kv.second);
+      childIndicesInParent->push_back(kv.second);
       childGlobalsTable[kv.first] = childGlobalsCount++;
     }
 
     for (auto &kv: globalsTable) {
       if (childGlobalsTable.find(kv.first) == childGlobalsTable.end()) {
         childGlobalsTypes->push_back(localsTypes[kv.second]);
-        childIndicesInParent->push_back(kv.second);
+        childIndicesInParent->push_back(-kv.second);
         childGlobalsTable[kv.first] = childGlobalsCount++;
       }
     }
 
-    auto environment = GEnvironment {
+    auto environment = new GEnvironment {
       .globalsTable = childGlobalsTable,
       .globalsCount = childGlobalsCount
     };
 
     if (childGlobalsCount > 0) {
-      environment.globalsTypes = &((*childGlobalsTypes)[0]);
-      environment.indicesInParent = &((*childIndicesInParent)[0]);
+      environment->globalsTypes = &((*childGlobalsTypes)[0]);
+      environment->indicesInParent = &((*childIndicesInParent)[0]);
     }
     return environment;
-      // return GEnvironment();
   }
 
   GEnvironmentInstance* GEnvironment::createInstance(GEnvironmentInstance& parent) {

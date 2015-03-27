@@ -20,5 +20,16 @@ namespace codegen {
     VM::GIndex* getObject(std::string name) {
       return environment->getObject(name);
     }
+
+    VM::GIndex* addFunction(std::string name, VM::GFunction* function) {
+      environment->functionTable[name] = function;
+      return environment->addObject(name, VM::getFunctionType());
+    }
+
+    VM::GFunction* getFunction(std::string name) {
+      return environment->functionTable[name];
+    }
+
+    GScope* createChild(bool withNewEnvironment);
   };
 }

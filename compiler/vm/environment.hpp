@@ -43,8 +43,9 @@ namespace VM {
       }
 
       if (globalsTable.find(name) != globalsTable.end()) {
-        int index = -globalsTable[name];
+        int index = globalsTable[name];
         return new GIndex {
+          .isGlobal = true,
           .registerNum = index,
           .type = globalsTypes[index]
         };
@@ -67,7 +68,7 @@ namespace VM {
       };
     }
     GEnvironmentInstance* createInstance(GEnvironmentInstance&);
-    GEnvironment createChild();
+    GEnvironment* createChild();
   };
 
   struct GEnvironmentInstance {

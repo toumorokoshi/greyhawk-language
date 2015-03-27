@@ -12,10 +12,12 @@ namespace VM {
 
   // the function is the top-level object.
   struct GFunction {
-    GType* returnType;
+    int           argumentCount;
+    std::string*  argumentNames;
+    GType**       argumentTypes;
+    GEnvironment  environment;
     GInstruction* instructions;
-    GEnvironment environment;
-    int argumentCount;
+    GType*        returnType;
 
     GFunctionInstance* createInstance(GEnvironmentInstance&);
   };

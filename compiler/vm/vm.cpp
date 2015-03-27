@@ -61,8 +61,22 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       done = true;
       break;
 
+    case FUNCTION_CREATE:
+      std::cout << "FUNCTION_CREATE: {" << values[0].registerNum << "} <- "
+                << values[1].asString;
+      break;
+
+    case FUNCTION_CALL:
+      std::cout << "FUNCTION_CALL: {" << values[0].registerNum << "}";
+      break;
+
     case GO:
       std::cout << "GO: " << values[0].positionDiff;
+      break;
+
+    case GLOBAL_LOAD:
+      std::cout << "GLOBAL_LOAD: {" << values[0].registerNum << "}"
+                << " <- {-" << values[1].registerNum << "}";
       break;
 
     case INT_TO_FLOAT:
