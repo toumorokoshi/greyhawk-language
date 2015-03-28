@@ -23,7 +23,9 @@ namespace VM {
     int* indicesInParent;
     int globalsCount;
 
-    std::map<std::string, GFunction*> functionTable;
+    std::map<int, int> functionTable;
+    std::vector<GFunction*> functions;
+    int functionCount;
 
     // locals data
     std::map<std::string, int> localsTable;
@@ -67,6 +69,12 @@ namespace VM {
         .type = type
       };
     }
+
+    int allocateFunction(GFunction* func) {
+      functions.push_back(func);
+      return functionCount++;
+    }
+
     GEnvironmentInstance* createInstance(GEnvironmentInstance&);
     GEnvironment* createChild();
   };

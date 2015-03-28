@@ -25,7 +25,7 @@ namespace VM {
   struct GFunctionInstance {
   public:
     GFunction* function;
-    GEnvironmentInstance* environmentInstance;
+    GEnvironmentInstance& parentEnv;
     GValue execute(GModules*);
   };
 

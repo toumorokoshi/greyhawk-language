@@ -301,14 +301,7 @@ namespace parser {
       throw ParserException("Cannot redeclare " + name);
     }
 
-    GScope* functionScope = scope->createChild(true);
-
-    auto function = new GFunction {
-      .returnType = evaluateType(returnType),
-      .argumentCount = (int) arguments.size(),
-      .environment = *(functionScope->environment)
-    };
-    scope->addFunction(name, function);
+    GScope* functionScope = scope->createChild(true, false);
 
     auto argumentNames = new std::string[arguments.size()];
     auto argumentTypes = new GType*[arguments.size()];
@@ -335,9 +328,11 @@ namespace parser {
         .returnType = evaluateType(returnType),
     });
 
+    auto functionIndex = scope->environment->functionTable[index->registerNum];
+
     instructions.push_back(GInstruction {
         GOPCODE::FUNCTION_CREATE, new VM::GOPARG[2] {
-          { index->registerNum }, GOPARG { .asString = name.c_str() }
+          { index->registerNum }, { functionIndex }
         }});
   }
 
@@ -362,14 +357,13 @@ namespace parser {
 
   void PIfElse::generateStatement(GScope* scope,
                                   GInstructionVector& instructions) {
-    /*
     auto conditionObject = condition->generateExpression(scope, instructions);
 
-    GScope trueScope(scope);
-    auto trueInstructions = trueBlock->generate(&trueScope);
+    auto trueScope = scope->createChild(false, true);
+    auto trueInstructions = trueBlock->generate(trueScope);
 
-    GScope falseScope(scope);
-    auto falseInstructions = falseBlock->generate(&falseScope);
+    auto falseScope = scope->createChild(false, true);
+    auto falseInstructions = falseBlock->generate(falseScope);
 
     instructions.push_back(GInstruction { GOPCODE::BRANCH, new GOPARG[3] {
           { conditionObject->registerNum },
@@ -396,7 +390,6 @@ namespace parser {
     instructions.insert(instructions.end(),
                         falseInstructions->begin(),
                         falseInstructions->end());
-    */
   }
 
   GIndex* PArray::generateExpression(GScope* scope,

@@ -4,7 +4,7 @@ using namespace VM;
 
 namespace codegen {
 
-  GScope* GScope::createChild(bool withNewEnvironment) {
+  GScope* GScope::createChild(bool withNewEnvironment, bool isInnerScope=false) {
     GEnvironment* childEnvironment;
     if (withNewEnvironment) {
       childEnvironment = environment->createChild();
@@ -13,7 +13,8 @@ namespace codegen {
     }
 
     return new GScope {
-      .environment = childEnvironment
+      .environment = childEnvironment,
+      .isInnerScope = isInnerScope
     };
   }
 }

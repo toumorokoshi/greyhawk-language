@@ -115,7 +115,7 @@ namespace VM {
       }
 
       case FUNCTION_CREATE: {
-        auto function = environment->functionTable[args[1].asString];
+        auto function = environment->functions[args[1].registerNum];
         locals[args[0].registerNum].asFunction = \
           function->createInstance(environmentInstance);
         break;
