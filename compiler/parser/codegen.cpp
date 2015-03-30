@@ -2,8 +2,8 @@
 #include "exceptions.hpp"
 #include <iostream>
 
-// #define debug(s);
-#define debug(s) std::cout << s << std::endl;
+#define debug(s);
+// #define debug(s) std::cout << s << std::endl;
 
 using namespace VM;
 using namespace lexer;
@@ -33,12 +33,15 @@ namespace parser {
     for (auto statement : statements) {
       statement->generateStatement(scope, *instructions);
     }
+    debug("finalizing...");
     scope->finalize();
+    debug("finished finalizing...");
     return instructions;
   }
 
   GIndex* PCall::generateExpression(GScope* scope,
                                      GInstructionVector& instructions) {
+    debug("calling method");
     if (name == "print") {
       auto argument = arguments[0]->generateExpression(scope, instructions);
       GOPCODE op;
@@ -61,19 +64,27 @@ namespace parser {
       });
 
     } else if (auto functionIndex = scope->getObject(name)) {
+      debug(name);
 
       if (functionIndex->type != getFunctionType()) {
         throw ParserException("" + name + " is not a function!");
       }
 
+      debug("getting function");
       auto function = scope->getFunction(name);
+
+      debug("finished getting function");
 
       auto opArgs = new std::vector<GOPARG>;
       // first OPARG is the function pointer
       opArgs->push_back(GOPARG{ .registerNum = functionIndex->registerNum });
 
       // second OPARG is the return object
+      debug("allocating return argument register");
+      debug(function);
+      debug(scope->environment);
       auto returnObject = scope->allocateObject(function->returnType);
+      debug("finished allocating return argument register");
       opArgs->push_back(GOPARG{ returnObject->registerNum });
 
       // third on are the actual arguments
@@ -82,6 +93,7 @@ namespace parser {
         opArgs->push_back(GOPARG { object->registerNum });
       }
 
+      debug("finishing function");
       instructions.push_back(GInstruction { GOPCODE::FUNCTION_CALL, &(*opArgs)[0] });
       return returnObject;
     } else {
@@ -302,29 +314,11 @@ namespace parser {
       throw ParserException("Cannot redeclare " + name);
     }
 
-    auto argumentNames = new std::string[arguments.size()];
-    auto argumentTypes = new GType*[arguments.size()];
-
-    GScope* functionScope = scope->createChild(true, false);
-
-    int i = 0;
-    for (auto argument : arguments) {
-      auto type = evaluateType(argument->second);
-
-      functionScope->addObject(argument->first, type);
-      argumentNames[i] = argument->first;
-      argumentTypes[i] = type;
-      i++;
-    }
-
+    debug("is inner scope: " << scope->isInnerScope);
     auto index = scope->addFunction(name, new GFunction {
         .argumentCount = (int) arguments.size(),
-        .argumentNames = argumentNames,
-        .argumentTypes = argumentTypes,
-        .environment = *(functionScope->environment),
-        .instructions = NULL,
         .returnType = evaluateType(returnType),
-          }, this, functionScope);
+    }, this);
     auto functionIndex = scope->environment->functionTable[index->registerNum];
 
     instructions.push_back(GInstruction {
@@ -333,7 +327,24 @@ namespace parser {
         }});
   }
 
-  void PFunctionDeclaration::generateBody(GFunction* function, GScope* functionScope) {
+  void PFunctionDeclaration::generateBody(GFunction* function, GScope* scope) {
+    GScope* functionScope = scope->createChild(true, false);
+
+    function->argumentNames = new std::string[arguments.size()];
+    function->argumentTypes = new GType*[arguments.size()];
+    function->environment = functionScope->environment;
+
+
+    int i = 0;
+    for (auto argument : arguments) {
+      auto type = evaluateType(argument->second);
+
+      functionScope->addObject(argument->first, type);
+      function->argumentNames[i] = argument->first;
+      function->argumentTypes[i] = type;
+      i++;
+    }
+
     auto vmBody = body->generate(functionScope);
     vmBody->push_back(GInstruction { END, 0 });
     function->instructions = &(*vmBody)[0];

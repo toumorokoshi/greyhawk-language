@@ -23,8 +23,7 @@ namespace codegen {
     for (int i = 0; i < functions.size(); i++) {
       auto function = functions[i];
       auto declaration = functionDeclarations[i];
-      auto scope = functionScopes[i];
-      declaration->generateBody(function, scope);
+      declaration->generateBody(function, this);
     }
   }
 }

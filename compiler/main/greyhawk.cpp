@@ -131,7 +131,6 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
       }
 
       globalScopeInstance->locals = registers;
-
       executeInstructions(vm->modules, instructions, *globalScopeInstance);
     }
 

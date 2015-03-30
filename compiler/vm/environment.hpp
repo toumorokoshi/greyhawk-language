@@ -1,3 +1,4 @@
+#include <iostream>
 #include <map>
 #include <vector>
 #include "ops.hpp"
@@ -23,6 +24,7 @@ namespace VM {
     int* indicesInParent;
     int globalsCount;
 
+    std::map<std::string, GFunction*> functionByName;
     std::map<int, int> functionTable;
     std::vector<GFunction*> functions;
     int functionCount;
@@ -73,6 +75,19 @@ namespace VM {
     int allocateFunction(GFunction* func) {
       functions.push_back(func);
       return functionCount++;
+    }
+
+    int addFunction(std::string name, GFunction* func) {
+      int index = allocateFunction(func);
+      functionByName[name] = func;
+      return index;
+    }
+
+    GFunction* getFunction(std::string name) {
+      if (functionByName.find(name) != functionByName.end()) {
+        return functionByName[name];
+      }
+      return NULL;
     }
 
     GEnvironmentInstance* createInstance(GEnvironmentInstance&);

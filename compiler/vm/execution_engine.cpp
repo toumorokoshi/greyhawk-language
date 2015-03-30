@@ -12,7 +12,7 @@ namespace VM {
                          GFunction* function,
                          GEnvironmentInstance& parent,
                          GValue* arguments) {
-    auto scopeInstance = function->environment.createInstance(parent);
+    auto scopeInstance = function->environment->createInstance(parent);
     auto argumentCount = function->argumentCount;
     // TODO: better copy logic
     for (int i = 0; i < argumentCount; i++) {
@@ -81,12 +81,6 @@ namespace VM {
           instruction += args[2].positionDiff - 1;
         }
         break;
-
-        /* case CALL: {
-        auto function = args[0].function;
-        locals[args[1].registerNum] = executeSubfunction(vm, function, locals, args);
-        break;
-        } */
 
       case DIVIDE_FLOAT:
         locals[args[2].registerNum].asFloat =

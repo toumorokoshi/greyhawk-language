@@ -15,7 +15,7 @@ namespace VM {
     int           argumentCount;
     std::string*  argumentNames;
     GType**       argumentTypes;
-    GEnvironment  environment;
+    GEnvironment*  environment;
     GInstruction* instructions;
     GType*        returnType;
 

@@ -16,7 +16,6 @@ namespace codegen {
     std::map<std::string, VM::GIndex*> localMap;
     std::vector<VM::GFunction*> functions;
     std::vector<parser::PFunctionDeclaration*> functionDeclarations;
-    std::vector<GScope*> functionScopes;
     bool isInnerScope;
 
     // a lot of methods are repeated from GEnvironment.
@@ -48,22 +47,27 @@ namespace codegen {
     }
 
     VM::GFunction* getFunction(std::string name) {
-      auto functionInstanceIndex = getObject(name);
-      if (environment->functionTable.find(functionInstanceIndex->registerNum) ==
-          environment->functionTable.end()) {
-        return NULL;
+      if (localMap.find(name) != localMap.end()) {
+        auto functionInstanceIndex = localMap[name];
+        if (environment->functionTable.find(functionInstanceIndex->registerNum) !=
+            environment->functionTable.end()) {
+          return environment->functions[environment->functionTable[functionInstanceIndex->registerNum]];
+        }
       }
 
-      return environment->functions[environment->functionTable[functionInstanceIndex->registerNum]];
+      return environment->getFunction(name);
     }
 
     VM::GIndex* addFunction(std::string name, VM::GFunction* func,
-                            parser::PFunctionDeclaration* declaration,
-                            GScope* functionScope){
+                            parser::PFunctionDeclaration* declaration) {
       functions.push_back(func);
       functionDeclarations.push_back(declaration);
-      functionScopes.push_back(functionScope);
-      int functionIndex = allocateFunction(func);
+      int functionIndex;
+      if (isInnerScope) {
+        functionIndex = environment->allocateFunction(func);
+      } else {
+        functionIndex = environment->addFunction(name, func);
+      }
       auto index = addObject(name, VM::getFunctionType());
       environment->functionTable[index->registerNum] = functionIndex;
       return index;
