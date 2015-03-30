@@ -142,6 +142,7 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual void generateStatement(codegen::GScope*, GInstructionVector&);
+    virtual void generateBody(VM::GFunction*, codegen::GScope*);
 
     PFunctionDeclaration(std::string _returnType,
                          std::string _name,

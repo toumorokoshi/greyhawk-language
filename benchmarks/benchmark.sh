@@ -36,6 +36,18 @@ time {
       python ./benchmarks/$SCRIPT/$SCRIPT.py > /dev/null
     done
 }
+
+which pypy &> /dev/null
+if [ $? -eq 0 ]; then
+    echo
+    echo
+    echo "PyPy:"
+    time {
+        for run in {1..$COUNT}; do
+          pypy ./benchmarks/$SCRIPT/$SCRIPT.py > /dev/null
+        done
+    }
+fi
 fi
 
 if [ -e "./benchmarks/$SCRIPT/$SCRIPT.llvm" ]; then

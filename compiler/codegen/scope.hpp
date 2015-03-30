@@ -1,12 +1,22 @@
 #include <map>
 #include "../vm/environment.hpp"
 
+#ifndef CODEGEN_SCOPE_HPP
+#define CODEGEN_SCOPE_HPP
+
+namespace parser {
+  class PFunctionDeclaration;
+}
+
 namespace codegen {
 
   class GScope {
   public:
     VM::GEnvironment* environment;
     std::map<std::string, VM::GIndex*> localMap;
+    std::vector<VM::GFunction*> functions;
+    std::vector<parser::PFunctionDeclaration*> functionDeclarations;
+    std::vector<GScope*> functionScopes;
     bool isInnerScope;
 
     // a lot of methods are repeated from GEnvironment.
@@ -47,7 +57,12 @@ namespace codegen {
       return environment->functions[environment->functionTable[functionInstanceIndex->registerNum]];
     }
 
-    VM::GIndex* addFunction(std::string name, VM::GFunction* func) {
+    VM::GIndex* addFunction(std::string name, VM::GFunction* func,
+                            parser::PFunctionDeclaration* declaration,
+                            GScope* functionScope){
+      functions.push_back(func);
+      functionDeclarations.push_back(declaration);
+      functionScopes.push_back(functionScope);
       int functionIndex = allocateFunction(func);
       auto index = addObject(name, VM::getFunctionType());
       environment->functionTable[index->registerNum] = functionIndex;
@@ -55,5 +70,9 @@ namespace codegen {
     }
 
     GScope* createChild(bool, bool);
+
+    void finalize();
   };
 }
+
+#endif

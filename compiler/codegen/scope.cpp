@@ -1,4 +1,5 @@
 #include "scope.hpp"
+#include "../parser/nodes.hpp"
 
 using namespace VM;
 
@@ -16,5 +17,14 @@ namespace codegen {
       .environment = childEnvironment,
       .isInnerScope = isInnerScope
     };
+  }
+
+  void GScope::finalize() {
+    for (int i = 0; i < functions.size(); i++) {
+      auto function = functions[i];
+      auto declaration = functionDeclarations[i];
+      auto scope = functionScopes[i];
+      declaration->generateBody(function, scope);
+    }
   }
 }

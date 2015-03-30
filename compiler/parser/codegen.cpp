@@ -33,6 +33,7 @@ namespace parser {
     for (auto statement : statements) {
       statement->generateStatement(scope, *instructions);
     }
+    scope->finalize();
     return instructions;
   }
 
@@ -301,10 +302,10 @@ namespace parser {
       throw ParserException("Cannot redeclare " + name);
     }
 
-    GScope* functionScope = scope->createChild(true, false);
-
     auto argumentNames = new std::string[arguments.size()];
     auto argumentTypes = new GType*[arguments.size()];
+
+    GScope* functionScope = scope->createChild(true, false);
 
     int i = 0;
     for (auto argument : arguments) {
@@ -316,24 +317,26 @@ namespace parser {
       i++;
     }
 
-    auto vmBody = body->generate(functionScope);
-    vmBody->push_back(GInstruction { END, 0 });
-
     auto index = scope->addFunction(name, new GFunction {
         .argumentCount = (int) arguments.size(),
         .argumentNames = argumentNames,
         .argumentTypes = argumentTypes,
         .environment = *(functionScope->environment),
-        .instructions = &(*vmBody)[0],
+        .instructions = NULL,
         .returnType = evaluateType(returnType),
-    });
-
+          }, this, functionScope);
     auto functionIndex = scope->environment->functionTable[index->registerNum];
 
     instructions.push_back(GInstruction {
         GOPCODE::FUNCTION_CREATE, new VM::GOPARG[2] {
           { index->registerNum }, { functionIndex }
         }});
+  }
+
+  void PFunctionDeclaration::generateBody(GFunction* function, GScope* functionScope) {
+    auto vmBody = body->generate(functionScope);
+    vmBody->push_back(GInstruction { END, 0 });
+    function->instructions = &(*vmBody)[0];
   }
 
   void PClassDeclaration::generateStatement(GScope*, GInstructionVector&) {
@@ -439,14 +442,13 @@ namespace parser {
   // generates the instructions to parse the array
   void parseArrayIterator(std::string varName, GIndex* array, PBlock* body,
                           GScope* scope, GInstructionVector& instructions) {
-    /*
-    GScope forScope(scope);
+    GScope* forScope = scope->createChild(false, true);
     auto iteratorIndex = scope->allocateObject(getInt32Type());
     instructions.push_back(GInstruction {
         LOAD_CONSTANT_INT, new GOPARG[2] { iteratorIndex->registerNum, 0 }
     });
 
-    auto iteratorObject = scope->allocateObject(array->type->subTypes[0]);
+    auto iteratorObject = forScope->addObject(varName, array->type->subTypes[0]);
 
     auto zero = scope->allocateObject(getInt32Type());
     instructions.push_back(GInstruction {
@@ -466,7 +468,6 @@ namespace parser {
     auto conditionObject = scope->allocateObject(getBoolType());
 
     // initialize statement
-    forScope.symbolTable[varName] = iteratorObject;
 
     auto forLoopStart = instructions.size();
     instructions.push_back(GInstruction {
@@ -477,7 +478,7 @@ namespace parser {
         }
     });
 
-    auto statements = body->generate(&forScope);
+    auto statements = body->generate(forScope);
     instructions.reserve(instructions.size()
                          + distance(statements->begin(), statements->end()));
     instructions.insert(instructions.end(), statements->begin(), statements->end());
@@ -502,7 +503,6 @@ namespace parser {
           { 1 }
         }
     });
-    */
   }
 
   void PForeachLoop::generateStatement(GScope* scope,
@@ -513,7 +513,7 @@ namespace parser {
       parseArrayIterator(variableName, iterableValue, block,
                          scope, instructions);
     } else {
-      throw ParserException("foreach loop not yet implemented!");
+      throw ParserException("unable to use foreach expression on type: " + iterableValue->type->name);
     }
   }
 }
