@@ -26,7 +26,6 @@ namespace VM {
   public:
     GFunction* function;
     GEnvironmentInstance& parentEnv;
-    GValue execute(GModules*);
   };
 
 }

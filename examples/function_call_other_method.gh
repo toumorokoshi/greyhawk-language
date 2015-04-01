@@ -1,0 +1,9 @@
+None foo():
+	bar()
+
+
+None bar():
+	print("foo-bar")
+
+
+foo()

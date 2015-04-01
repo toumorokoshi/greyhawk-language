@@ -6,9 +6,6 @@
 
 namespace VM {
 
-  GValue executeFunction(GModules*, GFunction*,
-                         GEnvironmentInstance& parent,
-                         GValue* arguments);
   GValue executeInstructions(GModules*, GInstruction*, GEnvironmentInstance&);
 }
 

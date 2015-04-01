@@ -8,32 +8,6 @@
 
 namespace VM {
 
-  GValue executeFunction(GModules* vm,
-                         GFunction* function,
-                         GEnvironmentInstance& parent,
-                         GValue* arguments) {
-    auto scopeInstance = function->environment->createInstance(parent);
-    auto argumentCount = function->argumentCount;
-    // TODO: better copy logic
-    for (int i = 0; i < argumentCount; i++) {
-      scopeInstance->locals[i] = arguments[i];
-    }
-    return executeInstructions(vm, function->instructions, *scopeInstance);
-  }
-
-  /* inline GValue executeSubfunction(GModules*, GFunction* function,
-                                   GValue* parentRegisters,
-                                   GOPARG* values) {
-    GValue registers[function->registerCount];
-    auto argumentCount = function->argumentCount;
-    for (int i = 0; i < argumentCount; i++) {
-      // we increment by two because first two args is function pointer, return value register
-      auto value = parentRegisters[values[i + 2].registerNum];
-      registers[i] = value;
-    }
-    return executeInstructions(vm, function->instructions, registers);
-    } */
-
   GValue executeInstructions(GModules* modules, GInstruction* instructions, GEnvironmentInstance& environmentInstance) {
     auto locals = environmentInstance.locals;
     auto globals = environmentInstance.globals;
@@ -116,7 +90,22 @@ namespace VM {
       }
 
       case FUNCTION_CALL: {
-        locals[args[0].registerNum].asFunction->execute(modules);
+        auto funcInst = locals[args[1].registerNum].asFunction;
+        auto func = funcInst->function;
+        auto funcEnvInstance = func->environment->createInstance(funcInst->parentEnv);
+
+        for (int i = 0; i < func->argumentCount; i++) {
+          // we start at argument 2 on, because 0 and 1 are the return
+          // value register and the function register, respectively.
+          funcEnvInstance->locals[i] = locals[args[2 + i].registerNum];
+        }
+
+        locals[args[0].registerNum] = executeInstructions(modules,
+                                                         func->instructions,
+                                                         *funcEnvInstance);
+        delete funcEnvInstance->locals;
+        delete funcEnvInstance->globals;
+        delete funcEnvInstance;
         break;
       }
 

@@ -1,0 +1,4 @@
+Int multiplyByTwo(x Int):
+	return x * 2
+
+print(multiplyByTwo(5))

@@ -63,11 +63,11 @@ void VM::printInstructions(GInstruction* firstInstruction) {
 
     case FUNCTION_CREATE:
       std::cout << "FUNCTION_CREATE: {" << values[0].registerNum << "} <- "
-                << values[1].asString;
+                << values[1].registerNum;
       break;
 
     case FUNCTION_CALL:
-      std::cout << "FUNCTION_CALL: {" << values[0].registerNum << "}";
+      std::cout << "FUNCTION_CALL: {" << values[0].registerNum << "} <- " << "{" << values[1].registerNum << "}()";
       break;
 
     case GO:
@@ -139,8 +139,12 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "SET: {" << values[0].registerNum << "} -> {" << values[1].registerNum << "}";
       break;
 
+    case SUBTRACT_INT:
+      std::cout << "SUBTRACT_INT: {" << values[0].registerNum << "} - {" << values[1].registerNum << "} -> {" << values[2].registerNum << "}";
+      break;
+
     default:
-      std::cout << "unable to print opcode!";
+      std::cout << "unable to print opcode: " << firstInstruction->op;
       break;
     }
     firstInstruction++;

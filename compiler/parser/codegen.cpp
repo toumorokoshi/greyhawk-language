@@ -11,6 +11,20 @@ using namespace codegen;
 
 namespace parser {
 
+  GIndex* getObjectEnforceLocal(GScope* scope, std::string name,
+                                GInstructionVector& instructions) {
+    GIndex* index = scope->getObject(name);
+    if (index == NULL || !index->isGlobal) {
+      return index;
+    }
+
+    auto localIndex = scope->allocateObject(index->type);
+    instructions.push_back({
+        GOPCODE::GLOBAL_LOAD, new GOPARG[2] { localIndex->registerNum, index->registerNum}
+    });
+    return localIndex;
+  }
+
   GType* evaluateType(std::string typeName) {
     if (typeName == "Int") { return getInt32Type(); }
     else if (typeName == "Bool") { return getBoolType(); }
@@ -63,29 +77,23 @@ namespace parser {
           op, new GOPARG[1] { { argument->registerNum } }
       });
 
-    } else if (auto functionIndex = scope->getObject(name)) {
+    } else if (auto functionIndex = getObjectEnforceLocal(scope, name, instructions)) {
       debug(name);
 
       if (functionIndex->type != getFunctionType()) {
         throw ParserException("" + name + " is not a function!");
       }
 
-      debug("getting function");
       auto function = scope->getFunction(name);
 
-      debug("finished getting function");
-
       auto opArgs = new std::vector<GOPARG>;
-      // first OPARG is the function pointer
-      opArgs->push_back(GOPARG{ .registerNum = functionIndex->registerNum });
 
-      // second OPARG is the return object
-      debug("allocating return argument register");
-      debug(function);
-      debug(scope->environment);
+      // first OPARG is the return object
       auto returnObject = scope->allocateObject(function->returnType);
-      debug("finished allocating return argument register");
       opArgs->push_back(GOPARG{ returnObject->registerNum });
+
+      // second OPARG is the function pointer
+      opArgs->push_back(GOPARG{ .registerNum = functionIndex->registerNum });
 
       // third on are the actual arguments
       for (auto argument : arguments) {

@@ -113,10 +113,9 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
     auto instructions = generateRoot(globalScope, pBlock);
 
     if (args.bytecode) {
-      for (auto functionKV: globalScope->functionTable) {
-        auto function = globalScope->functions[functionKV.second];
-        std::cout << functionKV.first << " (" << function << "):" << std::endl;
-        printInstructions(function->instructions);
+      for (auto functionKV: globalScope->functionByName) {
+        std::cout << functionKV.first << " (" << functionKV.second << "):" << std::endl;
+        printInstructions(functionKV.second->instructions);
         std::cout << std::endl;
       }
       std::cout << "main:" << std::endl;
