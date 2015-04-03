@@ -83,6 +83,11 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "INT_TO_FLOAT:";
       break;
 
+    case INSTANCE_CREATE:
+      std::cout << "INSTANCE_CREATE: {" << values[0].registerNum << "} <- {"
+                << values[1].registerNum << "}()";
+      break;
+
     case LENGTH:
       std::cout << "LENGTH:";
       break;
@@ -141,6 +146,10 @@ void VM::printInstructions(GInstruction* firstInstruction) {
 
     case SUBTRACT_INT:
       std::cout << "SUBTRACT_INT: {" << values[0].registerNum << "} - {" << values[1].registerNum << "} -> {" << values[2].registerNum << "}";
+      break;
+
+    case TYPE_LOAD:
+      std::cout << "TYPE_LOAD: {" << values[0].registerNum << "} <- types[" << values[1].registerNum << "]";
       break;
 
     default:

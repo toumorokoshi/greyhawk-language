@@ -56,6 +56,10 @@ namespace VM {
         }
         break;
 
+      case TYPE_LOAD:
+        locals[args[0].registerNum].asType = environment->types[args[1].registerNum];
+        break;
+
       case DIVIDE_FLOAT:
         locals[args[2].registerNum].asFloat =
           locals[args[0].registerNum].asFloat /

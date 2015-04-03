@@ -25,7 +25,16 @@ namespace parser {
     return localIndex;
   }
 
+  // determine if the identifier is a type
+  bool isType(std::string identifier) {
+    return identifier[0] >= 'A' || identifier[0] <= 'Z';
+  }
+
   GType* evaluateType(std::string typeName) {
+    if (typeName[0] <= 'A' || typeName[0] >= 'Z') {
+      throw ParserException(typeName + " is not a class!");
+    }
+
     if (typeName == "Int") { return getInt32Type(); }
     else if (typeName == "Bool") { return getBoolType(); }
     else if (typeName == "String") { return getStringType(); }
@@ -80,21 +89,33 @@ namespace parser {
     } else if (auto functionIndex = getObjectEnforceLocal(scope, name, instructions)) {
       debug(name);
 
-      if (functionIndex->type != getFunctionType()) {
-        throw ParserException("" + name + " is not a function!");
+      GOPCODE instruction;
+      GType* returnType;
+
+      debug("getting type values");
+      if (isType(name)) {
+        instruction = INSTANCE_CREATE;
+        returnType = scope->getClass(name);
+      } else {
+        instruction = FUNCTION_CALL;
+        returnType = scope->getFunction(name)->returnType;
       }
 
-      auto function = scope->getFunction(name);
+      if (functionIndex->type != getFunctionType() && functionIndex->type != getClassType()) {
+        throw ParserException("" + name + " is not a Function or Class! found " + functionIndex->type->name);
+      }
 
       auto opArgs = new std::vector<GOPARG>;
 
+      debug("allocating object");
       // first OPARG is the return object
-      auto returnObject = scope->allocateObject(function->returnType);
+      auto returnObject = scope->allocateObject(returnType);
       opArgs->push_back(GOPARG{ returnObject->registerNum });
 
       // second OPARG is the function pointer
       opArgs->push_back(GOPARG{ .registerNum = functionIndex->registerNum });
 
+      debug("allocating arguments");
       // third on are the actual arguments
       for (auto argument : arguments) {
         auto object = argument->generateExpression(scope, instructions);
@@ -102,7 +123,7 @@ namespace parser {
       }
 
       debug("finishing function");
-      instructions.push_back(GInstruction { GOPCODE::FUNCTION_CALL, &(*opArgs)[0] });
+      instructions.push_back(GInstruction { instruction, &(*opArgs)[0] });
       return returnObject;
     } else {
       throw ParserException("Unable to call method " + name);
@@ -358,7 +379,8 @@ namespace parser {
     function->instructions = &(*vmBody)[0];
   }
 
-  void PClassDeclaration::generateStatement(GScope*, GInstructionVector&) {
+  void PClassDeclaration::generateStatement(GScope* scope,
+                                            GInstructionVector& instr) {
     int attributeSize = attributes.size();
     auto attributeTypes = new GType*[attributeSize];
     auto attributeNames = new std::string[attributeSize];
@@ -375,6 +397,14 @@ namespace parser {
       .attributeNames = attributeNames,
       .subTypeCount = attributeSize
     };
+
+    auto classIndex = scope->addClass(name, type);
+    auto classInLocalsIndex = scope->addObject(name, getClassType());
+    instr.push_back(GInstruction {
+        GOPCODE::TYPE_LOAD, new VM::GOPARG[2] {
+          classInLocalsIndex->registerNum, classIndex->registerNum
+        }
+    });
   }
 
   void PIfElse::generateStatement(GScope* scope,

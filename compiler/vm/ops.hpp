@@ -48,6 +48,7 @@ namespace VM {
     SET,
     SUBTRACT_FLOAT,
     SUBTRACT_INT,
+    TYPE_LOAD,
     RETURN,
     RETURN_NONE,
   };

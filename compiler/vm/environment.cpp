@@ -31,6 +31,7 @@ namespace VM {
     };
 
     environment->functionByName.insert(functionByName.begin(), functionByName.end());
+    environment->typeByName.insert(typeByName.begin(), typeByName.end());
 
     if (childGlobalsCount > 0) {
       environment->globalsTypes = &((*childGlobalsTypes)[0]);

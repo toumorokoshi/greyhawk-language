@@ -1,5 +1,7 @@
 #include <map>
+#include <vector>
 #include "../vm/environment.hpp"
+#include "../vm/function.hpp"
 
 #ifndef CODEGEN_SCOPE_HPP
 #define CODEGEN_SCOPE_HPP
@@ -13,7 +15,10 @@ namespace codegen {
   class GScope {
   public:
     VM::GEnvironment* environment;
+    std::map<std::string, int> typeIndexByName;
     std::map<std::string, VM::GIndex*> localMap;
+    // I think these have to be the last attributes referenced.
+    // if not, this causes weird compile errors in clang.
     std::vector<VM::GFunction*> functions;
     std::vector<parser::PFunctionDeclaration*> functionDeclarations;
     bool isInnerScope;
@@ -44,6 +49,23 @@ namespace codegen {
 
     int allocateFunction(VM::GFunction* function) {
       return environment->allocateFunction(function);
+    }
+
+    VM::GIndex* addClass(std::string name, VM::GType* type) {
+      if (isInnerScope) {
+        auto index = environment->allocateClass(type);
+        typeIndexByName[name] = index->registerNum;
+        return index;
+      } else {
+        return environment->addClass(name, type);
+      }
+    }
+
+    VM::GType* getClass(std::string name) {
+      if (typeIndexByName.find(name) != typeIndexByName.end()) {
+        return environment->types[typeIndexByName[name]];
+      }
+      return environment->getClass(name);
     }
 
     VM::GFunction* getFunction(std::string name) {

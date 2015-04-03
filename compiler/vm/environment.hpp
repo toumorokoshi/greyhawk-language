@@ -13,6 +13,8 @@ namespace VM {
   struct GEnvironmentInstance;
   struct GFunction;
 
+  typedef std::map<std::string, GType*> GTypeMap;
+
   // we use a class instead of a struct
   // so we can encapsulate things for now,
   // until a good mechanism is decided.
@@ -24,10 +26,16 @@ namespace VM {
     int* indicesInParent;
     int globalsCount;
 
+    // function data
     std::map<std::string, GFunction*> functionByName;
     std::map<int, int> functionTable;
     std::vector<GFunction*> functions;
     int functionCount;
+
+    // class data
+    std::map<std::string, GType*> typeByName;
+    std::vector<GType*> types;
+    int typeCount;
 
     // locals data
     std::map<std::string, int> localsTable;
@@ -72,6 +80,8 @@ namespace VM {
       };
     }
 
+    // function methods
+
     int allocateFunction(GFunction* func) {
       functions.push_back(func);
       return functionCount++;
@@ -86,6 +96,27 @@ namespace VM {
     GFunction* getFunction(std::string name) {
       if (functionByName.find(name) != functionByName.end()) {
         return functionByName[name];
+      }
+      return NULL;
+    }
+
+    // class methods
+    GIndex* addClass(std::string name, GType* type) {
+      typeByName[name] = type;
+      return allocateClass(type);
+   }
+
+    GIndex* allocateClass(GType* type) {
+      types.push_back(type);
+      return new GIndex {
+        .registerNum = typeCount++,
+        .type = getClassType()
+      };
+    }
+
+    GType* getClass(std::string name) {
+      if (typeByName.find(name) != typeByName.end()) {
+        return typeByName[name];
       }
       return NULL;
     }
