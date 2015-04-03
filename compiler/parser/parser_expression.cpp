@@ -56,7 +56,7 @@ namespace parser {
     }
   }
 
-  PMethodCall* Parser::parseMethodCall(PExpression* currentValue) {
+  PExpression* Parser::parseMethodCall(PExpression* currentValue) {
     debug("parseMethodCall");
 
     debug("parseMethodCall: top of the while");
@@ -79,7 +79,8 @@ namespace parser {
       // this is something like a.foo,
       // which directly translates to a.foo()
       debug("parseMethodCall: found property, implicitly creating VMCallMethod..");
-      arguments = new PExpressions;
+
+      return new PPropertyAccess(currentValue, methodName);
     }
 
     debug("parseMethodCall: finished");

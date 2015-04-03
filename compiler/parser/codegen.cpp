@@ -3,7 +3,7 @@
 #include <iostream>
 
 #define debug(s);
-// #define debug(s) std::cout << s << std::endl;
+//#define debug(s) std::cout << s << std::endl;
 
 using namespace VM;
 using namespace lexer;
@@ -389,6 +389,7 @@ namespace parser {
     for (auto& kv: attributes) {
       attributeNames[i] = kv.first;
       attributeTypes[i] = evaluateType(kv.second);
+      i++;
     }
 
     auto type = new GType{
@@ -486,6 +487,40 @@ namespace parser {
         }
       });
     return objectRegister;
+  }
+
+  GIndex* PPropertyAccess::generateExpression(GScope* scope,
+                                              GInstructionVector& instr) {
+    debug("accessing property...")
+    auto valueObject = currentValue->generateExpression(scope, instr);
+    auto objectType = valueObject->type;
+    int index = 0;
+    GType* returnType = NULL;
+    while (returnType == NULL && index < objectType->subTypeCount) {
+      debug(objectType->attributeNames[index]);
+      debug(objectType->subTypes[index]->name);
+      if (objectType->attributeNames[index].compare(propertyName) == 0) {
+        returnType = objectType->subTypes[index];
+      } else {
+        index++;
+      }
+    }
+
+    if (returnType == NULL) {
+      throw ParserException("unable to retrieve type for property " + propertyName);
+    }
+
+    auto returnIndex = scope->allocateObject(returnType);
+
+    debug("pushing back instruction...")
+    instr.push_back({
+        GOPCODE::INSTANCE_LOAD_ATTRIBUTE, new GOPARG[3] {
+          returnIndex->registerNum, valueObject->registerNum, index
+        }
+    });
+
+    debug("done!");
+    return returnIndex;
   }
 
   // generates the instructions to parse the array

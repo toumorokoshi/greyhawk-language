@@ -164,6 +164,13 @@ namespace parser {
     return node;
   }
 
+  YAML::Node* PPropertyAccess::toYaml() {
+    auto node = new YAML::Node();
+    (*node)["property_access"]["object"] = *currentValue->toYaml();
+    (*node)["property_access"]["name"] = propertyName;
+    return node;
+  }
+
   YAML::Node* PBinaryOperation::toYaml() {
     auto node = new YAML::Node();
     (*node)["binary_operation"]["operation"] = lexer::tokenMap[op];

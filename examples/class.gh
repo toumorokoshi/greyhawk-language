@@ -5,3 +5,5 @@ class Foo:
 f := Foo(1, 2)
 
 print(f.attribute)
+print(f.attribute2)
+print(f.attribute2 + f.attribute)

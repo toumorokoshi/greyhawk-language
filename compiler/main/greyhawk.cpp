@@ -14,6 +14,8 @@ using namespace parser;
 using namespace VM;
 
 
+#define debug(s);
+//#define debug(s) std::cout << s << std::endl;
 
 // these are initialized in main
 static Tokenizer* tokenizer;
@@ -111,8 +113,10 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
   } else {
     int oldLocalsCount = globalScope->localsCount;
     auto instructions = generateRoot(globalScope, pBlock);
+    debug("parsed.");
 
     if (args.bytecode) {
+      debug("printing bytecode.");
       for (auto functionKV: globalScope->functionByName) {
         std::cout << functionKV.first << " (" << functionKV.second << "):" << std::endl;
         printInstructions(functionKV.second->instructions);
@@ -121,6 +125,7 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
       std::cout << "main:" << std::endl;
       printInstructions(instructions);
     } else {
+      debug("executing code.");
       // for now, we build temp registers
       auto registers = new GValue[globalScope->localsCount];
 

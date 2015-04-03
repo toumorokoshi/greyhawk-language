@@ -331,6 +331,19 @@ namespace parser {
       arguments(_arguments) {}
   };
 
+  class PPropertyAccess : public PExpression {
+  public:
+    PExpression* currentValue;
+    std::string propertyName;
+
+    virtual YAML::Node* toYaml();
+    virtual VM::GType* getType(codegen::GScope*) { return NULL; }
+    virtual VM::GIndex* generateExpression(codegen::GScope*, GInstructionVector&);
+
+    PPropertyAccess(PExpression* _currentValue, std::string _propertyName) :
+      currentValue(_currentValue), propertyName(_propertyName) {}
+  };
+
   class PBinaryOperation : public PExpression {
   public:
     PExpression* lhs;
