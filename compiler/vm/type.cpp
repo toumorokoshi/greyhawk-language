@@ -1,4 +1,6 @@
 #include "type.hpp"
+#include "environment.hpp"
+#include "function.hpp"
 #include <map>
 
 namespace VM {
@@ -56,6 +58,17 @@ namespace VM {
     return noneType;
   }
 
-  GFunctionInstance* GType::bindToEnv(GEnvironmentInstance* env) {
+  GEnvironmentInstance* GType::instantiate() {
+    auto instance = environment->createInstance(*parentEnv);
+    // we instantiate all the methods, binding them to the current context.
+    for (int i = 0; i < functionCount; i++) {
+      // methods are instantiate after type.
+      int methodIndex = i + subTypeCount;
+      instance->locals[methodIndex].asFunction = new GFunctionInstance {
+        .function = functions[i],
+        .parentEnv = *instance
+      };
+    }
+    return instance;
   }
 }

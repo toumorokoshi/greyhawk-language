@@ -5,8 +5,9 @@
 
 namespace VM {
 
+  struct GFunction;
+  class GEnvironment;
   struct GEnvironmentInstance;
-  struct GFunctionInstance;
 
   enum BASICTYPES {
     ARRAY,
@@ -23,6 +24,20 @@ namespace VM {
 
   struct GType;
 
+  /*
+    some notes about GType:
+    instances of types are just environment instances that expose only their locals.
+    they work by have each method instantiate with that instance as the scope.
+
+    assumptions are made regarding the order of the registers of an environmental
+    scope. The order is:
+
+    * attributes
+    * methods
+
+    this order is required, because an instantiate will automatically populate
+    functions bound to the internal scope of the instance.
+   */
   typedef struct GType {
     BASICTYPES classifier;
     std::string name;
@@ -31,9 +46,11 @@ namespace VM {
     std::string* attributeNames;
     int subTypeCount;
     // this is necessary to invoke methods
-    GFunctionInstance* functions;
-
-    void bindToEnv(GEnvironmentInstance*);
+    GEnvironmentInstance* parentEnv;
+    GEnvironment* environment;
+    GFunction** functions;
+    int functionCount;
+    GEnvironmentInstance* instantiate();
   } GType;
 
   GType* getArrayType(GType* elementType);
