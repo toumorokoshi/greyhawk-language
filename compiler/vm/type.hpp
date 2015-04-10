@@ -5,6 +5,9 @@
 
 namespace VM {
 
+  struct GEnvironmentInstance;
+  struct GFunctionInstance;
+
   enum BASICTYPES {
     ARRAY,
     BOOL,
@@ -27,6 +30,10 @@ namespace VM {
     GType** subTypes;
     std::string* attributeNames;
     int subTypeCount;
+    // this is necessary to invoke methods
+    GFunctionInstance* functions;
+
+    void bindToEnv(GEnvironmentInstance*);
   } GType;
 
   GType* getArrayType(GType* elementType);

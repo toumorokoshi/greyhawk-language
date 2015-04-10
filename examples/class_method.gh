@@ -1,0 +1,8 @@
+class Foo:
+	attribute Int
+
+	Int myMethod():
+		return attribute + 1
+
+f := Foo()
+print(f.myMethod())

@@ -62,47 +62,27 @@ namespace parser {
       auto token = *token_position;
       switch (token->type) {
 
-      case IDENTIFIER: {
-        if (token_position + 1 == tokens.end() || token_position + 2 == tokens.end()) {
-          throw ParserException(**token_position, "reached EOF while parsing class declaration");
-        }
-
-        auto attributeName = token->value;
-        token_position++;
-
-        _validateToken(L::TYPE, "expected a type for a class attribute declaration");
-        auto typeName = (*(token_position))->value;
-
-        pclass->attributes[attributeName] = typeName;
-        token_position++;
-        break;
-      }
-
-        // this code looks funky. Don't know what's going on with this.
-        /* case TYPE: {
-
-        if (token_position + 1 == tokens.end() || token_position + 2 == tokens.end()) {
-          throw ParserException(**token_position, "reached EOF while parsing class declaration");
-        }
-
-        auto next_token = *(token_position + 2);
-        switch (next_token->type) {
-
-        case LPAREN:
-          pclass->methods.push_back(parseFunctionDeclaration());
-          break;
-
-        default: {
-          auto typeName = token->value;
-          auto attributeName = (*(token_position + 1))->value;
-          pclass->attributes[attributeName] = typeName;
-          token_position += 2;
+      case IDENTIFIER:
+        {
+          if (token_position + 1 == tokens.end() || token_position + 2 == tokens.end()) {
+            throw ParserException(**token_position, "reached EOF while parsing class declaration");
           }
 
-        }
+          auto attributeName = token->value;
+          token_position++;
 
+          _validateToken(L::TYPE, "expected a type for a class attribute declaration");
+          auto typeName = (*(token_position))->value;
+
+          pclass->attributes[attributeName] = typeName;
+          token_position++;
+        }
         break;
-        } */
+
+        // this code looks funky. Don't know what's going on with this.
+      case TYPE:
+        pclass->methods.push_back(parseFunctionDeclaration());
+        break;
 
       default:
         throw ParserException(**token_position,

@@ -55,4 +55,7 @@ namespace VM {
     auto static noneType = new GType { NONE, "None", NULL };
     return noneType;
   }
+
+  GFunctionInstance* GType::bindToEnv(GEnvironmentInstance* env) {
+  }
 }
