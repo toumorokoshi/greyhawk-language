@@ -3,7 +3,7 @@
 #include <iostream>
 
 #define debug(s);
-//#define debug(s) std::cout << s << std::endl;
+// #define debug(s) std::cout << s << std::endl;
 
 using namespace VM;
 using namespace lexer;
@@ -66,6 +66,8 @@ namespace parser {
                                      GInstructionVector& instructions) {
     debug("calling method");
     if (name == "print") {
+
+      debug("adding print.");
       auto argument = arguments[0]->generateExpression(scope, instructions);
       GOPCODE op;
       auto type = argument->type;
@@ -381,22 +383,28 @@ namespace parser {
 
   void PClassDeclaration::generateStatement(GScope* scope,
                                             GInstructionVector& instr) {
-    int attributeSize = attributes.size();
-    auto attributeTypes = new GType*[attributeSize];
-    auto attributeNames = new std::string[attributeSize];
+    debug("creating class " + name);
+    auto classScope = scope->createChild(true, false);
 
-    int i = 0;
     for (auto& kv: attributes) {
-      attributeNames[i] = kv.first;
-      attributeTypes[i] = evaluateType(kv.second);
-      i++;
+      classScope->addObject(kv.first, evaluateType(kv.second));
     }
 
-    auto type = new GType{
+    for (auto method: methods) {
+      auto function = new GFunction {
+        .argumentCount = (int) method->arguments.size(),
+        .returnType = evaluateType(method->returnType)
+      };
+      debug("adding function " + method->name + "...")
+      classScope->addFunction(method->name, function, method);
+      method->generateBody(function, classScope);
+    }
+
+    auto type = new GType {
       .name = name,
-      .subTypes = attributeTypes,
-      .attributeNames = attributeNames,
-      .subTypeCount = attributeSize
+      .attributeCount = (int) attributes.size(),
+      .environment = classScope->environment,
+      .functionCount = (int) methods.size()
     };
 
     auto classIndex = scope->addClass(name, type);
@@ -475,7 +483,7 @@ namespace parser {
                                             GInstructionVector& instructions) {
     auto valueObject = value->generateExpression(scope, instructions);
     auto indexObject = index->generateExpression(scope, instructions);
-    auto objectRegister = scope->allocateObject(valueObject->type->subTypes[0]);
+    /* auto objectRegister = scope->allocateObject(valueObject->type->getObject[0]);
     if (indexObject->type->classifier != INT32) {
       throw ParserException("index on array is not an int");
     }
@@ -487,6 +495,35 @@ namespace parser {
         }
       });
     return objectRegister;
+    */
+  }
+
+  GIndex* PMethodCall::generateExpression(GScope* scope,
+                                          GInstructionVector& instructions) {
+    auto object = currentValue->generateExpression(scope, instructions);
+    auto funcRegister = scope->allocateObject(getFunctionType());
+    auto type = object->type;
+    auto methodIdx = type->environment->getObject(methodName);
+    instructions.push_back(GInstruction {
+        GOPCODE::INSTANCE_LOAD_ATTRIBUTE, new GOPARG[3] {
+          funcRegister->registerNum, object->registerNum, methodIdx->registerNum
+        }
+    });
+
+    auto function = type->environment->getFunction(methodName);
+    auto returnValue = scope->allocateObject(function->returnType);
+    auto argumentRegisters = new GOPARG[2 + arguments.size()];
+    argumentRegisters[0].registerNum = returnValue->registerNum;
+    argumentRegisters[1].registerNum = funcRegister->registerNum;
+    for (int i = 0; i < (int) arguments.size(); i++) {
+      auto index = arguments[i]->generateExpression(scope, instructions);
+      argumentRegisters[i + 2].registerNum = index->registerNum;
+    }
+
+    instructions.push_back(GInstruction {
+        GOPCODE::FUNCTION_CALL, argumentRegisters
+    });
+    return returnValue;
   }
 
   GIndex* PPropertyAccess::generateExpression(GScope* scope,
@@ -494,28 +531,18 @@ namespace parser {
     debug("accessing property...")
     auto valueObject = currentValue->generateExpression(scope, instr);
     auto objectType = valueObject->type;
-    int index = 0;
-    GType* returnType = NULL;
-    while (returnType == NULL && index < objectType->subTypeCount) {
-      debug(objectType->attributeNames[index]);
-      debug(objectType->subTypes[index]->name);
-      if (objectType->attributeNames[index].compare(propertyName) == 0) {
-        returnType = objectType->subTypes[index];
-      } else {
-        index++;
-      }
-    }
+    auto attribute = objectType->environment->getObject(propertyName);
 
-    if (returnType == NULL) {
+    if (attribute == NULL) {
       throw ParserException("unable to retrieve type for property " + propertyName);
     }
 
-    auto returnIndex = scope->allocateObject(returnType);
+    auto returnIndex = scope->allocateObject(attribute->type);
 
     debug("pushing back instruction...")
     instr.push_back({
         GOPCODE::INSTANCE_LOAD_ATTRIBUTE, new GOPARG[3] {
-          returnIndex->registerNum, valueObject->registerNum, index
+          returnIndex->registerNum, valueObject->registerNum, attribute->registerNum
         }
     });
 
@@ -532,7 +559,7 @@ namespace parser {
         LOAD_CONSTANT_INT, new GOPARG[2] { iteratorIndex->registerNum, 0 }
     });
 
-    auto iteratorObject = forScope->addObject(varName, array->type->subTypes[0]);
+    /* auto iteratorObject = forScope->addObject(varName, array->type->subTypes[0]);
 
     auto zero = scope->allocateObject(getInt32Type());
     instructions.push_back(GInstruction {
@@ -587,6 +614,7 @@ namespace parser {
           { 1 }
         }
     });
+    */
   }
 
   void PForeachLoop::generateStatement(GScope* scope,

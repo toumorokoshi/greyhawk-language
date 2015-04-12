@@ -321,7 +321,7 @@ namespace parser {
 
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(codegen::GScope*) { return NULL; }
-    virtual VM::GIndex* generateExpression(codegen::GScope*, GInstructionVector&) { return NULL; }
+    virtual VM::GIndex* generateExpression(codegen::GScope*, GInstructionVector&);
 
     PMethodCall(PExpression* _currentValue,
                 std::string _methodName,

@@ -3,8 +3,8 @@
 #include <string>
 #include <iostream>
 
-#define debug(s) std::cout << s << std::endl;
-// #define debug(s)
+// #define debug(s) std::cout << s << std::endl;
+#define debug(s)
 
 namespace VM {
 
@@ -58,6 +58,7 @@ namespace VM {
 
       case TYPE_LOAD:
         locals[args[0].registerNum].asType = environment->types[args[1].registerNum];
+        locals[args[0].registerNum].asType->parentEnv = &environmentInstance;
         break;
 
       case DIVIDE_FLOAT:
@@ -94,8 +95,11 @@ namespace VM {
       }
 
       case FUNCTION_CALL: {
+        debug("FUNCTION_CALL: start")
         auto funcInst = locals[args[1].registerNum].asFunction;
+        debug("FUNCTION_CALL: generating register num")
         auto func = funcInst->function;
+        debug("FUNCTION_CALL: generating env instance")
         auto funcEnvInstance = func->environment->createInstance(funcInst->parentEnv);
 
         for (int i = 0; i < func->argumentCount; i++) {
@@ -104,6 +108,7 @@ namespace VM {
           funcEnvInstance->locals[i] = locals[args[2 + i].registerNum];
         }
 
+        debug("FUNCTION_CALL: execute")
         locals[args[0].registerNum] = executeInstructions(modules,
                                                          func->instructions,
                                                          *funcEnvInstance);
@@ -132,24 +137,22 @@ namespace VM {
 
       case INSTANCE_CREATE: {
         auto type = locals[args[1].registerNum].asType;
-        auto attributes = new GValue[type->subTypeCount];
-        for (int i = 0; i < type->subTypeCount; i++) {
-          attributes[i] = locals[args[i + 2].registerNum];
+        auto instance = type->instantiate();
+        for (int i = 0; i < type->attributeCount; i++) {
+          instance->locals[i] = locals[args[i + 2].registerNum];
         }
-        locals[args[0].registerNum].asInstance = new GInstance{
-          .type = type,
-          .attributes = attributes
-        };
+        locals[args[0].registerNum].asInstance = instance;
         break;
       }
 
       case INSTANCE_LOAD_ATTRIBUTE:
+        debug("loading attribute...")
         locals[args[0].registerNum] = \
-          locals[args[1].registerNum].asInstance->attributes[args[2].registerNum];
+          locals[args[1].registerNum].asInstance->locals[args[2].registerNum];
         break;
 
       case INSTANCE_STORE_ATTRIBUTE:
-        locals[args[0].registerNum].asInstance->attributes[args[1].registerNum] = \
+        locals[args[0].registerNum].asInstance->locals[args[1].registerNum] = \
           locals[args[2].registerNum];
         break;
 

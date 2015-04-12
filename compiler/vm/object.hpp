@@ -32,7 +32,7 @@ namespace VM {
     void* asNone;
     GArray* asArray;
     GEnvironmentInstance* asModule;
-    GInstance* asInstance;
+    GEnvironmentInstance* asInstance;
     GFunctionInstance* asFunction;
     GType* asType;
     FILE* asFile;

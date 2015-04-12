@@ -42,13 +42,13 @@ namespace VM {
     BASICTYPES classifier;
     std::string name;
     // todo: rename to attributeTypes
-    GType** subTypes;
-    std::string* attributeNames;
-    int subTypeCount;
+    // GType** subTypes;
+    // std::string* attributeNames;
+    int attributeCount;
     // this is necessary to invoke methods
     GEnvironmentInstance* parentEnv;
     GEnvironment* environment;
-    GFunction** functions;
+    // GFunction** functions;
     int functionCount;
     GEnvironmentInstance* instantiate();
   } GType;

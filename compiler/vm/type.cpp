@@ -8,8 +8,11 @@ namespace VM {
   GType* getArrayType(GType* elementType) {
     static std::map<GType*, GType*> arrayTypes;
     if (arrayTypes.find(elementType) == arrayTypes.end()) {
-      arrayTypes[elementType] = new GType { ARRAY, "Array<" + elementType->name + ">",
-                                            new GType*[1] { elementType }};
+      /* arrayTypes[elementType] = new GType { ARRAY, "Array<" + elementType->name + ">",
+         new GType*[1] { elementType }};*/
+      arrayTypes[elementType] = new GType {
+        ARRAY, "Array<" + elementType->name + ">"
+      };
     }
     return arrayTypes[elementType];
   }
@@ -63,9 +66,9 @@ namespace VM {
     // we instantiate all the methods, binding them to the current context.
     for (int i = 0; i < functionCount; i++) {
       // methods are instantiate after type.
-      int methodIndex = i + subTypeCount;
+      int methodIndex = i + attributeCount;
       instance->locals[methodIndex].asFunction = new GFunctionInstance {
-        .function = functions[i],
+        .function = environment->functions[i],
         .parentEnv = *instance
       };
     }

@@ -4,5 +4,6 @@ class Foo:
 	Int myMethod():
 		return attribute + 1
 
-f := Foo()
+f := Foo(15)
+f.attribute = 12
 print(f.myMethod())

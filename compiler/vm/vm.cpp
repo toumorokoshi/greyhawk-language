@@ -88,6 +88,11 @@ void VM::printInstructions(GInstruction* firstInstruction) {
                 << values[1].registerNum << "}()";
       break;
 
+    case INSTANCE_LOAD_ATTRIBUTE:
+      std::cout << "INSTANCE_LOAD_ATTRIBUTE: {" << values[0].registerNum << "} <- {"
+                << values[1].registerNum << "}[" << values[2].registerNum << "]";
+      break;
+
     case LENGTH:
       std::cout << "LENGTH:";
       break;
