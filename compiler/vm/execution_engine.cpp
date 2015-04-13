@@ -129,7 +129,7 @@ namespace VM {
         break;
       }
 
-      case GLOBAL_WRITE:
+      case GLOBAL_SET:
         *(globals[args[0].registerNum]) = locals[args[1].registerNum];
         break;
 

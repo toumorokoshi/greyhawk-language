@@ -2,8 +2,10 @@ class Foo:
 	attribute Int
 
 	Int myMethod():
+		attribute = attribute + 1
 		return attribute + 1
 
 f := Foo(15)
-f.attribute = 12
+print(f.myMethod())
+print(f.myMethod())
 print(f.myMethod())

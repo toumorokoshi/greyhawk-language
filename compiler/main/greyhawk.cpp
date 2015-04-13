@@ -116,6 +116,16 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
     debug("parsed.");
 
     if (args.bytecode) {
+      for (auto typeKV: globalScope->typeByName) {
+        std::cout << typeKV.first << ":" << std::endl;
+
+        for (auto functionKV: typeKV.second->environment->functionByName) {
+          std::cout << functionKV.first << " (" << functionKV.second << "):" << std::endl;
+          printInstructions(functionKV.second->instructions);
+          std::cout << std::endl;
+        }
+      }
+
       debug("printing bytecode.");
       for (auto functionKV: globalScope->functionByName) {
         std::cout << functionKV.first << " (" << functionKV.second << "):" << std::endl;

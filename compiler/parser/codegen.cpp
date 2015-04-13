@@ -25,6 +25,19 @@ namespace parser {
     return localIndex;
   }
 
+  GIndex* enforceLocal(GScope* scope, GIndex* value,
+                       GInstructionVector& instructions) {
+    if (!value->isGlobal) {
+      return value;
+    }
+
+    auto index = scope->allocateObject(value->type);
+    instructions.push_back({
+        GOPCODE::GLOBAL_LOAD, new GOPARG[2] { index->registerNum, value->registerNum}
+    });
+    return index;
+  }
+
   // determine if the identifier is a type
   bool isType(std::string identifier) {
     return identifier[0] >= 'A' || identifier[0] <= 'Z';
@@ -167,9 +180,16 @@ namespace parser {
         throw ParserException("type mismatch in assignment!");
       }
 
-      instructions.push_back(GInstruction {
-          SET, new GOPARG[2] { {value->registerNum}, {ident->registerNum} }
-      });
+      if (ident->isGlobal) {
+        instructions.push_back(GInstruction {
+            GLOBAL_SET, new GOPARG[2] {{ident->registerNum}, {value->registerNum}}
+        });
+      } else {
+        instructions.push_back(GInstruction {
+            SET, new GOPARG[2] { {value->registerNum}, {ident->registerNum} }
+        });
+      }
+
     }
   }
 
@@ -185,6 +205,9 @@ namespace parser {
                                                 GInstructionVector& instructions) {
     auto lhsObject = lhs->generateExpression(scope, instructions);
     auto rhsObject = rhs->generateExpression(scope, instructions);
+
+    lhsObject = enforceLocal(scope, lhsObject, instructions);
+    rhsObject = enforceLocal(scope, rhsObject, instructions);
 
     // cast as necessary
     /* if (lhsObject->type == getFloatType() && rhsObject->type == getInt32Type()) {
@@ -308,6 +331,7 @@ namespace parser {
   GIndex* PIdentifier::generateExpression(GScope* scope,
                                           GInstructionVector& instructions) {
     auto object = scope->getObject(name);
+    /* auto object = scope->getObject(name);
     if (object->isGlobal) {
       auto newObject = scope->allocateObject(object->type);
       instructions.push_back({
@@ -315,7 +339,7 @@ namespace parser {
           new VM::GOPARG[2] { {newObject->registerNum}, {object->registerNum} }
       });
       return newObject;
-    }
+      } */
 
     if (object == NULL) {
       throw ParserException("Object " + name + " is not defined in this scope!");

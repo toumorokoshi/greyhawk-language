@@ -79,6 +79,11 @@ void VM::printInstructions(GInstruction* firstInstruction) {
                 << " <- {-" << values[1].registerNum << "}";
       break;
 
+    case GLOBAL_SET:
+      std::cout << "GLOBAL_SET: {-" << values[0].registerNum << "}"
+                << " <- {" << values[1].registerNum << "}";
+      break;
+
     case INT_TO_FLOAT:
       std::cout << "INT_TO_FLOAT:";
       break;
