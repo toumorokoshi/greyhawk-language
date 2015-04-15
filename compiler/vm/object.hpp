@@ -43,8 +43,17 @@ namespace VM {
     GValue value;
   } GObject;
 
+  enum GIndexType {
+    LOCAL,
+    GLOBAL,
+    OBJECT_PROPERTY
+  };
+
+  struct GIndex;
+
   typedef struct GIndex {
-    bool isGlobal;
+    GIndexType indexType;
+    GIndex* objectIndex;
     int registerNum;
     GType* type;
   } GIndex;

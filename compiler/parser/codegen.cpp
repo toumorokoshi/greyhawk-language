@@ -14,7 +14,7 @@ namespace parser {
   GIndex* getObjectEnforceLocal(GScope* scope, std::string name,
                                 GInstructionVector& instructions) {
     GIndex* index = scope->getObject(name);
-    if (index == NULL || !index->isGlobal) {
+    if (index == NULL || !(index->indexType == GLOBAL)) {
       return index;
     }
 
@@ -27,7 +27,7 @@ namespace parser {
 
   GIndex* enforceLocal(GScope* scope, GIndex* value,
                        GInstructionVector& instructions) {
-    if (!value->isGlobal) {
+    if (value->indexType == LOCAL) {
       return value;
     }
 
@@ -180,7 +180,7 @@ namespace parser {
         throw ParserException("type mismatch in assignment!");
       }
 
-      if (ident->isGlobal) {
+      if (ident->indexType == GLOBAL) {
         instructions.push_back(GInstruction {
             GLOBAL_SET, new GOPARG[2] {{ident->registerNum}, {value->registerNum}}
         });

@@ -1,0 +1,8 @@
+class Foo:
+	attribute Int
+	attribute2 Int
+
+f := Foo(1, 2)
+f.attribute = 12
+
+print(f.attribute)

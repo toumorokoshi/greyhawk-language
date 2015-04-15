@@ -41,15 +41,13 @@ namespace VM {
   typedef struct GType {
     BASICTYPES classifier;
     std::string name;
-    // todo: rename to attributeTypes
-    // GType** subTypes;
-    // std::string* attributeNames;
     int attributeCount;
+    int functionCount;
     // this is necessary to invoke methods
     GEnvironmentInstance* parentEnv;
     GEnvironment* environment;
-    // GFunction** functions;
-    int functionCount;
+    // this is actually what contains
+    // the variables.
     GEnvironmentInstance* instantiate();
   } GType;
 

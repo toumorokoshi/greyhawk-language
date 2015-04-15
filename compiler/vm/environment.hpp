@@ -57,7 +57,7 @@ namespace VM {
       if (globalsTable.find(name) != globalsTable.end()) {
         int index = globalsTable[name];
         return new GIndex {
-          .isGlobal = true,
+          .indexType = GLOBAL,
           .registerNum = index,
           .type = globalsTypes[index]
         };
