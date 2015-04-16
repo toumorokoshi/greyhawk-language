@@ -151,7 +151,7 @@ namespace VM {
           locals[args[1].registerNum].asInstance->locals[args[2].registerNum];
         break;
 
-      case INSTANCE_STORE_ATTRIBUTE:
+      case INSTANCE_SET_ATTRIBUTE:
         locals[args[0].registerNum].asInstance->locals[args[1].registerNum] = \
           locals[args[2].registerNum];
         break;

@@ -15,7 +15,7 @@ using namespace VM;
 
 
 #define debug(s);
-//#define debug(s) std::cout << s << std::endl;
+// #define debug(s) std::cout << s << std::endl;
 
 // these are initialized in main
 static Tokenizer* tokenizer;

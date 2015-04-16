@@ -11,20 +11,6 @@ using namespace codegen;
 
 namespace parser {
 
-  GIndex* getObjectEnforceLocal(GScope* scope, std::string name,
-                                GInstructionVector& instructions) {
-    GIndex* index = scope->getObject(name);
-    if (index == NULL || !(index->indexType == GLOBAL)) {
-      return index;
-    }
-
-    auto localIndex = scope->allocateObject(index->type);
-    instructions.push_back({
-        GOPCODE::GLOBAL_LOAD, new GOPARG[2] { localIndex->registerNum, index->registerNum}
-    });
-    return localIndex;
-  }
-
   GIndex* enforceLocal(GScope* scope, GIndex* value,
                        GInstructionVector& instructions) {
     if (value->indexType == LOCAL) {
@@ -32,9 +18,28 @@ namespace parser {
     }
 
     auto index = scope->allocateObject(value->type);
-    instructions.push_back({
-        GOPCODE::GLOBAL_LOAD, new GOPARG[2] { index->registerNum, value->registerNum}
-    });
+
+    switch (value->indexType) {
+    case GLOBAL:
+      instructions.push_back({
+          GLOBAL_LOAD, new GOPARG[2] { index->registerNum, value->registerNum}
+      });
+      break;
+
+    case OBJECT_PROPERTY:
+      instructions.push_back({
+          INSTANCE_LOAD_ATTRIBUTE, new GOPARG[3] {
+            index->registerNum,
+            value->objectIndex->registerNum,
+            value->registerNum
+          }
+      });
+      break;
+
+    default:
+      throw ParserException("unable to localize variable");
+    }
+
     return index;
   }
 
@@ -82,6 +87,7 @@ namespace parser {
 
       debug("adding print.");
       auto argument = arguments[0]->generateExpression(scope, instructions);
+      argument = enforceLocal(scope, argument, instructions);
       GOPCODE op;
       auto type = argument->type;
 
@@ -101,8 +107,9 @@ namespace parser {
           op, new GOPARG[1] { { argument->registerNum } }
       });
 
-    } else if (auto functionIndex = getObjectEnforceLocal(scope, name, instructions)) {
+    } else if (auto functionIndex = scope->getObject(name)) {
       debug(name);
+      functionIndex = enforceLocal(scope, functionIndex, instructions);
 
       GOPCODE instruction;
       GType* returnType;
@@ -134,6 +141,7 @@ namespace parser {
       // third on are the actual arguments
       for (auto argument : arguments) {
         auto object = argument->generateExpression(scope, instructions);
+        object = enforceLocal(scope, object, instructions);
         opArgs->push_back(GOPARG { object->registerNum });
       }
 
@@ -180,14 +188,31 @@ namespace parser {
         throw ParserException("type mismatch in assignment!");
       }
 
-      if (ident->indexType == GLOBAL) {
+      switch (ident->indexType) {
+      case LOCAL:
+        instructions.push_back(GInstruction {
+            SET, new GOPARG[2] { {ident->registerNum}, {value->registerNum} }
+        });
+        break;
+      case GLOBAL:
         instructions.push_back(GInstruction {
             GLOBAL_SET, new GOPARG[2] {{ident->registerNum}, {value->registerNum}}
         });
-      } else {
-        instructions.push_back(GInstruction {
-            SET, new GOPARG[2] { {value->registerNum}, {ident->registerNum} }
+        break;
+      case OBJECT_PROPERTY:
+        instructions.push_back({
+          INSTANCE_SET_ATTRIBUTE, new GOPARG[3] {
+            ident->objectIndex->registerNum,
+            ident->registerNum,
+            value->registerNum,
+          }
         });
+        break;
+      }
+
+
+      if (ident->indexType == GLOBAL) {
+      } else {
       }
 
     }
@@ -554,6 +579,8 @@ namespace parser {
                                               GInstructionVector& instr) {
     debug("accessing property...")
     auto valueObject = currentValue->generateExpression(scope, instr);
+    valueObject = enforceLocal(scope, valueObject, instr);
+
     auto objectType = valueObject->type;
     auto attribute = objectType->environment->getObject(propertyName);
 
@@ -561,7 +588,14 @@ namespace parser {
       throw ParserException("unable to retrieve type for property " + propertyName);
     }
 
-    auto returnIndex = scope->allocateObject(attribute->type);
+    return new GIndex {
+      .indexType = OBJECT_PROPERTY,
+      .objectIndex = valueObject,
+      .registerNum = attribute->registerNum,
+      .type = attribute->type
+    };
+
+    /* auto returnIndex = scope->allocateObject(attribute->type);
 
     debug("pushing back instruction...")
     instr.push_back({
@@ -571,7 +605,7 @@ namespace parser {
     });
 
     debug("done!");
-    return returnIndex;
+    return returnIndex; */
   }
 
   // generates the instructions to parse the array
