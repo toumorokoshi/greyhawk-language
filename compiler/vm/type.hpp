@@ -35,12 +35,16 @@ namespace VM {
     * attributes
     * methods
 
-    this order is required, because an instantiate will automatically populate
+    this order is required, because an instantiate() will automatically populate
     functions bound to the internal scope of the instance.
    */
   typedef struct GType {
     BASICTYPES classifier;
     std::string name;
+    // subtypes are kind of a weird thing. right now, they're
+    // only used for arrays, to indicate the array element type.
+    // at some point, we may want to use these for things like generics.
+    GType** subTypes;
     int attributeCount;
     int functionCount;
     // this is necessary to invoke methods

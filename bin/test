@@ -1,3 +1,2 @@
 #!/usr/bin/env bash
-[ -f ./compiler/greyhawk ] || ./bin/build
 python tests/test.py $@

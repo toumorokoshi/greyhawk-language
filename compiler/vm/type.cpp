@@ -8,11 +8,10 @@ namespace VM {
   GType* getArrayType(GType* elementType) {
     static std::map<GType*, GType*> arrayTypes;
     if (arrayTypes.find(elementType) == arrayTypes.end()) {
-      /* arrayTypes[elementType] = new GType { ARRAY, "Array<" + elementType->name + ">",
-         new GType*[1] { elementType }};*/
       arrayTypes[elementType] = new GType {
-        ARRAY, "Array<" + elementType->name + ">"
-      };
+        .classifier = ARRAY,
+        .name = "Array<" + elementType->name + ">",
+        .subTypes = new GType*[1] { elementType }};
     }
     return arrayTypes[elementType];
   }

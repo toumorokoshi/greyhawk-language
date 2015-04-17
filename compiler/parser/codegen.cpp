@@ -532,7 +532,7 @@ namespace parser {
                                             GInstructionVector& instructions) {
     auto valueObject = value->generateExpression(scope, instructions);
     auto indexObject = index->generateExpression(scope, instructions);
-    /* auto objectRegister = scope->allocateObject(valueObject->type->getObject[0]);
+    auto objectRegister = scope->allocateObject(valueObject->type->subTypes[0]);
     if (indexObject->type->classifier != INT32) {
       throw ParserException("index on array is not an int");
     }
@@ -544,7 +544,6 @@ namespace parser {
         }
       });
     return objectRegister;
-    */
   }
 
   GIndex* PMethodCall::generateExpression(GScope* scope,
@@ -594,18 +593,6 @@ namespace parser {
       .registerNum = attribute->registerNum,
       .type = attribute->type
     };
-
-    /* auto returnIndex = scope->allocateObject(attribute->type);
-
-    debug("pushing back instruction...")
-    instr.push_back({
-        GOPCODE::INSTANCE_LOAD_ATTRIBUTE, new GOPARG[3] {
-          returnIndex->registerNum, valueObject->registerNum, attribute->registerNum
-        }
-    });
-
-    debug("done!");
-    return returnIndex; */
   }
 
   // generates the instructions to parse the array
@@ -617,7 +604,7 @@ namespace parser {
         LOAD_CONSTANT_INT, new GOPARG[2] { iteratorIndex->registerNum, 0 }
     });
 
-    /* auto iteratorObject = forScope->addObject(varName, array->type->subTypes[0]);
+    auto iteratorObject = forScope->addObject(varName, array->type->subTypes[0]);
 
     auto zero = scope->allocateObject(getInt32Type());
     instructions.push_back(GInstruction {
@@ -672,7 +659,6 @@ namespace parser {
           { 1 }
         }
     });
-    */
   }
 
   void PForeachLoop::generateStatement(GScope* scope,
