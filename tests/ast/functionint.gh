@@ -1,0 +1,18 @@
+- function_declaration:
+    return_type: Int
+    name: getHelloFunction
+    body:
+      - return:
+          binary_operation:
+            operation: +
+            lhs: 1
+            rhs: 11
+- function_call:
+    name: print
+    arguments:
+      - function_call:
+          name: getHelloFunction
+- function_call:
+    name: print
+    arguments:
+      - 1

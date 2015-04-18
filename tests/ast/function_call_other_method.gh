@@ -1,0 +1,16 @@
+- function_declaration:
+    return_type: None
+    name: foo
+    body:
+      - function_call:
+          name: bar
+- function_declaration:
+    return_type: None
+    name: bar
+    body:
+      - function_call:
+          name: print
+          arguments:
+            - string: foo-bar
+- function_call:
+    name: foo

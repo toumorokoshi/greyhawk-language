@@ -1,0 +1,20 @@
+- declare:
+    name: a
+    value:
+      string: test
+- function_call:
+    name: print
+    arguments:
+      - array_access:
+          array:
+            identifier: a
+          index: 0
+- foreach_loop:
+    variable_name: c
+    iterable:
+      string: hello, world
+    block:
+      - function_call:
+          name: print
+          arguments:
+            - identifier: c

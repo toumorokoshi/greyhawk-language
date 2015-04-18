@@ -1,0 +1,35 @@
+- function_declaration:
+    return_type: Int
+    name: doMath
+    arguments:
+      - name: a
+        type: Int
+      - name: b
+        type: Int
+    body:
+      - return:
+          binary_operation:
+            operation: +
+            lhs:
+              binary_operation:
+                operation: +
+                lhs:
+                  identifier: a
+                rhs:
+                  identifier: b
+            rhs: 5
+- function_call:
+    name: print
+    arguments:
+      - string: "Final number: "
+- function_call:
+    name: print
+    arguments:
+      - function_call:
+          name: doMath
+          arguments:
+            - binary_operation:
+                operation: +
+                lhs: 5
+                rhs: 7
+            - 6

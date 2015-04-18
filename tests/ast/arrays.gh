@@ -1,0 +1,32 @@
+- declare:
+    name: x
+    value:
+      - 0
+      - 1
+      - 2
+      - 3
+- for_loop:
+    initializer:
+      declare:
+        name: i
+        value: 0
+    condition:
+      binary_operation:
+        operation: <
+        lhs:
+          identifier: i
+        rhs: 4
+    incrementer:
+      increment:
+        identifier:
+          identifier: i
+        expression: 1
+    body:
+      - function_call:
+          name: print
+          arguments:
+            - array_access:
+                array:
+                  identifier: x
+                index:
+                  identifier: i

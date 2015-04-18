@@ -1,0 +1,26 @@
+- declare:
+    name: y
+    value:
+      -
+        - 0
+        - 1
+      -
+        - 2
+        - 3
+      -
+        - 4
+        - 5
+- foreach_loop:
+    variable_name: i
+    iterable:
+      identifier: y
+    block:
+      - foreach_loop:
+          variable_name: j
+          iterable:
+            identifier: i
+          block:
+            - function_call:
+                name: print
+                arguments:
+                  - identifier: j

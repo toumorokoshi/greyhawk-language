@@ -1,0 +1,46 @@
+- function_declaration:
+    return_type: Int
+    name: fib
+    arguments:
+      - name: n
+        type: Int
+    body:
+      - if_else:
+          condition:
+            binary_operation:
+              operation: <
+              lhs:
+                identifier: n
+              rhs: 2
+          true_block:
+            - return:
+                identifier: n
+          false_block:
+            - return:
+                binary_operation:
+                  operation: +
+                  lhs:
+                    function_call:
+                      name: fib
+                      arguments:
+                        - binary_operation:
+                            operation: "-"
+                            lhs:
+                              identifier: n
+                            rhs: 1
+                  rhs:
+                    function_call:
+                      name: fib
+                      arguments:
+                        - binary_operation:
+                            operation: "-"
+                            lhs:
+                              identifier: n
+                            rhs: 2
+- function_call:
+    name: print
+    arguments:
+      - function_call:
+          name: fib
+          arguments:
+            - 40

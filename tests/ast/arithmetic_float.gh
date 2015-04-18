@@ -1,0 +1,7 @@
+- function_call:
+    name: print
+    arguments:
+      - binary_operation:
+          operation: "*"
+          lhs: 1.1
+          rhs: 1.1

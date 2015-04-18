@@ -1,0 +1,18 @@
+- declare:
+    name: message
+    value:
+      string: foo
+- function_declaration:
+    return_type: None
+    name: printHelloWorld
+    body:
+      - function_call:
+          name: print
+          arguments:
+            - string: hello world
+      - function_call:
+          name: print
+          arguments:
+            - identifier: message
+- function_call:
+    name: printHelloWorld

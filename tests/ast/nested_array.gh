@@ -1,0 +1,36 @@
+- declare:
+    name: array
+    value:
+      -
+        - 0
+        - 1
+      -
+        - 2
+        - 3
+      -
+        - 4
+        - 5
+- assign:
+    name:
+      array_access:
+        array:
+          array_access:
+            array:
+              identifier: array
+            index: 0
+        index: 1
+    value: 12
+- foreach_loop:
+    variable_name: element
+    iterable:
+      identifier: array
+    block:
+      - foreach_loop:
+          variable_name: sub_element
+          iterable:
+            identifier: element
+          block:
+            - function_call:
+                name: print
+                arguments:
+                  - identifier: sub_element

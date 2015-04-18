@@ -1,0 +1,34 @@
+- function_declaration:
+    return_type: None
+    name: printHelloWorld
+    body:
+      - if_else:
+          condition: true
+          true_block:
+            - function_declaration:
+                return_type: None
+                name: printAnotherHelloWorld
+                body:
+                  - function_call:
+                      name: print
+                      arguments:
+                        - string: hi there
+            - function_call:
+                name: printAnotherHelloWorld
+          false_block:
+            - function_declaration:
+                return_type: None
+                name: printAnotherHelloWorld
+                body:
+                  - function_call:
+                      name: print
+                      arguments:
+                        - string: not hi there
+            - function_call:
+                name: printAnotherHelloWorld
+      - function_call:
+          name: print
+          arguments:
+            - string: hello world
+- function_call:
+    name: printHelloWorld

@@ -1,0 +1,15 @@
+- declare:
+    name: x
+    value:
+      binary_operation:
+        operation: +
+        lhs: 1
+        rhs: 2
+- assign:
+    name:
+      identifier: x
+    value: 5
+- function_call:
+    name: print
+    arguments:
+      - identifier: x

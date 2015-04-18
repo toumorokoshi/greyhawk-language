@@ -1,0 +1,20 @@
+- function_declaration:
+    return_type: Int
+    name: multiplyByTwo
+    arguments:
+      - name: x
+        type: Int
+    body:
+      - return:
+          binary_operation:
+            operation: "*"
+            lhs:
+              identifier: x
+            rhs: 2
+- function_call:
+    name: print
+    arguments:
+      - function_call:
+          name: multiplyByTwo
+          arguments:
+            - 5

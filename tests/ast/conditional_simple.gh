@@ -1,0 +1,12 @@
+- if_else:
+    condition: true
+    true_block:
+      - function_call:
+          name: print
+          arguments:
+            - string: true
+    false_block:
+      - function_call:
+          name: print
+          arguments:
+            - string: not so true

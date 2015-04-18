@@ -1,0 +1,57 @@
+- function_declaration:
+    return_type: Int
+    name: testIfElse
+    arguments:
+      - name: x
+        type: Bool
+    body:
+      - if_else:
+          condition:
+            identifier: x
+          true_block:
+            - declare:
+                name: i
+                value: 5
+            - return:
+                identifier: i
+          false_block:
+            - return: 2
+      - return: 0
+- function_declaration:
+    return_type: None
+    name: printHelloWorld
+    body:
+      - function_call:
+          name: print
+          arguments:
+            - string: hello world
+- function_declaration:
+    return_type: None
+    name: main
+    body:
+      - function_call:
+          name: print
+          arguments:
+            - function_call:
+                name: testIfElse
+                arguments:
+                  - true
+      - function_call:
+          name: print
+          arguments:
+            - function_call:
+                name: testIfElse
+                arguments:
+                  - false
+      - function_call:
+          name: printHelloWorld
+      - function_call:
+          name: print
+          arguments:
+            - 1
+- function_call:
+    name: print
+    arguments:
+      - string: Running main..
+- function_call:
+    name: main

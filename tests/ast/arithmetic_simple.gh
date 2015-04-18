@@ -1,0 +1,25 @@
+- for_loop:
+    initializer:
+      declare:
+        name: i
+        value: 0
+    condition:
+      binary_operation:
+        operation: <
+        lhs:
+          identifier: i
+        rhs: 10
+    incrementer:
+      increment:
+        identifier:
+          identifier: i
+        expression: 1
+    body:
+      - function_call:
+          name: print
+          arguments:
+            - binary_operation:
+                operation: +
+                lhs:
+                  identifier: i
+                rhs: 1
