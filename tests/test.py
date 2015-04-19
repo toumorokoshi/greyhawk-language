@@ -97,6 +97,7 @@ def main():
                                 "Current Output", "Desired Output"
                         ):
                             print(line)
+                        continue
 
             successes += 1
 

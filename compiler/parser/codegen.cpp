@@ -45,7 +45,7 @@ namespace parser {
 
   // determine if the identifier is a type
   bool isType(std::string identifier) {
-    return identifier[0] >= 'A' || identifier[0] <= 'Z';
+    return identifier[0] >= 'A' && identifier[0] <= 'Z';
   }
 
   GType* evaluateType(std::string typeName) {
@@ -72,6 +72,7 @@ namespace parser {
   GInstructionVector* PBlock::generate(GScope* scope) {
     auto instructions = new GInstructionVector;
     for (auto statement : statements) {
+      debug("generating statement...")
       statement->generateStatement(scope, *instructions);
     }
     debug("finalizing...");
@@ -87,10 +88,11 @@ namespace parser {
 
       debug("adding print.");
       auto argument = arguments[0]->generateExpression(scope, instructions);
+      debug("enforcing local on print...")
       argument = enforceLocal(scope, argument, instructions);
+      debug("after enforcing local on print...")
       GOPCODE op;
       auto type = argument->type;
-
       if (type == getStringType()) {
         op = GOPCODE::PRINT_STRING;
       } else if (type == getInt32Type()) {
@@ -100,8 +102,12 @@ namespace parser {
       } else if (type == getFloatType()) {
         op = GOPCODE::PRINT_FLOAT;
       } else {
+        if (type == NULL) {
+          throw ParserException("There was an issue with the compiler! Recieved null class type.");
+        }
         throw ParserException("Unable to print class " + type->name);
       }
+      debug(op)
 
       instructions.push_back(GInstruction {
           op, new GOPARG[1] { { argument->registerNum } }
@@ -115,6 +121,7 @@ namespace parser {
       GType* returnType;
 
       debug("getting type values");
+      debug(name)
       if (isType(name)) {
         instruction = INSTANCE_CREATE;
         returnType = scope->getClass(name);
@@ -122,6 +129,8 @@ namespace parser {
         instruction = FUNCTION_CALL;
         returnType = scope->getFunction(name)->returnType;
       }
+      debug("return type from getCall is: ")
+      debug(returnType)
 
       if (functionIndex->type != getFunctionType() && functionIndex->type != getClassType()) {
         throw ParserException("" + name + " is not a Function or Class! found " + functionIndex->type->name);
@@ -146,12 +155,15 @@ namespace parser {
       }
 
       debug("finishing function");
+      debug(instruction);
+      debug(&(*opArgs)[0]);
+      debug(opArgs);
       instructions.push_back(GInstruction { instruction, &(*opArgs)[0] });
       return returnObject;
     } else {
       throw ParserException("Unable to call method " + name);
     }
-
+    debug("returning null on function call")
     return NULL;
   }
 
@@ -356,15 +368,6 @@ namespace parser {
   GIndex* PIdentifier::generateExpression(GScope* scope,
                                           GInstructionVector& instructions) {
     auto object = scope->getObject(name);
-    /* auto object = scope->getObject(name);
-    if (object->isGlobal) {
-      auto newObject = scope->allocateObject(object->type);
-      instructions.push_back({
-          GOPCODE::GLOBAL_LOAD,
-          new VM::GOPARG[2] { {newObject->registerNum}, {object->registerNum} }
-      });
-      return newObject;
-      } */
 
     if (object == NULL) {
       throw ParserException("Object " + name + " is not defined in this scope!");
@@ -395,6 +398,7 @@ namespace parser {
     }
 
     debug("is inner scope: " << scope->isInnerScope);
+    debug("return type is: " + returnType)
     auto index = scope->addFunction(name, new GFunction {
         .argumentCount = (int) arguments.size(),
         .returnType = evaluateType(returnType),
