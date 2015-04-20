@@ -56,6 +56,27 @@ namespace VM {
         }
         break;
 
+      case BUILTIN_CALL: {
+        auto funcInst = locals[args[1].registerNum].asFunction;
+        auto func = funcInst->function;
+        auto funcEnvInstance = func->environment->createInstance(funcInst->parentEnv);
+
+        for (int i = 0; i < func->argumentCount; i++) {
+          // we start at argument 2 on, because 0 and 1 are the return
+          // value register and the function register, respectively.
+          funcEnvInstance->locals[i] = locals[args[2 + i].registerNum];
+        }
+
+        debug("FUNCTION_CALL: execute")
+        locals[args[0].registerNum] = executeInstructions(modules,
+                                                         func->instructions,
+                                                         *funcEnvInstance);
+        delete funcEnvInstance->locals;
+        delete funcEnvInstance->globals;
+        delete funcEnvInstance;
+        break;
+      }
+
       case TYPE_LOAD:
         locals[args[0].registerNum].asType = environment->types[args[1].registerNum];
         locals[args[0].registerNum].asType->parentEnv = &environmentInstance;

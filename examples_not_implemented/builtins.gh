@@ -1,0 +1,3 @@
+test := "buffer"
+__builtins__.read(0, test, 6)
+print(test)

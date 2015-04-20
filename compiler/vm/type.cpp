@@ -9,45 +9,49 @@ namespace VM {
     static std::map<GType*, GType*> arrayTypes;
     if (arrayTypes.find(elementType) == arrayTypes.end()) {
       arrayTypes[elementType] = new GType {
-        .classifier = ARRAY,
-        .name = "Array<" + elementType->name + ">",
+        .name = "Array",
         .subTypes = new GType*[1] { elementType }};
     }
     return arrayTypes[elementType];
   }
 
   GType* getBoolType() {
-    auto static boolType = new GType { BOOL, "Bool", NULL };
+    auto static boolType = new GType { "Bool", NULL };
     return boolType;
   }
 
   GType* getClassType() {
-    auto static classType = new GType { CLASS, "Class", NULL };
+    auto static classType = new GType { "Class", NULL };
     return classType;
   };
 
   GType* getCharType() {
-    auto static charType = new GType { CHAR, "Char", NULL };
+    auto static charType = new GType { "Char", NULL };
     return charType;
   };
 
   GType* getFloatType() {
-    auto static floatType = new GType { FLOAT, "Float", NULL };
+    auto static floatType = new GType { "Float", NULL };
     return floatType;
   }
 
   GType* getFunctionType() {
-    auto static functionType = new GType { FUNCTION, "Float", NULL };
+    auto static functionType = new GType { "Function", NULL };
     return functionType;
   }
 
   GType* getInt32Type() {
-    auto static intType = new GType { INT32, "Int32", NULL };
+    auto static intType = new GType { "Int32", NULL };
     return intType;
   }
 
+  GType* getModuleType() {
+    auto static moduleType = new GType { "Module", NULL };
+    return moduleType;
+  }
+
   GType* getFileHandleType() {
-    auto static fileHandleType = new GType { FILEHANDLE, "FileHandle", NULL };
+    auto static fileHandleType = new GType { "FileHandle", NULL };
     return fileHandleType;
   }
 
@@ -56,7 +60,7 @@ namespace VM {
   }
 
   GType* getNoneType() {
-    auto static noneType = new GType { NONE, "None", NULL };
+    auto static noneType = new GType { "None", NULL };
     return noneType;
   }
 

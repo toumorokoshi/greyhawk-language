@@ -6,23 +6,11 @@
 
 namespace VM {
 
-  union GValue;
+  struct GArray;
   struct GObject;
   struct GEnvironmentInstance;
   struct GFunctionInstance;
 
-  typedef struct {
-    GValue* elements;
-    int size;
-  } GArray;
-
-  // this represents an instance of a class.
-  // all it needs are explicit set of values for each
-  // attribute it has.
-  typedef struct {
-    GType* type;
-    GValue* attributes;
-  } GInstance;
 
   typedef union GValue {
     int asInt32;
@@ -37,6 +25,11 @@ namespace VM {
     GType* asType;
     FILE* asFile;
   } GValue;
+
+  typedef struct GArray {
+    GValue* elements;
+    int size;
+  } GArray;
 
   typedef struct GObject {
     GType* type;

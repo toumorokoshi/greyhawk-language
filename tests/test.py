@@ -68,6 +68,8 @@ def main():
             if not name.endswith('.gh'):
                 continue
 
+            print("  testing {0}...".format(name))
+
             tests += 1
             target_file_path = os.path.join(EXAMPLES_DIRECTORY, name)
 

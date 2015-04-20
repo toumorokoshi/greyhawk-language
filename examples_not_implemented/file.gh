@@ -4,3 +4,6 @@ class File:
 
 	None write(msg String):
 		_handle.write(msg)
+
+	String read():
+		_handle.read()

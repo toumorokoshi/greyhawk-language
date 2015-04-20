@@ -9,19 +9,6 @@ namespace VM {
   class GEnvironment;
   struct GEnvironmentInstance;
 
-  enum BASICTYPES {
-    ARRAY,
-    BOOL,
-    CHAR,
-    CLASS,
-    FLOAT,
-    FUNCTION,
-    INSTANCE,
-    INT32,
-    FILEHANDLE,
-    NONE
-  };
-
   struct GType;
 
   /*
@@ -39,7 +26,6 @@ namespace VM {
     functions bound to the internal scope of the instance.
    */
   typedef struct GType {
-    BASICTYPES classifier;
     std::string name;
     // subtypes are kind of a weird thing. right now, they're
     // only used for arrays, to indicate the array element type.
@@ -61,6 +47,7 @@ namespace VM {
   GType* getClassType();
   GType* getFloatType();
   GType* getFunctionType();
+  GType* getModuleType();
   GType* getInt32Type();
   GType* getNoneType();
   GType* getFileHandleType();

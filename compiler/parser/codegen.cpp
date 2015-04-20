@@ -367,6 +367,10 @@ namespace parser {
 
   GIndex* PIdentifier::generateExpression(GScope* scope,
                                           GInstructionVector& instructions) {
+    if (name.compare("__builtins__") == 0) {
+      return {};
+    }
+
     auto object = scope->getObject(name);
 
     if (object == NULL) {
@@ -537,7 +541,7 @@ namespace parser {
     auto valueObject = value->generateExpression(scope, instructions);
     auto indexObject = index->generateExpression(scope, instructions);
     auto objectRegister = scope->allocateObject(valueObject->type->subTypes[0]);
-    if (indexObject->type->classifier != INT32) {
+    if (indexObject->type != getInt32Type()) {
       throw ParserException("index on array is not an int");
     }
     instructions.push_back(GInstruction {
@@ -669,7 +673,7 @@ namespace parser {
                                        GInstructionVector& instructions) {
     auto iterableValue = iterableExpression->generateExpression(scope, instructions);
     // if the value is an array, we iterate through the array first
-    if (iterableValue->type->classifier == ARRAY) {
+    if (iterableValue->type->name.compare("Array") == 0) {
       parseArrayIterator(variableName, iterableValue, block,
                          scope, instructions);
     } else {
