@@ -43,6 +43,7 @@ namespace VM {
 
   GType* getArrayType(GType* elementType);
   GType* getBoolType();
+  GType* getBuiltinType();
   GType* getCharType();
   GType* getClassType();
   GType* getFloatType();

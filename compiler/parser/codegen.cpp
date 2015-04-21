@@ -169,6 +169,7 @@ namespace parser {
 
   void PDeclare::generateStatement(GScope* scope,
                                    GInstructionVector& instructions) {
+    debug("declaring...")
     auto value = expression->generateExpression(scope, instructions);
     auto newVar = scope->addObject(name, value->type);
     instructions.push_back(GInstruction {
@@ -367,10 +368,6 @@ namespace parser {
 
   GIndex* PIdentifier::generateExpression(GScope* scope,
                                           GInstructionVector& instructions) {
-    if (name.compare("__builtins__") == 0) {
-      return {};
-    }
-
     auto object = scope->getObject(name);
 
     if (object == NULL) {
@@ -557,6 +554,10 @@ namespace parser {
   GIndex* PMethodCall::generateExpression(GScope* scope,
                                           GInstructionVector& instructions) {
     auto object = currentValue->generateExpression(scope, instructions);
+    object = enforceLocal(scope, object, instructions);
+    debug("methodcall object")
+    debug("  " << object->registerNum)
+    debug("  " << object->indexType)
     auto funcRegister = scope->allocateObject(getFunctionType());
     auto type = object->type;
     auto methodIdx = type->environment->getObject(methodName);
@@ -566,9 +567,17 @@ namespace parser {
         }
     });
 
-    auto function = type->environment->getFunction(methodName);
-    auto returnValue = scope->allocateObject(function->returnType);
+    GOPCODE instruction;
+    GIndex* returnValue;
     auto argumentRegisters = new GOPARG[2 + arguments.size()];
+    if (object->type == getBuiltinModuleType()) {
+      instruction = GOPCODE::BUILTIN_CALL;
+      returnValue = scope->allocateObject(getNoneType());
+    } else {
+      instruction = GOPCODE::FUNCTION_CALL;
+      auto function = type->environment->getFunction(methodName);
+      returnValue = scope->allocateObject(function->returnType);
+    }
     argumentRegisters[0].registerNum = returnValue->registerNum;
     argumentRegisters[1].registerNum = funcRegister->registerNum;
     for (int i = 0; i < (int) arguments.size(); i++) {
@@ -577,7 +586,7 @@ namespace parser {
     }
 
     instructions.push_back(GInstruction {
-        GOPCODE::FUNCTION_CALL, argumentRegisters
+        instruction, argumentRegisters
     });
     return returnValue;
   }
@@ -585,6 +594,7 @@ namespace parser {
   GIndex* PPropertyAccess::generateExpression(GScope* scope,
                                               GInstructionVector& instr) {
     debug("accessing property...")
+
     auto valueObject = currentValue->generateExpression(scope, instr);
     valueObject = enforceLocal(scope, valueObject, instr);
 

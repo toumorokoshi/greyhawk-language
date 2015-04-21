@@ -13,6 +13,7 @@
 #include "environment.hpp"
 #include "type.hpp"
 #include "function.hpp"
+#include "rootenvironment.hpp"
 
 #ifndef VM2_VM_HPP
 #define VM2_VM_HPP

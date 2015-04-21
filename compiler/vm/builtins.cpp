@@ -1,4 +1,5 @@
 #include "builtins.hpp"
+#include "environment.hpp"
 // unistd is a unix-specific thing.
 // we'll need to do an if/else for windows at
 // some point.
@@ -25,7 +26,32 @@ namespace VM {
     return getNoneObject();
   }
 
-  std::map<std::string, Builtin> builtinMap = {
+  /* std::map<std::string, Builtin> builtinMap = {
     {"read", builtin_read}
-  };
+    }; */
+
+  GType* getBuiltinModuleType() {
+    auto static _initialized = false;
+    auto static builtinEnv = new GEnvironment();
+    auto static builtinType = new GType {
+      "Builtin", NULL,
+      .environment = builtinEnv
+    };
+    if (!_initialized) {
+      builtinEnv->addObject("read", getBuiltinType());
+      _initialized = true;
+    }
+    return builtinType;
+  }
+
+  GEnvironmentInstance* getBuiltins() {
+    auto static _initialized = false;
+    auto static environment =                                         \
+      getBuiltinModuleType()->environment->createInstance(getEmptyEnvironmentInstance());
+    if (!_initialized) {
+      environment->locals[0].asBuiltin = &builtin_read;
+      _initialized = true;
+    }
+    return environment;
+  }
 }

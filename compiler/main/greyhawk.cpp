@@ -81,7 +81,6 @@ void printValues() {
     auto name = symbol.first;
     auto object = globalScopeInstance->locals[symbol.second];
     auto type = globalScope->localsTypes[symbol.second];
-    // auto value = globalScopeInstance[object->registerNum];
     std::cout << name << ": ";
     if (type == getNoneType()) {
       std::cout << "none";
@@ -177,8 +176,9 @@ void interpreter(CommandLineArguments& args) {
 
 int main(int argc, char *argv[]) {
   tokenizer = new Tokenizer();
-  globalScope = new GEnvironment();
-  globalScopeInstance = globalScope->createInstance(*new GEnvironmentInstance());
+  globalScope = getBaseEnvironment().createChild();
+  globalScopeInstance = \
+    globalScope->createInstance(getBaseEnvironmentInstance());
   vm = new GVM();
   vm->modules = new GModules();
   CommandLineArguments& args = getArguments(argc, argv);

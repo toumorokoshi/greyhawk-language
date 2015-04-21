@@ -56,6 +56,10 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       break;
       } */
 
+    case BUILTIN_CALL:
+      std::cout << "BUILTIN_CALL: {" << values[0].registerNum << "}";
+      break;
+
     case END:
       std::cout << "END";
       done = true;

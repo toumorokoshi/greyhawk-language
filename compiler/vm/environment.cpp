@@ -80,4 +80,9 @@ namespace VM {
       environment->globalsTypes = new GType*[0];
     }
   }
+
+  GEnvironmentInstance& getEmptyEnvironmentInstance() {
+    auto static environment = new GEnvironmentInstance();
+    return *environment;
+  }
 }

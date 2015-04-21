@@ -20,6 +20,11 @@ namespace VM {
     return boolType;
   }
 
+  GType* getBuiltinType() {
+    auto static builtinType = new GType { "Builtin", NULL };
+    return builtinType;
+  }
+
   GType* getClassType() {
     auto static classType = new GType { "Class", NULL };
     return classType;

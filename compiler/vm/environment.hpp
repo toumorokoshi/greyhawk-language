@@ -136,6 +136,6 @@ namespace VM {
   };
 
   GEnvironment* getEmptyEnvironment();
-
+  GEnvironmentInstance& getEmptyEnvironmentInstance();
 }
 #endif

@@ -1,4 +1,5 @@
 #include "type.hpp"
+#include <functional>
 #include <map>
 
 #ifndef VM2_VALUE_HPP
@@ -6,11 +7,13 @@
 
 namespace VM {
 
+  union GValue;
   struct GArray;
   struct GObject;
   struct GEnvironmentInstance;
   struct GFunctionInstance;
-
+  typedef GValue* Builtin(GValue*);
+  //  typedef std::function<GValue*(GValue*)> Builtin;
 
   typedef union GValue {
     int asInt32;
@@ -22,6 +25,7 @@ namespace VM {
     GEnvironmentInstance* asModule;
     GEnvironmentInstance* asInstance;
     GFunctionInstance* asFunction;
+    Builtin* asBuiltin;
     GType* asType;
     FILE* asFile;
   } GValue;
@@ -39,7 +43,7 @@ namespace VM {
   enum GIndexType {
     LOCAL,
     GLOBAL,
-    OBJECT_PROPERTY
+    OBJECT_PROPERTY,
   };
 
   struct GIndex;
@@ -50,11 +54,6 @@ namespace VM {
     int registerNum;
     GType* type;
   } GIndex;
-
-  /*typedef struct GObject {
-    GType* type;
-    int registerNum;
-  } GObject; */
 
   GValue* getNoneObject();
 

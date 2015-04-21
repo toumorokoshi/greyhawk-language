@@ -57,23 +57,20 @@ namespace VM {
         break;
 
       case BUILTIN_CALL: {
-        auto funcInst = locals[args[1].registerNum].asFunction;
-        auto func = funcInst->function;
-        auto funcEnvInstance = func->environment->createInstance(funcInst->parentEnv);
+        debug("BUILTIN_CALL")
+        auto builtin = locals[args[1].registerNum].asBuiltin;
+        int argCount = 3;
+        auto arguments = new GValue[3];
 
-        for (int i = 0; i < func->argumentCount; i++) {
+        for (int i = 0; i < argCount; i++) {
           // we start at argument 2 on, because 0 and 1 are the return
           // value register and the function register, respectively.
-          funcEnvInstance->locals[i] = locals[args[2 + i].registerNum];
+          arguments[i] = locals[args[2 + i].registerNum];
         }
 
-        debug("FUNCTION_CALL: execute")
-        locals[args[0].registerNum] = executeInstructions(modules,
-                                                         func->instructions,
-                                                         *funcEnvInstance);
-        delete funcEnvInstance->locals;
-        delete funcEnvInstance->globals;
-        delete funcEnvInstance;
+        debug("BUILTIN_CALL: executing...")
+        (*builtin)(arguments);
+        debug("BUILTIN_CALL: finished...")
         break;
       }
 
@@ -167,7 +164,7 @@ namespace VM {
       }
 
       case INSTANCE_LOAD_ATTRIBUTE:
-        debug("loading attribute...")
+        debug("INSTANCE_LOAD_ATTRIBUTE");
         locals[args[0].registerNum] = \
           locals[args[1].registerNum].asInstance->locals[args[2].registerNum];
         break;
@@ -194,10 +191,12 @@ namespace VM {
         break;
 
       case LOAD_CONSTANT_INT:
+        debug("LOAD_CONSTANT_INT");
         locals[args[0].registerNum].asInt32 = args[1].asInt32;
         break;
 
       case LOAD_CONSTANT_STRING: {
+        debug("LOAD_CONSTANT_STRING");
         auto constantString = args[1].asString;
         auto length = (int) strlen(constantString);
         auto elements = new GValue[length];
