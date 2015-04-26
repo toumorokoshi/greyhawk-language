@@ -26,6 +26,26 @@ namespace VM {
     return getNoneObject();
   }
 
+  GValue* builtin_write(GValue* args) {
+    // TODO: this should return the integer value.
+    int fd = args[0].asInt32;
+    GValue* buffer = (GValue*) args[1].asArray->elements;
+    int size = args[2].asInt32;
+
+    // TODO: this is really messy. this
+    // should use the buffer directly at some point
+    // in the future.
+    char inBuf[size];
+
+    for (int i = 0; i < size; i++) {
+      inBuf[i] = buffer[i].asChar;
+    }
+
+    write(fd, &inBuf, size);
+
+    return getNoneObject();
+  }
+
   /* std::map<std::string, Builtin> builtinMap = {
     {"read", builtin_read}
     }; */
@@ -39,6 +59,7 @@ namespace VM {
     };
     if (!_initialized) {
       builtinEnv->addObject("read", getBuiltinType());
+      builtinEnv->addObject("write", getBuiltinType());
       _initialized = true;
     }
     return builtinType;
@@ -50,6 +71,7 @@ namespace VM {
       getBuiltinModuleType()->environment->createInstance(getEmptyEnvironmentInstance());
     if (!_initialized) {
       environment->locals[0].asBuiltin = &builtin_read;
+      environment->locals[1].asBuiltin = &builtin_write;
       _initialized = true;
     }
     return environment;

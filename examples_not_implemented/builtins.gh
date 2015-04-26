@@ -1,3 +1,4 @@
 test := "buffer"
+__builtins__.write(1, test, 6)
 __builtins__.read(0, test, 6)
 print(test)

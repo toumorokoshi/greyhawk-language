@@ -1,9 +1,11 @@
 class File:
 
-	FileHandle _handle
+	fileDescriptor Int
 
 	None write(msg String):
-		_handle.write(msg)
+		__builtins__.write(fileDescriptor, msg, 6)
 
-	String read():
-		_handle.read()
+	String read(num Int):
+		// buffer Char[name]
+		_handle.read(fileDescriptor, buffer, num)
+		return buffer

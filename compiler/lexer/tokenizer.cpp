@@ -19,7 +19,7 @@ FSMNode& lexer::getOperatorFSMRoot() {
 TokenVector Tokenizer::tokenize(std::istream& input) {
   int line = 0;
   StringScanner scanner(input);
-  TokenVector& tokens = *new TokenVector();
+  TokenVector tokens;
   bool isNewLine = true;
   bool isComment = false;
   initialize();

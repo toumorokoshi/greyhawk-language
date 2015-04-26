@@ -20,7 +20,7 @@ namespace codegen {
   }
 
   void GScope::finalize() {
-    for (int i = 0; i < functions.size(); i++) {
+    for (int i = 0; i < (int) functions.size(); i++) {
       auto function = functions[i];
       auto declaration = functionDeclarations[i];
       declaration->generateBody(function, this);

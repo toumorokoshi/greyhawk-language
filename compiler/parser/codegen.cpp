@@ -2,8 +2,11 @@
 #include "exceptions.hpp"
 #include <iostream>
 
-#define debug(s);
-// #define debug(s) std::cout << s << std::endl;
+#ifdef DEBUG
+  #define debug(s) std::cerr << s << std::endl;
+#else
+  #define debug(s);
+#endif
 
 using namespace VM;
 using namespace lexer;
@@ -70,27 +73,28 @@ namespace parser {
   }
 
   GInstructionVector* PBlock::generate(GScope* scope) {
+    debug("PARSER: Generating Block")
     auto instructions = new GInstructionVector;
     for (auto statement : statements) {
-      debug("generating statement...")
+      debug("  generating statement...")
       statement->generateStatement(scope, *instructions);
     }
-    debug("finalizing...");
+    debug("  finalizing...");
     scope->finalize();
-    debug("finished finalizing...");
+    debug("  finished finalizing...");
     return instructions;
   }
 
   GIndex* PCall::generateExpression(GScope* scope,
                                      GInstructionVector& instructions) {
-    debug("calling method");
+    debug("  calling method");
     if (name == "print") {
 
-      debug("adding print.");
+      debug("    adding print.");
       auto argument = arguments[0]->generateExpression(scope, instructions);
-      debug("enforcing local on print...")
+      debug("    enforcing local on print...")
       argument = enforceLocal(scope, argument, instructions);
-      debug("after enforcing local on print...")
+      debug("    after enforcing local on print...")
       GOPCODE op;
       auto type = argument->type;
       if (type == getStringType()) {
@@ -120,7 +124,7 @@ namespace parser {
       GOPCODE instruction;
       GType* returnType;
 
-      debug("getting type values");
+      debug("    getting type values");
       debug(name)
       if (isType(name)) {
         instruction = INSTANCE_CREATE;
@@ -129,9 +133,6 @@ namespace parser {
         instruction = FUNCTION_CALL;
         returnType = scope->getFunction(name)->returnType;
       }
-      debug("return type from getCall is: ")
-      debug(returnType)
-
       if (functionIndex->type != getFunctionType() && functionIndex->type != getClassType()) {
         throw ParserException("" + name + " is not a Function or Class! found " + functionIndex->type->name);
       }
@@ -169,7 +170,7 @@ namespace parser {
 
   void PDeclare::generateStatement(GScope* scope,
                                    GInstructionVector& instructions) {
-    debug("declaring...")
+    debug("  declaring...")
     auto value = expression->generateExpression(scope, instructions);
     auto newVar = scope->addObject(name, value->type);
     instructions.push_back(GInstruction {
@@ -398,8 +399,8 @@ namespace parser {
       throw ParserException("Cannot redeclare " + name);
     }
 
-    debug("is inner scope: " << scope->isInnerScope);
-    debug("return type is: " + returnType)
+    debug("  is inner scope: " << scope->isInnerScope);
+    debug("  return type is: " + returnType)
     auto index = scope->addFunction(name, new GFunction {
         .argumentCount = (int) arguments.size(),
         .returnType = evaluateType(returnType),
@@ -437,19 +438,24 @@ namespace parser {
 
   void PClassDeclaration::generateStatement(GScope* scope,
                                             GInstructionVector& instr) {
-    debug("creating class " + name);
+    debug("  creating class " + name);
+    debug(scope);
+    debug(scope->environment);
     auto classScope = scope->createChild(true, false);
+    // auto classScope = scope->createChild(false, false);
+    debug ("    finished creating child.")
 
     for (auto& kv: attributes) {
       classScope->addObject(kv.first, evaluateType(kv.second));
     }
 
+    debug("    creating class attributes")
     for (auto method: methods) {
       auto function = new GFunction {
         .argumentCount = (int) method->arguments.size(),
         .returnType = evaluateType(method->returnType)
       };
-      debug("adding function " + method->name + "...")
+      debug("    adding function " + method->name + "...")
       classScope->addFunction(method->name, function, method);
       method->generateBody(function, classScope);
     }

@@ -19,7 +19,7 @@ namespace VM {
 
     for (auto &kv: globalsTable) {
       if (childGlobalsTable.find(kv.first) == childGlobalsTable.end()) {
-        childGlobalsTypes->push_back(localsTypes[kv.second]);
+        childGlobalsTypes->push_back(globalsTypes[kv.second]);
         childIndicesInParent->push_back(-kv.second);
         childGlobalsTable[kv.first] = childGlobalsCount++;
       }
