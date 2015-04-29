@@ -124,12 +124,31 @@ namespace parser {
     case L_BRACKET:
       debug("parseBaseValue: return array.");
       token_position--;
-      return parseArray();
+      return parseConstantArray();
 
-    case TYPE:
-      debug("parseBaseValue: returning class.");
+    case TYPE: {
+
+      auto nextTokenType = (*token_position)->type;
       token_position--;
-      return parseClassInstantiation();
+
+      switch (nextTokenType) {
+
+      case L_BRACKET:
+        debug("parseBaseValue: returning empty array.");
+        return parseArray();
+        break;
+
+      case LPAREN:
+        debug("parseBaseValue: returning class.");
+        return parseClassInstantiation();
+        break;
+
+      default:
+        throw ParserException(*token,
+                              "found a class name at the beginning of an expression."
+                              "expected a ( or [ for a class instantiate or an array.");
+      }
+    }
 
     case L::STRING:
       debug("parseBaseValue: returning string.");

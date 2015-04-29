@@ -15,10 +15,21 @@ namespace parser {
 
   typedef std::vector<VM::GInstruction> GInstructionVector;
 
+  // helper methods
+  VM::GType* evaluateType(std::string);
+  VM::GIndex* enforceLocal(codegen::GScope*, VM::GIndex*, GInstructionVector&);
+
   class PNode {
   public:
     virtual YAML::Node* toYaml() = 0;
     virtual ~PNode() {};
+  };
+
+  // the type node is used to evaluate types.
+  // NOT USED ATM. We'll probably need this at some point.
+  class PType : public PNode {
+  public:
+    VM::GType* generateType(codegen::GScope*, GInstructionVector&) { return NULL; }
   };
 
   /* Statements */
@@ -193,6 +204,18 @@ namespace parser {
 
   /* expressions */
 
+  class PArray : public PExpression {
+  public:
+    std::string type;
+    PExpression* size;
+    virtual YAML::Node* toYaml();
+    virtual VM::GType* getType(codegen::GScope*);
+    virtual VM::GIndex* generateExpression(codegen::GScope*,
+                                           GInstructionVector&);
+    PArray(std::string _type, PExpression* _size) :
+      type(_type), size(_size) {}
+  };
+
   class PConstantBool : public PExpression {
   public:
     bool value;
@@ -274,14 +297,14 @@ namespace parser {
     PIdentifier(std::string _name) : name(_name) {}
   };
 
-  class PArray : public PExpression {
+  class PConstantArray : public PExpression {
   public:
     std::vector<PExpression*>& elements;
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(codegen::GScope*) { return VM::getNoneType(); }
     virtual VM::GIndex* generateExpression(codegen::GScope*, GInstructionVector&);
 
-    PArray(std::vector<PExpression*>& _elements) :
+    PConstantArray(std::vector<PExpression*>& _elements) :
       elements(_elements) {}
   };
 

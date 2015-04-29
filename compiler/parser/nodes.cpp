@@ -130,7 +130,7 @@ namespace parser {
     return node;
   }
 
-  YAML::Node* PArray::toYaml() {
+  YAML::Node* PConstantArray::toYaml() {
     auto node = new YAML::Node();
     for (auto element: elements) {
       node->push_back(*element->toYaml());

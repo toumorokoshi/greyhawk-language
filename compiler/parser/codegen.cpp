@@ -513,12 +513,17 @@ namespace parser {
                         falseInstructions->end());
   }
 
-  GIndex* PArray::generateExpression(GScope* scope,
-                                      GInstructionVector& instructions) {
+  GIndex* PConstantArray::generateExpression(GScope* scope,
+                                             GInstructionVector& instructions) {
+    auto sizeObject = scope->allocateObject(getInt32Type());
+    instructions.push_back(GInstruction {
+        LOAD_CONSTANT_INT, new GOPARG[2] { sizeObject->registerNum, (int) elements.size() }
+    });
+
     auto arrayObject = scope->allocateObject(getNoneType());
     auto type = getNoneType();
     instructions.push_back(GInstruction {
-        ARRAY_ALLOCATE, new GOPARG[2] { arrayObject->registerNum, (int) elements.size() }
+        ARRAY_ALLOCATE, new GOPARG[2] { arrayObject->registerNum, sizeObject->registerNum }
     });
     auto indexObject = scope->allocateObject(getInt32Type());
 

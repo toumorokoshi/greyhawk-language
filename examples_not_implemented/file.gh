@@ -6,6 +6,10 @@ class File:
 		__builtins__.write(fileDescriptor, msg, 6)
 
 	String read(num Int):
-		// buffer Char[name]
-		_handle.read(fileDescriptor, buffer, num)
+		buffer := Char[num]
+		__builtins__.read(fileDescriptor, buffer, num)
 		return buffer
+
+f := File(0)
+
+print(f.read(10))

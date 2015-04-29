@@ -23,6 +23,7 @@ namespace parser {
     Parser(lexer::TokenVector& _tokens) :
       tokens(_tokens), token_position(tokens.begin()) {}
 
+    PArray* parseArray();
     PBlock* parseBlock();
     PStatement* parseStatement();
     PClassDeclaration* parseClassDeclaration();
@@ -32,7 +33,7 @@ namespace parser {
     PForLoop* parseForLoop();
     PForeachLoop* parseForeachLoop();
     PIfElse* parseIfElse();
-    PArray* parseArray();
+    PConstantArray* parseConstantArray();
     PExpression* parseExpression();
     PExpression* parseValue();
     PExpression* parseBaseValue();
@@ -45,6 +46,7 @@ namespace parser {
 
   private:
     void _validateToken(lexer::L type, std::string message);
+    std::string _parseType(std::string);
   };
 }
 

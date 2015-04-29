@@ -20,19 +20,26 @@ int main(int argc, char* argv[]) {
   string input;
   Tokenizer tokenizer;
   if (argc == 2) {
-    string filename(argv[1]);
-    ifstream input_stream(filename);
-    TokenVector tokens = tokenizer.tokenize(input_stream);
-    Parser parser(tokens);
-    PBlock* mainBlock;
     try {
+      string filename(argv[1]);
+      ifstream input_stream(filename);
+      TokenVector tokens = tokenizer.tokenize(input_stream);
+      Parser parser(tokens);
+      PBlock* mainBlock;
       mainBlock = parser.parseBlock();
+      YAML::Node* yaml = mainBlock->toYaml();
+      cout << (*yaml) << std::endl;
     } catch (parser::ParserException& e) {
       cout << ((core::GreyhawkException) e).message << endl;
       exit(1);
+    } catch (lexer::LexerException& e) {
+      std::cout << e.message << std::endl;
+      if (e.specMessage != "") {
+        std::cout << std::endl << "details:" << std::endl;
+        std::cout << e.specMessage << std::endl;
+      }
+      exit(1);
     }
-    YAML::Node* yaml = mainBlock->toYaml();
-    cout << (*yaml) << std::endl;
 
   } else {
     cout << "Greyhawk parser." << endl;
@@ -49,7 +56,15 @@ int main(int argc, char* argv[]) {
       } catch (parser::ParserException& e) {
         cout << ((core::GreyhawkException) e).message << endl;
         continue;
+      } catch (lexer::LexerException& e) {
+        std::cout << e.message << std::endl;
+        if (e.specMessage != "") {
+          std::cout << std::endl << "details:" << std::endl;
+          std::cout << e.specMessage << std::endl;
+        }
+        continue;
       }
+      exit(1);
     }
   }
 }

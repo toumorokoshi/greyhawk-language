@@ -132,7 +132,7 @@ namespace parser {
 
   }
 
-  PArray* Parser::parseArray() {
+  PConstantArray* Parser::parseConstantArray() {
     _validateToken(L_BRACKET, "expected an '[' for an array");
     token_position++;
 
@@ -152,7 +152,7 @@ namespace parser {
     _validateToken(R_BRACKET, "expected an ']' for an array");
     token_position++;
 
-    return new PArray(*elements);
+    return new PConstantArray(*elements);
   }
 
   PStatement* Parser::parseStatement() {

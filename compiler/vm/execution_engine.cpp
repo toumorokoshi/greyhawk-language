@@ -19,9 +19,11 @@ namespace VM {
 
       switch (instruction->op) {
 
-      case ARRAY_ALLOCATE:
+      case ARRAY_ALLOCATE: {
+        auto arraySize = locals[args[1].registerNum].asInt32;
         locals[args[0].registerNum].asArray =
-          new GArray{ new GValue[args[1].size], args[1].size };
+          new GArray{ new GValue[arraySize], arraySize};
+      }
         break;
 
       case ARRAY_SET_VALUE:
