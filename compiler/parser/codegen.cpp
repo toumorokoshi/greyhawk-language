@@ -442,7 +442,6 @@ namespace parser {
     debug(scope);
     debug(scope->environment);
     auto classScope = scope->createChild(true, false);
-    // auto classScope = scope->createChild(false, false);
     debug ("    finished creating child.")
 
     for (auto& kv: attributes) {
@@ -450,13 +449,24 @@ namespace parser {
     }
 
     debug("    creating class attributes")
-    for (auto method: methods) {
+    GFunction* createdFunctions[methods.size()];
+
+    for (int i = 0; i < (int) methods.size(); i++) {
+      auto method = methods[i];
       auto function = new GFunction {
         .argumentCount = (int) method->arguments.size(),
         .returnType = evaluateType(method->returnType)
       };
+      createdFunctions[i] = function;
       debug("    adding function " + method->name + "...")
       classScope->addFunction(method->name, function, method);
+    }
+
+    // we generate the bodies at the end, to ensure that all
+    // class functions are available to all other methods.
+    for (int i = 0; i < (int) methods.size(); i++) {
+      auto method = methods[i];
+      auto function = createdFunctions[i];
       method->generateBody(function, classScope);
     }
 
@@ -593,6 +603,7 @@ namespace parser {
     argumentRegisters[1].registerNum = funcRegister->registerNum;
     for (int i = 0; i < (int) arguments.size(); i++) {
       auto index = arguments[i]->generateExpression(scope, instructions);
+      index = enforceLocal(scope, index, instructions);
       argumentRegisters[i + 2].registerNum = index->registerNum;
     }
 

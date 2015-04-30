@@ -1,0 +1,14 @@
+class Foo:
+	attribute Int
+
+	Int myOtherMethod():
+		return myMethod() + 10
+
+	Int myMethod():
+		attribute = attribute + 1
+		return attribute + 1
+
+
+f := Foo(1)
+// this should return 12
+print(f.myOtherMethod())

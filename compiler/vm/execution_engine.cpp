@@ -3,8 +3,11 @@
 #include <string>
 #include <iostream>
 
-// #define debug(s) std::cout << s << std::endl;
-#define debug(s)
+#ifdef DEBUG
+  #define debug(s) std::cerr << s << std::endl;
+#else
+  #define debug(s);
+#endif
 
 namespace VM {
 
@@ -13,6 +16,14 @@ namespace VM {
     auto globals = environmentInstance.globals;
     auto environment = environmentInstance.environment;
     auto instruction = instructions;
+    // for debugging purposes
+    debug("Environment:");
+    debug("  globals:");
+    for (auto& kv: environment->globalsTable) {
+      debug("    name: " << kv.first << " register: " << kv.second);
+    }
+
+    // the actual logic
     bool done = false;
     while (!done) {
       auto args = instruction->args;
@@ -145,6 +156,7 @@ namespace VM {
       // GLOBAL METHODS
 
       case GLOBAL_LOAD: {
+        debug("GLOBAL_LOAD")
         locals[args[0].registerNum] = *(globals[args[1].registerNum]);
         break;
       }
@@ -166,9 +178,12 @@ namespace VM {
       }
 
       case INSTANCE_LOAD_ATTRIBUTE:
-        debug("INSTANCE_LOAD_ATTRIBUTE");
-        locals[args[0].registerNum] = \
+        debug("INSTANCE_LOAD_ATTRIBUTE")
+        debug(locals)
+        debug(locals[args[1].registerNum].asInstance)
+        locals[args[0].registerNum] =                                 \
           locals[args[1].registerNum].asInstance->locals[args[2].registerNum];
+        debug("finished loading attribute")
         break;
 
       case INSTANCE_SET_ATTRIBUTE:

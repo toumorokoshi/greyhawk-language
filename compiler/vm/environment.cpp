@@ -20,7 +20,7 @@ namespace VM {
     for (auto &kv: globalsTable) {
       if (childGlobalsTable.find(kv.first) == childGlobalsTable.end()) {
         childGlobalsTypes->push_back(globalsTypes[kv.second]);
-        childIndicesInParent->push_back(-kv.second);
+        childIndicesInParent->push_back(-(kv.second + 1));
         childGlobalsTable[kv.first] = childGlobalsCount++;
       }
     }
@@ -47,7 +47,7 @@ namespace VM {
       auto index = indicesInParent[i];
       bool globalValue = index < 0;
       if (globalValue) {
-        globals[i] = parent.globals[-index];
+        globals[i] = parent.globals[-(index + 1)];
       } else {
         globals[i] = &(parent.locals[index]);
       }

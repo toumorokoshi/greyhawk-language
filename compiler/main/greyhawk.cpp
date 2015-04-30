@@ -13,9 +13,11 @@ using namespace lexer;
 using namespace parser;
 using namespace VM;
 
-
-#define debug(s);
-// #define debug(s) std::cout << s << std::endl;
+#ifdef DEBUG
+  #define debug(s) std::cerr << s << std::endl;
+#else
+  #define debug(s);
+#endif
 
 // these are initialized in main
 static Tokenizer* tokenizer;
