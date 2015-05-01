@@ -43,4 +43,4 @@
       - function_call:
           name: fib
           arguments:
-            - 40
+            - 20

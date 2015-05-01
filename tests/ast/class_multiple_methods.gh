@@ -1,0 +1,49 @@
+- class:
+    name: Foo
+    attributes:
+      attribute: Int
+    methods:
+      - function_declaration:
+          return_type: Int
+          name: myOtherMethod
+          body:
+            - return:
+                binary_operation:
+                  operation: +
+                  lhs:
+                    function_call:
+                      name: myMethod
+                  rhs: 10
+      - function_declaration:
+          return_type: Int
+          name: myMethod
+          body:
+            - assign:
+                name:
+                  identifier: attribute
+                value:
+                  binary_operation:
+                    operation: +
+                    lhs:
+                      identifier: attribute
+                    rhs: 1
+            - return:
+                binary_operation:
+                  operation: +
+                  lhs:
+                    identifier: attribute
+                  rhs: 1
+- declare:
+    name: f
+    value:
+      function_call:
+        name: Foo
+        arguments:
+          - 1
+- function_call:
+    name: print
+    arguments:
+      - method_call:
+          object:
+            identifier: f
+          method_name: myOtherMethod
