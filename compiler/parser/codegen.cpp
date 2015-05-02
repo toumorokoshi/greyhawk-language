@@ -597,6 +597,13 @@ namespace parser {
     } else {
       instruction = GOPCODE::FUNCTION_CALL;
       auto function = type->environment->getFunction(methodName);
+      if (function->argumentCount != (int) arguments.size()) {
+        throw ParserException("Argument count mismatch! " +
+                              std::to_string(function->argumentCount) +
+                              " values passed, " +
+                              std::to_string((int) arguments.size()) +
+                              " expected.");
+      }
       returnValue = scope->allocateObject(function->returnType);
     }
     argumentRegisters[0].registerNum = returnValue->registerNum;

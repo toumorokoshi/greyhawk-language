@@ -1,0 +1,12 @@
+// let's make sure multiple instances
+// of the same class don't interfere with
+// each other
+
+class Foo:
+	attribute Int
+	attribute2 Int
+
+f := Foo(1, 2)
+f2 := Foo(5, 6)
+
+print(f.attribute + f2.attribute2)

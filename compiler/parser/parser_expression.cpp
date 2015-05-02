@@ -3,8 +3,12 @@
 using namespace VM;
 using namespace lexer;
 
-#define debug(s);
-// #define debug(s) std::cout << s << std::endl;
+#ifdef DEBUG
+  #define debug(s) std::cerr << s << std::endl;
+#else
+  #define debug(s);
+#endif
+
 
 namespace parser {
 
@@ -37,7 +41,9 @@ namespace parser {
     while (true) {
       debug("loop");
 
+
       if (token_position == tokens.end()) {
+        debug("returning baseValue");
         return baseValue;
       }
 
@@ -51,6 +57,7 @@ namespace parser {
         baseValue = parseArrayAccess(baseValue);
         break;
       default:
+        debug("returning basevalue");
         return baseValue;
       }
     }
@@ -72,7 +79,7 @@ namespace parser {
     PExpressions* arguments;
 
     if (token_position != tokens.end() && (*token_position)->type == LPAREN) {
-      debug("parseMethodCall: found method call, creating VMCallMethod..");
+      debug("parseMethodCall: found method call, creating PCallMethod..");
       arguments = parseArgumentsParens();
 
     } else {

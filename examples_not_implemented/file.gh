@@ -3,14 +3,15 @@ class File:
 	fileDescriptor Int
 
 	None write(msg String):
-		__builtins__.write(fileDescriptor, msg, 3)
+		__builtins__.write(fileDescriptor, msg, 6)
 
 	String read(num Int):
 		buffer := Char[num]
 		__builtins__.read(fileDescriptor, buffer, num)
 		return buffer
 
-f := File(1)
+// stdin := File(0)
+stdout := File(1)
 
-f.write("foo")
-// print(f.write("foo"))
+stdout.write("foooo", 6)
+// stdout.write(stdin.read(10), 9)

@@ -3,8 +3,13 @@
 #include <iostream>
 #include <string>
 
-#define debug(s);
-// #define debug(s) std::cout << s << std::endl;
+#ifdef DEBUG
+  #define debug(s) std::cerr << s << std::endl;
+#else
+  #define debug(s);
+#endif
+
+
 
 using namespace lexer;
 using namespace VM;
@@ -193,6 +198,10 @@ namespace parser {
       token_position--;
       auto expression = parseExpression();
 
+      if (token_position == tokens.end()) {
+        return expression;
+      }
+
       switch ((*token_position)->type) {
       case ASSIGN:
         token_position++;
@@ -230,6 +239,7 @@ namespace parser {
   }
 
   PFunctionDeclaration* Parser::parseFunctionDeclaration() {
+    debug("parseFunctionDeclaration");
     // skip for now. I'll add this in later.
     _validateToken(TYPE, "expected a type for a function declaration");
     auto returnType = (*token_position)->value;

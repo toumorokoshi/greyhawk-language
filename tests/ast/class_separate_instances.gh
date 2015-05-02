@@ -1,0 +1,37 @@
+- class:
+    name: Foo
+    attributes:
+      attribute: Int
+      attribute2: Int
+    methods: ~
+- declare:
+    name: f
+    value:
+      function_call:
+        name: Foo
+        arguments:
+          - 1
+          - 2
+- declare:
+    name: f2
+    value:
+      function_call:
+        name: Foo
+        arguments:
+          - 5
+          - 6
+- function_call:
+    name: print
+    arguments:
+      - binary_operation:
+          operation: +
+          lhs:
+            property_access:
+              object:
+                identifier: f
+              name: attribute
+          rhs:
+            property_access:
+              object:
+                identifier: f2
+              name: attribute2

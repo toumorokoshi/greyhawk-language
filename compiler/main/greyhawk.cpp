@@ -105,9 +105,13 @@ void printValues() {
 }
 
 void run(CommandLineArguments& args, std::istream& input_stream) {
+  debug("tokenizing...");
   TokenVector tokens = tokenizer->tokenize(input_stream);
+  debug("tokenized!");
   Parser parser(tokens);
+  debug("parsing block...!");
   auto pBlock = parser.parseBlock();
+  debug("parsed!");
 
   if (args.ast) {
     dumpAST(pBlock);
