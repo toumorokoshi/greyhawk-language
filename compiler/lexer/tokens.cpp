@@ -44,6 +44,7 @@ namespace lexer {
     {IS, "is"},
     {INCREMENT, "+="},
     {DECREMENT, "-="},
+    {WHILE, "while"}
   };
 
   KeywordPair& pairFromType(L type) {
@@ -60,6 +61,7 @@ namespace lexer {
     pairFromType(FALSE),
     pairFromType(TRUE),
     pairFromType(CLASS),
+    pairFromType(WHILE),
   };
 
   const KeywordPairVector operatorPairs {

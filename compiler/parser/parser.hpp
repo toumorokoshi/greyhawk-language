@@ -39,6 +39,7 @@ namespace parser {
     PExpression* parseBaseValue();
     PCall* parseClassInstantiation();
     PCall* parseCall();
+    PWhile* parseWhile();
     PExpression* parseMethodCall(PExpression*);
     PArrayAccess* parseArrayAccess(PExpression*);
     PExpressions* parseArguments();

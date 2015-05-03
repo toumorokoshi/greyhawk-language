@@ -205,7 +205,7 @@ namespace parser {
       switch (ident->indexType) {
       case LOCAL:
         instructions.push_back(GInstruction {
-            SET, new GOPARG[2] { {ident->registerNum}, {value->registerNum} }
+            SET, new GOPARG[2] { {value->registerNum}, {ident->registerNum}}
         });
         break;
       case GLOBAL:

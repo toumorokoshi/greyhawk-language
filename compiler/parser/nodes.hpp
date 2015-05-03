@@ -202,6 +202,18 @@ namespace parser {
       expression(_expression) {}
   };
 
+  class PWhile : public PStatement {
+  public:
+    PExpression* condition;
+    PBlock* body;
+
+    virtual YAML::Node* toYaml();
+    virtual void generateStatement(codegen::GScope*, GInstructionVector&);
+
+    PWhile(PExpression* _condition, PBlock* _body):
+      condition(_condition), body(_body) {}
+  };
+
   /* expressions */
 
   class PArray : public PExpression {

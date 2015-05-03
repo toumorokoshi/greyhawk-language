@@ -150,7 +150,7 @@ namespace VM {
       }
 
       case GO:
-        instruction += args[0].positionDiff- 1;
+        instruction += args[0].positionDiff - 1;
         break;
 
       // GLOBAL METHODS

@@ -129,7 +129,7 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       break;
 
     case LESS_THAN_INT:
-      std::cout << "LESS_THAN_INT: {" << values[0].registerNum << "} < {" << values[1].registerNum << "} -> " << values[2].registerNum;
+      std::cout << "LESS_THAN_INT: {" << values[0].registerNum << "} < {" << values[1].registerNum << "} -> {" << values[2].registerNum << "}";
       break;
 
     case MULTIPLY_FLOAT:

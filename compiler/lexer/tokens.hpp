@@ -44,6 +44,7 @@ namespace lexer {
     L_CURLY,
     R_CURLY,
     SEMICOLON,
+    WHILE,
     INCREMENT,
     DECREMENT,
     // binary operators

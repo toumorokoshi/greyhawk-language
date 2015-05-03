@@ -230,6 +230,9 @@ namespace parser {
     case FOR:
       return parseForStatement();
 
+    case WHILE:
+      return parseWhile();
+
     case L::RETURN:
       return parseReturn();
 
