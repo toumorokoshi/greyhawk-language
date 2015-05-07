@@ -1,0 +1,27 @@
+class File:
+
+	fileDescriptor Int
+
+	None write(msg String, len Int):
+		__builtins__.write(fileDescriptor, msg, len)
+
+	String read(num Int):
+		buffer := Char[num]
+		__builtins__.read(fileDescriptor, buffer, num)
+		return buffer
+
+stdin := File(0)
+stdout := File(1)
+
+
+i := 0
+while i < 10:
+	output := stdin.read(100)
+	// stdout.write(output, 100)
+	for c in output:
+		buffer := Char[1]
+		buffer[0] = c
+		stdout.write(buffer, 1)
+	i = i + 1
+// stdout.write("foooo")
+// stdout.write(stdin.read(100), 100)

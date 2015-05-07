@@ -59,6 +59,7 @@ namespace parser {
     if (typeName == "Int") { return getInt32Type(); }
     else if (typeName == "Bool") { return getBoolType(); }
     else if (typeName == "String") { return getStringType(); }
+    else if (typeName == "Char") { return getCharType(); }
     else if (typeName == "None") { return getNoneType(); }
 
     throw ParserException("Cannot find class " + typeName);
@@ -604,6 +605,18 @@ namespace parser {
                               std::to_string((int) arguments.size()) +
                               " expected.");
       }
+      for (int i = 0; i < function->argumentCount; i++) {
+        GType* expectedType = function->argumentTypes[i];
+        GType* actualType = arguments[i]->getType(scope);
+        if (expectedType != actualType) {
+          debug(expectedType->subTypes[0]->name);
+          debug(actualType->subTypes[0]->name);
+          throw ParserException("Argument types mismatch! "
+                                "expected " + expectedType->name +
+                                ", found " + actualType->name);
+        }
+      }
+
       returnValue = scope->allocateObject(function->returnType);
     }
     argumentRegisters[0].registerNum = returnValue->registerNum;

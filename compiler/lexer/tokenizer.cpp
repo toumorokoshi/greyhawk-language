@@ -71,8 +71,28 @@ TokenVector Tokenizer::tokenize(std::istream& input) {
     } else if (scanner.peek() == '"') {
       std::string output;
       scanner.next();
+      bool isEscapeCharacter = false;
       while(scanner.peek() != '"') {
-        output.push_back(scanner.next());
+
+        if (isEscapeCharacter) {
+          switch (scanner.peek()) {
+          case '0':
+            output.push_back('\0');
+            break;
+          case '\\':
+            output.push_back('\\');
+            break;
+          default:
+            throw LexerException(line, "unable to escape character", NULL);
+          }
+          isEscapeCharacter = false;
+          scanner.next();
+
+        } else if (scanner.peek() == '\\') {
+          isEscapeCharacter = true;
+        } else {
+          output.push_back(scanner.next());
+        }
       }
       scanner.next();
       tokens.push_back(new Token(STRING, line, output));

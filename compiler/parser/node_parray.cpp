@@ -14,7 +14,7 @@ namespace parser {
   }
 
   GType* PArray::getType(codegen::GScope*) {
-    return evaluateType(type);
+    return getArrayType(evaluateType(type));
   }
 
   GIndex* PArray::generateExpression(codegen::GScope* scope,
@@ -27,7 +27,7 @@ namespace parser {
     auto sizeObject = size->generateExpression(scope, instr);
     sizeObject = enforceLocal(scope, sizeObject, instr);
 
-    auto arrayType = getArrayType(sizeType);
+    auto arrayType = getType(scope);
     auto arrayObject = scope->allocateObject(arrayType);
 
     instr.push_back(GInstruction {
