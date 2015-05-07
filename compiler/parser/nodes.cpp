@@ -110,6 +110,10 @@ namespace parser {
     return new YAML::Node(value);
   }
 
+  YAML::Node* PConstantChar::toYaml() {
+    return new YAML::Node(value);
+  }
+
   YAML::Node* PConstantInt::toYaml() {
     return new YAML::Node(value);
   }

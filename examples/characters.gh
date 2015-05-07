@@ -1,0 +1,3 @@
+array := "barbaz"
+array[0] = 'c'
+print(array)

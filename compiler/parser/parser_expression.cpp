@@ -161,6 +161,10 @@ namespace parser {
       debug("parseBaseValue: returning string.");
       return new PConstantString(token->value);
 
+    case CHAR:
+      debug("parseBaseValue: returning char.");
+      return new PConstantChar(token->value[0]);
+
     case INT:
       debug("parseBaseValue: returning int.");
       return new PConstantInt(std::stoi(token->value));

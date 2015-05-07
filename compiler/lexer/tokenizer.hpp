@@ -17,6 +17,7 @@ namespace lexer {
     static const Token& matchKeyword(StringScanner& scanner, int line);
     const Token& matchOperator(StringScanner& scanner, int line);
     static const Token& matchNumber(StringScanner& scanner, int line);
+    char parseChar(StringScanner&, int line);
     void calculateIndent(StringScanner& scanner, TokenVector& tokens, int line);
     void clearIndent(TokenVector& tokens, int line);
   public:

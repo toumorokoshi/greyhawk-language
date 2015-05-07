@@ -4,6 +4,7 @@ namespace lexer {
 
   std::map<L, std::string> tokenMap = {
     {BAD_TOKEN, "bad token"},
+    {CHAR, "char"},
     {INT, "integer"},
     {DOUBLE, "double"},
     {STRING, "string"},

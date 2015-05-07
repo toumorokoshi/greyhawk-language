@@ -104,7 +104,7 @@ void printValues() {
   }
 }
 
-void run(CommandLineArguments& args, std::istream& input_stream) {
+GValue run(CommandLineArguments& args, std::istream& input_stream) {
   debug("tokenizing...");
   TokenVector tokens = tokenizer->tokenize(input_stream);
   debug("tokenized!");
@@ -139,6 +139,7 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
       }
       std::cout << "main:" << std::endl;
       printInstructions(instructions);
+      return {0};
     } else {
       debug("executing code.");
       // for now, we build temp registers
@@ -150,7 +151,7 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
       }
 
       globalScopeInstance->locals = registers;
-      executeInstructions(vm->modules, instructions, *globalScopeInstance);
+      return executeInstructions(vm->modules, instructions, *globalScopeInstance);
     }
 
   }
@@ -159,7 +160,7 @@ void run(CommandLineArguments& args, std::istream& input_stream) {
 
 void interpreter(CommandLineArguments& args) {
   std::string input;
-  std::cout << "Greyhawk 0.0.1" << std::endl;
+  std::cout << "Greyhawk 0.0.2" << std::endl;
   while (true) {
     std::cout << ">> ";
     getline(std::cin, input);
@@ -168,7 +169,7 @@ void interpreter(CommandLineArguments& args) {
     }
     try {
       std::istringstream input_stream(input);
-      run(args, input_stream);
+      auto returnValue = run(args, input_stream);
 
    } catch (LexerException& e) {
       std::cout << e.message << std::endl;

@@ -16,6 +16,7 @@ namespace lexer {
     // generic token, this means an error
     BAD_TOKEN,
     // base types
+    CHAR,
     INT,
     DOUBLE,
     STRING,

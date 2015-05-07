@@ -199,8 +199,8 @@ namespace VM {
         locals[args[0].registerNum].asBool = args[1].asBool;
         break;
 
-      case LOAD_CONSTANT_FILEHANDLE:
-        locals[args[0].registerNum].asFile = args[1].asFile;
+      case LOAD_CONSTANT_CHAR:
+        locals[args[0].registerNum].asChar = args[1].asChar;
         break;
 
       case LOAD_CONSTANT_FLOAT:

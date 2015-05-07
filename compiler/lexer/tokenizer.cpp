@@ -68,31 +68,21 @@ TokenVector Tokenizer::tokenize(std::istream& input) {
         tokens.push_back(&matchOperator(scanner, line));
       }
 
+    } else if (scanner.peek() == '\'') {
+      char* values = new char[1];
+      scanner.next();
+      values[0] = parseChar(scanner, line);
+      if (scanner.peek() != '\'') {
+        throw LexerException(line, "expected a single quote, to close a character definition", "");
+      }
+      scanner.next();
+      tokens.push_back(new Token(CHAR, line, values));
+
     } else if (scanner.peek() == '"') {
       std::string output;
       scanner.next();
-      bool isEscapeCharacter = false;
       while(scanner.peek() != '"') {
-
-        if (isEscapeCharacter) {
-          switch (scanner.peek()) {
-          case '0':
-            output.push_back('\0');
-            break;
-          case '\\':
-            output.push_back('\\');
-            break;
-          default:
-            throw LexerException(line, "unable to escape character", NULL);
-          }
-          isEscapeCharacter = false;
-          scanner.next();
-
-        } else if (scanner.peek() == '\\') {
-          isEscapeCharacter = true;
-        } else {
-          output.push_back(scanner.next());
-        }
+        output.push_back(parseChar(scanner, line));
       }
       scanner.next();
       tokens.push_back(new Token(STRING, line, output));
@@ -117,6 +107,19 @@ TokenVector Tokenizer::tokenize(std::istream& input) {
 
 void Tokenizer::initialize() {
   indentation = 0;
+}
+
+char Tokenizer::parseChar(StringScanner& scanner, int line) {
+  if (scanner.peek() != '\\') {
+    return scanner.next();
+  }
+  scanner.next();
+  if (scanner.peek() == '0') {
+    scanner.next();
+    return EOF;
+  } else {
+    throw LexerException(line, "unable to escape character", "");
+  }
 }
 
 const Token& Tokenizer::matchOperator(StringScanner& scanner, int line) {

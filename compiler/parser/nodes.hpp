@@ -246,6 +246,23 @@ namespace parser {
     PConstantBool(bool _value) : value(_value) {}
   };
 
+  class PConstantChar : public PExpression {
+  public:
+    char value;
+    virtual YAML::Node* toYaml();
+    virtual VM::GType* getType(codegen::GScope*) { return VM::getCharType(); }
+    virtual VM::GIndex* generateExpression(codegen::GScope* scope, GInstructionVector& instructions) {
+      auto target = scope->allocateObject(VM::getBoolType());
+      instructions.push_back(VM::GInstruction {
+          VM::LOAD_CONSTANT_CHAR, new VM::GOPARG[2] {
+            { target->registerNum }, VM::GOPARG { .asChar = value }
+          }});
+      return target;
+    }
+
+    PConstantChar(char _value) : value(_value) {}
+  };
+
   class PConstantInt : public PExpression {
   public:
     int value;
