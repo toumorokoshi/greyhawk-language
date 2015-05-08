@@ -155,6 +155,7 @@ GValue run(CommandLineArguments& args, std::istream& input_stream) {
     }
 
   }
+  return {0};
 }
 
 

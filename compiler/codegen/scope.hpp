@@ -6,6 +6,12 @@
 #ifndef CODEGEN_SCOPE_HPP
 #define CODEGEN_SCOPE_HPP
 
+#ifdef DEBUG
+  #define debug(s) std::cerr << s << std::endl;
+#else
+  #define debug(s);
+#endif
+
 namespace parser {
   class PFunctionDeclaration;
 }
@@ -15,19 +21,20 @@ namespace codegen {
   class GScope {
   public:
     VM::GEnvironment* environment;
+    GScope* parentScope;
     std::map<std::string, int> typeIndexByName;
     std::map<std::string, VM::GIndex*> localMap;
     // I think these have to be the last attributes referenced.
     // if not, this causes weird compile errors in clang.
     std::vector<VM::GFunction*> functions;
     std::vector<parser::PFunctionDeclaration*> functionDeclarations;
-    bool isInnerScope;
+    bool isRootScope;
 
     // a lot of methods are repeated from GEnvironment.
     // they should all probably be in addObject, but
     // I want to wait to see if they actually belong here.
     VM::GIndex* addObject(std::string name, VM::GType* type) {
-      if (isInnerScope) {
+      if (!isRootScope) {
         auto val = environment->allocateObject(type);
         localMap[name] = val;
         return val;
@@ -44,6 +51,11 @@ namespace codegen {
       if (localMap.find(name) != localMap.end()) {
         return localMap[name];
       }
+
+      if (parentScope != NULL) {
+        return parentScope->getObject(name);
+      }
+
       return environment->getObject(name);
     }
 
@@ -52,7 +64,7 @@ namespace codegen {
     }
 
     VM::GIndex* addClass(std::string name, VM::GType* type) {
-      if (isInnerScope) {
+      if (!isRootScope) {
         auto index = environment->allocateClass(type);
         typeIndexByName[name] = index->registerNum;
         return index;
@@ -85,7 +97,7 @@ namespace codegen {
       functions.push_back(func);
       functionDeclarations.push_back(declaration);
       int functionIndex;
-      if (isInnerScope) {
+      if (!isRootScope) {
         functionIndex = environment->allocateFunction(func);
       } else {
         functionIndex = environment->addFunction(name, func);
@@ -95,7 +107,7 @@ namespace codegen {
       return index;
     }
 
-    GScope* createChild(bool, bool);
+    GScope* createChild(bool);
 
     void finalize();
   };

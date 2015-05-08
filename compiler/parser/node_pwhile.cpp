@@ -16,7 +16,8 @@ namespace parser {
   void PWhile::generateStatement(codegen::GScope* scope,
                                  GInstructionVector& instr) {
     int loopStart = instr.size();
-    auto statements = body->generate(scope);
+    auto whileScope = scope->createChild(false);
+    auto statements = body->generate(whileScope);
 
     auto conditionObject = condition->generateExpression(scope, instr);
     if (conditionObject->type != getBoolType()) {

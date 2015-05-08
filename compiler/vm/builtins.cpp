@@ -17,13 +17,13 @@ namespace VM {
     // should use the buffer directly at some point
     // in the future.
     char inBuf[size];
-    read(fd, &inBuf, size);
+    int bytesRead = read(fd, &inBuf, size);
 
     for (int i = 0; i < size; i++) {
       buffer[i].asChar = inBuf[i];
     }
 
-    return getNoneObject();
+    return new GValue { bytesRead };
   }
 
   GValue* builtin_write(GValue* args) {

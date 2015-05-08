@@ -385,7 +385,24 @@ namespace parser {
 
   GIndex* PIdentifier::generateExpression(GScope* scope,
                                           GInstructionVector& instructions) {
+    debug("PIdentifier");
+    debug("  (scope) localMap: ");
+    for (auto& kv: scope->localMap) {
+      debug("    " << kv.first << ": " << kv.second);
+    }
+
+    debug("  (environment) localMap:  ");
+    for (auto& kv: scope->environment->localsTable) {
+      debug("    " << kv.first << ": " << kv.second);
+    }
+
+    debug("  globalMap:  ");
+    for (auto& kv: scope->environment->globalsTable) {
+      debug("    " << kv.first << ": " << kv.second);
+    }
+
     auto object = scope->getObject(name);
+    debug("null");
 
     if (object == NULL) {
       throw ParserException("Object " + name + " is not defined in this scope!");
@@ -415,7 +432,7 @@ namespace parser {
       throw ParserException("Cannot redeclare " + name);
     }
 
-    debug("  is inner scope: " << scope->isInnerScope);
+    debug("  is root scope: " << scope->isRootScope);
     debug("  return type is: " + returnType)
     auto index = scope->addFunction(name, new GFunction {
         .argumentCount = (int) arguments.size(),
@@ -430,7 +447,7 @@ namespace parser {
   }
 
   void PFunctionDeclaration::generateBody(GFunction* function, GScope* scope) {
-    GScope* functionScope = scope->createChild(true, false);
+    GScope* functionScope = scope->createChild(true);
 
     function->argumentNames = new std::string[arguments.size()];
     function->argumentTypes = new GType*[arguments.size()];
@@ -457,7 +474,7 @@ namespace parser {
     debug("  creating class " + name);
     debug(scope);
     debug(scope->environment);
-    auto classScope = scope->createChild(true, false);
+    auto classScope = scope->createChild(true);
     debug ("    finished creating child.")
 
     for (auto& kv: attributes) {
@@ -506,7 +523,7 @@ namespace parser {
                                   GInstructionVector& instructions) {
     auto conditionObject = condition->generateExpression(scope, instructions);
 
-    auto trueScope = scope->createChild(false, true);
+    auto trueScope = scope->createChild(false);
     auto trueInstructions = trueBlock->generate(trueScope);
 
     instructions.push_back(GInstruction { GOPCODE::BRANCH, new GOPARG[3] {
@@ -528,7 +545,7 @@ namespace parser {
       return;
     }
 
-    auto falseScope = scope->createChild(false, true);
+    auto falseScope = scope->createChild(false);
     auto falseInstructions = falseBlock->generate(falseScope);
 
     instructions.push_back(GInstruction { GOPCODE::GO, new GOPARG[1] {
@@ -677,7 +694,7 @@ namespace parser {
   // generates the instructions to parse the array
   void parseArrayIterator(std::string varName, GIndex* array, PBlock* body,
                           GScope* scope, GInstructionVector& instructions) {
-    GScope* forScope = scope->createChild(false, true);
+    GScope* forScope = scope->createChild(false);
     auto iteratorIndex = scope->allocateObject(getInt32Type());
     instructions.push_back(GInstruction {
         LOAD_CONSTANT_INT, new GOPARG[2] { iteratorIndex->registerNum, 0 }
