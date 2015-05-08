@@ -87,6 +87,12 @@ namespace VM {
         break;
       }
 
+      case CHAR_EQ:
+        locals[args[2].registerNum].asBool =
+          locals[args[0].registerNum].asChar ==
+          locals[args[1].registerNum].asChar;
+        break;
+
       case TYPE_LOAD:
         locals[args[0].registerNum].asType = environment->types[args[1].registerNum];
         locals[args[0].registerNum].asType->parentEnv = &environmentInstance;
@@ -117,6 +123,11 @@ namespace VM {
         }
         break;
       }
+
+      case FLOAT_EQ:
+        locals[args[2].registerNum].asBool =
+          locals[args[0].registerNum].asFloat ==
+          locals[args[1].registerNum].asFloat;
 
       case FUNCTION_CREATE: {
         auto function = environment->functions[args[1].registerNum];

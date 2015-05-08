@@ -243,6 +243,7 @@ namespace parser {
 
   GIndex* PBinaryOperation::generateExpression(GScope* scope,
                                                 GInstructionVector& instructions) {
+    debug("PARSER: PBinaryOperation");
     auto lhsObject = lhs->generateExpression(scope, instructions);
     auto rhsObject = rhs->generateExpression(scope, instructions);
 
@@ -265,7 +266,21 @@ namespace parser {
     VM::GOPCODE opCode;
 
     switch (op) {
+    case L::EQUAL:
+      debug("  equal");
+      debug(lhsObject->type->name);
+      resultObject = scope->allocateObject(getBoolType());
+      if (lhsObject->type == getFloatType()) {
+        opCode = GOPCODE::FLOAT_EQ;
+        break;
+      } else if (lhsObject->type == getCharType()) {
+        debug("  char eq");
+        opCode = GOPCODE::CHAR_EQ;
+        break;
+      }
+
     case L::LESS_THAN:
+      debug("  less than");
       resultObject = scope->allocateObject(getBoolType());
       opCode = GOPCODE::LESS_THAN_INT;
       break;
@@ -494,9 +509,6 @@ namespace parser {
     auto trueScope = scope->createChild(false, true);
     auto trueInstructions = trueBlock->generate(trueScope);
 
-    auto falseScope = scope->createChild(false, true);
-    auto falseInstructions = falseBlock->generate(falseScope);
-
     instructions.push_back(GInstruction { GOPCODE::BRANCH, new GOPARG[3] {
           { conditionObject->registerNum },
           { 1 },
@@ -511,6 +523,13 @@ namespace parser {
     instructions.insert(instructions.end(),
                         trueInstructions->begin(),
                         trueInstructions->end());
+
+    if (falseBlock == NULL) {
+      return;
+    }
+
+    auto falseScope = scope->createChild(false, true);
+    auto falseInstructions = falseBlock->generate(falseScope);
 
     instructions.push_back(GInstruction { GOPCODE::GO, new GOPARG[1] {
           { (int) falseInstructions->size() + 1 }

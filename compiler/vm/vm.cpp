@@ -60,6 +60,13 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "BUILTIN_CALL: {" << values[0].registerNum << "}";
       break;
 
+    case CHAR_EQ:
+      std::cout << "CHAR_EQ: {"
+                << values[0].registerNum << "} == {"
+                << values[1].registerNum << "} -> {"
+                << values[2].registerNum << "}";
+      break;
+
     case END:
       std::cout << "END";
       done = true;
@@ -114,6 +121,10 @@ void VM::printInstructions(GInstruction* firstInstruction) {
 
     case LOAD_CONSTANT_BOOL:
       std::cout << "LOAD_CONSTANT_BOOL: [" << values[0].registerNum << "] <- " << (values[1].asBool == true ? "true" : "false");
+      break;
+
+    case LOAD_CONSTANT_CHAR:
+      std::cout << "LOAD_CONSTANT_CHAR: [" << values[0].registerNum << "] <- " << values[1].asChar;
       break;
 
     case LOAD_CONSTANT_FLOAT:

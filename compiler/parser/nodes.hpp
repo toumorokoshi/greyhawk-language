@@ -252,7 +252,7 @@ namespace parser {
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(codegen::GScope*) { return VM::getCharType(); }
     virtual VM::GIndex* generateExpression(codegen::GScope* scope, GInstructionVector& instructions) {
-      auto target = scope->allocateObject(VM::getBoolType());
+      auto target = scope->allocateObject(VM::getCharType());
       instructions.push_back(VM::GInstruction {
           VM::LOAD_CONSTANT_CHAR, new VM::GOPARG[2] {
             { target->registerNum }, VM::GOPARG { .asChar = value }

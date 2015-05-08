@@ -119,19 +119,22 @@ namespace parser {
     _validateToken(UNINDENT, "expected an unindent for an if statement");
     token_position++;
 
-    _validateToken(ELSE, "expected an 'else' for an else statement");
-    token_position++;
+    PBlock* falseBlock = NULL;
 
-    _validateToken(COLON, "expected an ':' for an else statement");
-    token_position++;
+    if (token_position != tokens.end() && (*token_position)->type == ELSE) {
+        token_position++;
 
-     _validateToken(INDENT, "expected an indent for an if statement");
-    token_position++;
+        _validateToken(COLON, "expected an ':' for an else statement");
+        token_position++;
 
-    auto falseBlock = parseBlock();
+         _validateToken(INDENT, "expected an indent for an if statement");
+        token_position++;
 
-    _validateToken(UNINDENT, "expected an unindent for an if statement");
-    token_position++;
+        falseBlock = parseBlock();
+
+        _validateToken(UNINDENT, "expected an unindent for an if statement");
+        token_position++;
+    }
 
     return new PIfElse(expression, trueBlock, falseBlock);
 
