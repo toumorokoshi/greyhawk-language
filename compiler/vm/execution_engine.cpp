@@ -206,6 +206,12 @@ namespace VM {
         // intToFloat(instruction->values[0], instruction->values[1]);
         break;
 
+      case INT_OR:
+        locals[args[0].registerNum].asInt32 =
+          locals[args[1].registerNum].asInt32 |
+          locals[args[2].registerNum].asInt32;
+        break;
+
       case LOAD_CONSTANT_BOOL:
         locals[args[0].registerNum].asBool = args[1].asBool;
         break;

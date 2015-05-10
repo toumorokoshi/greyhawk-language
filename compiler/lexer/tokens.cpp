@@ -43,6 +43,7 @@ namespace lexer {
     {COLON, ":"},
     {DOT, "."},
     {IS, "is"},
+    {OR, "or"},
     {INCREMENT, "+="},
     {DECREMENT, "-="},
     {WHILE, "while"}
@@ -63,6 +64,7 @@ namespace lexer {
     pairFromType(TRUE),
     pairFromType(CLASS),
     pairFromType(WHILE),
+    pairFromType(OR),
   };
 
   const KeywordPairVector operatorPairs {

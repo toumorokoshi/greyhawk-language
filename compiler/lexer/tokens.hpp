@@ -59,6 +59,7 @@ namespace lexer {
     GREATER_OR_EQUAL,
     LESS_THAN,
     GREATER_THAN,
+    OR,
     IS,
     // end binary ops
   };
