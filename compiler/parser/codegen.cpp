@@ -395,6 +395,7 @@ namespace parser {
   GIndex* PIdentifier::generateExpression(GScope* scope,
                                           GInstructionVector& instructions) {
     debug("PIdentifier");
+    debug("  looking for: " << name);
     debug("  (scope) localMap: ");
     for (auto& kv: scope->localMap) {
       debug("    " << kv.first << ": " << kv.second);

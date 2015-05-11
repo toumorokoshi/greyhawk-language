@@ -96,7 +96,9 @@ namespace parser {
     auto root = new YAML::Node();
     (*root)["if_else"]["condition"] = *condition->toYaml();
     (*root)["if_else"]["true_block"] = *trueBlock->toYaml();
-    (*root)["if_else"]["false_block"] = *falseBlock->toYaml();
+    if (falseBlock != NULL) {
+      (*root)["if_else"]["false_block"] = *falseBlock->toYaml();
+    }
     return root;
   }
 

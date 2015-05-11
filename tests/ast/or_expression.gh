@@ -1,0 +1,16 @@
+- if_else:
+    condition:
+      binary_operation:
+        operation: or
+        lhs: true
+        rhs: false
+    true_block:
+      - function_call:
+          name: print
+          arguments:
+            - string: it works
+    false_block:
+      - function_call:
+          name: print
+          arguments:
+            - string: it doesn't work!

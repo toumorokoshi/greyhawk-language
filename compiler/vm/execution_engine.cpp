@@ -248,13 +248,6 @@ namespace VM {
         break;
       }
 
-      case LOAD_MODULE_VALUE: {
-        auto name = args[1].asString;
-        locals[args[2].registerNum] =
-          locals[args[0].registerNum].asModule->getValue(name);
-        break;
-      }
-
       case LESS_THAN_INT:
         locals[args[2].registerNum].asBool =
           locals[args[0].registerNum].asInt32 <

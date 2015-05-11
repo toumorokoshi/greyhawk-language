@@ -1,0 +1,26 @@
+- declare:
+    name: array
+    value:
+      string: barbaz
+- assign:
+    name:
+      array_access:
+        array:
+          identifier: array
+        index: 0
+    value: c
+- function_call:
+    name: print
+    arguments:
+      - identifier: array
+- if_else:
+    condition:
+      binary_operation:
+        operation: ==
+        lhs: c
+        rhs: c
+    true_block:
+      - function_call:
+          name: print
+          arguments:
+            - string: It's the same!

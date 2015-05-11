@@ -21,105 +21,30 @@ namespace VM {
   class GEnvironment {
   public:
     // globals data
-    std::map<std::string, int> globalsTable;
+    std::map<std::string, int> globalsByName;
     GType** globalsTypes;
     int* indicesInParent;
     int globalsCount;
 
     // function data
-    std::map<std::string, GFunction*> functionByName;
-    std::map<int, int> functionTable;
+    // std::map<std::string, GFunction*> functionByName;
+    // std::map<int, int> functionTable;
     std::vector<GFunction*> functions;
     int functionCount;
 
     // class data
-    std::map<std::string, GType*> typeByName;
+    // std::map<std::string, GType*> typeByName;
     std::vector<GType*> types;
     int typeCount;
 
     // locals data
-    std::map<std::string, int> localsTable;
     std::vector<GType*> localsTypes;
     int localsCount;
 
-    // get the index of an object
-    // negative = global scope (GLOBAL_LOAD)
-    // positive = local scope (LOAD)
-    GIndex* getObject(std::string name) {
-      if (localsTable.find(name) != localsTable.end()) {
-        int index = localsTable[name];
-        return new GIndex{
-          .registerNum = index,
-          .type = localsTypes[index]
-        };
-      }
-
-      if (globalsTable.find(name) != globalsTable.end()) {
-        int index = globalsTable[name];
-        return new GIndex {
-          .indexType = GLOBAL,
-          .registerNum = index,
-          .type = globalsTypes[index]
-        };
-      }
-
-      return NULL;
-    }
-
-    GIndex* addObject(std::string name, GType* type) {
-      auto index = allocateObject(type);
-      localsTable[name] = index->registerNum;
-      return index;
-    }
-
-    GIndex* allocateObject(GType* type) {
-      localsTypes.push_back(type);
-      return new GIndex {
-        .registerNum = localsCount++,
-        .type = type
-      };
-    }
-
-    // function methods
-
-    int allocateFunction(GFunction* func) {
-      functions.push_back(func);
-      return functionCount++;
-    }
-
-    int addFunction(std::string name, GFunction* func) {
-      int index = allocateFunction(func);
-      functionByName[name] = func;
-      return index;
-    }
-
-    GFunction* getFunction(std::string name) {
-      if (functionByName.find(name) != functionByName.end()) {
-        return functionByName[name];
-      }
-      return NULL;
-    }
-
-    // class methods
-    GIndex* addClass(std::string name, GType* type) {
-      typeByName[name] = type;
-      return allocateClass(type);
-   }
-
-    GIndex* allocateClass(GType* type) {
-      types.push_back(type);
-      return new GIndex {
-        .registerNum = typeCount++,
-        .type = getClassType()
-      };
-    }
-
-    GType* getClass(std::string name) {
-      if (typeByName.find(name) != typeByName.end()) {
-        return typeByName[name];
-      }
-      return NULL;
-    }
+    int     allocateClass(GType* type);
+    int     allocateFunction(GFunction* func);
+    GIndex* allocateObject(GType* type);
+    GIndex* getGlobal(std::string name);
 
     GEnvironmentInstance* createInstance(GEnvironmentInstance&);
     GEnvironment* createChild();
@@ -129,9 +54,6 @@ namespace VM {
     GEnvironment* environment;
     GValue** globals;
     GValue* locals;
-
-    GValue getValue(std::string);
-
     GEnvironmentInstance* createChildScope(GEnvironmentInstance&);
   };
 

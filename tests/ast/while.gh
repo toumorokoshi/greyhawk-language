@@ -1,0 +1,28 @@
+- declare:
+    name: i
+    value: 0
+- while:
+    condition:
+      binary_operation:
+        operation: <
+        lhs:
+          identifier: i
+        rhs: 10
+    body:
+      - assign:
+          name:
+            identifier: i
+          value:
+            binary_operation:
+              operation: +
+              lhs:
+                identifier: i
+              rhs: 1
+      - function_call:
+          name: print
+          arguments:
+            - identifier: i
+- function_call:
+    name: print
+    arguments:
+      - string: done!

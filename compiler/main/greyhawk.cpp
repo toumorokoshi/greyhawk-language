@@ -121,10 +121,10 @@ GValue run(CommandLineArguments& args, std::istream& input_stream) {
     debug("parsed.");
 
     if (args.bytecode) {
-      for (auto typeKV: globalScope->typeByName) {
-        std::cout << typeKV.first << ":" << std::endl;
+      for (auto type: globalScope->types) {
+        std::cout << type->name << ":" << std::endl;
 
-        for (auto functionKV: typeKV.second->environment->functionByName) {
+        for (auto functionKV: type->environment->functionByName) {
           std::cout << functionKV.first << " (" << functionKV.second << "):" << std::endl;
           printInstructions(functionKV.second->instructions);
           std::cout << std::endl;
@@ -157,7 +157,6 @@ GValue run(CommandLineArguments& args, std::istream& input_stream) {
   }
   return {0};
 }
-
 
 void interpreter(CommandLineArguments& args) {
   std::string input;
