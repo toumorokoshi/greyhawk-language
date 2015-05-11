@@ -19,7 +19,7 @@ while i < 10:
 	output := stdin.read(100)
 	// stdout.write(output, 100)
 	for c in output:
-		if c == '\0':
+		if c == '\0' or i == 10:
 			print("eof")
 			i = 10
 		else:

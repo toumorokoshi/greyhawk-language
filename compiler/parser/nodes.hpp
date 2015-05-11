@@ -403,7 +403,22 @@ namespace parser {
     PExpression* rhs;
 
     virtual YAML::Node* toYaml();
-    virtual VM::GType* getType(codegen::GScope* s) { return lhs->getType(s); }
+    virtual VM::GType* getType(codegen::GScope* s) {
+      switch (op) {
+      case lexer::L::OR:
+      case lexer::L::LESS_THAN:
+      case lexer::L::LESS_OR_EQUAL:
+      case lexer::L::GREATER_OR_EQUAL:
+      case lexer::L::IS:
+      case lexer::L::NOT_EQUAL:
+      case lexer::L::EQUAL:
+        std::cout << "YboolType" << std::endl;
+        return VM::getBoolType();
+      default:
+        std::cout << "default" << std::endl;
+        return lhs->getType(s);
+      }
+    }
     virtual VM::GIndex* generateExpression(codegen::GScope*, GInstructionVector&);
 
     PBinaryOperation(PExpression* _lhs,

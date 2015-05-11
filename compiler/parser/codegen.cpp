@@ -1,6 +1,7 @@
 #include "nodes.hpp"
 #include "exceptions.hpp"
 #include <iostream>
+#include <typeinfo>
 
 #ifdef DEBUG
   #define debug(s) std::cerr << s << std::endl;
@@ -259,7 +260,9 @@ namespace parser {
       } */
 
     if (lhsObject->type != rhsObject->type) {
-      throw ParserException("type mismatch during binary operation!");
+      throw ParserException("type mismatch during binary operation! " +
+                            lhsObject->type->name + " and " +
+                            rhsObject->type->name);
     }
 
     GIndex* resultObject;
@@ -335,6 +338,12 @@ namespace parser {
         opCode = GOPCODE::DIVIDE_INT;
         break;
       }
+    }
+
+    case L::OR: {
+      resultObject = scope->allocateObject(getBoolType());
+      opCode = GOPCODE::INT_OR;
+      break;
     }
 
     default:
