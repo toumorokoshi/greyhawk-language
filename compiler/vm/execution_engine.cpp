@@ -19,7 +19,7 @@ namespace VM {
     // for debugging purposes
     debug("Environment:");
     debug("  globals:");
-    for (auto& kv: environment->globalsTable) {
+    for (auto& kv: environment->globalsByName) {
       debug("    name: " << kv.first << " register: " << kv.second);
     }
 
@@ -94,7 +94,7 @@ namespace VM {
         break;
 
       case TYPE_LOAD:
-        locals[args[0].registerNum].asType = environment->types[args[1].registerNum];
+        locals[args[0].registerNum].asType = environment->classes[args[1].registerNum];
         locals[args[0].registerNum].asType->parentEnv = &environmentInstance;
         break;
 

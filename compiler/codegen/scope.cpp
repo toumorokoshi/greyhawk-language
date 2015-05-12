@@ -1,61 +1,31 @@
 #include "scope.hpp"
 #include "../parser/nodes.hpp"
 
+#ifdef DEBUG
+  #define debug(s) std::cerr << s << std::endl;
+#else
+  #define debug(s);
+#endif
+
 using namespace VM;
 
 namespace codegen {
 
-  GIndex* GScope::addClass(std::string name, VM::GType* type) {
-    auto typeIndex = environment->allocateClass(type);
-    typeIndexByName[name] = typeIndex;
-    return new GIndex {
-      .registerNum = typeIndex,
-      .type = getClassType()
-    };
-  }
-
-  GIndex* GScope::addFunction(std::string name, GFunction* func,
-                              parser::PFunctionDeclaration* declaration) {
-    int functionIndex = environment->allocateFunction(func);
-    functionDeclarations.push_back(declaration);
-
-    auto index = addObject(name, VM::getFunctionType());
-    functionIndexByName[name] = functionIndex;
-    return index;
-  }
-
   // a lot of methods are repeated from GEnvironment.
   // they should all probably be in addObject, but
   // I want to wait to see if they actually belong here.
-  VM::GIndex* GScope::addObject(std::string name, VM::GType* type) {
-    auto val = environment->allocateObject(type);
-    localsByName[name] = val;
-    return val;
+  GIndex* GScope::addObject(std::string name, VM::GType* type) {
+    if (parentScope == NULL) {
+      return environment->addObject(name, type);
+    } else {
+      auto val = environment->allocateObject(type);
+      localsByName[name] = val;
+      return val;
+    }
   }
 
-  VM::GIndex* GScope::allocateObject(VM::GType* type) {
+  GIndex* GScope::allocateObject(VM::GType* type) {
     return environment->allocateObject(type);
-  }
-
-  GType* GScope::getClass(std::string name) {
-    GType* type = NULL;
-    if (typeIndexByName.find(name) != typeIndexByName.end()) {
-      type = environment->types[typeIndexByName[name]];
-    } else if (parentScope != NULL) {
-      type = parentScope->getClass(name);
-    }
-    return type;
-  }
-
-  // function methods
-  GFunction* GScope::getFunction(std::string name) {
-    GFunction* function = NULL;
-    if (functionIndexByName.find(name) != functionIndexByName.end()) {
-      function = environment->functions[functionIndexByName[name]];
-    } else if (parentScope != NULL) {
-      function = parentScope->getFunction(name);
-    }
-    return function;
   }
 
   GIndex* GScope::getObject(std::string name) {
@@ -64,8 +34,64 @@ namespace codegen {
     } else if (parentScope != NULL) {
       return parentScope->getObject(name);
     } else {
-      return environment->getGlobal(name);
+      return environment->getObject(name);
     }
+  }
+
+  GIndex* GScope::addClass(std::string name, VM::GType* type) {
+    if (parentScope == NULL) {
+      return environment->addClass(name, type);
+    } else {
+      auto typeIndex = environment->allocateClass(type);
+      typeIndexByName[name] = typeIndex;
+      return new GIndex {
+        .registerNum = typeIndex,
+        .type = getClassType()
+      };
+    }
+  }
+
+  GType* GScope::getClass(std::string name) {
+    GType* type = NULL;
+
+    if (typeIndexByName.find(name) != typeIndexByName.end()) {
+      type = environment->classes[typeIndexByName[name]];
+    } else if (parentScope != NULL) {
+      type = parentScope->getClass(name);
+    } else {
+      type = environment->getClass(name);
+    }
+
+    return type;
+  }
+
+  GIndex* GScope::addFunction(std::string name, GFunction* func,
+                              parser::PFunctionDeclaration* declaration) {
+    if (parentScope == NULL) {
+      functionDeclarations.push_back(declaration);
+      return environment->addFunction(name, func);
+
+    } else {
+      int functionIndex = environment->allocateFunction(func);
+      functionIndexByName[name] = functionIndex;
+      functionDeclarations.push_back(declaration);
+      auto index = addObject(name, VM::getFunctionType());
+      return index;
+    }
+  }
+
+
+  // function methods
+  GFunction* GScope::getFunction(std::string name) {
+    GFunction* function = NULL;
+    if (functionIndexByName.find(name) != functionIndexByName.end()) {
+      function = environment->functions[functionIndexByName[name]];
+    } else if (parentScope != NULL) {
+      function = parentScope->getFunction(name);
+    } else {
+      function = environment->getFunction(name);
+    }
+    return function;
   }
 
   GScope* GScope::createChild(bool isRootScope) {
@@ -94,6 +120,7 @@ namespace codegen {
   }
 
   GEnvironment* createEnvironmentFromScope(GScope* scope) {
+    debug("YYY: create child was called");
     std::map<std::string, int> globalsByName;
     auto globalsTypes = new std::vector<GType*>();
     auto indicesInParent = new std::vector<int>();
@@ -118,9 +145,22 @@ namespace codegen {
       localsScope = scope->parentScope;
     }
 
+    for (auto &kv: parentEnvironment->localsByName) {
+      debug("Y: checking " << kv.first);
+      if (globalsByName.find(kv.first) == globalsByName.end()) {
+        debug("Y: adding " << kv.first);
+        auto valIndex = kv.second;
+        auto valType = parentEnvironment->localsTypes[valIndex];
+        indicesInParent->push_back(kv.second);
+        globalsTypes->push_back(valType);
+        globalsByName[kv.first] = globalsCount++;
+      }
+    }
 
     for (auto &kv: parentEnvironment->globalsByName) {
+      debug("Y: checking " << kv.first);
       if (globalsByName.find(kv.first) == globalsByName.end()) {
+        debug("Y: adding " << kv.first);
         auto valIndex = kv.second;
         auto valType = parentEnvironment->globalsTypes[valIndex];
         indicesInParent->push_back(-(kv.second + 1));
@@ -129,10 +169,13 @@ namespace codegen {
       }
     }
 
-    auto environment = new GEnvironment {
+    auto environment = new GEnvironment();
+    environment->globalsByName = globalsByName;
+    environment->globalsCount = globalsCount;
+    /* auto environment = new GEnvironment {
       .globalsByName = globalsByName,
       .globalsCount = globalsCount,
-    };
+      }; */
 
     if (globalsCount > 0) {
       environment->indicesInParent = &((*indicesInParent)[0]);
@@ -143,10 +186,11 @@ namespace codegen {
                                   parentEnvironment->functions.begin(),
                                   parentEnvironment->functions.end());
 
-    environment->types.insert(environment->types.end(),
-                              parentEnvironment->types.begin(),
-                              parentEnvironment->types.end());
+    environment->classes.insert(environment->classes.end(),
+                                parentEnvironment->classes.begin(),
+                                parentEnvironment->classes.end());
 
+    // return environment;
     return environment;
   }
 }

@@ -27,24 +27,32 @@ namespace VM {
     int globalsCount;
 
     // function data
-    // std::map<std::string, GFunction*> functionByName;
-    // std::map<int, int> functionTable;
+    std::map<std::string, int> functionsByName;
     std::vector<GFunction*> functions;
-    int functionCount;
+    int functionsCount;
 
     // class data
-    // std::map<std::string, GType*> typeByName;
-    std::vector<GType*> types;
-    int typeCount;
+    std::map<std::string, int> classesByName;
+    std::vector<GType*> classes;
+    int classesCount;
 
     // locals data
+    std::map<std::string, int> localsByName;
     std::vector<GType*> localsTypes;
     int localsCount;
 
-    int     allocateClass(GType* type);
-    int     allocateFunction(GFunction* func);
-    GIndex* allocateObject(GType* type);
-    GIndex* getGlobal(std::string name);
+    GIndex*     addObject(std::string name, GType* type);
+    GIndex*     allocateObject(GType* type);
+    GIndex*     getObject(std::string name);
+
+    GIndex*     addClass(std::string name, GType* type);
+    int         allocateClass(GType* type);
+    GType*      getClass(std::string name);
+
+    GIndex*     addFunction(std::string name, GFunction* func);
+    int         allocateFunction(GFunction* func);
+    GFunction*  getFunction(std::string name);
+
 
     GEnvironmentInstance* createInstance(GEnvironmentInstance&);
     GEnvironment* createChild();

@@ -4,6 +4,7 @@
 #include "../vm/vm.hpp"
 #include "../vm/execution_engine.hpp"
 #include "../parser/parser.hpp"
+#include "../codegen/scope.hpp"
 #include <boost/program_options.hpp>
 #include <sstream>
 #include <fstream>
@@ -79,7 +80,7 @@ void dumpAST(PNode* node) {
 
 // for debug purposes mainly
 void printValues() {
-  for (auto symbol : globalScope->localsTable) {
+  for (auto symbol : globalScope->localsByName) {
     auto name = symbol.first;
     auto object = globalScopeInstance->locals[symbol.second];
     auto type = globalScope->localsTypes[symbol.second];
@@ -121,20 +122,22 @@ GValue run(CommandLineArguments& args, std::istream& input_stream) {
     debug("parsed.");
 
     if (args.bytecode) {
-      for (auto type: globalScope->types) {
+      for (auto type: globalScope->classes) {
         std::cout << type->name << ":" << std::endl;
 
-        for (auto functionKV: type->environment->functionByName) {
-          std::cout << functionKV.first << " (" << functionKV.second << "):" << std::endl;
-          printInstructions(functionKV.second->instructions);
+        for (auto functionKV: type->environment->functionsByName) {
+          auto function = type->environment->functions[functionKV.second];
+          std::cout << functionKV.first << " (" << function << "):" << std::endl;
+          printInstructions(function->instructions);
           std::cout << std::endl;
         }
       }
 
       debug("printing bytecode.");
-      for (auto functionKV: globalScope->functionByName) {
-        std::cout << functionKV.first << " (" << functionKV.second << "):" << std::endl;
-        printInstructions(functionKV.second->instructions);
+      for (auto functionKV: globalScope->functionsByName) {
+        auto function = globalScope->functions[functionKV.second];
+        std::cout << functionKV.first << " (" << function << "):" << std::endl;
+        printInstructions(function->instructions);
         std::cout << std::endl;
       }
       std::cout << "main:" << std::endl;
@@ -183,7 +186,11 @@ void interpreter(CommandLineArguments& args) {
 
 int main(int argc, char *argv[]) {
   tokenizer = new Tokenizer();
-  globalScope = getBaseEnvironment().createChild();
+  // convoluted way to get a child environment.
+  auto scope = new codegen::GScope();
+  scope->environment = &getBaseEnvironment();
+  globalScope = scope->createChild(true)->environment;
+
   globalScopeInstance = \
     globalScope->createInstance(getBaseEnvironmentInstance());
   vm = new GVM();

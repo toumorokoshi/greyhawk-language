@@ -31,16 +31,19 @@ namespace codegen {
     // std::vector<GFunction*> functions;
     std::vector<parser::PFunctionDeclaration*> functionDeclarations;
 
-    VM::GIndex*    addClass(std::string name, VM::GType* type);
-    VM::GIndex*    addFunction(std::string name, VM::GFunction* func,
-                               parser::PFunctionDeclaration* declaration);
     VM::GIndex*    addObject(std::string name, VM::GType* type);
     VM::GIndex*    allocateObject(VM::GType* type);
+    VM::GIndex*    getObject(std::string name);
+
+    VM::GIndex*    addClass(std::string name, VM::GType* type);
+    VM::GType*     getClass(std::string name);
+
+    VM::GIndex*    addFunction(std::string name, VM::GFunction* func,
+                               parser::PFunctionDeclaration* declaration);
+    VM::GFunction* getFunction(std::string name);
+
     GScope*        createChild(bool);
     void           finalize();
-    VM::GType*     getClass(std::string name);
-    VM::GFunction* getFunction(std::string name);
-    VM::GIndex*    getObject(std::string name);
   };
 
   VM::GEnvironment* createEnvironmentFromScope(GScope*);

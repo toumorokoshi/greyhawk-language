@@ -4,14 +4,11 @@
 
 namespace VM {
 
-  int GEnvironment::allocateClass(GType* type) {
-    types.push_back(type);
-    return typeCount++;
-  }
-
-  int GEnvironment::allocateFunction(GFunction* func) {
-    functions.push_back(func);
-    return functionCount++;
+  // object methods
+  GIndex* GEnvironment::addObject(std::string name, GType* type) {
+    auto index = allocateObject(type);
+    localsByName[name] = index->registerNum;
+    return index;
   }
 
   GIndex* GEnvironment::allocateObject(GType* type) {
@@ -22,7 +19,15 @@ namespace VM {
     };
   }
 
-  GIndex* GEnvironment::getGlobal(std::string name) {
+  GIndex* GEnvironment::getObject(std::string name) {
+    if (localsByName.find(name) != localsByName.end()) {
+      int index = localsByName[name];
+      return new GIndex {
+        .registerNum = index,
+        .type = localsTypes[index]
+      };
+    }
+
     if (globalsByName.find(name) != globalsByName.end()) {
       int index = globalsByName[name];
       return new GIndex {
@@ -34,6 +39,49 @@ namespace VM {
 
     return NULL;
   }
+
+  // class methods
+  int GEnvironment::allocateClass(GType* cls) {
+    classes.push_back(cls);
+    return classesCount++;
+  }
+
+  GIndex* GEnvironment::addClass(std::string name, VM::GType* cls) {
+    auto classIndex = allocateClass(cls);
+    classesByName[name] = classIndex;
+    return new GIndex {
+      .registerNum = classIndex,
+      .type = getClassType()
+    };
+  }
+
+  GType* GEnvironment::getClass(std::string name) {
+    if (classesByName.find(name) != classesByName.end()) {
+      return classes[classesByName[name]];
+    }
+    return NULL;
+  }
+
+  // function methods
+  GIndex* GEnvironment::addFunction(std::string name, GFunction* func) {
+    int functionIndex = allocateFunction(func);
+    functionsByName[name] = functionIndex;
+    auto index = addObject(name, getFunctionType());
+    return index;
+  }
+
+  int GEnvironment::allocateFunction(GFunction* func) {
+    functions.push_back(func);
+    return functionsCount++;
+  }
+
+  GFunction* GEnvironment::getFunction(std::string name) {
+    if (functionsByName.find(name) != functionsByName.end()) {
+      return functions[functionsByName[name]];
+    }
+    return NULL;
+  }
+
 
   GEnvironmentInstance* GEnvironment::createInstance(GEnvironmentInstance& parent) {
     auto globals = new GValue*[globalsCount];

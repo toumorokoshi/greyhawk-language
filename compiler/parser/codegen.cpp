@@ -394,25 +394,28 @@ namespace parser {
 
   GIndex* PIdentifier::generateExpression(GScope* scope,
                                           GInstructionVector& instructions) {
-    debug("PIdentifier");
-    debug("  looking for: " << name);
-    debug("  (scope) localMap: ");
-    for (auto& kv: scope->localMap) {
+    debug("PARSER: PIdentifier");
+
+    auto debugScope = scope;
+    while (debugScope != NULL) {
+      debug("  locals:");
+      for (auto& kv: debugScope->localsByName) {
+        debug("    " << kv.first << ": " << kv.second);
+      }
+      debugScope = debugScope->parentScope;
+    }
+
+    debug("  environment locals:");
+    for (auto& kv: scope->environment->localsByName) {
       debug("    " << kv.first << ": " << kv.second);
     }
 
-    debug("  (environment) localMap:  ");
-    for (auto& kv: scope->environment->localsTable) {
-      debug("    " << kv.first << ": " << kv.second);
-    }
-
-    debug("  globalMap:  ");
-    for (auto& kv: scope->environment->globalsTable) {
+    debug("  environment globals:");
+    for (auto& kv: scope->environment->globalsByName) {
       debug("    " << kv.first << ": " << kv.second);
     }
 
     auto object = scope->getObject(name);
-    debug("null");
 
     if (object == NULL) {
       throw ParserException("Object " + name + " is not defined in this scope!");
@@ -442,13 +445,12 @@ namespace parser {
       throw ParserException("Cannot redeclare " + name);
     }
 
-    debug("  is root scope: " << scope->isRootScope);
     debug("  return type is: " + returnType)
     auto index = scope->addFunction(name, new GFunction {
         .argumentCount = (int) arguments.size(),
         .returnType = evaluateType(returnType),
     }, this);
-    auto functionIndex = scope->environment->functionTable[index->registerNum];
+    auto functionIndex = scope->functionIndexByName[name];
 
     instructions.push_back(GInstruction {
         GOPCODE::FUNCTION_CREATE, new VM::GOPARG[2] {
