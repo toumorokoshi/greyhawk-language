@@ -25,7 +25,7 @@ namespace codegen {
 
     std::map<std::string, int> typeIndexByName;
     std::map<std::string, VM::GIndex*> localsByName;
-    std::map<std::string, int> functionIndexByName;
+    std::map<std::string, int> functionsByName;
     // I think these have to be the last attributes referenced.
     // if not, this causes weird compile errors in clang.
     // std::vector<GFunction*> functions;

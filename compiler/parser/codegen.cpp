@@ -120,7 +120,6 @@ namespace parser {
       });
 
     } else if (auto functionIndex = scope->getObject(name)) {
-      debug(name);
       functionIndex = enforceLocal(scope, functionIndex, instructions);
 
       GOPCODE instruction;
@@ -133,6 +132,10 @@ namespace parser {
         returnType = scope->getClass(name);
       } else {
         instruction = FUNCTION_CALL;
+        debug("    checking function: " << scope->getFunction(name));
+        for (auto& kv: scope->environment->functionsByName) {
+          debug("   function " << kv.first << ": " << kv.second);
+        }
         returnType = scope->getFunction(name)->returnType;
       }
       if (functionIndex->type != getFunctionType() && functionIndex->type != getClassType()) {
@@ -450,7 +453,7 @@ namespace parser {
         .argumentCount = (int) arguments.size(),
         .returnType = evaluateType(returnType),
     }, this);
-    auto functionIndex = scope->functionIndexByName[name];
+    auto functionIndex = scope->functionsByName[name];
 
     instructions.push_back(GInstruction {
         GOPCODE::FUNCTION_CREATE, new VM::GOPARG[2] {
@@ -459,6 +462,7 @@ namespace parser {
   }
 
   void PFunctionDeclaration::generateBody(GFunction* function, GScope* scope) {
+    debug("generating function body");
     GScope* functionScope = scope->createChild(true);
 
     function->argumentNames = new std::string[arguments.size()];

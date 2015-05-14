@@ -4,6 +4,11 @@
 
 using namespace VM;
 
+#ifdef DEBUG
+  #define debug(s) std::cerr << s << std::endl;
+#else
+  #define debug(s);
+#endif
 
 void VM::printInstructions(GInstruction* firstInstruction) {
   auto done = false;
@@ -14,6 +19,7 @@ void VM::printInstructions(GInstruction* firstInstruction) {
     }
     std::cout << instructionCount << ", ";
     auto values = firstInstruction->args;
+    debug(firstInstruction->op);
 
     switch(firstInstruction->op) {
 

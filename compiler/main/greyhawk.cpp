@@ -137,6 +137,8 @@ GValue run(CommandLineArguments& args, std::istream& input_stream) {
       for (auto functionKV: globalScope->functionsByName) {
         auto function = globalScope->functions[functionKV.second];
         std::cout << functionKV.first << " (" << function << "):" << std::endl;
+        debug("functionByName: " << functionKV.first);
+        debug(function->instructions);
         printInstructions(function->instructions);
         std::cout << std::endl;
       }
