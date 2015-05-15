@@ -67,6 +67,8 @@ def main():
         for name in os.listdir(EXAMPLES_DIRECTORY):
             if not name.endswith('.gh'):
                 continue
+            if name.startswith('_'):
+                continue
 
             print("  testing {0}...".format(name))
 

@@ -67,14 +67,16 @@ namespace codegen {
 
   GIndex* GScope::addFunction(std::string name, GFunction* func,
                               parser::PFunctionDeclaration* declaration) {
+    debug("Gsope::addFunction pushing back " << declaration->name);
+    functionDeclarations.push_back(declaration);
     if (parentScope == NULL) {
-      functionDeclarations.push_back(declaration);
-      return environment->addFunction(name, func);
+      auto index = environment->addFunction(name, func);
+      functionsByName[name] = environment->functionsByName[name];
+      return index;
 
     } else {
       int functionIndex = environment->allocateFunction(func);
       functionsByName[name] = functionIndex;
-      functionDeclarations.push_back(declaration);
       auto index = addObject(name, VM::getFunctionType());
       return index;
     }
@@ -107,14 +109,19 @@ namespace codegen {
       parentScope = this;
     }
 
-    return new GScope {
+    auto scope = new GScope {
       .environment = childEnvironment,
       .parentScope = parentScope
     };
+    debug("Y:  scope " << scope);
+    debug("Y:  parentScope" << this);
+    return scope;
   }
 
   void GScope::finalize() {
+    debug("GScope::finalize");
     for (auto& funcDecl : functionDeclarations) {
+      debug("  function name:" << funcDecl->name);
       auto funcIndex = functionsByName[funcDecl->name];
       auto function = environment->functions[funcIndex];
       funcDecl->generateBody(function, this);
@@ -146,13 +153,15 @@ namespace codegen {
       }
 
       for (auto &kv: localsScope->functionsByName) {
+        debug("Y: checking function " << kv.first);
         if (functionsByName.find(kv.first) == functionsByName.end()) {
           debug("Y: adding function " << kv.first);
           functionsByName[kv.first] = kv.second;
+          debug("Y: done");
         }
       }
 
-      localsScope = scope->parentScope;
+      localsScope = localsScope->parentScope;
     }
 
     for (auto &kv: parentEnvironment->localsByName) {
@@ -181,7 +190,6 @@ namespace codegen {
 
     for (auto &kv: parentEnvironment->functionsByName) {
       if (functionsByName.find(kv.first) == functionsByName.end()) {
-        debug("Y: adding function " << kv.first);
         functionsByName[kv.first] = kv.second;
       }
     }
@@ -190,6 +198,7 @@ namespace codegen {
     environment->globalsByName = globalsByName;
     environment->globalsCount = globalsCount;
     environment->functionsByName = functionsByName;
+    environment->functionsCount = functionsByName.size();
 
     if (globalsCount > 0) {
       environment->indicesInParent = &((*indicesInParent)[0]);
@@ -204,7 +213,6 @@ namespace codegen {
                                 parentEnvironment->classes.begin(),
                                 parentEnvironment->classes.end());
 
-    // return environment;
     return environment;
   }
 }

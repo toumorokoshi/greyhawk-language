@@ -137,11 +137,11 @@ namespace VM {
       }
 
       case FUNCTION_CALL: {
-        debug("FUNCTION_CALL: start")
+        debug("FUNCTION_CALL: start " << args[1].registerNum);
         auto funcInst = locals[args[1].registerNum].asFunction;
-        debug("FUNCTION_CALL: generating register num")
+        debug("FUNCTION_CALL: generating register num");
         auto func = funcInst->function;
-        debug("FUNCTION_CALL: generating env instance")
+        debug("FUNCTION_CALL: generating env instance");
         auto funcEnvInstance = func->environment->createInstance(funcInst->parentEnv);
 
         for (int i = 0; i < func->argumentCount; i++) {

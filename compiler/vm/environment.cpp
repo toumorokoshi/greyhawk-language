@@ -2,6 +2,12 @@
 #include "../exceptions.hpp"
 #include "environment.hpp"
 
+#ifdef DEBUG
+  #define debug(s) std::cerr << s << std::endl;
+#else
+  #define debug(s);
+#endif
+
 namespace VM {
 
   // object methods
@@ -65,6 +71,7 @@ namespace VM {
   // function methods
   GIndex* GEnvironment::addFunction(std::string name, GFunction* func) {
     int functionIndex = allocateFunction(func);
+    debug(functionIndex);
     functionsByName[name] = functionIndex;
     auto index = addObject(name, getFunctionType());
     return index;

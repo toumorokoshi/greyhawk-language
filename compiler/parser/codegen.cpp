@@ -132,10 +132,6 @@ namespace parser {
         returnType = scope->getClass(name);
       } else {
         instruction = FUNCTION_CALL;
-        debug("    checking function: " << scope->getFunction(name));
-        for (auto& kv: scope->environment->functionsByName) {
-          debug("   function " << kv.first << ": " << kv.second);
-        }
         returnType = scope->getFunction(name)->returnType;
       }
       if (functionIndex->type != getFunctionType() && functionIndex->type != getClassType()) {
@@ -443,6 +439,7 @@ namespace parser {
 
   void PFunctionDeclaration::generateStatement(GScope* scope,
                                                GInstructionVector& instructions) {
+    debug("PFunctionDeclaration");
 
     if (scope->getObject(name) != NULL) {
       throw ParserException("Cannot redeclare " + name);
@@ -453,7 +450,9 @@ namespace parser {
         .argumentCount = (int) arguments.size(),
         .returnType = evaluateType(returnType),
     }, this);
+    debug("PFunctionDeclaration name: " << name);
     auto functionIndex = scope->functionsByName[name];
+    debug("PFunctionDeclaration index: " << functionIndex);
 
     instructions.push_back(GInstruction {
         GOPCODE::FUNCTION_CREATE, new VM::GOPARG[2] {
@@ -472,6 +471,7 @@ namespace parser {
 
     int i = 0;
     for (auto argument : arguments) {
+      debug(i);
       auto type = evaluateType(argument->second);
 
       functionScope->addObject(argument->first, type);
@@ -483,6 +483,8 @@ namespace parser {
     auto vmBody = body->generate(functionScope);
     vmBody->push_back(GInstruction { END, 0 });
     function->instructions = &(*vmBody)[0];
+    debug("function instructions: " << function->instructions);
+    debug("function: " << function);
   }
 
   void PClassDeclaration::generateStatement(GScope* scope,
@@ -537,6 +539,7 @@ namespace parser {
 
   void PIfElse::generateStatement(GScope* scope,
                                   GInstructionVector& instructions) {
+    debug("PIfElse");
     auto conditionObject = condition->generateExpression(scope, instructions);
 
     auto trueScope = scope->createChild(false);

@@ -19,7 +19,6 @@ void VM::printInstructions(GInstruction* firstInstruction) {
     }
     std::cout << instructionCount << ", ";
     auto values = firstInstruction->args;
-    debug(firstInstruction->op);
 
     switch(firstInstruction->op) {
 

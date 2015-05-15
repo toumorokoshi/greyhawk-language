@@ -134,12 +134,16 @@ GValue run(CommandLineArguments& args, std::istream& input_stream) {
       }
 
       debug("printing bytecode.");
+      debug("functions count: " << globalScope->functionsCount);
       for (auto functionKV: globalScope->functionsByName) {
+        debug(functionKV.second);
         auto function = globalScope->functions[functionKV.second];
         std::cout << functionKV.first << " (" << function << "):" << std::endl;
         debug("functionByName: " << functionKV.first);
         debug(function->instructions);
-        printInstructions(function->instructions);
+        if (function->instructions != NULL) {
+          printInstructions(function->instructions);
+        }
         std::cout << std::endl;
       }
       std::cout << "main:" << std::endl;

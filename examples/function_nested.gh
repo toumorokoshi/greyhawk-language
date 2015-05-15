@@ -1,6 +1,6 @@
 None printHelloWorld():
 	// ?Func<None, ()> printMethod =
-	if true:
+	if false:
 		None printAnotherHelloWorld():
 			print("hi there")
 		printAnotherHelloWorld()
