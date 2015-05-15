@@ -15,3 +15,4 @@ stdout := File(1)
 
 // stdout.write("foooo")
 stdout.write(stdin.read(100), 100)
+// stdout.write("FOO")

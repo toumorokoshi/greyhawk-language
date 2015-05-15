@@ -316,11 +316,7 @@ namespace parser {
     std::string name;
 
     virtual YAML::Node* toYaml();
-    virtual VM::GType* getType(codegen::GScope* scope) {
-      auto object = scope->getObject(name);
-      return object != NULL ? object->type : VM::getNoneType();
-    }
-
+    virtual VM::GType* getType(codegen::GScope* scope);
     virtual VM::GIndex* generateExpression(codegen::GScope*, GInstructionVector&);
 
     PIdentifier(std::string _name) : name(_name) {}
@@ -372,7 +368,7 @@ namespace parser {
     PExpressions& arguments;
 
     virtual YAML::Node* toYaml();
-    virtual VM::GType* getType(codegen::GScope*) { return NULL; }
+    virtual VM::GType* getType(codegen::GScope*);
     virtual VM::GIndex* generateExpression(codegen::GScope*, GInstructionVector&);
 
     PMethodCall(PExpression* _currentValue,
