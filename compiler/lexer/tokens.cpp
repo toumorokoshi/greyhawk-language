@@ -20,14 +20,14 @@ namespace lexer {
     {CLASS, "class"},
     {INDENT, "indent"},
     {UNINDENT, "unindent"},
-    {LPAREN, "("},
-    {RPAREN, ")"},
     {L_BRACKET, "["},
     {R_BRACKET, "]"},
     {L_CURLY, "{"},
     {R_CURLY, "}"},
     {SEMICOLON, ";"},
     {COMMA, ","},
+    {LPAREN, "("},
+    {RPAREN, ")"},
     {PLUS, "+"},
     {MINUS, "-"},
     {MUL, "*"},
@@ -42,8 +42,8 @@ namespace lexer {
     {GREATER_THAN, ">"},
     {COLON, ":"},
     {DOT, "."},
-    {IS, "is"},
     {OR, "or"},
+    {IS, "is"},
     {INCREMENT, "+="},
     {DECREMENT, "-="},
     {WHILE, "while"}
@@ -65,6 +65,7 @@ namespace lexer {
     pairFromType(CLASS),
     pairFromType(WHILE),
     pairFromType(OR),
+    pairFromType(IS),
   };
 
   const KeywordPairVector operatorPairs {
@@ -79,22 +80,36 @@ namespace lexer {
     pairFromType(COMMA),
     pairFromType(DOT),
     pairFromType(SEMICOLON),
+    pairFromType(DECLARE),
+    pairFromType(ASSIGN),
+    pairFromType(INCREMENT),
+    pairFromType(DECREMENT),
     // binary operators
     pairFromType(PLUS),
     pairFromType(MINUS),
     pairFromType(MUL),
     pairFromType(DIV),
-    pairFromType(DECLARE),
-    pairFromType(ASSIGN),
     pairFromType(EQUAL),
     pairFromType(NOT_EQUAL),
     pairFromType(LESS_OR_EQUAL),
     pairFromType(GREATER_OR_EQUAL),
     pairFromType(LESS_THAN),
     pairFromType(GREATER_THAN),
-    pairFromType(IS),
-    pairFromType(INCREMENT),
-    pairFromType(DECREMENT),
  };
+
+  std::map<L, int> opPrecedence = {
+    {PLUS,2},
+    {MINUS,2},
+    {MUL,3},
+    {DIV,3},
+    {EQUAL,1},
+    {NOT_EQUAL,1},
+    {LESS_OR_EQUAL,1},
+    {GREATER_OR_EQUAL,1},
+    {LESS_THAN,1},
+    {GREATER_THAN,1},
+    {IS, 1},
+    {OR, 0},
+  };
 
 }

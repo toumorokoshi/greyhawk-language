@@ -1,12 +1,13 @@
 #include "parser.hpp"
+#include <stack>
 
 using namespace VM;
 using namespace lexer;
 
 #ifdef DEBUG
-  #define debug(s) std::cerr << s << std::endl;
+#define debug(s) std::cerr << s << std::endl;
 #else
-  #define debug(s);
+#define debug(s);
 #endif
 
 
@@ -16,6 +17,66 @@ namespace parser {
     return token.type >= PLUS && token.type <= IS;
   }
 
+  PExpression* createBinaryOp(std::stack<PExpression*>& values,
+                             lexer::L op) {
+    if (values.size() < 2) {
+      throw ParserException("Unable to create binary operator. Not enough operands");
+    }
+
+    auto rhs = values.top();
+    values.pop();
+    auto lhs = values.top();
+    values.pop();
+
+    return new PBinaryOperation(lhs, op, rhs);
+  }
+
+  // parse binary operations w/ precedence
+  // using the shunting yard algorithm.
+  PExpression* Parser::parseBinaryOperations() {
+    std::stack<PExpression*> values;
+    std::stack<lexer::L> operators;
+
+    values.push(parseValue());
+    while (token_position != tokens.end() && isBinaryOperator(**token_position)) {
+      debug("Parser::parseBinaryOperations: parsing token " << (*token_position)->getFullDescription());
+      auto op = (*token_position)->type;
+
+      while (true) {
+        if (operators.size() == 0) {
+          operators.push(op);
+          break;
+
+        } else {
+          auto topOp = operators.top();
+          if (lexer::opPrecedence[topOp] >= lexer::opPrecedence[op]) {
+            operators.pop();
+            values.push(createBinaryOp(values, topOp));
+
+          } else {
+            operators.push(op);
+            break;
+          }
+        }
+      }
+
+      token_position++;
+      values.push(parseValue());
+    }
+
+    while (operators.size() > 0) {
+      auto op = operators.top();
+      operators.pop();
+      values.push(createBinaryOp(values, op));
+    }
+
+    // we might need to add a check if there's
+    // more that 1 value in the values stack,
+    // but the way it was coded, this is not necessary
+    // (while loop requires a value after every binary op
+    return values.top();
+  }
+
   PExpression* Parser::parseExpression() {
     // an expression could be one of the following:
     // * a method call
@@ -23,27 +84,16 @@ namespace parser {
     // * an array access
     // a binary operator
     // all of the start with a base value.
-    auto lhs = parseValue();
-
-    while (token_position != tokens.end() && isBinaryOperator(**token_position)) {
-      auto op = (*token_position)->type;
-      token_position++;
-      auto rhs = parseValue();
-      lhs = new PBinaryOperation(lhs, op, rhs);
-    }
-
-    return lhs;
+    // TODO: handle parentheses
+    return parseBinaryOperations();
   }
 
   PExpression* Parser::parseValue() {
     auto baseValue = parseBaseValue();
 
     while (true) {
-      debug("loop");
-
 
       if (token_position == tokens.end()) {
-        debug("returning baseValue");
         return baseValue;
       }
 
@@ -57,7 +107,6 @@ namespace parser {
         baseValue = parseArrayAccess(baseValue);
         break;
       default:
-        debug("returning basevalue");
         return baseValue;
       }
     }

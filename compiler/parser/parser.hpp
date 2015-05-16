@@ -34,6 +34,7 @@ namespace parser {
     PForeachLoop* parseForeachLoop();
     PIfElse* parseIfElse();
     PConstantArray* parseConstantArray();
+    PExpression* parseBinaryOperations();
     PExpression* parseExpression();
     PExpression* parseValue();
     PExpression* parseBaseValue();

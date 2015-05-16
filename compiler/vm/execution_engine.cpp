@@ -207,9 +207,9 @@ namespace VM {
         break;
 
       case INT_OR:
-        locals[args[0].registerNum].asInt32 =
-          locals[args[1].registerNum].asInt32 |
-          locals[args[2].registerNum].asInt32;
+        locals[args[2].registerNum].asInt32 =
+          locals[args[0].registerNum].asInt32 |
+          locals[args[1].registerNum].asInt32;
         break;
 
       case LOAD_CONSTANT_BOOL:

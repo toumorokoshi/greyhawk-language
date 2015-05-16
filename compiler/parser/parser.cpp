@@ -4,9 +4,9 @@
 #include <string>
 
 #ifdef DEBUG
-  #define debug(s) std::cerr << s << std::endl;
+#define debug(s) std::cerr << s << std::endl;
 #else
-  #define debug(s);
+#define debug(s);
 #endif
 
 

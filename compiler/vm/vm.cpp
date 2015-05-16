@@ -104,6 +104,11 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "INT_TO_FLOAT:";
       break;
 
+    case INT_OR:
+      std::cout << "INT_OR: {" << values[2].registerNum << "} <- {"
+                << values[0].registerNum << "} OR {" << values[1].registerNum << "}";
+      break;
+
     case INSTANCE_CREATE:
       std::cout << "INSTANCE_CREATE: {" << values[0].registerNum << "} <- {"
                 << values[1].registerNum << "}()";

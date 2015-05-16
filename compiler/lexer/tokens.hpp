@@ -65,6 +65,7 @@ namespace lexer {
   };
 
   extern std::map<L, std::string> tokenMap;
+  extern std::map<L, int> opPrecedence;
 
   class Token {
   public:
