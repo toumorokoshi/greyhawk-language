@@ -50,16 +50,9 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "BRANCH: {" << values[0].registerNum << "} ? " << values[1].positionDiff << " : " << values[2].positionDiff;
       break;
 
-      /* case CALL: {
-      auto function = values[0].function;
-      std::cout << "CALL: " << values[0].function << "(";
-      for (int i = 0; i < function->argumentCount; i++) {
-        std::cout << "[" << values[2 + i].registerNum << +"]";
-        if (i < function->argumentCount - 1) { std::cout << ", "; }
-      }
-      std::cout << ") -> [" << values[1].registerNum << "]";
+    case BOOL_PRINT:
+      std::cout << "BOOL_PRINT: {" << values[0].registerNum << "}";
       break;
-      } */
 
     case BUILTIN_CALL:
       std::cout << "BUILTIN_CALL: {" << values[0].registerNum << "}";
@@ -123,10 +116,6 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "INSTANCE_SET_ATTRIBUTE: {" << values[0].registerNum << "}["
                 << values[1].registerNum << "] <- {"
                 << values[2].registerNum << "}";
-      break;
-
-    case LENGTH:
-      std::cout << "LENGTH:";
       break;
 
     case LOAD_CONSTANT_BOOL:

@@ -241,6 +241,14 @@ namespace parser {
       debug("parseBaseValue: return false.");
       return new PConstantBool(false);
 
+    case LPAREN: {
+      debug("parseBaseValue: return subexpression");
+      auto value = parseExpression();
+      _validateToken(RPAREN, "expected a ')' to close an experssion");
+      token_position++;
+      return value;
+    }
+
     default:
       throw ParserException(*token, "expected value!");
     }

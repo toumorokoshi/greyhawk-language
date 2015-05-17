@@ -107,6 +107,8 @@ namespace parser {
         op = GOPCODE::PRINT_CHAR;
       } else if (type == getFloatType()) {
         op = GOPCODE::PRINT_FLOAT;
+      } else if (type == getBoolType()) {
+        op = GOPCODE::BOOL_PRINT;
       } else {
         if (type == NULL) {
           throw ParserException("There was an issue with the compiler! Recieved null class type.");

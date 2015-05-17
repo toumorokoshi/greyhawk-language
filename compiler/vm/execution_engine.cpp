@@ -87,6 +87,12 @@ namespace VM {
         break;
       }
 
+      case BOOL_PRINT: {
+        debug("BOOL_PRINT");
+        printf("%s\n", locals[args[0].registerNum].asBool ? "true" : "false");
+        break;
+      }
+
       case CHAR_EQ:
         locals[args[2].registerNum].asBool =
           locals[args[0].registerNum].asChar ==
@@ -307,9 +313,8 @@ namespace VM {
       case SUBTRACT_FLOAT:
         break;
       }
-
-
       instruction++;
     }
+    return GValue { .asBool = false };
   }
 }
