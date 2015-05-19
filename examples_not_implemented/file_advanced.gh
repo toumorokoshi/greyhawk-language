@@ -5,9 +5,9 @@ class File:
 	None write(msg String, len Int):
 		__builtins__.write(fileDescriptor, msg, len)
 
-	(Int, String) read(num Int):
+	String read(num Int):
 		buffer := Char[num]
-		bytes_read := __builtins__.read(fileDescriptor, buffer, num)
+		print(__builtins__.read(fileDescriptor, buffer, num))
 		return buffer
 
 stdin := File(0)

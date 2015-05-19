@@ -1,11 +1,25 @@
 #include "builtins.hpp"
 #include "environment.hpp"
+#include "function.hpp"
 // unistd is a unix-specific thing.
 // we'll need to do an if/else for windows at
 // some point.
 #include <unistd.h>
 
 namespace VM {
+
+  void addBuiltinRead(GEnvironment* environment) {
+    environment->addFunction("read", new GFunction {
+        .argumentCount = 3,
+        .argumentTypes = new GType*[3]{
+          getInt32Type(),
+          getStringType(),
+          getInt32Type()
+        },
+        .returnType = getInt32Type()
+    });
+    environment->localsTypes[environment->localsCount - 1] = getBuiltinType();
+  }
 
   // None __builtin__.read(fd Int, buffer Array<char>, size Int)
   GValue* builtin_read(GValue* args) {
@@ -24,6 +38,19 @@ namespace VM {
     }
 
     return new GValue { bytesRead };
+  }
+
+  void addBuiltinWrite(GEnvironment* environment) {
+    environment->addFunction("write", new GFunction {
+        .argumentCount = 3,
+        .argumentTypes = new GType*[3]{
+          getInt32Type(),
+          getStringType(),
+          getInt32Type()
+        },
+        .returnType = getNoneType()
+    });
+    environment->localsTypes[environment->localsCount - 1] = getBuiltinType();
   }
 
   GValue* builtin_write(GValue* args) {
@@ -58,8 +85,8 @@ namespace VM {
       .environment = builtinEnv
     };
     if (!_initialized) {
-      builtinEnv->addObject("read", getBuiltinType());
-      builtinEnv->addObject("write", getBuiltinType());
+      addBuiltinRead(builtinEnv);
+      addBuiltinWrite(builtinEnv);
       _initialized = true;
     }
     return builtinType;

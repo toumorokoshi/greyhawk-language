@@ -4,9 +4,9 @@
 #include <iostream>
 
 #ifdef DEBUG
-  #define debug(s) std::cerr << s << std::endl;
+#define debug(s) std::cerr << s << std::endl;
 #else
-  #define debug(s);
+#define debug(s);
 #endif
 
 namespace VM {
@@ -82,7 +82,11 @@ namespace VM {
         }
 
         debug("BUILTIN_CALL: executing...")
-        (*builtin)(arguments);
+        auto value = (*builtin)(arguments);
+        if (value != NULL) {
+          locals[args[0].registerNum] = *value;
+          // delete value;
+        }
         debug("BUILTIN_CALL: finished...")
         break;
       }

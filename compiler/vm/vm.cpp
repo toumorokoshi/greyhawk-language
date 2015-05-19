@@ -55,7 +55,8 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       break;
 
     case BUILTIN_CALL:
-      std::cout << "BUILTIN_CALL: {" << values[0].registerNum << "}";
+      std::cout << "BUILTIN_CALL: {" << values[0].registerNum << "} <- {"
+                << values[1].registerNum << "}()";
       break;
 
     case CHAR_EQ:

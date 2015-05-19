@@ -40,34 +40,35 @@ namespace parser {
     GOPCODE instruction;
     GIndex* returnValue;
     auto argumentRegisters = new GOPARG[2 + arguments.size()];
+    auto function = type->environment->getFunction(methodName);
     if (object->type == getBuiltinModuleType()) {
       instruction = GOPCODE::BUILTIN_CALL;
-      returnValue = scope->allocateObject(getNoneType());
     } else {
       instruction = GOPCODE::FUNCTION_CALL;
-      auto function = type->environment->getFunction(methodName);
-      if (function->argumentCount != (int) arguments.size()) {
-        throw ParserException("Argument count mismatch! " +
-                              std::to_string(function->argumentCount) +
-                              " values passed, " +
-                              std::to_string((int) arguments.size()) +
-                              " expected.");
-      }
-      for (int i = 0; i < function->argumentCount; i++) {
-        GType* expectedType = function->argumentTypes[i];
-        GType* actualType = arguments[i]->getType(scope);
-        if (expectedType != actualType) {
-          // debug(expectedType->subTypes[0]->name);
-          // debug(actualType->subTypes[0])
-          // debug(actualType->subTypes[0]->name);
-          throw ParserException("Argument types mismatch! "
-                                "expected " + expectedType->name +
-                                ", found " + actualType->name);
-        }
-      }
-
-      returnValue = scope->allocateObject(function->returnType);
     }
+
+    if (function->argumentCount != (int) arguments.size()) {
+      throw ParserException("Argument count mismatch! " +
+                            std::to_string(function->argumentCount) +
+                            " values passed, " +
+                            std::to_string((int) arguments.size()) +
+                            " expected.");
+    }
+
+    for (int i = 0; i < function->argumentCount; i++) {
+      GType* expectedType = function->argumentTypes[i];
+      GType* actualType = arguments[i]->getType(scope);
+      if (expectedType != actualType) {
+        // debug(expectedType->subTypes[0]->name);
+        // debug(actualType->subTypes[0])
+        // debug(actualType->subTypes[0]->name);
+        throw ParserException("Argument types mismatch! "
+                              "expected " + expectedType->name +
+                              ", found " + actualType->name);
+      }
+    }
+
+    returnValue = scope->allocateObject(function->returnType);
     argumentRegisters[0].registerNum = returnValue->registerNum;
     argumentRegisters[1].registerNum = funcRegister->registerNum;
     for (int i = 0; i < (int) arguments.size(); i++) {
