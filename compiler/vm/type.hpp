@@ -1,4 +1,5 @@
 #include <string>
+#include "../std/gstd.hpp"
 
 #ifndef VM2_TYPE_HPP
 #define VM2_TYPE_HPP

@@ -7,6 +7,7 @@ class File:
 
 	String read(num Int):
 		buffer := Char[num]
+		// bytes_read := __builtins__.read(fileDescriptor, buffer, num)
 		print(__builtins__.read(fileDescriptor, buffer, num))
 		return buffer
 

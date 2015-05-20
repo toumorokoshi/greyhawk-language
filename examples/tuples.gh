@@ -1,0 +1,7 @@
+// you can have tuple objects in gh
+(Bool, String) tryMethodWithReturnValue():
+	return (False, "an error occurred!")
+
+result := tryMethodWithReturnValue()
+print(result[0])
+print(result[1])

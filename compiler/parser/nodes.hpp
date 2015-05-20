@@ -5,6 +5,7 @@
 #include "../vm/vm.hpp"
 #include "../codegen/scope.hpp"
 #include "yaml-cpp/yaml.h"
+#include "../std/gstd.hpp"
 #include <string.h>
 #include <iostream>
 
@@ -28,8 +29,21 @@ namespace parser {
   // the type node is used to evaluate types.
   // NOT USED ATM. We'll probably need this at some point.
   class PType : public PNode {
+    std::string type;
   public:
-    VM::GType* generateType(codegen::GScope*, GInstructionVector&) { return NULL; }
+    virtual VM::GType* generateType(codegen::GScope*);
+    virtual std::string getName();
+    virtual YAML::Node* toYaml();
+    PType(std::string _type) : type(_type) {}
+  };
+
+  class PTupleType: public PNode {
+    gstd::Array<PType*> types;
+  public:
+    virtual VM::GType* generateType(codegen::GScope*);
+    virtual YAML::Node* toYaml();
+    virtual std::string getName();
+    PTupleType(gstd::Array<PType*> _types) : types(_types) {}
   };
 
   /* Statements */

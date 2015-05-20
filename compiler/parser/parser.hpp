@@ -7,9 +7,6 @@
 
 namespace parser {
 
-  class CScope {
-  };
-
   class CType {
   public:
     std::string value;
@@ -40,6 +37,7 @@ namespace parser {
     PExpression* parseBaseValue();
     PCall* parseClassInstantiation();
     PCall* parseCall();
+    PType* parseType();
     PWhile* parseWhile();
     PExpression* parseMethodCall(PExpression*);
     PArrayAccess* parseArrayAccess(PExpression*);
@@ -48,7 +46,6 @@ namespace parser {
 
   private:
     void _validateToken(lexer::L type, std::string message);
-    std::string _parseType(std::string);
   };
 }
 
