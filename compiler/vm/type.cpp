@@ -1,6 +1,7 @@
 #include "type.hpp"
 #include "environment.hpp"
 #include "function.hpp"
+#include <sstream>
 #include <map>
 
 namespace VM {
@@ -10,53 +11,72 @@ namespace VM {
     if (arrayTypes.find(elementType) == arrayTypes.end()) {
       arrayTypes[elementType] = new GType {
         .name = "Array",
-        .subTypes = new GType*[1] { elementType }};
+        .subTypes = gstd::Array<GType*> (new GType*[1] { elementType }, 1)
+      };
     }
     return arrayTypes[elementType];
   }
 
   GType* getBoolType() {
-    auto static boolType = new GType { "Bool", NULL };
+    auto static boolType = new GType {
+      "Bool", gstd::Array<GType*> (NULL, 0)
+    };
     return boolType;
   }
 
   GType* getBuiltinType() {
-    auto static builtinType = new GType { "Builtin", NULL };
+    auto static builtinType = new GType {
+      "Builtin", gstd::Array<GType*> (NULL, 0)
+    };
     return builtinType;
   }
 
   GType* getClassType() {
-    auto static classType = new GType { "Class", NULL };
+    auto static classType = new GType {
+      "Class", gstd::Array<GType*> (NULL, 0)
+    };
     return classType;
   };
 
   GType* getCharType() {
-    auto static charType = new GType { "Char", NULL };
+    auto static charType = new GType {
+      "Char", gstd::Array<GType*> (NULL, 0)
+    };
     return charType;
   };
 
   GType* getFloatType() {
-    auto static floatType = new GType { "Float", NULL };
+    auto static floatType = new GType {
+      "Float", gstd::Array<GType*> (NULL, 0)
+    };
     return floatType;
   }
 
   GType* getFunctionType() {
-    auto static functionType = new GType { "Function", NULL };
+    auto static functionType = new GType {
+      "Function", gstd::Array<GType*> (NULL, 0)
+    };
     return functionType;
   }
 
   GType* getInt32Type() {
-    auto static intType = new GType { "Int32", NULL };
+    auto static intType = new GType {
+      "Int32", gstd::Array<GType*> (NULL, 0)
+    };
     return intType;
   }
 
   GType* getModuleType() {
-    auto static moduleType = new GType { "Module", NULL };
+    auto static moduleType = new GType {
+      "Module", gstd::Array<GType*> (NULL, 0)
+    };
     return moduleType;
   }
 
   GType* getFileHandleType() {
-    auto static fileHandleType = new GType { "FileHandle", NULL };
+    auto static fileHandleType = new GType {
+      "FileHandle", gstd::Array<GType*> (NULL, 0)
+    };
     return fileHandleType;
   }
 
@@ -65,8 +85,31 @@ namespace VM {
   }
 
   GType* getNoneType() {
-    auto static noneType = new GType { "None", NULL };
+    auto static noneType = new GType {
+      "None", gstd::Array<GType*> (NULL, 0)
+    };
     return noneType;
+  }
+
+  GType* getTupleType(gstd::Array<GType*> subTypes) {
+    static std::map<std::string, GType*> tupleTypes;
+    std::stringstream typeStream;
+    typeStream << "Tuple<";
+    for (int i = 0; i < subTypes.length(); i++) {
+      typeStream << subTypes[i]->name;
+      if (i + 1 < subTypes.length()) { typeStream << ","; }
+    }
+    typeStream << ">";
+    auto name = typeStream.str();
+
+    if (tupleTypes.find(name) == tupleTypes.end()) {
+      tupleTypes[name] = new GType {
+        .name = name,
+        .subTypes = subTypes
+      };
+    }
+
+    return tupleTypes[name];
   }
 
   GEnvironmentInstance* GType::instantiate() {

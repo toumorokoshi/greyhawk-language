@@ -525,6 +525,7 @@ namespace parser {
 
     auto type = new GType {
       .name = name,
+      .subTypes = gstd::Array<GType*> (NULL, 0),
       .attributeCount = (int) attributes.size(),
       .environment = classScope->environment,
       .functionCount = (int) methods.size()

@@ -4,8 +4,7 @@ using namespace lexer;
 using namespace codegen;
 using namespace VM;
 
-#ifndef PARSER_PARSER_TYPE
-#define PARSER_PARSER_TYPE
+using gstd::Array;
 
 namespace parser {
 
@@ -19,49 +18,54 @@ namespace parser {
 
   PType* Parser::parseType() {
     auto token = *token_position;
+    token_position++;
     switch(token->type) {
     case TYPE:
-      return new PType(token->value);
+      return new PSingleType(token->value);
       break;
+    case LPAREN: {
+      std::vector<PType*> types;
+      token_position++;
+      while ((*token_position)->type != RPAREN) {
+        types.push_back(parseType());
+        _validateToken(COMMA, "expected a comma in between tuple arguments");
+      }
+      token_position++;
+
+      if (types.size() < 2) {
+        throw ParserException("Expected at least two types for a tuple type declaration");
+      }
+
+      return new PTupleType(types);
     }
-    return NULL;
+    default:
+      throw ParserException("Expected type declaration");
+    }
   }
 
-  GType* PType::generateType(GScope* scope) {
+  GType* PSingleType::generateType(GScope* scope) {
     return calculateType(scope, type);
   }
 
-  YAML::Node* PType::toYaml() {
+  YAML::Node* PSingleType::toYaml() {
     return new YAML::Node(type);
   }
 
-  std::string PType::getName() { return type; }
+  std::string PSingleType::getName() { return type; }
 
   GType* PTupleType::generateType(GScope* scope) {
-    auto tupleTypes = new GType*[types.length()];
-    std::stringstream typeStream;
-    typeStream << "Tuple<";
-    for (int i = 0; i < types.length(); i++) {
-      auto type = types[i]->generateType(scope);
-      tupleTypes[i] = type;
-      typeStream << type->name;
-      if (i + 1 < types.length()) {
-        typeStream << ",";
-      }
+    Array<VM::GType*> tupleTypes(new GType*[types.size()],
+                                 types.size());
+    for (int i = 0; i < types.size(); i++) {
+      tupleTypes[i] = types[i]->generateType(scope);
     }
-    typeStream << ">";
-    auto name = typeStream.str();
-
-    return new GType {
-      .name = name,
-      .subTypes = tupleTypes
-    };
+    return getTupleType(tupleTypes);
   }
 
   YAML::Node* PTupleType::toYaml() {
     auto root = new YAML::Node();
-    for (int i = 0; i < types.length(); i++) {
-      (*root)["tuple"]["types"].push_back(types[i]->getName());
+    for (auto& type : types) {
+      (*root)["tuple"]["types"].push_back(type->getName());
     }
     return root;
   }
@@ -69,10 +73,10 @@ namespace parser {
   std::string PTupleType::getName() {
     std::stringstream typeStream;
     typeStream << "Tuple<";
-    for (int i = 0; i < types.length(); i++) {
+    for (int i = 0; i < types.size(); i++) {
       auto type = types[i]->getName();
       typeStream << type;
-      if (i + 1 < types.length()) {
+      if (i + 1 < types.size()) {
         typeStream << ",";
       }
     }
@@ -81,5 +85,3 @@ namespace parser {
   };
 
 }
-
-#endif

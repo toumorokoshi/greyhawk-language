@@ -31,7 +31,7 @@ namespace VM {
     // subtypes are kind of a weird thing. right now, they're
     // only used for arrays, to indicate the array element type.
     // at some point, we may want to use these for things like generics.
-    GType** subTypes;
+    gstd::Array<GType*> subTypes;
     int attributeCount;
     int functionCount;
     // this is necessary to invoke methods
@@ -54,6 +54,7 @@ namespace VM {
   GType* getNoneType();
   GType* getFileHandleType();
   GType* getStringType();
+  GType* getTupleType(gstd::Array<GType*>);
 }
 
 #endif

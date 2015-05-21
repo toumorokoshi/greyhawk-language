@@ -29,21 +29,28 @@ namespace parser {
   // the type node is used to evaluate types.
   // NOT USED ATM. We'll probably need this at some point.
   class PType : public PNode {
+  public:
+    virtual VM::GType* generateType(codegen::GScope*);
+    virtual std::string getName();
+    virtual YAML::Node* toYaml();
+  };
+
+  class PSingleType : public PType {
     std::string type;
   public:
     virtual VM::GType* generateType(codegen::GScope*);
     virtual std::string getName();
     virtual YAML::Node* toYaml();
-    PType(std::string _type) : type(_type) {}
+    PSingleType(std::string _type) : type(_type) {}
   };
 
-  class PTupleType: public PNode {
-    gstd::Array<PType*> types;
+  class PTupleType: public PType {
+    std::vector<PType*> types;
   public:
     virtual VM::GType* generateType(codegen::GScope*);
     virtual YAML::Node* toYaml();
     virtual std::string getName();
-    PTupleType(gstd::Array<PType*> _types) : types(_types) {}
+    PTupleType(std::vector<PType*> _types) : types(_types) {}
   };
 
   /* Statements */

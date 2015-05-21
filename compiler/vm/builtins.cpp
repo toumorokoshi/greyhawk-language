@@ -81,7 +81,7 @@ namespace VM {
     auto static _initialized = false;
     auto static builtinEnv = new GEnvironment();
     auto static builtinType = new GType {
-      "Builtin", NULL,
+      "Builtin", gstd::Array<GType*>(NULL, 0),
       .environment = builtinEnv
     };
     if (!_initialized) {
