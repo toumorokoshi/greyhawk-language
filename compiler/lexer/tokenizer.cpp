@@ -114,10 +114,17 @@ char Tokenizer::parseChar(StringScanner& scanner, int line) {
     return scanner.next();
   }
   scanner.next();
-  if (scanner.peek() == '0') {
+  switch (scanner.peek()) {
+  case '0':
     scanner.next();
     return EOF;
-  } else {
+  case '\'':
+    scanner.next();
+    return '\'';
+  case '"':
+    scanner.next();
+    return '"';
+  default:
     throw LexerException(line, "unable to escape character", "");
   }
 }

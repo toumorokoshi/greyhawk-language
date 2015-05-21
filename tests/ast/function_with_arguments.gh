@@ -1,6 +1,6 @@
 - function_declaration:
-    return_type: Int
     name: multiplyByTwo
+    return_type: Int
     arguments:
       - name: x
         type: Int

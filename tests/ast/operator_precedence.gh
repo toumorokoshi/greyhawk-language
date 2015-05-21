@@ -1,0 +1,22 @@
+- function_call:
+    name: print
+    arguments:
+      - binary_operation:
+          operation: +
+          lhs:
+            binary_operation:
+              operation: "*"
+              lhs:
+                binary_operation:
+                  operation: +
+                  lhs: 1
+                  rhs: 2
+              rhs: 3
+          rhs: 5
+- function_call:
+    name: print
+    arguments:
+      - binary_operation:
+          operation: or
+          lhs: true
+          rhs: false
