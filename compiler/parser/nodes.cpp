@@ -78,7 +78,7 @@ namespace parser {
 
   YAML::Node* PFunctionDeclaration::toYaml() {
     auto root = new YAML::Node();
-    (*root)["function_declaration"]["return_type"] = returnType;
+    (*root)["function_declaration"]["return_type"] = returnType->getName();
     (*root)["function_declaration"]["name"] = name;
 
     for (auto argument : arguments) {

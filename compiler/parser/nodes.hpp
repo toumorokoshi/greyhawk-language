@@ -30,9 +30,10 @@ namespace parser {
   // NOT USED ATM. We'll probably need this at some point.
   class PType : public PNode {
   public:
-    virtual VM::GType* generateType(codegen::GScope*);
-    virtual std::string getName();
-    virtual YAML::Node* toYaml();
+    virtual VM::GType* generateType(codegen::GScope*) = 0;
+    virtual std::string getName() = 0;
+    virtual YAML::Node* toYaml() = 0;
+    virtual ~PType() {};
   };
 
   class PSingleType : public PType {
@@ -167,7 +168,7 @@ namespace parser {
 
   class PFunctionDeclaration : public PStatement {
   public:
-    std::string returnType;
+    PType* returnType;
     std::string name;
     PArgumentList& arguments;
     PBlock* body;
@@ -176,7 +177,7 @@ namespace parser {
     virtual void generateStatement(codegen::GScope*, GInstructionVector&);
     virtual void generateBody(VM::GFunction*, codegen::GScope*);
 
-    PFunctionDeclaration(std::string _returnType,
+    PFunctionDeclaration(PType* _returnType,
                          std::string _name,
                          PArgumentList& _arguments,
                          PBlock* _body) :
@@ -239,13 +240,13 @@ namespace parser {
 
   class PArray : public PExpression {
   public:
-    std::string type;
+    PType* type;
     PExpression* size;
     virtual YAML::Node* toYaml();
     virtual VM::GType* getType(codegen::GScope*);
     virtual VM::GIndex* generateExpression(codegen::GScope*,
                                            GInstructionVector&);
-    PArray(std::string _type, PExpression* _size) :
+    PArray(PType* _type, PExpression* _size) :
       type(_type), size(_size) {}
   };
 
@@ -413,6 +414,15 @@ namespace parser {
       currentValue(_currentValue), propertyName(_propertyName) {}
   };
 
+  class PTuple : public PExpression {
+  public:
+    std::vector<PExpression*> values;
+    virtual YAML::Node* toYaml();
+    virtual VM::GType* getType(codegen::GScope*);
+    virtual VM::GIndex* generateExpression(codegen::GScope*, GInstructionVector&);
+    PTuple(std::vector<PExpression*> _values) : values(_values) {};
+  };
+
   class PBinaryOperation : public PExpression {
   public:
     PExpression* lhs;
@@ -429,10 +439,8 @@ namespace parser {
       case lexer::L::IS:
       case lexer::L::NOT_EQUAL:
       case lexer::L::EQUAL:
-        std::cout << "YboolType" << std::endl;
         return VM::getBoolType();
       default:
-        std::cout << "default" << std::endl;
         return lhs->getType(s);
       }
     }

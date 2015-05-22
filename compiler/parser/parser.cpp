@@ -172,6 +172,11 @@ namespace parser {
     case TYPE:
       return parseFunctionDeclaration();
 
+    case LPAREN:
+      // an lparen implies a tuple type declaration of some sort,
+      // for now.
+      return parseFunctionDeclaration();
+
     case IDENTIFIER: {
       auto identifier = token;
       token_position++;
@@ -247,9 +252,7 @@ namespace parser {
   PFunctionDeclaration* Parser::parseFunctionDeclaration() {
     debug("parseFunctionDeclaration");
     // skip for now. I'll add this in later.
-    _validateToken(TYPE, "expected a type for a function declaration");
-    auto returnType = (*token_position)->value;
-    token_position++;
+    auto returnType = parseType();
 
     _validateToken(IDENTIFIER, "expected a function name for a function declaration");
     auto functionName = (*token_position)->value;

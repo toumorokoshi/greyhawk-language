@@ -244,8 +244,30 @@ namespace parser {
     case LPAREN: {
       debug("parseBaseValue: return subexpression");
       auto value = parseExpression();
-      _validateToken(RPAREN, "expected a ')' to close an experssion");
-      token_position++;
+
+      switch ((*token_position)->type) {
+      case RPAREN:
+        token_position++;
+        return value;
+      case COMMA: {
+        // we're looking at a tuple.
+        token_position++;
+        std::vector<PExpression*> values;
+        values.push_back(value);
+        while ((*token_position)->type != RPAREN) {
+          auto value = parseExpression();
+          values.push_back(value);
+          if ((*token_position)->type != RPAREN) {
+            _validateToken(COMMA, "expected a comma for a tuple value");
+            token_position++;
+          }
+        }
+        token_position++;
+        return new PTuple(values);
+      }
+      default:
+        throw ParserException(*token, "expected a ')' to close an expression");
+      }
       return value;
     }
 

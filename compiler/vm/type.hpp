@@ -55,6 +55,8 @@ namespace VM {
   GType* getFileHandleType();
   GType* getStringType();
   GType* getTupleType(gstd::Array<GType*>);
+  bool isTupleType(GType*);
+  bool isArrayType(GType*);
 }
 
 #endif

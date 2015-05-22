@@ -25,15 +25,18 @@ namespace parser {
       break;
     case LPAREN: {
       std::vector<PType*> types;
-      token_position++;
       while ((*token_position)->type != RPAREN) {
         types.push_back(parseType());
-        _validateToken(COMMA, "expected a comma in between tuple arguments");
+        if ((*token_position)->type != RPAREN) {
+          _validateToken(COMMA, "expected a comma in between tuple arguments");
+          token_position++;
+        }
       }
       token_position++;
 
       if (types.size() < 2) {
-        throw ParserException("Expected at least two types for a tuple type declaration");
+        throw ParserException(**token_position,
+                              "Expected at least two types for a tuple type declaration");
       }
 
       return new PTupleType(types);

@@ -22,6 +22,7 @@ namespace VM {
     double asFloat;
     void* asNone;
     GArray* asArray;
+    GArray* asTuple;
     GEnvironmentInstance* asModule;
     GEnvironmentInstance* asInstance;
     GFunctionInstance* asFunction;

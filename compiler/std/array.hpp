@@ -7,14 +7,18 @@ namespace gstd {
     T* values;
     int _length;
   public:
-    Array(T* _values, int length) :
-      values(_values), _length(length) {}
-
     T &operator[](int i) {
       return values[i];
     }
 
     int length() { return _length; }
+
+    Array(int length) : _length(length) {
+      values = new T[length];
+    }
+
+    Array(T* _values, int length):
+      values(_values), _length(length) {}
   };
 }
 

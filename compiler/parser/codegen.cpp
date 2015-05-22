@@ -447,10 +447,9 @@ namespace parser {
       throw ParserException("Cannot redeclare " + name);
     }
 
-    debug("  return type is: " + returnType)
     auto index = scope->addFunction(name, new GFunction {
         .argumentCount = (int) arguments.size(),
-        .returnType = evaluateType(returnType),
+        .returnType = returnType->generateType(scope),
     }, this);
     debug("PFunctionDeclaration name: " << name);
     auto functionIndex = scope->functionsByName[name];
@@ -508,7 +507,7 @@ namespace parser {
       auto method = methods[i];
       auto function = new GFunction {
         .argumentCount = (int) method->arguments.size(),
-        .returnType = evaluateType(method->returnType)
+        .returnType = method->returnType->generateType(scope)
       };
       createdFunctions[i] = function;
       debug("    adding function " + method->name + "...")
@@ -525,7 +524,7 @@ namespace parser {
 
     auto type = new GType {
       .name = name,
-      .subTypes = gstd::Array<GType*> (NULL, 0),
+      .subTypes = gstd::Array<GType*>(0),
       .attributeCount = (int) attributes.size(),
       .environment = classScope->environment,
       .functionCount = (int) methods.size()
@@ -617,6 +616,12 @@ namespace parser {
                                             GInstructionVector& instructions) {
     auto valueObject = value->generateExpression(scope, instructions);
     auto indexObject = index->generateExpression(scope, instructions);
+    GType* elementType;
+    if (isArrayType(valueObject->type)) {
+      elementType = valueObject->type->subTypes[0];
+    } else {
+      elementType
+    }
     auto objectRegister = scope->allocateObject(valueObject->type->subTypes[0]);
     if (indexObject->type != getInt32Type()) {
       throw ParserException("index on array is not an int");

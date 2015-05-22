@@ -8,13 +8,13 @@ namespace parser {
 
   YAML::Node* PArray::toYaml() {
     auto node = new YAML::Node();
-    (*node)["array"]["type"] = type;
+    (*node)["array"]["type"] = type->getName();
     (*node)["array"]["size"] = *size->toYaml();
     return node;
   }
 
-  GType* PArray::getType(codegen::GScope*) {
-    return getArrayType(evaluateType(type));
+  GType* PArray::getType(codegen::GScope* scope) {
+    return getArrayType(type->generateType(scope));
   }
 
   GIndex* PArray::generateExpression(codegen::GScope* scope,
@@ -38,9 +38,7 @@ namespace parser {
   }
 
   PArray* Parser::parseArray() {
-    _validateToken(TYPE, "expected a class name for an array declaration");
-    auto type = (*token_position)->value;
-    token_position++;
+    auto type = parseType();
 
     _validateToken(L_BRACKET, "expected an '[' for an array");
     token_position++;
