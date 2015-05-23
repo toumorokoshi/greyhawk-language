@@ -34,10 +34,14 @@ namespace parser {
     instr.push_back(GInstruction { ARRAY_ALLOCATE, new GOPARG[2] {
           { tuple->registerNum }, { size->registerNum }
     }});
+    auto intVar = scope->allocateObject(getInt32Type());
     for (int i = 0; i < (int) values.size(); i++) {
       auto value = values[i]->generateExpression(scope, instr);
+      instr.push_back(GInstruction { LOAD_CONSTANT_INT, new GOPARG[2] {
+            {intVar->registerNum}, {i}
+      }});
       instr.push_back(GInstruction { ARRAY_SET_VALUE, new GOPARG[3] {
-            { tuple->registerNum } , { i }, { value->registerNum }
+            { tuple->registerNum } , { intVar->registerNum }, { value->registerNum }
       }});
     }
     return tuple;

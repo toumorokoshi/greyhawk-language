@@ -10,9 +10,9 @@
 #endif
 
 
-
 using namespace lexer;
 using namespace VM;
+using gstd::Array;
 
 namespace parser {
 
@@ -84,14 +84,9 @@ namespace parser {
         }
         break;
 
-        // this code looks funky. Don't know what's going on with this.
-      case TYPE:
+      default:
         pclass->methods.push_back(parseFunctionDeclaration());
         break;
-
-      default:
-        throw ParserException(**token_position,
-                              "not recognized as the start of a statement in a class declaration!");
       }
     }
 
@@ -178,55 +173,67 @@ namespace parser {
       return parseFunctionDeclaration();
 
     case IDENTIFIER: {
-      auto identifier = token;
-      token_position++;
-
-      if (token_position != tokens.end()) {
-
-        switch ((*token_position)->type) {
-
-        case DECLARE: {
-          debug("pDeclare");
-          token_position++; // iterate past declare
-          auto* expression = parseExpression();
-          return new PDeclare(identifier->value, expression);
+      // we collect the identifiers
+      // it could be a tuple
+      auto identifiers = new std::vector<std::string>();
+      while ((*token_position)->type == IDENTIFIER) {
+        identifiers->push_back((*token_position)->value);
+        token_position++;
+        if ((*token_position)->type == IDENTIFIER) {
+          throw ParserException(**token_position,
+                                "multiple identifiers must be separated by a comma");
         }
-
-        case LPAREN:
-          token_position--;
-          return parseCall();
-
-        default:
-          break;
-
+        if ((*token_position)->type == COMMA) {
+          token_position++;
         }
+      }
 
+      if (token_position == tokens.end()) {
+        token_position--;
+        return parseExpression();
+      }
+
+      // declare is the only type that can take a
+      // tuple right now.
+      if ((*token_position)->type == DECLARE) {
+        debug("pDeclare");
+        token_position++; // iterate past declare
+        auto expression = parseExpression();
+        Array<std::string> identifierArray(&(*identifiers)[0], identifiers->size());
+        return new PDeclare(identifierArray, expression);
+      }
+
+      if (identifiers->size() > 1) {
+        throw ParserException(**token_position, "found an unexpected statement with the tuple on the lhs!");
       }
 
       token_position--;
-      auto expression = parseExpression();
 
-      if (token_position == tokens.end()) {
-        return expression;
-      }
+      auto identExpression = parseExpression();
+
+      // TODO: this results in identifiers being the
+      // only valid expression. In the future, we should expand
+      // this out.
+      // the array is not needed for a single-value case.
 
       switch ((*token_position)->type) {
+
       case ASSIGN:
         token_position++;
-        return new PAssign(expression, parseExpression());
+        return new PAssign(identExpression, parseExpression());
 
       case INCREMENT:
         token_position++;
-        return new PIncrement(expression, parseExpression());
+        return new PIncrement(identExpression, parseExpression());
 
       case DECREMENT:
         token_position++;
-        return new PDecrement(expression, parseExpression());
+        return new PDecrement(identExpression, parseExpression());
 
       default:
-        return expression;
-      }
+        return identExpression;
 
+      }
     }
 
     case L::CLASS:

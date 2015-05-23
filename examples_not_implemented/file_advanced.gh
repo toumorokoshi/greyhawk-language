@@ -5,11 +5,10 @@ class File:
 	None write(msg String, len Int):
 		__builtins__.write(fileDescriptor, msg, len)
 
-	String read(num Int):
+	(Int, String) read(num Int):
 		buffer := Char[num]
-		// bytes_read := __builtins__.read(fileDescriptor, buffer, num)
-		print(__builtins__.read(fileDescriptor, buffer, num))
-		return buffer
+		bytes_read := __builtins__.read(fileDescriptor, buffer, num)
+		return (bytes_read, buffer)
 
 stdin := File(0)
 stdout := File(1)
@@ -17,15 +16,8 @@ stdout := File(1)
 
 i := 0
 while i < 10:
-	output := stdin.read(100)
-	// stdout.write(output, 100)
-	for c in output:
-		// if c == '\0' or i == 10:
-		//	i = 10
-		// else:
-		buffer := Char[1]
-		buffer[0] = c
-		stdout.write(buffer, 1)
+	bytes_read, output := stdin.read(100)
+	stdout.write(output, bytes_read)
 	i = i + 1
 // stdout.write("foooo")
 // stdout.write(stdin.read(100), 100)

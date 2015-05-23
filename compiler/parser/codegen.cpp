@@ -171,16 +171,6 @@ namespace parser {
     return NULL;
   }
 
-  void PDeclare::generateStatement(GScope* scope,
-                                   GInstructionVector& instructions) {
-    debug("  declaring...")
-    auto value = expression->generateExpression(scope, instructions);
-    auto newVar = scope->addObject(name, value->type);
-    instructions.push_back(GInstruction {
-        SET, new GOPARG[2] { {value->registerNum}, {newVar->registerNum} }
-    });
-  }
-
   void setArrayElement(GScope* scope, GInstructionVector& instructions,
                        PArrayAccess* arrayAccess, GIndex* value) {
     auto array = arrayAccess->value->generateExpression(scope, instructions);
@@ -617,11 +607,7 @@ namespace parser {
     auto valueObject = value->generateExpression(scope, instructions);
     auto indexObject = index->generateExpression(scope, instructions);
     GType* elementType;
-    if (isArrayType(valueObject->type)) {
-      elementType = valueObject->type->subTypes[0];
-    } else {
-      elementType
-    }
+    elementType = valueObject->type->subTypes[0];
     auto objectRegister = scope->allocateObject(valueObject->type->subTypes[0]);
     if (indexObject->type != getInt32Type()) {
       throw ParserException("index on array is not an int");

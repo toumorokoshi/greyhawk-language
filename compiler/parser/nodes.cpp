@@ -52,13 +52,6 @@ namespace parser {
     return root;
   }
 
-  YAML::Node* PDeclare::toYaml() {
-    auto root = new YAML::Node();
-    (*root)["declare"]["name"] = name;
-    (*root)["declare"]["value"] = *expression->toYaml();
-    return root;
-  }
-
   YAML::Node* PForLoop::toYaml() {
     auto root = new YAML::Node();
     (*root)["for_loop"]["initializer"] = *initializer->toYaml();

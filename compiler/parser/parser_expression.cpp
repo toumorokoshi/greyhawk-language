@@ -85,6 +85,7 @@ namespace parser {
     // a binary operator
     // all of the start with a base value.
     // TODO: handle parentheses
+    debug("parseExpression");
     return parseBinaryOperations();
   }
 

@@ -117,15 +117,15 @@ namespace parser {
 
   class PDeclare : public PStatement {
   public:
-    std::string name;
+    gstd::Array<std::string> names;
     PExpression* expression;
 
     virtual YAML::Node* toYaml();
     virtual void generateStatement(codegen::GScope*, GInstructionVector&);
 
-    PDeclare(std::string _name,
+    PDeclare(gstd::Array<std::string> _names,
              PExpression* _expression) :
-      name(_name), expression(_expression) {}
+      names(_names), expression(_expression) {}
   };
 
   class PForeachLoop : public PStatement {
