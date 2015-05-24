@@ -1,5 +1,6 @@
 - declare:
-    name: array
+    names:
+      - array
     value:
       -
         - 0

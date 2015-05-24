@@ -23,7 +23,8 @@
                     identifier: attribute
                   rhs: 1
 - declare:
-    name: f
+    names:
+      - f
     value:
       function_call:
         name: Foo

@@ -1,5 +1,6 @@
 - declare:
-    name: y
+    names:
+      - y
     value:
       -
         - 0

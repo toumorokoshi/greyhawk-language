@@ -1,5 +1,6 @@
 - declare:
-    name: a
+    names:
+      - a
     value:
       string: test
 - function_call:

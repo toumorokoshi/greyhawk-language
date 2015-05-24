@@ -5,7 +5,8 @@
       attribute2: Int
     methods: ~
 - declare:
-    name: f
+    names:
+      - f
     value:
       function_call:
         name: Foo
@@ -13,7 +14,8 @@
           - 1
           - 2
 - declare:
-    name: f2
+    names:
+      - f2
     value:
       function_call:
         name: Foo

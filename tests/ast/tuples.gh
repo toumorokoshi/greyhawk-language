@@ -1,0 +1,23 @@
+- function_declaration:
+    return_type: Tuple<Bool,String>
+    name: tryMethodWithReturnValue
+    body:
+      - return:
+          tuple:
+            - false
+            - string: an error occurred!
+- declare:
+    names:
+      - success
+      - errors
+    value:
+      function_call:
+        name: tryMethodWithReturnValue
+- function_call:
+    name: print
+    arguments:
+      - identifier: success
+- function_call:
+    name: print
+    arguments:
+      - identifier: errors

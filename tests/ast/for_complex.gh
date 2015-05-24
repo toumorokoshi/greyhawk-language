@@ -12,7 +12,8 @@
               identifier: a
             rhs: 12
 - declare:
-    name: x
+    names:
+      - x
     value:
       -
         - 0
@@ -26,7 +27,8 @@
 - for_loop:
     initializer:
       declare:
-        name: i
+        names:
+          - i
         value: 0
     condition:
       binary_operation:
@@ -43,7 +45,8 @@
       - for_loop:
           initializer:
             declare:
-              name: j
+              names:
+                - j
               value: 0
           condition:
             binary_operation:

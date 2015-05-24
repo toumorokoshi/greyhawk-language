@@ -10,7 +10,8 @@
             identifier: x
           true_block:
             - declare:
-                name: i
+                names:
+                  - i
                 value: 5
             - return:
                 identifier: i

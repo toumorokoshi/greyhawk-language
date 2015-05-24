@@ -1,5 +1,6 @@
 - declare:
-    name: x
+    names:
+      - x
     value:
       binary_operation:
         operation: +

@@ -1,5 +1,6 @@
 - declare:
-    name: message
+    names:
+      - message
     value:
       string: foo
 - function_declaration:

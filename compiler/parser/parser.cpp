@@ -216,6 +216,10 @@ namespace parser {
       // this out.
       // the array is not needed for a single-value case.
 
+      if (token_position == tokens.end()) {
+        return identExpression;
+      }
+
       switch ((*token_position)->type) {
 
       case ASSIGN:
