@@ -1,3 +1,4 @@
 import "system"
 
-system.stdout.print("Hello World!")
+bytes := system.stdin.read()
+system.stdout.write("Hello World!")

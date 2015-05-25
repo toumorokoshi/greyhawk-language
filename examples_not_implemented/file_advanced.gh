@@ -5,19 +5,26 @@ class File:
 	None write(msg String, len Int):
 		__builtins__.write(fileDescriptor, msg, len)
 
-	(Int, String) read(num Int):
-		buffer := Char[num]
-		bytes_read := __builtins__.read(fileDescriptor, buffer, num)
-		return (bytes_read, buffer)
+	(Int, String) read():
+		full_buffer := Char[1]
+		size, bytes_read := (2, 1)
+
+		while bytes_read == size / 2:
+			buffer := Char[size]
+			bytes_read = __builtins__.read(fileDescriptor, buffer, size)
+			new_full_buffer := Char[size * 2]
+			for i := 0; i < size; i += 1:
+				new_full_buffer[i] = full_buffer[i]
+			for i := 0; i < bytes_read; i += 1:
+				new_full_buffer[i + size] = buffer[i]
+			full_buffer = new_full_buffer
+			size = size * 2
+
+		return (size, full_buffer)
 
 stdin := File(0)
 stdout := File(1)
 
 
-i := 0
-while i < 10:
-	bytes_read, output := stdin.read(100)
-	stdout.write(output, bytes_read)
-	i = i + 1
-// stdout.write("foooo")
-// stdout.write(stdin.read(100), 100)
+bytes_read, output := stdin.read()
+stdout.write(output, bytes_read)

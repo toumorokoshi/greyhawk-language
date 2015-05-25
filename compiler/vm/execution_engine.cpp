@@ -32,17 +32,20 @@ namespace VM {
 
       case ARRAY_ALLOCATE: {
         auto arraySize = locals[args[1].registerNum].asInt32;
+        debug("ARRAY_ALLOCATE: " << arraySize);
         locals[args[0].registerNum].asArray =
           new GArray{ new GValue[arraySize], arraySize};
       }
         break;
 
       case ARRAY_SET_VALUE:
+        debug("ARRAY_SET_VALUE")
         locals[args[0].registerNum].asArray->elements[locals[args[1].registerNum].asInt32] =
           locals[args[2].registerNum];
         break;
 
       case ARRAY_LOAD_VALUE:
+        debug("ARRAY_LOAD_VALUE")
         locals[args[2].registerNum] =
           locals[args[0].registerNum].asArray->elements[locals[args[1].registerNum].asInt32];
         break;
@@ -212,6 +215,12 @@ namespace VM {
           locals[args[2].registerNum];
         break;
 
+      case INT_EQ:
+        locals[args[2].registerNum].asBool =
+          locals[args[0].registerNum].asInt32 ==
+          locals[args[1].registerNum].asInt32;
+        break;
+
       case INT_TO_FLOAT:
         // intToFloat(instruction->values[0], instruction->values[1]);
         break;
@@ -305,6 +314,7 @@ namespace VM {
         return { 0 };
 
       case SET:
+        debug("SET");
         locals[args[1].registerNum] = locals[args[0].registerNum];
         break;
 

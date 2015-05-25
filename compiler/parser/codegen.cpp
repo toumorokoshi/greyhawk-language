@@ -271,6 +271,9 @@ namespace parser {
         debug("  char eq");
         opCode = GOPCODE::CHAR_EQ;
         break;
+      } else if (lhsObject->type == getInt32Type()) {
+        opCode = GOPCODE::INT_EQ;
+        break;
       }
 
     case L::LESS_THAN:

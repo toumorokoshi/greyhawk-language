@@ -98,6 +98,11 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "INT_TO_FLOAT:";
       break;
 
+    case INT_EQ:
+      std::cout << "INT_EQ: {" << values[2].registerNum << "} <- {"
+                << values[0].registerNum << "} == {" << values[1].registerNum << "}";
+      break;
+
     case INT_OR:
       std::cout << "INT_OR: {" << values[2].registerNum << "} <- {"
                 << values[0].registerNum << "} OR {" << values[1].registerNum << "}";
