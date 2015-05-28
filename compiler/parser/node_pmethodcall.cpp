@@ -6,10 +6,25 @@ using namespace codegen;
 
 namespace parser {
 
+  PrimitiveMethod getPrimitiveMethod(GType* type, std::string methodName) {
+    auto typeName = type->name.c_str();
+    if (primitives.find(typeName) == primitives.end()) {
+      throw ParserException("unable to find primitive method dict for " + type->name);
+    }
+    if (primitives[typeName].find(methodName.c_str()) == primitives[typeName].end()) {
+      throw ParserException("unable to find method " + methodName +
+                            " for type " + type->name);
+    }
+    return primitives[typeName][methodName.c_str()];
+  }
+
   GType* PMethodCall::getType(GScope* scope) {
     auto objectType = currentValue->getType(scope);
     if (objectType == getBuiltinModuleType()) {
       return getNoneType();
+    } else if (objectType->isPrimitive) {
+      auto primitiveMethod = getPrimitiveMethod(objectType, methodName);
+      return primitiveMethod.returnType;
     } else {
       auto function = objectType->environment->getFunction(methodName);
       if (function == NULL) {
@@ -28,15 +43,7 @@ namespace parser {
     object = enforceLocal(scope, object, instr);
 
     if (object->type->isPrimitive) {
-      auto typeName = object->type->name.c_str();
-      if (primitives.find(typeName) == primitives.end()) {
-        throw ParserException("unable to find primitive method dict for " + object->type->name);
-      }
-      if (primitives[typeName].find(methodName.c_str()) == primitives[typeName].end()) {
-        throw ParserException("unable to find method " + methodName +
-                              " for type " + object->type->name);
-      }
-      auto primitiveMethod = primitives[typeName][methodName.c_str()];
+      auto primitiveMethod = getPrimitiveMethod(object->type, methodName);
       auto returnObject = scope->allocateObject(primitiveMethod.returnType);
       instr.push_back(GInstruction { GOPCODE::PRIMITIVE_METHOD_CALL, new GOPARG[4] {
             {returnObject->registerNum},
