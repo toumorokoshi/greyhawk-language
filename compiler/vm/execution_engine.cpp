@@ -285,6 +285,23 @@ namespace VM {
           locals[args[1].registerNum].asInt32;
         break;
 
+      case PRIMITIVE_METHOD_CALL: {
+        debug("PRIMITIVE_METHOD_CALL");
+        int argCount = 3;
+        auto arguments = new GValue[3];
+
+        for (int i = 0; i < argCount; i++) {
+          // we start at argument 2 on, because 0 and 1 are the return
+          // value register and the function register, respectively.
+          arguments[i] = locals[args[4 + i].registerNum];
+        }
+
+        auto primitiveMethod = primitives[args[2].asString][args[3].asString].rawMethod;
+        locals[args[0].registerNum] =
+          (*primitiveMethod)(locals[args[1].registerNum], arguments);
+        break;
+      }
+
       case PRINT_CHAR:
         printf("%c\n", locals[args[0].registerNum].asChar);
         break;

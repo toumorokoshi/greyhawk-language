@@ -717,7 +717,7 @@ namespace parser {
                                        GInstructionVector& instructions) {
     auto iterableValue = iterableExpression->generateExpression(scope, instructions);
     // if the value is an array, we iterate through the array first
-    if (iterableValue->type->name.compare("Array") == 0) {
+    if (isArrayType(iterableValue->type)) {
       parseArrayIterator(variableName, iterableValue, block,
                          scope, instructions);
     } else {

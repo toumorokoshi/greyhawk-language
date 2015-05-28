@@ -1,2 +1,4 @@
+import "file"
+
 stdout = file(__raw__.stdout)
 stdin = file(__raw__.stdin)

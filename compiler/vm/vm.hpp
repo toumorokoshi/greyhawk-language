@@ -12,6 +12,9 @@
 #include "ops.hpp"
 #include "environment.hpp"
 #include "type.hpp"
+#include "types/array.hpp"
+#include "types/string.hpp"
+#include "types/primitives.hpp"
 #include "function.hpp"
 #include "rootenvironment.hpp"
 

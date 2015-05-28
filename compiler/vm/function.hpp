@@ -18,6 +18,7 @@ namespace VM {
     GEnvironment*  environment;
     GInstruction* instructions;
     GType*        returnType;
+    bool          isNative;
 
     GFunctionInstance* createInstance(GEnvironmentInstance&);
   } GFunction;

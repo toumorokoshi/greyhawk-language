@@ -40,9 +40,9 @@ namespace VM {
     // this is actually what contains
     // the variables.
     GEnvironmentInstance* instantiate();
+    bool isPrimitive;
   } GType;
 
-  GType* getArrayType(GType* elementType);
   GType* getBoolType();
   GType* getBuiltinType();
   GType* getCharType();
@@ -53,10 +53,9 @@ namespace VM {
   GType* getInt32Type();
   GType* getNoneType();
   GType* getFileHandleType();
-  GType* getStringType();
   GType* getTupleType(gstd::Array<GType*>);
   bool isTupleType(GType*);
-  bool isArrayType(GType*);
+
 }
 
 #endif

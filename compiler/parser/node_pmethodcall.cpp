@@ -22,16 +22,35 @@ namespace parser {
   }
 
   GIndex* PMethodCall::generateExpression(GScope* scope,
-                                          GInstructionVector& instructions) {
-    auto object = currentValue->generateExpression(scope, instructions);
-    object = enforceLocal(scope, object, instructions);
-    debug("methodcall object: " << methodName)
-    debug("  " << object->registerNum)
-    debug("  " << object->indexType)
+                                          GInstructionVector& instr) {
+    debug("CODEGEN: PMethodCall");
+    auto object = currentValue->generateExpression(scope, instr);
+    object = enforceLocal(scope, object, instr);
+
+    if (object->type->isPrimitive) {
+      auto typeName = object->type->name.c_str();
+      if (primitives.find(typeName) == primitives.end()) {
+        throw ParserException("unable to find primitive method dict for " + object->type->name);
+      }
+      if (primitives[typeName].find(methodName.c_str()) == primitives[typeName].end()) {
+        throw ParserException("unable to find method " + methodName +
+                              " for type " + object->type->name);
+      }
+      auto primitiveMethod = primitives[typeName][methodName.c_str()];
+      auto returnObject = scope->allocateObject(primitiveMethod.returnType);
+      instr.push_back(GInstruction { GOPCODE::PRIMITIVE_METHOD_CALL, new GOPARG[4] {
+            {returnObject->registerNum},
+            {object->registerNum},
+            {.asString = object->type->name.c_str()},
+            {.asString = methodName.c_str()},
+      }});
+      return returnObject;
+    }
+
     auto funcRegister = scope->allocateObject(getFunctionType());
     auto type = object->type;
     auto methodIdx = type->environment->getObject(methodName);
-    instructions.push_back(GInstruction {
+    instr.push_back(GInstruction {
         GOPCODE::INSTANCE_LOAD_ATTRIBUTE, new GOPARG[3] {
           funcRegister->registerNum, object->registerNum, methodIdx->registerNum
         }
@@ -41,7 +60,7 @@ namespace parser {
     GIndex* returnValue;
     auto argumentRegisters = new GOPARG[2 + arguments.size()];
     auto function = type->environment->getFunction(methodName);
-    if (object->type == getBuiltinModuleType()) {
+    if (function->isNative) {
       instruction = GOPCODE::BUILTIN_CALL;
     } else {
       instruction = GOPCODE::FUNCTION_CALL;
@@ -59,9 +78,6 @@ namespace parser {
       GType* expectedType = function->argumentTypes[i];
       GType* actualType = arguments[i]->getType(scope);
       if (expectedType != actualType) {
-        // debug(expectedType->subTypes[0]->name);
-        // debug(actualType->subTypes[0])
-        // debug(actualType->subTypes[0]->name);
         throw ParserException("Argument types mismatch! "
                               "expected " + expectedType->name +
                               ", found " + actualType->name);
@@ -72,12 +88,12 @@ namespace parser {
     argumentRegisters[0].registerNum = returnValue->registerNum;
     argumentRegisters[1].registerNum = funcRegister->registerNum;
     for (int i = 0; i < (int) arguments.size(); i++) {
-      auto index = arguments[i]->generateExpression(scope, instructions);
-      index = enforceLocal(scope, index, instructions);
+      auto index = arguments[i]->generateExpression(scope, instr);
+      index = enforceLocal(scope, index, instr);
       argumentRegisters[i + 2].registerNum = index->registerNum;
     }
 
-    instructions.push_back(GInstruction {
+    instr.push_back(GInstruction {
         instruction, argumentRegisters
     });
     return returnValue;

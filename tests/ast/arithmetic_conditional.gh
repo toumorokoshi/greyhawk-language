@@ -1,0 +1,21 @@
+- declare:
+    names:
+      - i
+    value: 1
+- if_else:
+    condition:
+      binary_operation:
+        operation: ==
+        lhs:
+          identifier: i
+        rhs: 1
+    true_block:
+      - function_call:
+          name: print
+          arguments:
+            - string: it works!
+    false_block:
+      - function_call:
+          name: print
+          arguments:
+            - string: it doesn't work

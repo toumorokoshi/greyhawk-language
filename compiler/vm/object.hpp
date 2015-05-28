@@ -13,7 +13,15 @@ namespace VM {
   struct GEnvironmentInstance;
   struct GFunctionInstance;
   typedef GValue* Builtin(GValue*);
-  //  typedef std::function<GValue*(GValue*)> Builtin;
+
+  typedef GValue  RawPrimitiveMethod(GValue, GValue*);
+
+  typedef struct {
+    GType* returnType;
+    RawPrimitiveMethod* rawMethod;
+  } PrimitiveMethod;
+
+  typedef std::map<std::string, PrimitiveMethod> PrimitiveMethodMap;
 
   typedef union GValue {
     int asInt32;

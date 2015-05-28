@@ -1,6 +1,7 @@
 #include "builtins.hpp"
 #include "environment.hpp"
 #include "function.hpp"
+#include "types/string.hpp"
 // unistd is a unix-specific thing.
 // we'll need to do an if/else for windows at
 // some point.
@@ -16,7 +17,8 @@ namespace VM {
           getStringType(),
           getInt32Type()
         },
-        .returnType = getInt32Type()
+        .returnType = getInt32Type(),
+        .isNative = true,
     });
     environment->localsTypes[environment->localsCount - 1] = getBuiltinType();
   }
@@ -48,7 +50,8 @@ namespace VM {
           getStringType(),
           getInt32Type()
         },
-        .returnType = getNoneType()
+        .returnType = getNoneType(),
+        .isNative = true
     });
     environment->localsTypes[environment->localsCount - 1] = getBuiltinType();
   }

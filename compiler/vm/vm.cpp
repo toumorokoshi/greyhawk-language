@@ -152,6 +152,12 @@ void VM::printInstructions(GInstruction* firstInstruction) {
       std::cout << "MULTIPLY_FLOAT: {" << values[0].registerNum << "} * {" << values[1].registerNum << "} -> " << values[2].registerNum;
       break;
 
+    case PRIMITIVE_METHOD_CALL:
+      std::cout << "PRIMITIVE_METHOD_CALL (" << values[2].asString << "): {"
+                << values[0].registerNum << "} <- {" << values[1].asString
+                << "}." << values[3].asString << "()";
+      break;
+
     case PRINT_CHAR:
       std::cout << "PRINT_CHAR: {" << values[0].registerNum << "}";
       break;

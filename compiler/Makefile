@@ -27,7 +27,7 @@ lexer:
 
 PARSER_FILES=parser/*.cpp
 
-VM_FILES=vm/*.cpp
+VM_FILES=vm/**/*.cpp vm/*.cpp
 
 CODEGEN_FILES=codegen/*.cpp
 

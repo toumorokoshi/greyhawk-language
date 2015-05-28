@@ -8,20 +8,10 @@ using gstd::Array;
 
 namespace VM {
 
-  GType* getArrayType(GType* elementType) {
-    static std::map<GType*, GType*> arrayTypes;
-    if (arrayTypes.find(elementType) == arrayTypes.end()) {
-      arrayTypes[elementType] = new GType {
-        .name = "Array",
-        .subTypes = Array<GType*> (new GType*[1] { elementType }, 1)
-      };
-    }
-    return arrayTypes[elementType];
-  }
-
   GType* getBoolType() {
     auto static boolType = new GType {
-      "Bool", Array<GType*>(0)
+      "Bool", Array<GType*>(0),
+      .isPrimitive = true
     };
     return boolType;
   }
@@ -35,60 +25,56 @@ namespace VM {
 
   GType* getClassType() {
     auto static classType = new GType {
-      "Class", Array<GType*>(0)
+      "Class", Array<GType*>(0),
+      .isPrimitive = true
     };
     return classType;
   };
 
   GType* getCharType() {
     auto static charType = new GType {
-      "Char", Array<GType*>(0)
+      "Char", Array<GType*>(0),
+      .isPrimitive = true
     };
     return charType;
   };
 
   GType* getFloatType() {
     auto static floatType = new GType {
-      "Float", Array<GType*>(0)
+      "Float", Array<GType*>(0),
+      .isPrimitive = true
     };
     return floatType;
   }
 
   GType* getFunctionType() {
     auto static functionType = new GType {
-      "Function", Array<GType*>(0)
+      "Function", Array<GType*>(0),
+      .isPrimitive = true
     };
     return functionType;
   }
 
   GType* getInt32Type() {
     auto static intType = new GType {
-      "Int32", Array<GType*>(0)
+      "Int32", Array<GType*>(0),
+      .isPrimitive = true
     };
     return intType;
   }
 
   GType* getModuleType() {
     auto static moduleType = new GType {
-      "Module", Array<GType*>(0)
+      "Module", Array<GType*>(0),
+      .isPrimitive = true
     };
     return moduleType;
   }
 
-  GType* getFileHandleType() {
-    auto static fileHandleType = new GType {
-      "FileHandle", Array<GType*>(0)
-    };
-    return fileHandleType;
-  }
-
-  GType* getStringType() {
-    return getArrayType(getCharType());
-  }
-
   GType* getNoneType() {
     auto static noneType = new GType {
-      "None", Array<GType*>(0)
+      "None", Array<GType*>(0),
+      .isPrimitive = true
     };
     return noneType;
   }
@@ -130,9 +116,5 @@ namespace VM {
 
   bool isTupleType(GType* type) {
     return type->name.find("Tuple<") != std::string::npos;
-  }
-
-  bool isArrayType(GType* type) {
-    return type->name.find("Array<") != std::string::npos;
   }
 }

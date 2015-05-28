@@ -1,3 +1,6 @@
 x := [0, 1, 2, 3]
 for i := 0; i < 4; i+= 1:
 	print(x[i])
+
+print("array size:")
+print(x.size())
