@@ -2,8 +2,8 @@ class File:
 
 	fileDescriptor Int
 
-	None write(msg String, len Int):
-		__builtins__.write(fileDescriptor, msg, len)
+	None write(msg String):
+		__builtins__.write(fileDescriptor, msg, msg.size())
 
 	String read():
 		full_buffer := Char[1]
@@ -22,14 +22,12 @@ class File:
 
 		return full_buffer
 
+	String readLines():
+		buffer := read().split("a")
+
 stdin := File(0)
 stdout := File(1)
 
 
 output := stdin.read()
-// size := output.size()
-// size2 := output.size()
-// should be 583
-// print(size)
-size := output.size()
-stdout.write(output, size)
+stdout.write(output)

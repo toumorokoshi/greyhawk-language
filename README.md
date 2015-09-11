@@ -1,16 +1,13 @@
 Greyhawk Language
 =================
 
-Greyhawk Language is a playground for a language that has the syntax I would like to use.
+Greyhawk is a highly opinionated programming language. Some of the defining features are:
 
-Installation
-------------
+* runs on a virtual machine (e.g. Java)
+* immutability by default
+* tight restrictions around syntax
 
-The following tools are required:
-
-* flex for lexer (apt-get flex)
-* llvm headers + libraries (apt-get llvm-3.3-dev)
-* sphinx for docs (pip install sphinx)
+If you're interested in the why, please read the DESIGN.md page.
 
 Building the compiler
 ---------------------
@@ -23,3 +20,12 @@ The Compiler uses the following:
 * yaml-cpp to output the syntax tree in a human-readable format
 * boost, for:
   * the command line parser
+
+Installation
+------------
+
+The following tools are required:
+
+* flex for lexer (apt-get flex)
+* llvm headers + libraries (apt-get llvm-3.3-dev)
+* sphinx for docs (pip install sphinx)

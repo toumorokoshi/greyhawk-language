@@ -287,8 +287,8 @@ namespace VM {
 
       case PRIMITIVE_METHOD_CALL: {
         debug("PRIMITIVE_METHOD_CALL");
-        int argCount = 3;
-        auto arguments = new GValue[3];
+        int argCount = 0;
+        auto arguments = new GValue[0];
 
         for (int i = 0; i < argCount; i++) {
           // we start at argument 2 on, because 0 and 1 are the return
