@@ -26,7 +26,7 @@ namespace VM {
   // None __builtin__.read(fd Int, buffer Array<char>, size Int)
   GValue* builtin_read(GValue* args) {
     int fd = args[0].asInt32;
-    GValue* buffer = (GValue*) args[1].asArray->elements;
+    GValue* buffer = args[1].asArray->elements;
     int size = args[2].asInt32;
 
     // TODO: this is really messy. this

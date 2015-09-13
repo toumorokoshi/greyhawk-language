@@ -17,3 +17,5 @@ bin/greyhawk.dSYM
 bin/vm2
 compiler/gtest
 *.dSYM
+.idea
+CMakeLists.txt
