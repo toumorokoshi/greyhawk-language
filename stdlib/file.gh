@@ -1,7 +1,0 @@
-class File:
-
-	int file_number
-
-	void write(message string):
-		for c in message:
-			__raw__.write(file_number, c)

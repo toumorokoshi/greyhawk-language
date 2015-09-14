@@ -29,6 +29,7 @@ namespace VM {
   } GVM;
 
   void printInstructions(GInstruction*);
+  void loadModules(std::string stdlibPath);
 };
 
 #endif
