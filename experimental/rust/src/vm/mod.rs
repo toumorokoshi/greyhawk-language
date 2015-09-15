@@ -17,8 +17,15 @@ pub struct VM {
 
 impl VM {
     pub fn new() -> VM {
+
+        let mut main_module = Module{ functions: HashMap::new()};
+        main_module.functions.insert(
+            "foo", Function::NativeFunction{function: test}
+        );
+
         let mut modules = HashMap::new();
-        modules.insert("main", Module{ functions: HashMap::new()});
+        modules.insert("main", main_module);
+
         return VM {modules: modules};
     }
 
@@ -32,6 +39,19 @@ impl VM {
     }
 
     pub fn execute_function(&self, module: &Module, name: &str) {
-        println!("execute a function!");
+        match module.functions.get(name) {
+            Some(function) => {
+                let result = match function {
+                    &Function::NativeFunction{function: nativeFunc} => nativeFunc(),
+                    &Function::VMFunction{ops: ops} => {println!("not yet implemented."); Register::Int(0)},
+                };
+            },
+            None => println!("no such function {0}", name),
+        }
     }
+}
+
+pub fn test() -> Register {
+    println!("this is only a test.");
+    return Register::Int(10);
 }
