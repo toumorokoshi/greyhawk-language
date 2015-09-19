@@ -16,6 +16,7 @@ fn main () {
 }
 
 fn repl(module: &vm::Module, vm_instance: &vm::VM) {
+    let lexer = lexer::Lexer::new();
     loop {
         std::io::stdout().write(b">>> ");
         std::io::stdout().flush();

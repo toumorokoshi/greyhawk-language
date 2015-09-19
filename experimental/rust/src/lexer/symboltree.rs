@@ -30,7 +30,7 @@ impl Node {
 }
 
 // given a string of token defs, return a tree.
-pub fn generateTree(token_defs: &[TokenDef]) -> Node {
+pub fn generate_tree(token_defs: &[TokenDef]) -> Node {
     let mut root = Node::new();
     for token in token_defs {
         root.add_token(&mut token.path.chars(), token.token);
