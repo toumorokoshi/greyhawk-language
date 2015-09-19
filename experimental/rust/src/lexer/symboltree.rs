@@ -1,5 +1,6 @@
 use super::token;
 use std::collections::HashMap;
+use std::str::Chars;
 
 pub struct TokenDef {
     pub path: &'static str,
@@ -16,19 +17,15 @@ impl Node {
         Node{token: None, children: HashMap::new()}
     }
 
-    pub fn add_token(&mut self, path: &str, token: token::Token) {
-        let mut currentNode = self;
-        for character in path.chars() {
-            match currentNode.children.get(&character) {
-                Some(child) => currentNode = child,
-                None => {
-                    let mut child = Node::new();
-                    currentNode.children.insert(character, child);
-                    currentNode = child;
-                }
-            }
+    pub fn add_token(&mut self, path: &mut Chars, token: token::Token) {
+        match path.next() {
+            Some(c) => {
+                let next_node = self.children
+                    .entry(c).or_insert(Node::new());
+                next_node.add_token(path, token);
+            },
+            None => self.token = Some(token)
         }
-        currentNode.token = token;
     }
 }
 
@@ -36,6 +33,7 @@ impl Node {
 pub fn generateTree(token_defs: &[TokenDef]) -> Node {
     let mut root = Node::new();
     for token in token_defs {
-        root.add_token(token.path, token.token);
+        root.add_token(&mut token.path.chars(), token.token);
     }
+    return root;
 }
