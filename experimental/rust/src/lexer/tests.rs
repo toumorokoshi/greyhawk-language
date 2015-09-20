@@ -1,2 +1,7 @@
+use super;
+
 #[test]
-fn it_works() {}
+fn test_lexer() {
+    let lexer = super::Lexer::new();
+    lexer.match("+");
+}
