@@ -27,6 +27,23 @@ impl Node {
             None => self.token = Some(token)
         }
     }
+
+    pub fn find(&self, input: &str) -> Option<token::Token> {
+        let mut root = self;
+        let mut chars = input.chars();
+        loop {
+            match chars.next() {
+                Some(c) =>  {
+                    match root.children.get(&c) {
+                        Some(child) => root = child,
+                        None => break,
+                    }
+                },
+                None => break,
+            }
+        }
+        return root.token;
+    }
 }
 
 // given a string of token defs, return a tree.

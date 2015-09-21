@@ -15,7 +15,7 @@ pub const SYMBOLS: &'static [TokenDef] = &[
 ];
 
 pub struct Lexer {
-    symbols: Node,
+    pub symbols: Node,
 }
 
 impl Lexer {
