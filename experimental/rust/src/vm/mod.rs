@@ -28,14 +28,17 @@ impl VM {
     }
 
     pub fn execute_instructions(&self, module: &Module,
-                                registers: &mut &[i32], ops: &[Op]) -> i32 {
+                                registers: &mut [i32], ops: &[Op]) -> i32 {
         for op in ops {
             match op {
-                &Op::AddConstantInt{register, constant} => {
-                    registers[register as usize] =
-                        registers[register as usize] + constant;
-                },
-                &Op::ExecuteFunction{name} => self.execute_function(module, name),
+                &Op::AddConstantInt{register, constant} =>
+                    registers[register] = registers[register] + constant,
+
+                &Op::AddInt{lhs, rhs} =>
+                    registers[lhs] = registers[lhs] + registers[rhs],
+
+                &Op::ExecuteFunction{name} =>
+                    self.execute_function(module, name),
             };
         }
         return 0;

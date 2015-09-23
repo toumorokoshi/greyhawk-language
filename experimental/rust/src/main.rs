@@ -28,7 +28,7 @@ fn repl(module: &vm::Module, vm_instance: &vm::VM) {
             vm::Op::AddConstantInt{register: 0, constant: 1},
             vm::Op::ExecuteFunction{ name: "foo"}
         ];
-        let mut registers = &[0, 0, 0];
-        let value = vm_instance.execute_instructions(module, registers, ops);
+        let mut registers: [i32; 5] = [0, 0, 0, 0, 0];
+        let value = vm_instance.execute_instructions(module, &mut registers, ops);
     }
 }
