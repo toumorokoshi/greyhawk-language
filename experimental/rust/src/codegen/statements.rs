@@ -1,0 +1,3 @@
+trait Statement {
+    fn evaluate();
+}

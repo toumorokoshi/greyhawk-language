@@ -1,5 +1,7 @@
-mod vm;
 mod lexer;
+mod parser;
+mod codegen;
+mod vm;
 
 use std::io::{self, Write};
 use std::collections::HashMap;
@@ -23,18 +25,10 @@ fn repl(module: &vm::Module, vm_instance: &vm::VM) {
         let mut guess = String::new();
         io::stdin().read_line(&mut guess).ok().expect("Failed to read line");
         let ops = &[
-            vm::Op::AddInt { lhs: 0, rhs: 1 },
-            vm::Op::ExecuteFunction { name: "foo"}
+            vm::Op::AddConstantInt{register: 0, constant: 1},
+            vm::Op::ExecuteFunction{ name: "foo"}
         ];
-        let value = vm_instance.execute_instructions(module, ops);
-        printValue(value);
-    }
-}
-
-fn printValue(value: vm::Value) {
-    match value {
-        vm::Value::Int(intVal) => println!("{}", intVal),
-        vm::Value::String(strVal) => println!("{}", strVal),
-        vm::Value::None => println!("None")
+        let mut registers = &[0, 0, 0];
+        let value = vm_instance.execute_instructions(module, registers, ops);
     }
 }

@@ -1,4 +1,5 @@
 pub enum Op {
-    AddInt { lhs: i32, rhs: i32 },
+    AddConstantInt { register: usize, constant: i32},
+    AddInt{lhs_register: usize, rhs_register: u8},
     ExecuteFunction { name: &'static str },
 }

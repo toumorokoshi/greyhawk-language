@@ -4,7 +4,9 @@ use std::fmt;
 pub enum Token {
     Int(i32),
     Plus,
-    Minus
+    Minus,
+    Equal,
+    Increment,
 }
 
 impl fmt::Debug for Token {
@@ -12,7 +14,9 @@ impl fmt::Debug for Token {
         match (self) {
             &Token::Int(i) => write!(f, "{}", i),
             &Token::Plus => write!(f, "Plus"),
-            &Token::Minus => write!(f, "Minu")
+            &Token::Minus => write!(f, "Minus"),
+            &Token::Equal => write!(f, "Equal"),
+            &Token::Increment => write!(f, "Increment"),
         }
     }
 }

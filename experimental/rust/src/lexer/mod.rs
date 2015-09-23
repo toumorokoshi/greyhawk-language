@@ -9,9 +9,13 @@ pub use self::symboltree::TokenDef;
 pub use self::symboltree::generate_tree;
 pub use self::symboltree::Node;
 
+use std::vec::Vec;
+
 pub const SYMBOLS: &'static [TokenDef] = &[
-    TokenDef{ path: "+", token: token::Token::Plus},
-    TokenDef{ path: "-", token: token::Token::Minus},
+    TokenDef{ path: "+", token: Token::Plus},
+    TokenDef{ path: "-", token: Token::Minus},
+    TokenDef{ path: "==", token: Token::Equal},
+    TokenDef{ path: "+=", token: Token::Increment},
 ];
 
 pub struct Lexer {
@@ -26,24 +30,11 @@ impl Lexer {
         };
     }
 
-    pub fn read(&self, input: &str) {
-        let mut root = &self.symbols;
-        let mut chars = input.chars();
-        loop {
-            match chars.next() {
-                Some(c) => {
-                    match root.children.get(&c) {
-                        Some(child) => root = child,
-                        None => break,
-                    }
-                },
-                None => break,
-            }
-        }
-
-        match root.token {
-            Some(token) => println!("found a token!"),
-            None => println!("no token found.")
-        }
+    pub fn read(&self, input: &str) -> Vec<Token> {
+        let mut tokens = Vec::new();
+        tokens.push(token::Token::Int(10));
+        tokens.push(token::Token::Plus);
+        tokens.push(token::Token::Int(12));
+        return tokens;
     }
 }

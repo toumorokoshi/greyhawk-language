@@ -2,16 +2,12 @@ use std::collections::HashMap;
 
 pub mod module;
 pub mod function;
-pub mod register;
-pub mod value;
 pub mod ops;
 
 // for some reason, wildcards (*) don't work.
 pub use self::module::Module;
 pub use self::function::Function;
-pub use self::register::Register;
 pub use self::ops::Op;
-pub use self::value::Value;
 
 pub struct VM {
     pub modules: HashMap<&'static str, Module>,
@@ -31,14 +27,18 @@ impl VM {
         return VM {modules: modules};
     }
 
-    pub fn execute_instructions(&self, module: &Module, ops: &[Op]) -> Value {
+    pub fn execute_instructions(&self, module: &Module,
+                                registers: &mut &[i32], ops: &[Op]) -> i32 {
         for op in ops {
             match op {
-                &Op::AddInt{lhs, rhs} => println!("{}", lhs + rhs),
+                &Op::AddConstantInt{register, constant} => {
+                    registers[register as usize] =
+                        registers[register as usize] + constant;
+                },
                 &Op::ExecuteFunction{name} => self.execute_function(module, name),
             };
         }
-        return Value::None;
+        return 0;
     }
 
     pub fn execute_function(&self, module: &Module, name: &str) {
@@ -46,7 +46,7 @@ impl VM {
             Some(function) => {
                 let result = match function {
                     &Function::NativeFunction{function: nativeFunc} => nativeFunc(),
-                    &Function::VMFunction{ops: ops} => {println!("not yet implemented."); Value::Int(0)},
+                    &Function::VMFunction{register_count, ops} => {println!("not yet implemented."); 0},
                 };
             },
             None => println!("no such function {0}", name),
@@ -54,7 +54,7 @@ impl VM {
     }
 }
 
-pub fn test() -> Value {
+pub fn test() -> i32 {
     println!("this is only a test.");
-    return Value::Int(10);
+    return 10;
 }
