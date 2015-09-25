@@ -3,6 +3,7 @@ use std::collections::HashMap;
 pub mod module;
 pub mod function;
 pub mod ops;
+pub mod types;
 
 // for some reason, wildcards (*) don't work.
 pub use self::module::Module;
@@ -41,14 +42,14 @@ impl VM {
         return 0;
     }
 
-    pub fn execute_function(&self, module: &Module, func: &function::Function) {
-        let result = match func {
+    pub fn execute_function(&self, module: &Module, func: &function::Function) -> i32 {
+        return match func {
             &Function::NativeFunction{function: nativeFunc} => {
-                nativeFunc();
+                return nativeFunc();
             },
             &Function::VMFunction{register_count, ref ops} => {
                 let mut registers = vec![0; register_count];
-                self.execute_instructions(module, &mut registers, ops);
+                return self.execute_instructions(module, &mut registers, ops);
             },
         };
     }
