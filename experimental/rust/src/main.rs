@@ -24,11 +24,17 @@ fn repl(module: &vm::Module, vm_instance: &vm::VM) {
         std::io::stdout().flush();
         let mut guess = String::new();
         io::stdin().read_line(&mut guess).ok().expect("Failed to read line");
-        let ops = &[
-            vm::Op::AddConstantInt{register: 0, constant: 1},
-            vm::Op::ExecuteFunction{ name: "foo"}
-        ];
-        let mut registers: [i32; 5] = [0, 0, 0, 0, 0];
-        let value = vm_instance.execute_instructions(module, &mut registers, ops);
+        let function = get_test_function();
+        let value = vm_instance.execute_function(module, &function);
     }
+}
+
+fn get_test_function() -> vm::Function {
+    let ops = Box::new([
+        vm::Op::AddConstantInt{register: 0, constant: 15},
+    ]);
+    return vm::Function::VMFunction{
+        register_count: 1,
+        ops: ops
+    };
 }

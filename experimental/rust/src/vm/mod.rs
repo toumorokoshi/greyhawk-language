@@ -28,32 +28,29 @@ impl VM {
     }
 
     pub fn execute_instructions(&self, module: &Module,
-                                registers: &mut [i32], ops: &[Op]) -> i32 {
-        for op in ops {
+                                registers: &mut [i32], ops: &Box<[Op]>) -> i32 {
+        for op in ops.iter() {
             match op {
                 &Op::AddConstantInt{register, constant} =>
                     registers[register] = registers[register] + constant,
 
                 &Op::AddInt{lhs, rhs} =>
                     registers[lhs] = registers[lhs] + registers[rhs],
-
-                &Op::ExecuteFunction{name} =>
-                    self.execute_function(module, name),
             };
         }
         return 0;
     }
 
-    pub fn execute_function(&self, module: &Module, name: &str) {
-        match module.functions.get(name) {
-            Some(function) => {
-                let result = match function {
-                    &Function::NativeFunction{function: nativeFunc} => nativeFunc(),
-                    &Function::VMFunction{register_count, ops} => {println!("not yet implemented."); 0},
-                };
+    pub fn execute_function(&self, module: &Module, func: &function::Function) {
+        let result = match func {
+            &Function::NativeFunction{function: nativeFunc} => {
+                nativeFunc();
             },
-            None => println!("no such function {0}", name),
-        }
+            &Function::VMFunction{register_count, ref ops} => {
+                let mut registers = vec![0; register_count];
+                self.execute_instructions(module, &mut registers, ops);
+            },
+        };
     }
 }
 
