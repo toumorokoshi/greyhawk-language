@@ -2,4 +2,4 @@ pub struct Type {
     name: &'static str
 }
 
-pub static Int: Type = Type {name: "Int"};
+pub static IntType: Type = Type {name: "Int"};

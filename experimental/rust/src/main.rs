@@ -22,8 +22,9 @@ fn repl(module: &vm::Module, vm_instance: &vm::VM) {
     loop {
         std::io::stdout().write(b">>> ");
         std::io::stdout().flush();
-        let mut guess = String::new();
-        io::stdin().read_line(&mut guess).ok().expect("Failed to read line");
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).ok().expect("Failed to read line");
+        let tokens = lexer.read(&input);
         let function = get_test_function();
         let value = vm_instance.execute_function(module, &function);
     }

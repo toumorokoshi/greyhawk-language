@@ -32,6 +32,9 @@ impl VM {
                                 registers: &mut [i32], ops: &Box<[Op]>) -> i32 {
         for op in ops.iter() {
             match op {
+                &Op::LoadInt{register, constant} =>
+                    registers[register] = constant,
+
                 &Op::AddConstantInt{register, constant} =>
                     registers[register] = registers[register] + constant,
 

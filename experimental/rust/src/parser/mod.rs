@@ -1,3 +1,6 @@
 use super::lexer;
+use super::codegen;
 
-pub mod expressions;
+pub fn parse(tokens: &Vec<lexer::Token>) -> Vec<Box<codegen::Expression>> {
+    return Vec::new();
+}

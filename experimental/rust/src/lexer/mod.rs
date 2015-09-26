@@ -30,7 +30,7 @@ impl Lexer {
         };
     }
 
-    pub fn read(&self, input: &str) -> Vec<Token> {
+    pub fn read(&self, input: &String) -> Vec<Token> {
         let mut tokens = Vec::new();
         tokens.push(token::Token::Int(10));
         tokens.push(token::Token::Plus);
