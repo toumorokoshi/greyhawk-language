@@ -8,13 +8,14 @@ pub mod types;
 // for some reason, wildcards (*) don't work.
 pub use self::module::Module;
 pub use self::function::Function;
+pub use self::function::VMFunction;
 pub use self::ops::Op;
 
 pub struct VM {
     pub modules: HashMap<&'static str, Module>,
 }
 
-impl VM {
+impl VM{
     pub fn new() -> VM {
 
         let mut main_module = Module{ functions: HashMap::new()};
@@ -29,7 +30,7 @@ impl VM {
     }
 
     pub fn execute_instructions(&self, module: &Module,
-                                registers: &mut [i32], ops: &Box<[Op]>) -> i32 {
+                                registers: &mut [i32], ops: &[Op]) -> i32 {
         for op in ops.iter() {
             match op {
                 &Op::LoadInt{register, constant} =>
@@ -50,9 +51,9 @@ impl VM {
             &Function::NativeFunction{function: nativeFunc} => {
                 return nativeFunc();
             },
-            &Function::VMFunction{register_count, ref ops} => {
-                let mut registers = vec![0; register_count];
-                return self.execute_instructions(module, &mut registers, ops);
+            &Function::VMFunction(ref f) => {
+                let mut registers = vec![0; f.register_count];
+                return self.execute_instructions(module, &mut registers, &f.ops[..]);
             },
         };
     }

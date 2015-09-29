@@ -13,6 +13,10 @@ pub struct Scope {
 }
 
 impl Scope {
+    pub fn new() -> Scope {
+        return Scope{locals: HashMap::new(), local_count: 0};
+    }
+
     pub fn add_local(&mut self, name: &'static str, typ: TypeRef) -> Rc<LocalObject> {
         let object = self.allocate_local(typ);
         self.locals.insert(name, object.clone());

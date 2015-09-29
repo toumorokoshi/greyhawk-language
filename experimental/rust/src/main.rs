@@ -31,11 +31,10 @@ fn repl(module: &vm::Module, vm_instance: &vm::VM) {
 }
 
 fn get_test_function() -> vm::Function {
-    let ops = Box::new([
-        vm::Op::AddConstantInt{register: 0, constant: 15},
-    ]);
-    return vm::Function::VMFunction{
+    let mut ops: Vec<vm::ops::Op> = Vec::new();
+    ops.push(vm::Op::AddConstantInt{register: 0, constant: 15});
+    return vm::Function::VMFunction(vm::VMFunction{
         register_count: 1,
         ops: ops
-    };
+    });
 }

@@ -5,6 +5,9 @@ pub struct Type {
 }
 
 pub enum TypeRef {
+    // we use Arcs because it's thread-safe,
+    // and the type references is shared across
+    // processes.
     Heap(Arc<Type>),
     Static(&'static Type),
 }

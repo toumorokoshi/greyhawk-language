@@ -6,7 +6,7 @@ pub trait Expression {
     fn generate(&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> Option<scope::LocalObject>;
 }
 
-pub struct IntExpression { value: i32 }
+pub struct IntExpression { pub value: i32 }
 
 impl Expression for IntExpression {
     fn generate (&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> Option<scope::LocalObject> {
