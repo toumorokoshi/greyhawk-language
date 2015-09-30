@@ -6,7 +6,7 @@ fn test_lexer() {
     match lexer.symbols.find("+") {
         Some(t) => {
             match t {
-                token::Token::Plus => println!("great!"),
+                token::TokenType::Plus => println!("great!"),
                 _ => assert!(false),
             }
         },
@@ -20,7 +20,7 @@ fn test_lexer_double_equals() {
     match lexer.symbols.find("==") {
         Some(t) => {
             match t {
-                token::Token::Equal => println!("great!"),
+                token::TokenType::Equal => println!("great!"),
                 _ => assert!(false),
             }
         },
@@ -34,7 +34,7 @@ fn test_lexer_double_increment() {
     match lexer.symbols.find("+=") {
         Some(t) => {
             match t {
-                token::Token::Increment => println!("great!"),
+                token::TokenType::Increment => println!("great!"),
                 _ => assert!(false),
             }
         },

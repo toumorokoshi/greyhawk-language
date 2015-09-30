@@ -4,11 +4,11 @@ use std::str::Chars;
 
 pub struct TokenDef {
     pub path: &'static str,
-    pub token: token::Token
+    pub token: token::TokenType
 }
 
 pub struct Node {
-    pub token: Option<token::Token>,
+    pub token: Option<token::TokenType>,
     pub children: HashMap<char, Node>,
 }
 
@@ -17,7 +17,7 @@ impl Node {
         Node{token: None, children: HashMap::new()}
     }
 
-    pub fn add_token(&mut self, path: &mut Chars, token: token::Token) {
+    pub fn add_token(&mut self, path: &mut Chars, token: token::TokenType) {
         match path.next() {
             Some(c) => {
                 let next_node = self.children
@@ -28,7 +28,7 @@ impl Node {
         }
     }
 
-    pub fn find(&self, input: &str) -> Option<token::Token> {
+    pub fn find(&self, input: &str) -> Option<token::TokenType> {
         let mut root = self;
         let mut chars = input.chars();
         loop {
