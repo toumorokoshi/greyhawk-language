@@ -31,6 +31,7 @@ impl VM{
 
     pub fn execute_instructions(&self, module: &Module,
                                 registers: &mut [i32], ops: &[Op]) -> i32 {
+        let mut return_value = 0;
         for op in ops.iter() {
             match op {
                 &Op::LoadInt{register, constant} =>
@@ -41,9 +42,12 @@ impl VM{
 
                 &Op::AddInt{lhs, rhs} =>
                     registers[lhs] = registers[lhs] + registers[rhs],
+
+                &Op::Return{register} =>
+                    return_value = registers[register],
             };
         }
-        return 0;
+        return return_value;
     }
 
     pub fn execute_function(&self, module: &Module, func: &function::Function) -> i32 {

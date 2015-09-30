@@ -25,7 +25,7 @@ impl Scope {
 
     pub fn allocate_local(&mut self, typ: TypeRef) -> Rc<LocalObject> {
         let object = Rc::new(LocalObject{
-            index: self.local_count + 1, typ: typ
+            index: self.local_count, typ: typ
         });
         self.local_count += 1;
         return object;

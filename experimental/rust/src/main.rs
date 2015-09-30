@@ -25,8 +25,10 @@ fn repl(module: &vm::Module, vm_instance: &vm::VM) {
         let mut input = String::new();
         io::stdin().read_line(&mut input).ok().expect("Failed to read line");
         let tokens = lexer.read(&input);
-        let function = get_test_function();
+        let expressions = parser::parse(&tokens);
+        let function = codegen::generate_ops(&expressions);
         let value = vm_instance.execute_function(module, &function);
+        println!("{}", value);
     }
 }
 
