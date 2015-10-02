@@ -2,10 +2,10 @@ use super::token::*;
 use std::str::Chars;
 use std::iter::Peekable;
 
-pub trait Tokenizer {
-    fn reset(&mut self);
+pub trait Tokenizer<'a> {
+    fn reset(&'a mut self);
     fn read(&mut self, c: char, line_num: i32) -> bool;
-    fn publish(&mut self) -> Token;
+    fn publish(&'a mut self) -> Option<Token>;
 }
 
 pub struct NumReader {
@@ -19,8 +19,8 @@ impl NumReader {
     }
 }
 
-impl Tokenizer for NumReader {
-    fn reset(&mut self) {
+impl<'a> Tokenizer<'a> for NumReader {
+    fn reset(&'a mut self) {
         self.value = 0;
     }
 
@@ -36,12 +36,12 @@ impl Tokenizer for NumReader {
         return true;
     }
 
-    fn publish(&mut self) -> Token {
+    fn publish(&mut self) -> Option<Token> {
         let token = Token{
             typ: TokenType::Int(self.value),
             line_num: self.line_num
         };
         self.value = 0;
-        return token;
+        return Some(token);
     }
 }

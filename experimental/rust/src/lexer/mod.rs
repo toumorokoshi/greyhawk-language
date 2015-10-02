@@ -1,6 +1,7 @@
 pub mod token;
 pub mod tokenizer;
 pub mod symboltree;
+pub mod symbolreader;
 
 #[cfg(test)]
 mod tests;
@@ -12,23 +13,12 @@ pub use self::symboltree::Node;
 
 use std::vec::Vec;
 
-pub const SYMBOLS: &'static [TokenDef] = &[
-    TokenDef{ path: "+", token: TokenType::Plus},
-    TokenDef{ path: "-", token: TokenType::Minus},
-    TokenDef{ path: "==", token: TokenType::Equal},
-    TokenDef{ path: "+=", token: TokenType::Increment},
-];
-
-pub struct Lexer {
-    pub symbols: Node,
-}
+pub struct Lexer;
 
 impl Lexer {
 
     pub fn new() -> Lexer {
-        return Lexer {
-            symbols: generate_tree(SYMBOLS)
-        };
+        return Lexer;
     }
 
     pub fn read(&self, input: &String) -> Vec<Token> {
@@ -42,7 +32,10 @@ impl Lexer {
             match &mut tokenizer {
                 &mut Some(ref mut t) => {
                     if !t.read(c, line_num) {
-                        tokens.push(t.publish());
+                        match t.publish() {
+                            Some(tok) => tokens.push(tok),
+                            None => {},
+                        }
                         clear = true;
                     }
                 },
