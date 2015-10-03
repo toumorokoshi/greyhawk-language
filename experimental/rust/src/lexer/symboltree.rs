@@ -1,6 +1,7 @@
 use super::token;
 use std::collections::HashMap;
 use std::str::Chars;
+use std::rc::Rc;
 
 pub struct TokenDef {
     pub path: &'static str,
