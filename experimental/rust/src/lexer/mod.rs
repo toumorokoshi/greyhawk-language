@@ -43,7 +43,7 @@ impl Lexer {
                         c if ('0' <= c && c <= '9') => Box::new(tokenizer::NumReader::new()),
                         // this line breaks because it's set to tokenizer, which
                         // doesn't live long enough...
-                        // c => Box::new(symbolreader::SymbolReader::new()),
+                        c => Box::new(symbolreader::SymbolReader::new()),
                     };
                     t.read(c, line_num);
                     to_set = Some(t);
@@ -56,6 +56,9 @@ impl Lexer {
                 Some(t) => tokenizer = Some(t),
                 None => {},
             }
+        }
+        for token in &tokens {
+            println!("{}", token.typ);
         }
         return tokens;
     }

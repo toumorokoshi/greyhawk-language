@@ -13,6 +13,11 @@ pub struct Node {
     pub children: HashMap<char, Node>,
 }
 
+pub struct FinalNode {
+    pub token: Option<token::TokenType>,
+    pub children: HashMap<char, Rc<FinalNode>>,
+}
+
 impl Node {
     pub fn new() -> Node {
         Node{token: None, children: HashMap::new()}
@@ -45,13 +50,24 @@ impl Node {
         }
         return root.token;
     }
+
+    pub fn finalize(&self) -> FinalNode {
+        let mut children = HashMap::new();
+        for (&key, value) in &self.children {
+            children.insert(key, Rc::new(value.finalize()));
+        }
+        return FinalNode {
+            token: self.token,
+            children: children
+        };
+    }
 }
 
 // given a string of token defs, return a tree.
-pub fn generate_tree(token_defs: &[TokenDef]) -> Node {
+pub fn generate_tree(token_defs: &[TokenDef]) -> FinalNode {
     let mut root = Node::new();
     for token in token_defs {
         root.add_token(&mut token.path.chars(), token.token);
     }
-    return root;
+    return root.finalize();
 }
