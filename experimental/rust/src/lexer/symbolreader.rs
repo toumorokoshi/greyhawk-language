@@ -42,13 +42,14 @@ impl Tokenizer for SymbolReader {
     /// if not a valid character.
     fn read(&mut self, c: char, line_num: i32) -> bool {
         let mut next_node = self.current_node.clone();
-        let was_read = match self.current_node.children.get(&c) {
+        let mut was_read = false;
+        match self.current_node.children.get(&c) {
             Some(n) => {
                 next_node = n.clone();
                 self.line_num = line_num;
-                return true;
+                was_read = true;
             },
-            None => false,
+            None => was_read = false,
         };
         self.current_node = next_node;
         return was_read;

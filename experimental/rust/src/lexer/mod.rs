@@ -27,34 +27,28 @@ impl Lexer {
         let mut line_num = 0;
         for c in input.chars() {
             let mut to_set: Option<Box<tokenizer::Tokenizer>> = None;
-            let mut clear = false;
-            match &mut tokenizer {
-                &mut Some(ref mut t) => {
-                    if !t.read(c, line_num) {
-                        match t.publish() {
-                            Some(tok) => tokens.push(tok),
-                            None => {},
-                        };
-                        clear = true;
-                    }
-                },
-                &mut None => {
-                    let mut t: Box<tokenizer::Tokenizer> = match c {
-                        c if ('0' <= c && c <= '9') => Box::new(tokenizer::NumReader::new()),
-                        // this line breaks because it's set to tokenizer, which
-                        // doesn't live long enough...
-                        c => Box::new(symbolreader::SymbolReader::new()),
+            let mut clear = true;
+
+            if let &mut Some(ref mut t) = &mut tokenizer {
+                if !t.read(c, line_num) {
+                    match t.publish() {
+                        Some(tok) => tokens.push(tok),
+                        None => {},
                     };
-                    t.read(c, line_num);
-                    to_set = Some(t);
+                } else {
+                    clear = false;
                 }
             }
-            if (clear) {
-                tokenizer = None;
-            }
-            match to_set {
-                Some(t) => tokenizer = Some(t),
-                None => {},
+
+            if clear {
+                let mut new_tokenizer: Box<tokenizer::Tokenizer> = match c {
+                    c if ('0' <= c && c <= '9') => Box::new(tokenizer::NumReader::new()),
+                    // this line breaks because it's set to tokenizer, which
+                    // doesn't live long enough...
+                    c => Box::new(symbolreader::SymbolReader::new()),
+                };
+                new_tokenizer.read(c, line_num);
+                tokenizer = Some(new_tokenizer);
             }
         }
         for token in &tokens {

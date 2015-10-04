@@ -30,7 +30,9 @@ impl Node {
                     .entry(c).or_insert(Node::new());
                 next_node.add_token(path, token);
             },
-            None => self.token = Some(token)
+            None => {
+                self.token = Some(token)
+            }
         }
     }
 
