@@ -40,8 +40,8 @@ impl VM{
                 &Op::AddConstantInt{register, constant} =>
                     registers[register] = registers[register] + constant,
 
-                &Op::AddInt{lhs, rhs} =>
-                    registers[lhs] = registers[lhs] + registers[rhs],
+                &Op::AddInt{lhs, rhs, target} =>
+                    registers[target] = registers[lhs] + registers[rhs],
 
                 &Op::Return{register} =>
                     return_value = registers[register],

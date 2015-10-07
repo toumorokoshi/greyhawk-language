@@ -19,11 +19,11 @@ impl Expression for IntExpression {
 pub struct AddExpression {pub left: Box<Expression>, pub right: Box<Expression>}
 
 impl Expression for AddExpression {
-    fn generate (&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> Option<scope::LocalObject> {
-        let left = self.left.generate(scope, &mut instructions);
-        let right = self.right.generate(scope, &mut instructions);
+    fn generate (&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {
+        let left = self.left.generate(scope, instructions);
+        let right = self.right.generate(scope, instructions);
         let object = scope.allocate_local(types::get_int_type());
-        instructions.push(Op::LoadInt{register: object.index, constant: self.value});
+        instructions.push(Op::AddInt{lhs: left.index, rhs: right.index, target: object.index});
         return object;
     }
 }
