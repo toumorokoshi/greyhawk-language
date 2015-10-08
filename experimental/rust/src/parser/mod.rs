@@ -12,39 +12,44 @@ pub fn parse(tokens: &Vec<lexer::Token>) -> Vec<Box<codegen::Expression>> {
     let expr = parse_expression(&mut tokens.iter().peekable());
     match expr {
         Ok(e) => expressions.push(e),
-        Err(err) => {},
+        Err(err) => { println!("unable to parse!"); },
     }
     return expressions;
 }
 
 pub fn parse_expression(tokens: &mut Peekable<Iter<lexer::Token>>) -> ExprResult {
-    return match tokens.peek() {
-        Some(&t) => {
+    return parse_binary_operation(tokens);
+}
+
+pub fn parse_binary_operation(tokens: &mut Peekable<Iter<lexer::Token>>) -> ExprResult {
+    let left = parse_base_value(tokens);
+    let token_type = match tokens.next() {
+        Some(t) => {
             match t.typ {
-                TokenType::Int(i) => return Ok(Box::new(codegen::IntExpression{value: i})),
+                TokenType::Plus => TokenType::Plus,
+                _ => return Err("unable to parse binary operation."),
+            }
+        },
+        None => return Err("unable to parse binary operation."),
+    };
+    let right = parse_base_value(tokens);
+    return match left {
+        Ok(l) => match right {
+            Ok(r) => Ok(Box::new(codegen::AddExpression{left: l, right: r})),
+            Err(e) => Err(e),
+        },
+        Err(e) => Err(e),
+    };
+}
+
+pub fn parse_base_value(tokens: &mut Peekable<Iter<lexer::Token>>) -> ExprResult {
+    return match tokens.next() {
+        Some(t) => {
+            match t.typ {
+                TokenType::Int(i) => Ok(Box::new(codegen::IntExpression{value: i})),
                 _ => Err("foo"),
             }
         },
         None => Err("foo"),
     }
 }
-
-/* pub fn parse_binary_operation<I: Iterator<Item=lexer::Token>> (tokens: &mut Peekable<I>) -> Box<codegen::Expression> {
-    let mut left = parse_value(&mut tokens);
-    // Box::new(codegen::IntExpression{value: 10}));
-}
-
-pub fn parse_value<I: Iterator<Item=lexer::Token>> (tokens: &mut Peekable<I>) -> Box<codegen::Expression> {
-    return parse_base_value(&mut tokens);
-} */
-
-/* pub fn parse_base_value<I: Iterator<Item=lexer::Token>> (tokens: &mut Peekable<I>) -> Box<codegen::Expression> {
-    match tokens.peek() {
-        Some(t) =>,
-        None =>
-    }
-    let next = tokens.peek();
-    return match next.tok {
-        // Int(i) => return Box::new(
-    }
-} */
