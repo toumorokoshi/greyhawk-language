@@ -1,42 +1,34 @@
+extern crate getopts;
 mod lexer;
 mod parser;
 mod codegen;
 mod vm;
+mod repl;
 
-use std::io::{self, Write};
 use std::collections::HashMap;
+use std::env;
 
 fn main () {
-    println!("Greyhawk 0.0.3");
-    let vm_instance = vm::VM::new();
-    match vm_instance.modules.get("main") {
-        Some(module) => {
-            repl(module, &vm_instance);
-        },
-        None => println!("unable to load main module!"),
+    let args: Vec<String> = env::args().collect();
+    let matches = match setup_opts().parse(&args[1..]) {
+        Ok(m) => {m},
+        Err(f) => {panic!(f.to_string())},
+    };
+    if matches.free.len() > 1 {
+        match matches.free[0].as_ref() {
+            "lexer" => lexer(&matches.free[1]),
+            _ => panic!("no such command"),
+        }
+    } else {
+        repl::start_repl();
     }
 }
 
-fn repl(module: &vm::Module, vm_instance: &vm::VM) {
-    let lexer = lexer::Lexer::new();
-    loop {
-        std::io::stdout().write(b">>> ");
-        std::io::stdout().flush();
-        let mut input = String::new();
-        io::stdin().read_line(&mut input).ok().expect("Failed to read line");
-        let tokens = lexer.read(&input);
-        let expressions = parser::parse(&tokens);
-        let function = codegen::generate_ops(&expressions);
-        let value = vm_instance.execute_function(module, &function);
-        println!("{}", value);
-    }
+fn setup_opts() -> getopts::Options {
+    let mut opts = getopts::Options::new();
+    return opts;
 }
 
-fn get_test_function() -> vm::Function {
-    let mut ops: Vec<vm::ops::Op> = Vec::new();
-    ops.push(vm::Op::AddConstantInt{register: 0, constant: 15});
-    return vm::Function::VMFunction(vm::VMFunction{
-        register_count: 1,
-        ops: ops
-    });
+fn lexer(path: &String) {
+    println!("start lexer");
 }
