@@ -1,6 +1,7 @@
 pub enum Op {
-    LoadInt { register: usize, constant: i32},
-    AddConstantInt { register: usize, constant: i32},
-    AddInt{lhs: usize, rhs: usize, target: usize},
+    IntAdd{lhs: usize, rhs: usize, target: usize},
+    IntLoad{ register: usize, constant: i32},
+    FloatAdd{lhs: usize, rhs: usize, target: usize},
+    FloatLoad { register: usize, constant: f32},
     Return{register: usize},
 }

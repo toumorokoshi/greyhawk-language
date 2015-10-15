@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::mem;
 
 pub mod module;
 pub mod function;
@@ -34,14 +35,23 @@ impl VM{
         let mut return_value = 0;
         for op in ops.iter() {
             match op {
-                &Op::LoadInt{register, constant} =>
+
+                &Op::IntAdd{lhs, rhs, target} =>
+                    registers[target] = registers[lhs] + registers[rhs],
+
+                &Op::IntLoad{register, constant} =>
                     registers[register] = constant,
 
-                &Op::AddConstantInt{register, constant} =>
-                    registers[register] = registers[register] + constant,
+                &Op::FloatAdd{lhs, rhs, target} => unsafe {
+                    registers[target] = mem::transmute::<f32, i32>(
+                        mem::transmute::<i32, f32>(registers[lhs]) +
+                        mem::transmute::<i32, f32>(registers[rhs]),
+                    );
+                },
 
-                &Op::AddInt{lhs, rhs, target} =>
-                    registers[target] = registers[lhs] + registers[rhs],
+                &Op::FloatLoad{register, constant} => unsafe {
+                    registers[register] = mem::transmute::<f32, i32>(constant);
+                },
 
                 &Op::Return{register} =>
                     return_value = registers[register],

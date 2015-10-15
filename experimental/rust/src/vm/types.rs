@@ -22,7 +22,12 @@ impl TypeRef {
 }
 
 pub static IntType: Type = Type {name: "Int"};
+pub static FloatType: Type = Type {name: "Float"};
 
 pub fn get_int_type() -> TypeRef {
     return TypeRef::Static(&IntType);
+}
+
+pub fn get_float_type() -> TypeRef {
+    return TypeRef::Static(&FloatType);
 }
