@@ -5,43 +5,71 @@ use std::iter::Peekable;
 pub trait Tokenizer {
     fn reset(&mut self);
     fn read(&mut self, c: char, line_num: i32) -> bool;
-    fn publish(&mut self) -> Option<Token>;
+    fn publish(&mut self) -> Option<TokenType>;
+}
+
+pub enum NumReaderMode {
+    ReadInt{value: i32},
+    ReadDecimal{value: f32, power: f32},
 }
 
 pub struct NumReader {
-    value: i32,
-    line_num: i32,
+    mode: NumReaderMode
 }
 
 impl NumReader {
     pub fn new() -> NumReader {
-        return NumReader{value: 0, line_num: -1};
+        return NumReader{mode: NumReaderMode::ReadInt{value: 0}};
     }
 }
 
 impl Tokenizer for NumReader {
     fn reset(&mut self) {
-        self.value = 0;
+        self.mode = NumReaderMode::ReadInt{value: 0};
     }
 
     /// reads the char provided, returns false
     /// if not a valid character.
     fn read(&mut self, c: char, line_num: i32) -> bool {
-        if(c < '0' || c > '9') {
-            return false;
-        }
-        self.value *= 10;
-        self.value += (c as i32) - ('0' as i32);
-        self.line_num = line_num;
-        return true;
+        let mut mode = None;
+        let result = match &mut self.mode {
+            &mut NumReaderMode::ReadInt{ref mut value} => match c {
+                '.' => {
+                    mode = Some(NumReaderMode::ReadDecimal{
+                        value: *value as f32, power: 1.0
+                    });
+                    true
+                },
+                c if (c <= '0' || c >= '9') => {
+                    *value *= 10;
+                    *value += (c as i32) - ('0' as i32);
+                    true
+                },
+                _ => false,
+            },
+            &mut NumReaderMode::ReadDecimal{ref mut value, ref mut power} => match c {
+                c if (c <= '0' || c >= '9') => {
+                    *value *= 10 as f32;
+                    *value += ((c as i32) - ('0' as i32)) as f32;
+                    *power *= 10.0;
+                    true
+                },
+                _ => false,
+            }
+        };
+        match mode {
+            Some(m) => self.mode = m,
+            None => {},
+        };
+        result
     }
 
-    fn publish(&mut self) -> Option<Token> {
-        let token = Token{
-            typ: TokenType::Int(self.value),
-            line_num: self.line_num
+    fn publish(&mut self) -> Option<TokenType> {
+        let token = match self.mode {
+            NumReaderMode::ReadInt{value} => TokenType::Int(value),
+            NumReaderMode::ReadDecimal{value, power} => TokenType::Float(value / power),
         };
-        self.value = 0;
+        self.reset();
         return Some(token);
     }
 }

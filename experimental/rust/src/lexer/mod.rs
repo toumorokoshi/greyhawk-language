@@ -32,7 +32,10 @@ impl Lexer {
             if let &mut Some(ref mut t) = &mut tokenizer {
                 if !t.read(c, line_num) {
                     match t.publish() {
-                        Some(tok) => tokens.push(tok),
+                        Some(tok) => tokens.push(Token{
+                            typ: tok,
+                            line_num: line_num
+                        }),
                         None => {},
                     };
                 } else {
@@ -56,49 +59,4 @@ impl Lexer {
         }
         return tokens;
     }
-
-    /* pub fn read(&self, input: &String) -> Vec<Token> {
-        let mut tokenizer: Option<Box<tokenizer::Tokenizer>> = None;
-        let mut tokens = Vec::new();
-        let mut line_num = 0;
-        let mut chars = input.chars();
-        for c in chars {
-            let mut to_set: Option<Box<tokenizer::Tokenizer>> = None;
-            let mut clear = false;
-            match &mut tokenizer {
-                &mut Some(ref mut t) => {
-                    if !t.read(c, line_num) {
-                        match t.publish() {
-                            Some(tok) => tokens.push(tok),
-                            None => {},
-                        }
-                        tokenizer = None;
-                    }
-                },
-                &mut None => {
-                    let mut t: Box<tokenizer::Tokenizer> = match c {
-                        c if ('0' <= c && c <= '9') => Box::new(tokenizer::NumReader::new()),
-                        c  => Box::new(symbolreader::SymbolReader::new()),
-                    };
-                    t.read(c, line_num);
-                    tokenizer = Some(t);
-                },
-            }
-            if (clear) {
-                tokenizer = None;
-            } else {
-                match to_set {
-                    Some(t) => tokenizer = Some(t),
-                    None => {},
-                }
-            }
-        }
-        for token in &tokens {
-            println!("{}", token.typ);
-        }
-        // tokens.push(Token{typ: token::TokenType::Int(10), line_num: 0});
-        // tokens.push(Token{typ: token::TokenType::Plus, line_num: 0});
-        // tokens.push(Token{typ: token::TokenType::Int(12), line_num: 0});
-        return tokens;
-    } */
 }

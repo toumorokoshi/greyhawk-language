@@ -7,8 +7,7 @@ use super::symboltree;
 use std::rc::Rc;
 
 pub const SYMBOLS: &'static [TokenDef] = &[
-    TokenDef{ path: "+", token: TokenType::Plus},
-    TokenDef{ path: "-", token: TokenType::Minus},
+    TokenDef{ path: "+", token: TokenType::Plus}, TokenDef{ path: "-", token: TokenType::Minus},
     TokenDef{ path: "==", token: TokenType::Equal},
     TokenDef{ path: "+=", token: TokenType::Increment},
 ];
@@ -16,7 +15,6 @@ pub const SYMBOLS: &'static [TokenDef] = &[
 pub struct SymbolReader {
     root: Rc<FinalNode>,
     current_node: Rc<FinalNode>,
-    line_num: i32,
 }
 
 impl SymbolReader {
@@ -25,7 +23,6 @@ impl SymbolReader {
         return SymbolReader{
             root: root.clone(),
             current_node: root.clone(),
-            line_num: -1,
         };
     }
 }
@@ -46,7 +43,6 @@ impl Tokenizer for SymbolReader {
         match self.current_node.children.get(&c) {
             Some(n) => {
                 next_node = n.clone();
-                self.line_num = line_num;
                 was_read = true;
             },
             None => was_read = false,
@@ -55,15 +51,8 @@ impl Tokenizer for SymbolReader {
         return was_read;
     }
 
-    fn publish(&mut self) -> Option<Token> {
-        return match self.current_node.token {
-            Some(token) => {
-                return Some(Token {
-                    typ: token,
-                    line_num: self.line_num
-                });
-            },
-            None => None,
-        };
+    fn publish(&mut self) -> Option<TokenType> {
+        self.reset();
+        return self.current_node.token;
     }
 }

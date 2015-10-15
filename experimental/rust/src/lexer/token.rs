@@ -8,6 +8,7 @@ pub struct Token {
 #[derive(Copy, Clone)]
 pub enum TokenType {
     Int(i32),
+    Float(f32),
     Plus,
     Minus,
     Equal,
@@ -17,7 +18,8 @@ pub enum TokenType {
 impl fmt::Debug for TokenType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match (self) {
-            &TokenType::Int(i) => write!(f, "{}", i),
+            &TokenType::Int(i) => write!(f, "Int: {}", i),
+            &TokenType::Float(fl) => write!(f, "Float: {}", fl),
             &TokenType::Plus => write!(f, "Plus"),
             &TokenType::Minus => write!(f, "Minus"),
             &TokenType::Equal => write!(f, "Equal"),
@@ -30,6 +32,7 @@ impl fmt::Display for TokenType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match (self) {
             &TokenType::Int(i) => write!(f, "Int: {}", i),
+            &TokenType::Float(fl) => write!(f, "Float: {}", fl),
             &TokenType::Plus => write!(f, "Plus"),
             &TokenType::Minus => write!(f, "Minus"),
             &TokenType::Equal => write!(f, "Equal"),
