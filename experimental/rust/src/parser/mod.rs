@@ -12,7 +12,7 @@ pub fn parse(tokens: &Vec<lexer::Token>) -> Vec<Box<codegen::Expression>> {
     let expr = parse_expression(&mut tokens.iter().peekable());
     match expr {
         Ok(e) => expressions.push(e),
-        Err(err) => { println!("unable to parse!"); },
+        Err(err) => { println!("unable to parse! {}", err); },
     }
     return expressions;
 }
@@ -47,7 +47,8 @@ pub fn parse_base_value(tokens: &mut Peekable<Iter<lexer::Token>>) -> ExprResult
         Some(t) => {
             match t.typ {
                 TokenType::Int(i) => Ok(Box::new(codegen::IntExpression{value: i})),
-                _ => Err("foo"),
+                TokenType::Float(f) => Ok(Box::new(codegen::FloatExpression{value: f})),
+                _ => Err("unable to find basic type."),
             }
         },
         None => Err("foo"),

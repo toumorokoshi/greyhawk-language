@@ -40,7 +40,7 @@ impl Tokenizer for NumReader {
                     });
                     true
                 },
-                c if (c <= '0' || c >= '9') => {
+                '0' ... '9' => {
                     *value *= 10;
                     *value += (c as i32) - ('0' as i32);
                     true
@@ -48,7 +48,7 @@ impl Tokenizer for NumReader {
                 _ => false,
             },
             &mut NumReaderMode::ReadDecimal{ref mut value, ref mut power} => match c {
-                c if (c <= '0' || c >= '9') => {
+                '0' ... '9' => {
                     *value *= 10 as f32;
                     *value += ((c as i32) - ('0' as i32)) as f32;
                     *power *= 10.0;

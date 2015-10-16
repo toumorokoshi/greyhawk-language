@@ -31,13 +31,12 @@ impl Lexer {
 
             if let &mut Some(ref mut t) = &mut tokenizer {
                 if !t.read(c, line_num) {
-                    match t.publish() {
-                        Some(tok) => tokens.push(Token{
+                    if let Some(tok) = t.publish() {
+                        tokens.push(Token{
                             typ: tok,
                             line_num: line_num
-                        }),
-                        None => {},
-                    };
+                        });
+                    }
                 } else {
                     clear = false;
                 }
@@ -45,15 +44,20 @@ impl Lexer {
 
             if clear {
                 let mut new_tokenizer: Box<tokenizer::Tokenizer> = match c {
-                    c if ('0' <= c && c <= '9') => Box::new(tokenizer::NumReader::new()),
-                    // this line breaks because it's set to tokenizer, which
-                    // doesn't live long enough...
-                    c => Box::new(symbolreader::SymbolReader::new()),
+                    '0'...'9' => Box::new(tokenizer::NumReader::new()),
+                    _ => Box::new(symbolreader::SymbolReader::new()),
                 };
                 new_tokenizer.read(c, line_num);
                 tokenizer = Some(new_tokenizer);
             }
         }
+
+        if let &mut Some(ref mut t) = &mut tokenizer {
+            if let Some(tok) = t.publish() {
+                tokens.push(Token{ typ: tok, line_num: line_num});
+            }
+        }
+
         for token in &tokens {
             println!("{}", token.typ);
         }

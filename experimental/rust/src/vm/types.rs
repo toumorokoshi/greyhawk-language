@@ -21,6 +21,15 @@ impl TypeRef {
     }
 }
 
+impl PartialEq<TypeRef> for TypeRef {
+    fn eq(&self, other: &TypeRef) -> bool {
+        return self.name() == other.name();
+    }
+    fn ne(&self, other: &TypeRef) -> bool {
+        return self.name() != other.name();
+    }
+}
+
 pub static IntType: Type = Type {name: "Int"};
 pub static FloatType: Type = Type {name: "Float"};
 
