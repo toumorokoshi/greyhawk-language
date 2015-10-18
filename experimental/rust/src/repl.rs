@@ -27,6 +27,12 @@ fn repl(module: &vm::Module, vm_instance: &vm::VM) {
         let tokens = lexer.read(&input);
         let expressions = parser::parse(&tokens);
         let function = codegen::generate_ops(&expressions);
+        match &function {
+            &vm::function::Function::VMFunction(ref f) => {
+                println!("{}", f.scope);
+            },
+            _ => {},
+        }
         let object = vm_instance.execute_function(module, &function);
         print_value(object);
     }

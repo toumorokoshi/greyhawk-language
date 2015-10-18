@@ -1,3 +1,4 @@
+use std::fmt;
 use std::collections::HashMap;
 use super::types;
 use super::types::TypeRef;
@@ -45,5 +46,19 @@ impl Scope {
 
     pub fn local_count(&self) -> usize {
         return self.types.len();
+    }
+}
+
+impl fmt::Display for Scope {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Locals:\n");
+        for (key, value) in &self.locals {
+            write!(f, "  {}: {}\n", key, value);
+        }
+        write!(f, "Types:\n");
+        for typ in &self.types {
+            write!(f, "  {}\n", typ);
+        }
+        return write!(f, "");
     }
 }

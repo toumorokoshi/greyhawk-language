@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::fmt;
 
 pub struct Type {
     name: &'static str
@@ -29,6 +30,16 @@ impl Clone for TypeRef {
         };
     }
 
+}
+
+
+impl fmt::Display for TypeRef {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", match self {
+            &TypeRef::Heap(ref t) => t.name,
+            &TypeRef::Static(t) => t.name
+        })
+    }
 }
 
 impl PartialEq<TypeRef> for TypeRef {

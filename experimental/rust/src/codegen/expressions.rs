@@ -32,12 +32,14 @@ impl Expression for AddExpression {
     fn generate (&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {
         let left = self.left.generate(scope, instructions);
         let right = self.right.generate(scope, instructions);
-        let object = scope.allocate_local(types::get_int_type());
-        if (left.typ == types::get_float_type()) {
+        return if (left.typ == types::get_float_type()) {
+            let object = scope.allocate_local(types::get_float_type());
             instructions.push(Op::FloatAdd{lhs: left.index, rhs: right.index, target: object.index});
+            object
         } else {
+            let object = scope.allocate_local(types::get_int_type());
             instructions.push(Op::IntAdd{lhs: left.index, rhs: right.index, target: object.index});
-        }
-        return object;
+            object
+        };
     }
 }
