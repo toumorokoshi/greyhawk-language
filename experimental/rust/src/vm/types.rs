@@ -21,6 +21,16 @@ impl TypeRef {
     }
 }
 
+impl Clone for TypeRef {
+    fn clone(&self) -> TypeRef {
+        return match self {
+            &TypeRef::Heap(ref a) => TypeRef::Heap(a.clone()),
+            &TypeRef::Static(t) => TypeRef::Static(t),
+        };
+    }
+
+}
+
 impl PartialEq<TypeRef> for TypeRef {
     fn eq(&self, other: &TypeRef) -> bool {
         return self.name() == other.name();

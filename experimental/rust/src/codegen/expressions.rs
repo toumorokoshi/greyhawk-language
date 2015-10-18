@@ -1,6 +1,6 @@
-use super::scope;
 use vm::Op;
 use vm::types;
+use vm::scope;
 
 pub trait Expression {
     fn generate(&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject;
@@ -10,7 +10,7 @@ pub struct IntExpression { pub value: i32 }
 
 impl Expression for IntExpression {
     fn generate (&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {
-        let object = scope.allocate_local(types::get_float_type());
+        let object = scope.allocate_local(types::get_int_type());
         instructions.push(Op::IntLoad{register: object.index, constant: self.value});
         return object;
     }
@@ -20,7 +20,7 @@ pub struct FloatExpression { pub value: f32 }
 
 impl Expression for FloatExpression {
     fn generate (&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {
-        let object = scope.allocate_local(types::get_int_type());
+        let object = scope.allocate_local(types::get_float_type());
         instructions.push(Op::FloatLoad{register: object.index, constant: self.value});
         return object;
     }

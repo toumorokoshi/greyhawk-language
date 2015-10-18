@@ -1,3 +1,4 @@
+use std::mem;
 use super::lexer;
 use super::parser;
 use super::codegen;
@@ -26,7 +27,17 @@ fn repl(module: &vm::Module, vm_instance: &vm::VM) {
         let tokens = lexer.read(&input);
         let expressions = parser::parse(&tokens);
         let function = codegen::generate_ops(&expressions);
-        let value = vm_instance.execute_function(module, &function);
-        println!("{}", value);
+        let object = vm_instance.execute_function(module, &function);
+        print_value(object);
+    }
+}
+
+fn print_value(object: vm::Object) {
+    if (object.typ == vm::types::get_int_type()) {
+        println!("int: {}", object.value);
+    } else if (object.typ == vm::types::get_float_type()) {
+        unsafe {
+            println!("float: {}", mem::transmute::<i32, f32>(object.value));
+        }
     }
 }

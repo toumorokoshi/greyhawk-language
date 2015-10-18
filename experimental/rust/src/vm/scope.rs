@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use vm::types::TypeRef;
+use super::types;
+use super::types::TypeRef;
 
 pub struct LocalObject {
     pub index: usize,
@@ -19,26 +20,30 @@ impl Clone for LocalObject {
 }
 
 pub struct Scope {
-    pub locals: HashMap<&'static str, LocalObject>,
-    pub local_count: usize,
+    pub locals: HashMap<&'static str, usize>,
+    pub types: Vec<types::TypeRef>
 }
 
 impl Scope {
     pub fn new() -> Scope {
-        return Scope{locals: HashMap::new(), local_count: 0};
+        return Scope{locals: HashMap::new(), types: Vec::new()};
     }
 
     pub fn add_local(&mut self, name: &'static str, typ: TypeRef) -> LocalObject {
         let object = self.allocate_local(typ);
-        self.locals.insert(name, object.clone());
+        self.locals.insert(name, object.index);
         return object;
     }
 
     pub fn allocate_local(&mut self, typ: TypeRef) -> LocalObject {
-        let object = LocalObject{
-            index: self.local_count, typ: typ
+        self.types.push(typ.clone());
+        return LocalObject {
+            index: self.types.len() - 1,
+            typ: typ
         };
-        self.local_count += 1;
-        return object;
+    }
+
+    pub fn local_count(&self) -> usize {
+        return self.types.len();
     }
 }
