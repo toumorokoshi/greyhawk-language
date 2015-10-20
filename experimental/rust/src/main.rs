@@ -30,5 +30,5 @@ fn setup_opts() -> getopts::Options {
 }
 
 fn lexer(path: &String) {
-    println!("start lexer");
+    println!("start lexer at {}", path);
 }

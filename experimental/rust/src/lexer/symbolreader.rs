@@ -7,9 +7,12 @@ use super::symboltree;
 use std::rc::Rc;
 
 pub const SYMBOLS: &'static [TokenDef] = &[
-    TokenDef{ path: "+", token: TokenType::Plus}, TokenDef{ path: "-", token: TokenType::Minus},
-    TokenDef{ path: "==", token: TokenType::Equal},
-    TokenDef{ path: "+=", token: TokenType::Increment},
+    TokenDef{path: "+", token: TokenType::Plus},
+    TokenDef{path: "-", token: TokenType::Sub},
+    TokenDef{path: "*", token: TokenType::Mul},
+    TokenDef{path: "/", token: TokenType::Div},
+    TokenDef{path: "==", token: TokenType::Equal},
+    TokenDef{path: "+=", token: TokenType::Increment},
 ];
 
 pub struct SymbolReader {

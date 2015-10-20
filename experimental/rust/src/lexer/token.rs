@@ -10,7 +10,9 @@ pub enum TokenType {
     Int(i32),
     Float(f32),
     Plus,
-    Minus,
+    Sub,
+    Mul,
+    Div,
     Equal,
     Increment,
 }
@@ -21,7 +23,9 @@ impl fmt::Debug for TokenType {
             &TokenType::Int(i) => write!(f, "Int: {}", i),
             &TokenType::Float(fl) => write!(f, "Float: {}", fl),
             &TokenType::Plus => write!(f, "Plus"),
-            &TokenType::Minus => write!(f, "Minus"),
+            &TokenType::Sub => write!(f, "Minus"),
+            &TokenType::Mul => write!(f, "Mul"),
+            &TokenType::Div => write!(f, "Div"),
             &TokenType::Equal => write!(f, "Equal"),
             &TokenType::Increment => write!(f, "Increment"),
         }
@@ -34,7 +38,9 @@ impl fmt::Display for TokenType {
             &TokenType::Int(i) => write!(f, "Int: {}", i),
             &TokenType::Float(fl) => write!(f, "Float: {}", fl),
             &TokenType::Plus => write!(f, "Plus"),
-            &TokenType::Minus => write!(f, "Minus"),
+            &TokenType::Sub => write!(f, "Minus"),
+            &TokenType::Mul => write!(f, "Mul"),
+            &TokenType::Div => write!(f, "Div"),
             &TokenType::Equal => write!(f, "Equal"),
             &TokenType::Increment => write!(f, "Increment"),
         }

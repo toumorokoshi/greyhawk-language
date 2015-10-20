@@ -6,7 +6,7 @@ use std::rc::Rc;
 pub use self::expressions::Expression;
 pub use self::expressions::FloatExpression;
 pub use self::expressions::IntExpression;
-pub use self::expressions::AddExpression;
+pub use self::expressions::BinOpExpression;
 
 pub fn generate_ops(expressions: &Vec<Box<Expression>>) -> vm::Function {
     let mut ops: Vec<vm::ops::Op> = Vec::new();

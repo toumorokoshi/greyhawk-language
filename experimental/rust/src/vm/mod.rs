@@ -42,26 +42,37 @@ impl VM{
         for op in ops.iter() {
             match op {
 
-                &Op::IntAdd{lhs, rhs, target} =>
-                    registers[target] = registers[lhs] + registers[rhs],
-
-                &Op::IntLoad{register, constant} =>
-                    registers[register] = constant,
-
+                &Op::IntAdd{lhs, rhs, target} => registers[target] = registers[lhs] + registers[rhs],
+                &Op::IntSub{lhs, rhs, target} => registers[target] = registers[lhs] - registers[rhs],
+                &Op::IntMul{lhs, rhs, target} => registers[target] = registers[lhs] * registers[rhs],
+                &Op::IntDiv{lhs, rhs, target} => registers[target] = registers[lhs] / registers[rhs],
+                &Op::IntLoad{register, constant} => registers[register] = constant,
                 &Op::FloatAdd{lhs, rhs, target} => unsafe {
                     registers[target] = mem::transmute::<f32, i32>(
                         mem::transmute::<i32, f32>(registers[lhs]) +
                         mem::transmute::<i32, f32>(registers[rhs]),
                     );
                 },
-
-                &Op::FloatLoad{register, constant} => unsafe {
-                    registers[register] = mem::transmute::<f32, i32>(constant);
+                &Op::FloatSub{lhs, rhs, target} => unsafe {
+                    registers[target] = mem::transmute::<f32, i32>(
+                        mem::transmute::<i32, f32>(registers[lhs]) -
+                        mem::transmute::<i32, f32>(registers[rhs]),
+                    );
                 },
-
-                &Op::Return{register} => {
-                    return register;
-                }
+                &Op::FloatMul{lhs, rhs, target} => unsafe {
+                    registers[target] = mem::transmute::<f32, i32>(
+                        mem::transmute::<i32, f32>(registers[lhs]) *
+                        mem::transmute::<i32, f32>(registers[rhs]),
+                    );
+                },
+                &Op::FloatDiv{lhs, rhs, target} => unsafe {
+                    registers[target] = mem::transmute::<f32, i32>(
+                        mem::transmute::<i32, f32>(registers[lhs]) /
+                        mem::transmute::<i32, f32>(registers[rhs]),
+                    );
+                },
+                &Op::FloatLoad{register, constant} => unsafe { registers[register] = mem::transmute::<f32, i32>(constant) },
+                &Op::Return{register} => { return register; }
             };
         }
         return return_value;

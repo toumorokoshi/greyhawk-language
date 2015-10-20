@@ -27,6 +27,9 @@ pub fn parse_binary_operation(tokens: &mut Peekable<Iter<lexer::Token>>) -> Expr
         Some(t) => {
             match t.typ {
                 TokenType::Plus => TokenType::Plus,
+                TokenType::Sub => TokenType::Sub,
+                TokenType::Mul => TokenType::Mul,
+                TokenType::Div => TokenType::Div,
                 _ => return Err("unable to parse binary operation."),
             }
         },
@@ -35,7 +38,7 @@ pub fn parse_binary_operation(tokens: &mut Peekable<Iter<lexer::Token>>) -> Expr
     let right = parse_base_value(tokens);
     return match left {
         Ok(l) => match right {
-            Ok(r) => Ok(Box::new(codegen::AddExpression{left: l, right: r})),
+            Ok(r) => Ok(Box::new(codegen::BinOpExpression{op: token_type, left: l, right: r})),
             Err(e) => Err(e),
         },
         Err(e) => Err(e),
