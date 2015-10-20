@@ -15,34 +15,33 @@ pub enum TokenType {
     Div,
     Equal,
     Increment,
+    If,
+    Else,
+}
+
+fn fmt(typ: &TokenType, f: &mut fmt::Formatter) -> fmt::Result {
+    match (typ) {
+        &TokenType::Int(i) => write!(f, "Int: {}", i),
+        &TokenType::Float(fl) => write!(f, "Float: {}", fl),
+        &TokenType::Plus => write!(f, "Plus"),
+        &TokenType::Sub => write!(f, "Minus"),
+        &TokenType::Mul => write!(f, "Mul"),
+        &TokenType::Div => write!(f, "Div"),
+        &TokenType::Equal => write!(f, "Equal"),
+        &TokenType::Increment => write!(f, "Increment"),
+        &TokenType::If => write!(f, "If"),
+        &TokenType::Else => write!(f, "Else"),
+    }
 }
 
 impl fmt::Debug for TokenType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match (self) {
-            &TokenType::Int(i) => write!(f, "Int: {}", i),
-            &TokenType::Float(fl) => write!(f, "Float: {}", fl),
-            &TokenType::Plus => write!(f, "Plus"),
-            &TokenType::Sub => write!(f, "Minus"),
-            &TokenType::Mul => write!(f, "Mul"),
-            &TokenType::Div => write!(f, "Div"),
-            &TokenType::Equal => write!(f, "Equal"),
-            &TokenType::Increment => write!(f, "Increment"),
-        }
+        fmt(self, f)
     }
 }
 
 impl fmt::Display for TokenType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match (self) {
-            &TokenType::Int(i) => write!(f, "Int: {}", i),
-            &TokenType::Float(fl) => write!(f, "Float: {}", fl),
-            &TokenType::Plus => write!(f, "Plus"),
-            &TokenType::Sub => write!(f, "Minus"),
-            &TokenType::Mul => write!(f, "Mul"),
-            &TokenType::Div => write!(f, "Div"),
-            &TokenType::Equal => write!(f, "Equal"),
-            &TokenType::Increment => write!(f, "Increment"),
-        }
+        fmt(self, f)
     }
 }

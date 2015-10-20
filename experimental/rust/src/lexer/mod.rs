@@ -2,6 +2,7 @@ pub mod token;
 pub mod tokenizer;
 pub mod symboltree;
 pub mod symbolreader;
+pub mod stringreader;
 
 #[cfg(test)]
 mod tests;

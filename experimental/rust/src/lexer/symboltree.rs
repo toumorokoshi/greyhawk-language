@@ -18,6 +18,25 @@ pub struct FinalNode {
     pub children: HashMap<char, Rc<FinalNode>>,
 }
 
+impl FinalNode {
+    pub fn find(&self, input: &str) -> Option<token::TokenType> {
+        let mut root = self;
+        let mut chars = input.chars();
+        loop {
+            match chars.next() {
+                Some(c) =>  {
+                    match root.children.get(&c) {
+                        Some(child) => root = child,
+                        None => break,
+                    }
+                },
+                None => break,
+            }
+        }
+        return root.token;
+    }
+}
+
 impl Node {
     pub fn new() -> Node {
         Node{token: None, children: HashMap::new()}
@@ -34,23 +53,6 @@ impl Node {
                 self.token = Some(token)
             }
         }
-    }
-
-    pub fn find(&self, input: &str) -> Option<token::TokenType> {
-        let mut root = self;
-        let mut chars = input.chars();
-        loop {
-            match chars.next() {
-                Some(c) =>  {
-                    match root.children.get(&c) {
-                        Some(child) => root = child,
-                        None => break,
-                    }
-                },
-                None => break,
-            }
-        }
-        return root.token;
     }
 
     pub fn finalize(&self) -> FinalNode {
