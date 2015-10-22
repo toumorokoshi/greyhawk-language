@@ -1,11 +1,12 @@
 use std::fmt;
+use std::rc::Rc;
 
 pub struct Token {
     pub typ: TokenType,
     pub line_num: i32
 }
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub enum TokenType {
     Int(i32),
     Float(f32),
@@ -17,6 +18,7 @@ pub enum TokenType {
     Increment,
     If,
     Else,
+    Symbol(Rc<String>),
 }
 
 fn fmt(typ: &TokenType, f: &mut fmt::Formatter) -> fmt::Result {
@@ -31,6 +33,7 @@ fn fmt(typ: &TokenType, f: &mut fmt::Formatter) -> fmt::Result {
         &TokenType::Increment => write!(f, "Increment"),
         &TokenType::If => write!(f, "If"),
         &TokenType::Else => write!(f, "Else"),
+        &TokenType::Symbol(ref s) => write!(f, "Symbol: {}", s),
     }
 }
 

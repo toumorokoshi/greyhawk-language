@@ -33,7 +33,7 @@ impl FinalNode {
                 None => break,
             }
         }
-        return root.token;
+        return root.token.clone();
     }
 }
 
@@ -61,7 +61,7 @@ impl Node {
             children.insert(key, Rc::new(value.finalize()));
         }
         return FinalNode {
-            token: self.token,
+            token: self.token.clone(),
             children: children
         };
     }
@@ -71,7 +71,7 @@ impl Node {
 pub fn generate_tree(token_defs: &[TokenDef]) -> FinalNode {
     let mut root = Node::new();
     for token in token_defs {
-        root.add_token(&mut token.path.chars(), token.token);
+        root.add_token(&mut token.path.chars(), token.token.clone());
     }
     return root.finalize();
 }

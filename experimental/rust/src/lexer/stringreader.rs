@@ -3,6 +3,7 @@ use super::token::TokenType;
 use super::symboltree::TokenDef;
 use super::symboltree::FinalNode;
 use super::symboltree;
+use std::rc::Rc;
 
 pub const SYMBOLS: &'static [TokenDef] = &[
     TokenDef{path: "if", token: TokenType::If},
@@ -10,14 +11,14 @@ pub const SYMBOLS: &'static [TokenDef] = &[
 ];
 
 pub struct StringReader {
-    chars: Vec<char>,
+    string: String,
     keywords: FinalNode,
 }
 
 impl StringReader {
     pub fn new() -> StringReader {
         return StringReader{
-            chars: Vec::new(),
+            string: String::new(),
             keywords: symboltree::generate_tree(SYMBOLS)
         };
     }
@@ -29,8 +30,8 @@ impl Tokenizer for StringReader {
 
     fn read(&mut self, c: char, line_num: i32) -> bool {
         match c {
-            'a'...'z' | 'A'...'Z' => {
-                self.chars.push(c);
+            'a'...'z' | 'A'...'Z' | '0'...'9' | '_' => {
+                self.string.push(c);
                 true
             },
             _ => false,
@@ -38,10 +39,9 @@ impl Tokenizer for StringReader {
     }
 
     fn publish(&mut self) -> Option<TokenType> {
-        let string = self.chars.into_iter();
-        match self.keywords.find(string) {
-            Some(t) => None,
-            None => None,
+        match self.keywords.find(&self.string) {
+            Some(t) => Some(t),
+            None => Some(TokenType::Symbol(Rc::new(self.string.clone()))),
         }
     }
 }

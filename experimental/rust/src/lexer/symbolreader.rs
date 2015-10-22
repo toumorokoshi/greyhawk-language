@@ -55,7 +55,7 @@ impl Tokenizer for SymbolReader {
     }
 
     fn publish(&mut self) -> Option<TokenType> {
-        let tok = self.current_node.token;
+        let tok = self.current_node.token.clone();
         self.reset();
         return tok;
     }

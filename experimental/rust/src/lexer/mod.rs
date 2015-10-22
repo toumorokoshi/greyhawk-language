@@ -46,6 +46,7 @@ impl Lexer {
             if clear {
                 let mut new_tokenizer: Box<tokenizer::Tokenizer> = match c {
                     '0'...'9' => Box::new(tokenizer::NumReader::new()),
+                    'a'...'z' | 'A'...'Z' => Box::new(stringreader::StringReader::new()),
                     _ => Box::new(symbolreader::SymbolReader::new()),
                 };
                 new_tokenizer.read(c, line_num);
