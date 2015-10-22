@@ -13,6 +13,8 @@ pub const SYMBOLS: &'static [TokenDef] = &[
     TokenDef{path: "/", token: TokenType::Div},
     TokenDef{path: "==", token: TokenType::Equal},
     TokenDef{path: "+=", token: TokenType::Increment},
+    TokenDef{path: "(", token: TokenType::ParenL},
+    TokenDef{path: ")", token: TokenType::ParenR},
 ];
 
 pub struct SymbolReader {

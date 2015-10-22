@@ -3,6 +3,7 @@ pub mod tokenizer;
 pub mod symboltree;
 pub mod symbolreader;
 pub mod stringreader;
+pub mod typereader;
 
 #[cfg(test)]
 mod tests;
@@ -11,6 +12,7 @@ pub use self::token::*;
 pub use self::symboltree::TokenDef;
 pub use self::symboltree::generate_tree;
 pub use self::symboltree::Node;
+pub use self::typereader::TypeReader;
 
 use std::vec::Vec;
 
@@ -46,7 +48,8 @@ impl Lexer {
             if clear {
                 let mut new_tokenizer: Box<tokenizer::Tokenizer> = match c {
                     '0'...'9' => Box::new(tokenizer::NumReader::new()),
-                    'a'...'z' | 'A'...'Z' => Box::new(stringreader::StringReader::new()),
+                    'a'...'z' => Box::new(stringreader::StringReader::new()),
+                    'A'...'Z' => Box::new(typereader::TypeReader::new()),
                     _ => Box::new(symbolreader::SymbolReader::new()),
                 };
                 new_tokenizer.read(c, line_num);
