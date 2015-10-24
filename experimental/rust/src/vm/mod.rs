@@ -37,12 +37,12 @@ impl VM{
         return VM {modules: modules};
     }
 
-    pub fn execute_instructions(&self, scope: &mut ScopeInstance, ops: &[Op]) -> usize {
+    pub fn execute_instructions(&mut self, scope: &mut ScopeInstance, ops: &[Op]) -> usize {
         let mut return_value = 0 as usize;
-        let mut registers = scope.registers;
+        let mut registers = &mut scope.registers;
         for op in ops.iter() {
             match op {
-                &Op::Call{func, target} => registers[target] = self.execute_function(&func).value,
+                &Op::Call{ref func, target} => registers[target] = self.execute_function(func).value,
                 &Op::IntAdd{lhs, rhs, target} => registers[target] = registers[lhs] + registers[rhs],
                 &Op::IntSub{lhs, rhs, target} => registers[target] = registers[lhs] - registers[rhs],
                 &Op::IntMul{lhs, rhs, target} => registers[target] = registers[lhs] * registers[rhs],

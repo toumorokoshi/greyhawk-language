@@ -15,6 +15,7 @@ pub const SYMBOLS: &'static [TokenDef] = &[
     TokenDef{path: "+=", token: TokenType::Increment},
     TokenDef{path: "(", token: TokenType::ParenL},
     TokenDef{path: ")", token: TokenType::ParenR},
+    TokenDef{path: ":", token: TokenType::Colon},
 ];
 
 pub struct SymbolReader {

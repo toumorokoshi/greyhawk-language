@@ -21,6 +21,7 @@ pub enum TokenType {
     Symbol(Rc<String>),
     Type(Rc<String>),
     ParenL, ParenR,
+    Colon,
 }
 
 fn fmt(typ: &TokenType, f: &mut fmt::Formatter) -> fmt::Result {
@@ -39,6 +40,7 @@ fn fmt(typ: &TokenType, f: &mut fmt::Formatter) -> fmt::Result {
         &TokenType::Type(ref s) => write!(f, "Type: {}", s),
         &TokenType::ParenL => write!(f, "("),
         &TokenType::ParenR => write!(f, ")"),
+        &TokenType::Colon => write!(f, ":"),
     }
 }
 

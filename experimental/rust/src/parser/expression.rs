@@ -37,10 +37,10 @@ pub fn parse_base_value(tokens: &mut Peekable<Iter<lexer::Token>>) -> ExprResult
     let nextToken = tokens.next();
     return match nextToken {
         Some(t) => {
-            match t.typ {
-                TokenType::Int(i) => Ok(Box::new(codegen::IntExpression{value: i})),
-                TokenType::Float(f) => Ok(Box::new(codegen::FloatExpression{value: f})),
-                TokenType::Symbol(s) => Err("not implemented"),
+            match &t.typ {
+                &TokenType::Int(i) => Ok(Box::new(codegen::IntExpression{value: i})),
+                &TokenType::Float(f) => Ok(Box::new(codegen::FloatExpression{value: f})),
+                &TokenType::Symbol(ref s) => Err("not implemented"),
                 _ => Err("unable to find basic type."),
             }
         },

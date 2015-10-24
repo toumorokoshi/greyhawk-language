@@ -63,9 +63,6 @@ impl Lexer {
             }
         }
 
-        for token in &tokens {
-            println!("{}", token.typ);
-        }
         return tokens;
     }
 }

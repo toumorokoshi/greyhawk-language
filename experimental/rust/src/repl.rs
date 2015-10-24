@@ -8,16 +8,11 @@ use std::io::{self, Write};
 
 pub fn start_repl() {
     println!("Greyhawk 0.0.3");
-    let vm_instance = vm::VM::new();
-    match vm_instance.modules.get("main") {
-        Some(module) => {
-            repl(module, &vm_instance);
-        },
-        None => println!("unable to load main module!"),
-    }
+    let mut vm_instance = vm::VM::new();
+    repl(&mut vm_instance);
 }
 
-fn repl(module: &vm::Module, vm_instance: &vm::VM) {
+fn repl(vm_instance: &mut vm::VM) {
     let lexer = lexer::Lexer::new();
     loop {
         std::io::stdout().write(b">>> ");
