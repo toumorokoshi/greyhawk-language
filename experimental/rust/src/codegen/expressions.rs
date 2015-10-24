@@ -60,3 +60,11 @@ impl Expression for BinOpExpression {
         };
     }
 }
+
+pub struct CallExpression {pub name: String}
+
+impl Expression for CallExpression {
+    fn generate (&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {
+        return scope.allocate_local(types::get_int_type());
+    }
+}

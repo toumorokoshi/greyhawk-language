@@ -12,6 +12,7 @@ pub use self::module::Module;
 pub use self::function::Function;
 pub use self::function::VMFunction;
 pub use self::ops::Op;
+pub use self::scope::ScopeInstance;
 
 pub struct VM {
     pub modules: HashMap<&'static str, Module>,
@@ -36,12 +37,12 @@ impl VM{
         return VM {modules: modules};
     }
 
-    pub fn execute_instructions(&self, module: &Module,
-                                registers: &mut [i32], ops: &[Op]) -> usize {
+    pub fn execute_instructions(&self, scope: &mut ScopeInstance, ops: &[Op]) -> usize {
         let mut return_value = 0 as usize;
+        let mut registers = scope.registers;
         for op in ops.iter() {
             match op {
-
+                &Op::Call{func, target} => registers[target] = self.execute_function(&func).value,
                 &Op::IntAdd{lhs, rhs, target} => registers[target] = registers[lhs] + registers[rhs],
                 &Op::IntSub{lhs, rhs, target} => registers[target] = registers[lhs] - registers[rhs],
                 &Op::IntMul{lhs, rhs, target} => registers[target] = registers[lhs] * registers[rhs],
@@ -78,23 +79,8 @@ impl VM{
         return return_value;
     }
 
-    pub fn execute_function(&self, module: &Module, func: &function::Function) -> Object {
-        return match func {
-            &Function::NativeFunction{function, ref typ} => {
-                return Object{
-                    value: function(),
-                    typ: typ.clone()
-                };
-            },
-            &Function::VMFunction(ref f) => {
-                let mut registers = vec![0; f.scope.local_count()];
-                let return_register = self.execute_instructions(module, &mut registers, &f.ops[..]);
-                return Object{
-                    value: registers[return_register],
-                    typ: f.scope.types[return_register].clone()
-                };
-            },
-        };
+    pub fn execute_function(&mut self, func: &function::Function) -> Object {
+        func.call(self)
     }
 }
 

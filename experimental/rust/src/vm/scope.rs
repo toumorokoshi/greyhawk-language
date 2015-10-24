@@ -25,6 +25,10 @@ pub struct Scope {
     pub types: Vec<types::TypeRef>
 }
 
+pub struct ScopeInstance {
+    pub registers: Vec<i32>
+}
+
 impl Scope {
     pub fn new() -> Scope {
         return Scope{locals: HashMap::new(), types: Vec::new()};
@@ -46,6 +50,10 @@ impl Scope {
 
     pub fn local_count(&self) -> usize {
         return self.types.len();
+    }
+
+    pub fn create_instance(&self) -> ScopeInstance {
+        return ScopeInstance{registers: vec![0, self.local_count() as i32]};
     }
 }
 

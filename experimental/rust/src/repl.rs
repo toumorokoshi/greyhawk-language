@@ -33,7 +33,7 @@ fn repl(module: &vm::Module, vm_instance: &vm::VM) {
             },
             _ => {},
         }
-        let object = vm_instance.execute_function(module, &function);
+        let object = vm_instance.execute_function(&function);
         print_value(object);
     }
 }
