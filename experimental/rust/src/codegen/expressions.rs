@@ -1,10 +1,14 @@
+extern crate yaml_rust;
 use lexer::token::TokenType;
 use vm::Op;
 use vm::types;
 use vm::scope;
+use yaml_rust::Yaml;
+use yaml_rust::yaml;
 
 pub trait Expression {
     fn generate(&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject;
+    fn to_yaml(&self) -> Yaml;
 }
 
 pub struct IntExpression { pub value: i32 }
@@ -15,6 +19,10 @@ impl Expression for IntExpression {
         instructions.push(Op::IntLoad{register: object.index, constant: self.value});
         return object;
     }
+
+    fn to_yaml(&self) -> Yaml {
+        return Yaml::Integer(self.value as i64);
+    }
 }
 
 pub struct FloatExpression { pub value: f32 }
@@ -24,6 +32,10 @@ impl Expression for FloatExpression {
         let object = scope.allocate_local(types::get_float_type());
         instructions.push(Op::FloatLoad{register: object.index, constant: self.value});
         return object;
+    }
+
+    fn to_yaml(&self) -> Yaml {
+        return Yaml::Real(self.value.to_string());
     }
 }
 
@@ -59,6 +71,15 @@ impl Expression for BinOpExpression {
             object
         };
     }
+
+    fn to_yaml(&self) -> Yaml {
+        let mut yaml = yaml::Hash::new();
+        yaml.insert(Yaml::String("type".to_string()), Yaml::String("binop".to_string()));
+        yaml.insert(Yaml::String("op".to_string()), Yaml::String(self.op.to_string()));
+        yaml.insert(Yaml::String("left".to_string()), self.left.to_yaml());
+        yaml.insert(Yaml::String("right".to_string()), self.left.to_yaml());
+        return Yaml::Hash(yaml);
+    }
 }
 
 pub struct CallExpression {pub name: String}
@@ -66,5 +87,12 @@ pub struct CallExpression {pub name: String}
 impl Expression for CallExpression {
     fn generate (&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {
         return scope.allocate_local(types::get_int_type());
+    }
+
+    fn to_yaml(&self) -> Yaml {
+        let mut yaml = yaml::Hash::new();
+        yaml.insert(Yaml::String("type".to_string()), Yaml::String("call".to_string()));
+        yaml.insert(Yaml::String("func_name".to_string()), Yaml::String(self.name.clone()));
+        return Yaml::Hash(yaml);
     }
 }

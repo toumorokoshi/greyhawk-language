@@ -53,7 +53,7 @@ impl Scope {
     }
 
     pub fn create_instance(&self) -> ScopeInstance {
-        return ScopeInstance{registers: vec![0, self.local_count() as i32]};
+        return ScopeInstance{registers: vec![0; self.local_count()]};
     }
 }
 

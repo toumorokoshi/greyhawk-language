@@ -4,13 +4,7 @@ use yaml_rust::{Yaml};
 pub fn to_yaml(expressions: Vec<Box<super::Expression>>) -> Yaml {
     let mut yaml = Vec::new();
     for expr in expressions {
-        yaml.push(expr_to_yaml(expr));
+        yaml.push(expr.to_yaml());
     }
     return Yaml::Array(yaml);
-}
-
-pub fn expr_to_yaml(expression: Box<super::Expression>) -> Yaml {
-    match expression {
-    }
-    return Yaml::Integer(10);
 }
