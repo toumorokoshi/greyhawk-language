@@ -22,6 +22,7 @@ pub enum TokenType {
     Type(Rc<String>),
     ParenL, ParenR,
     Colon,
+    Return,
 }
 
 impl TokenType {
@@ -42,6 +43,7 @@ impl TokenType {
             &TokenType::ParenL => format!("("),
             &TokenType::ParenR => format!(")"),
             &TokenType::Colon => format!(":"),
+            &TokenType::Return => format!("return"),
         }
     }
 }

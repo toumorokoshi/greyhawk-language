@@ -11,7 +11,7 @@ pub struct VMFunction {
 
 pub enum Function {
     NativeFunction{
-        function: fn() -> i32,
+        function: fn(&[Object]) -> Object,
         typ: super::types::TypeRef
     },
     VMFunction(VMFunction)
@@ -21,18 +21,15 @@ impl Function {
     pub fn call(&self, vm: &mut VM) -> Object {
         match self {
             &Function::NativeFunction{function, ref typ} => {
-                return Object{
-                    value: function(),
-                    typ: typ.clone()
-                };
+                function(&[])
             },
             &Function::VMFunction(ref f) => {
                 let mut scopeInstance = f.scope.create_instance();
                 let return_register = vm.execute_instructions(&mut scopeInstance, &f.ops[..]);
-                return Object{
+                Object{
                     value: scopeInstance.registers[return_register],
                     typ: f.scope.types[return_register].clone()
-                };
+                }
             },
         }
     }

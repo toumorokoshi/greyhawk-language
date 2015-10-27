@@ -8,6 +8,8 @@ use std::rc::Rc;
 pub const SYMBOLS: &'static [TokenDef] = &[
     TokenDef{path: "if", token: TokenType::If},
     TokenDef{path: "else", token: TokenType::Else},
+    TokenDef{path: "return", token: TokenType::Return},
+
 ];
 
 pub struct StringReader {

@@ -6,6 +6,7 @@ pub mod function;
 pub mod ops;
 pub mod types;
 pub mod scope;
+pub mod builtins;
 
 // for some reason, wildcards (*) don't work.
 pub use self::module::Module;
@@ -13,6 +14,7 @@ pub use self::function::Function;
 pub use self::function::VMFunction;
 pub use self::ops::Op;
 pub use self::scope::ScopeInstance;
+pub use self::builtins::print;
 
 pub struct VM {
     pub modules: HashMap<&'static str, Module>,
@@ -25,16 +27,7 @@ pub struct Object {
 
 impl VM{
     pub fn new() -> VM {
-
-        let mut main_module = Module{ functions: HashMap::new()};
-        main_module.functions.insert(
-            "foo", Function::NativeFunction{function: test, typ: types::get_int_type()}
-        );
-
-        let mut modules = HashMap::new();
-        modules.insert("main", main_module);
-
-        return VM {modules: modules};
+        return VM {modules: HashMap::new()};
     }
 
     pub fn execute_instructions(&mut self, scope: &mut ScopeInstance, ops: &[Op]) -> usize {

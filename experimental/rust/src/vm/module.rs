@@ -1,6 +1,10 @@
-use super::function;
+use super::scope;
 use std::collections::HashMap;
 
 pub struct Module {
-    pub functions: HashMap<&'static str, function::Function>,
+    pub scope: scope::Scope,
+    pub scope_instance: scope::ScopeInstance
+}
+
+impl Module {
 }
