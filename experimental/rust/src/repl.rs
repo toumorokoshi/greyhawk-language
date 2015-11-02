@@ -27,7 +27,7 @@ fn repl(vm_instance: &mut vm::VM) {
             },
             _ => {},
         }
-        let object = vm_instance.execute_function(&function);
+        let object = vm_instance.execute_function(&function, &[]);
         vm::print(&[object]);
     }
 }

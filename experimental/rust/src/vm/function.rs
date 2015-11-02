@@ -18,14 +18,14 @@ pub enum Function {
 }
 
 impl Function {
-    pub fn call(&self, vm: &mut VM) -> Object {
+    pub fn call(&self, vm: &mut VM, args: &[Object]) -> Object {
         match self {
             &Function::NativeFunction{function, ref typ} => {
-                function(&[])
+                function(args)
             },
             &Function::VMFunction(ref f) => {
                 let mut scopeInstance = f.scope.create_instance();
-                let return_register = vm.execute_instructions(&mut scopeInstance, &f.ops[..]);
+                let return_register = vm.execute_instructions(&mut scopeInstance, &f.scope, &f.ops[..]);
                 Object{
                     value: scopeInstance.registers[return_register],
                     typ: f.scope.types[return_register].clone()

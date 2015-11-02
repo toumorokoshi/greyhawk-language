@@ -14,6 +14,7 @@ pub use self::function::Function;
 pub use self::function::VMFunction;
 pub use self::ops::Op;
 pub use self::scope::ScopeInstance;
+pub use self::scope::Scope;
 pub use self::builtins::print;
 
 pub struct VM {
@@ -30,12 +31,18 @@ impl VM{
         return VM {modules: HashMap::new()};
     }
 
-    pub fn execute_instructions(&mut self, scope: &mut ScopeInstance, ops: &[Op]) -> usize {
+    pub fn execute_instructions(&mut self, scopeInstance: &mut ScopeInstance, scope: &Scope, ops: &[Op]) -> usize {
         let mut return_value = 0 as usize;
-        let mut registers = &mut scope.registers;
+        let mut registers = &mut scopeInstance.registers;
         for op in ops.iter() {
             match op {
-                &Op::Call{ref func, target} => registers[target] = self.execute_function(func).value,
+                &Op::Call{ref func, ref args, target} => {
+                    let mut arg_objects = Vec::new();
+                    for arg in args {
+                        arg_objects.push(Object{value: registers[arg.index], typ: arg.typ.clone()});
+                    }
+                    registers[target] = self.execute_function(func, &arg_objects).value
+                },
                 &Op::IntAdd{lhs, rhs, target} => registers[target] = registers[lhs] + registers[rhs],
                 &Op::IntSub{lhs, rhs, target} => registers[target] = registers[lhs] - registers[rhs],
                 &Op::IntMul{lhs, rhs, target} => registers[target] = registers[lhs] * registers[rhs],
@@ -72,8 +79,8 @@ impl VM{
         return return_value;
     }
 
-    pub fn execute_function(&mut self, func: &function::Function) -> Object {
-        func.call(self)
+    pub fn execute_function(&mut self, func: &function::Function, args: &[Object]) -> Object {
+        func.call(self, args)
     }
 }
 

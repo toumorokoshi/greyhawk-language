@@ -26,7 +26,7 @@ fn main () {
                 _ => panic!("no such command"),
             }
         },
-        1 => execute_file(),
+        1 => execute_file(&matches.free[0]),
         0 => repl::start_repl(),
         _ => panic!("Invalid Args"),
     }
@@ -68,5 +68,21 @@ fn parse(path: &String) {
     println!("{}", out_str);
 }
 
-fn execute_file() {
+fn execute_file(path: &String) {
+    let lexer = lexer::Lexer::new();
+    let mut vm_instance = vm::VM::new();
+
+    let mut file = File::open(path).unwrap();
+    let mut content = String::new();
+    file.read_to_string(&mut content).unwrap();
+    let tokens = lexer.read(&content);
+    let expressions = parser::parse(&tokens);
+    let function = codegen::generate_ops(&expressions);
+    match &function {
+        &vm::function::Function::VMFunction(ref f) => {
+            println!("{}", f.scope);
+        },
+        _ => {},
+    }
+    vm_instance.execute_function(&function, &[]);
 }

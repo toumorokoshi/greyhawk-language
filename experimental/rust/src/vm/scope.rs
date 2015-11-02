@@ -2,6 +2,8 @@ use std::fmt;
 use std::collections::HashMap;
 use super::types;
 use super::types::TypeRef;
+use super::Function;
+use super::builtins::print;
 
 pub struct LocalObject {
     pub index: usize,
@@ -54,6 +56,13 @@ impl Scope {
 
     pub fn create_instance(&self) -> ScopeInstance {
         return ScopeInstance{registers: vec![0; self.local_count()]};
+    }
+
+    pub fn get_function(&self, name: String) -> Function {
+        return Function::NativeFunction {
+            function: print,
+            typ: types::get_none_type()
+        };
     }
 }
 

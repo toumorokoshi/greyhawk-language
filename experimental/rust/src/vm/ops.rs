@@ -1,8 +1,9 @@
 use super::function;
+use super::scope::LocalObject;
 use std::fmt;
 
 pub enum Op {
-    Call{func: function::Function, target: usize},
+    Call{func: function::Function, args: Vec<LocalObject>, target: usize},
     FloatAdd{lhs: usize, rhs: usize, target: usize},
     FloatSub{lhs: usize, rhs: usize, target: usize},
     FloatMul{lhs: usize, rhs: usize, target: usize},
@@ -19,7 +20,7 @@ pub enum Op {
 impl Op {
     pub fn to_string(&self) -> String {
         match (self) {
-            &Op::Call{ref func, target} => format!("{0} <= Call()", target),
+            &Op::Call{ref func, ref args, target} => format!("{0} <= Call()", target),
             &Op::FloatAdd{lhs, rhs, target} => format!("{2} <= {0} + {1} (float)", lhs, rhs, target),
             &Op::FloatSub{lhs, rhs, target} => format!("{2} <= {0} - {1} (float)", lhs, rhs, target),
             &Op::FloatMul{lhs, rhs, target} => format!("{2} <= {0} + {1} (float)", lhs, rhs, target),

@@ -87,7 +87,14 @@ pub struct CallExpression {pub name: String, pub arg: Box<Expression>}
 
 impl Expression for CallExpression {
     fn generate (&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {
-        return scope.allocate_local(types::get_int_type());
+        let mut args = Vec::new();
+        args.push(self.arg.generate(scope, instructions));
+
+        let ret_object = scope.allocate_local(types::get_int_type());
+        instructions.push(Op::Call {
+            func: scope.get_function(self.name.clone()), args: args, target: ret_object.index
+        });
+        return ret_object;
     }
 
     fn to_yaml(&self) -> Yaml {

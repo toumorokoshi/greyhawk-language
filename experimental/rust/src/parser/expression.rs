@@ -8,15 +8,6 @@ use codegen;
 
 pub fn parse_expression(tokens: &mut Peekable<Iter<lexer::Token>>) -> ExprResult {
     parse_binary_operation(tokens)
-    /* let mut next_token = None;
-    if let Some(t) = tokens.peek() { next_token = Some(t.clone()); }
-    match next_token {
-        Some(t) => match t.typ {
-            TokenType::ParenL => parse_call(tokens),
-            _ => parse_binary_operation(tokens),
-        },
-        None => Err("no next token!")
-    } */
 }
 
 pub fn parse_binary_operation(tokens: &mut Peekable<Iter<lexer::Token>>) -> ExprResult {
