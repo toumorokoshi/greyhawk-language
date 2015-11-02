@@ -5,6 +5,7 @@ use super::vm;
 use std::rc::Rc;
 
 pub use self::expressions::Expression;
+pub use self::expressions::CallExpression;
 pub use self::expressions::FloatExpression;
 pub use self::expressions::IntExpression;
 pub use self::expressions::BinOpExpression;

@@ -27,6 +27,6 @@ impl Tokenizer for TypeReader {
     }
 
     fn publish(&mut self) -> Option<TokenType> {
-        Some(TokenType::Type(Rc::new(self.name.clone())))
+        Some(TokenType::Type(self.name.clone()))
     }
 }

@@ -6,7 +6,7 @@ pub struct Token {
     pub line_num: i32
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum TokenType {
     Int(i32),
     Float(f32),
@@ -18,8 +18,8 @@ pub enum TokenType {
     Increment,
     If,
     Else,
-    Symbol(Rc<String>),
-    Type(Rc<String>),
+    Symbol(String),
+    Type(String),
     ParenL, ParenR,
     Colon,
     Return,

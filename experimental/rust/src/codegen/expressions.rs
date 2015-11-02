@@ -1,4 +1,5 @@
 extern crate yaml_rust;
+use std::rc::Rc;
 use lexer::token::TokenType;
 use vm::Op;
 use vm::types;
@@ -82,7 +83,7 @@ impl Expression for BinOpExpression {
     }
 }
 
-pub struct CallExpression {pub name: String}
+pub struct CallExpression {pub name: String, pub arg: Box<Expression>}
 
 impl Expression for CallExpression {
     fn generate (&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {

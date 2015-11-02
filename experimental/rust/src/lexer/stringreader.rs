@@ -43,7 +43,7 @@ impl Tokenizer for StringReader {
     fn publish(&mut self) -> Option<TokenType> {
         match self.keywords.find(&self.string) {
             Some(t) => Some(t),
-            None => Some(TokenType::Symbol(Rc::new(self.string.clone()))),
+            None => Some(TokenType::Symbol(self.string.clone())),
         }
     }
 }
