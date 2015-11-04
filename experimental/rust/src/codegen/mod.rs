@@ -4,6 +4,7 @@ pub mod yaml;
 use super::vm;
 use std::rc::Rc;
 
+pub use self::statements::Statement;
 pub use self::expressions::Expression;
 pub use self::expressions::CallExpression;
 pub use self::expressions::FloatExpression;
