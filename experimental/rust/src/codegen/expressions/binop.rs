@@ -5,6 +5,7 @@ use lexer::token::TokenType;
 use vm::Op;
 use vm::types;
 use vm::scope;
+use std::collections::BTreeMap;
 use yaml_rust::Yaml;
 
 pub struct BinOpExpression {
@@ -52,7 +53,7 @@ impl Statement for BinOpExpression {
     }
 
     fn to_yaml(&self) -> Yaml {
-        let mut yaml = Yaml::Hash::new();
+        let mut yaml = BTreeMap::new();
         yaml.insert(Yaml::String("type".to_string()), Yaml::String("binop".to_string()));
         yaml.insert(Yaml::String("op".to_string()), Yaml::String(self.op.to_string()));
         yaml.insert(Yaml::String("left".to_string()), self.left.to_yaml());
