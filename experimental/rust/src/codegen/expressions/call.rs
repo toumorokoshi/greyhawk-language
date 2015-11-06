@@ -4,6 +4,7 @@ use super::super::Statement;
 use vm::Op;
 use vm::types;
 use vm::scope;
+use std::rc::Rc;
 use std::collections::BTreeMap;
 use yaml_rust::Yaml;
 

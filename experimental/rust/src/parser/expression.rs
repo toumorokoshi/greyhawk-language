@@ -1,10 +1,11 @@
-use super::ExprResult;
 use std::rc::Rc;
 use std::slice::Iter;
 use std::iter::Peekable;
 use lexer;
 use lexer::token::TokenType;
 use codegen;
+
+pub type ExprResult = Result<Box<codegen::Expression>, &'static str>;
 
 pub fn parse_expression(tokens: &mut Peekable<Iter<lexer::Token>>) -> ExprResult {
     parse_binary_operation(tokens)

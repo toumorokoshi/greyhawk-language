@@ -1,9 +1,10 @@
 use super::function;
 use super::scope::LocalObject;
+use std::rc::Rc;
 use std::fmt;
 
 pub enum Op {
-    Call{func: function::Function, args: Vec<LocalObject>, target: usize},
+    Call{func: Rc<function::Function>, args: Vec<LocalObject>, target: usize},
     FloatAdd{lhs: usize, rhs: usize, target: usize},
     FloatSub{lhs: usize, rhs: usize, target: usize},
     FloatMul{lhs: usize, rhs: usize, target: usize},

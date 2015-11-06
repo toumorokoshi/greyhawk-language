@@ -1,5 +1,6 @@
 use std::fmt;
 use std::collections::HashMap;
+use std::rc::Rc;
 use super::types;
 use super::types::TypeRef;
 use super::Function;
@@ -24,7 +25,7 @@ impl Clone for LocalObject {
 
 pub struct Scope {
     pub locals: HashMap<&'static str, usize>,
-    pub functions: HashMap<String, Function>,
+    pub functions: HashMap<String, Rc<Function>>,
     pub types: Vec<types::TypeRef>
 }
 
@@ -34,7 +35,11 @@ pub struct ScopeInstance {
 
 impl Scope {
     pub fn new() -> Scope {
-        return Scope{locals: HashMap::new(), types: Vec::new()};
+        return Scope{
+            functions: HashMap::new(),
+            locals: HashMap::new(),
+            types: Vec::new()
+        };
     }
 
     pub fn add_local(&mut self, name: &'static str, typ: TypeRef) -> LocalObject {
@@ -43,8 +48,8 @@ impl Scope {
         return object;
     }
 
-    pub fn add_function(&mut self, name: String, function: Function) {
-        functions.insert(name, function);
+    pub fn add_function(&mut self, name: String, function: Rc<Function>) {
+        self.functions.insert(name, function);
     }
 
     pub fn allocate_local(&mut self, typ: TypeRef) -> LocalObject {
@@ -63,11 +68,15 @@ impl Scope {
         return ScopeInstance{registers: vec![0; self.local_count()]};
     }
 
-    pub fn get_function(&self, name: String) -> Function {
-        return Function::NativeFunction {
-            function: print,
-            typ: types::get_none_type()
-        };
+    pub fn get_function(&self, name: String) -> Rc<Function> {
+        if let Some(func) = self.functions.get(&name) {
+            return func.clone();
+        } else {
+            return Rc::new(Function::NativeFunction {
+                function: print,
+                typ: types::get_none_type()
+            });
+        }
     }
 }
 

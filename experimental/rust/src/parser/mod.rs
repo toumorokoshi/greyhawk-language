@@ -1,20 +1,21 @@
 mod expression;
+mod statements;
 
 use super::lexer;
 use super::lexer::token::TokenType;
 use super::codegen;
 use std::slice::Iter;
 use std::iter::Peekable;
+use self::statements::StatResult;
+use self::expression::ExprResult;
 
-pub type ExprResult = Result<Box<codegen::Expression>, &'static str>;
-
-pub fn parse(tokens: &Vec<lexer::Token>) -> Vec<Box<codegen::Expression>> {
+pub fn parse(tokens: &Vec<lexer::Token>) -> Vec<Box<codegen::Statement>> {
     let mut token_iter = tokens.iter().peekable();
-    let mut expressions: Vec<Box<codegen::expressions::Expression>> = Vec::new();
-    let expr = expression::parse_expression(&mut tokens.iter().peekable());
+    let mut statements: Vec<Box<codegen::statements::Statement>> = Vec::new();
+    let expr = statements::parse_statement(&mut tokens.iter().peekable());
     match expr {
-        Ok(e) => expressions.push(e),
+        Ok(e) => statements.push(e),
         Err(err) => { println!("unable to parse! {}", err); },
     }
-    return expressions;
+    return statements;
 }
