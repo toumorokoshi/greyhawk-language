@@ -9,7 +9,6 @@ mod vm;
 mod repl;
 
 use yaml_rust::emitter::YamlEmitter;
-use std::collections::HashMap;
 use std::env;
 
 fn main () {
@@ -34,6 +33,7 @@ fn main () {
 
 fn setup_opts() -> getopts::Options {
     let mut opts = getopts::Options::new();
+    opts.optflag("h", "help", "print this help menu");
     return opts;
 }
 

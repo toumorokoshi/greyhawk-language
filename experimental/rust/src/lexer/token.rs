@@ -1,5 +1,4 @@
 use std::fmt;
-use std::rc::Rc;
 
 pub struct Token {
     pub typ: TokenType,

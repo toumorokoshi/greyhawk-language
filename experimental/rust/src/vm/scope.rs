@@ -24,6 +24,7 @@ impl Clone for LocalObject {
 
 pub struct Scope {
     pub locals: HashMap<&'static str, usize>,
+    pub functions: HashMap<String, Function>,
     pub types: Vec<types::TypeRef>
 }
 
@@ -40,6 +41,10 @@ impl Scope {
         let object = self.allocate_local(typ);
         self.locals.insert(name, object.index);
         return object;
+    }
+
+    pub fn add_function(&mut self, name: String, function: Function) {
+        functions.insert(name, function);
     }
 
     pub fn allocate_local(&mut self, typ: TypeRef) -> LocalObject {

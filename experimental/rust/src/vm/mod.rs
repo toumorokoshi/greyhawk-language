@@ -31,9 +31,9 @@ impl VM{
         return VM {modules: HashMap::new()};
     }
 
-    pub fn execute_instructions(&mut self, scopeInstance: &mut ScopeInstance, scope: &Scope, ops: &[Op]) -> usize {
-        let mut return_value = 0 as usize;
-        let mut registers = &mut scopeInstance.registers;
+    pub fn execute_instructions(&mut self, scope_instance: &mut ScopeInstance, scope: &Scope, ops: &[Op]) -> usize {
+        let return_value = 0 as usize;
+        let mut registers = &mut scope_instance.registers;
         for op in ops.iter() {
             match op {
                 &Op::Call{ref func, ref args, target} => {
@@ -82,9 +82,4 @@ impl VM{
     pub fn execute_function(&mut self, func: &function::Function, args: &[Object]) -> Object {
         func.call(self, args)
     }
-}
-
-pub fn test() -> i32 {
-    println!("this is only a test.");
-    return 10;
 }
