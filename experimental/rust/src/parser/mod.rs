@@ -9,9 +9,9 @@ use std::iter::Peekable;
 use self::statements::StatResult;
 use self::expression::ExprResult;
 
-pub fn parse(tokens: &Vec<lexer::Token>) -> Vec<Box<codegen::Statement>> {
+pub fn parse(tokens: &Vec<lexer::Token>) -> Vec<codegen::Statement> {
     let mut token_iter = tokens.iter().peekable();
-    let mut statements: Vec<Box<codegen::Statement>> = Vec::new();
+    let mut statements: Vec<codegen::Statement> = Vec::new();
     let expr = statements::parse_statement(&mut tokens.iter().peekable());
     match expr {
         Ok(e) => statements.push(e),

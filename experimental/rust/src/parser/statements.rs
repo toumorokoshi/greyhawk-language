@@ -4,20 +4,23 @@ use super::expression;
 use lexer::token::TokenType;
 use std::iter::Peekable;
 use std::slice::Iter;
-pub type StatResult = Result<Box<codegen::Statement>, &'static str>;
+pub type StatResult = Result<codegen::Statement, &'static str>;
 
 pub fn parse_statement(tokens: &mut Peekable<Iter<lexer::Token>>) -> StatResult {
-    if let Some(ref next) = tokens.peek() {
-        let next_clone = next.clone();
-        match next_clone.typ {
-            TokenType::Type(name) => parse_function_declaration(&mut tokens),
-            _ => match expression::parse_expression(&mut tokens) {
-                Ok(expr) => Ok(expr.as_statement()),
-                Err(err) => Err(err)
+    let mut next_token: Option<lexer::Token> = None;
+    if let Some(next) = tokens.peek() { next_token = Some((**next).clone()); }
+
+    match next_token {
+        Some(t) => {
+            match t.typ {
+                TokenType::Type(name) => parse_function_declaration(tokens),
+                _ => match expression::parse_expression(tokens) {
+                    Ok(expr) => Ok(codegen::Statement::Expression(expr)),
+                    Err(err) => Err(err)
+                }
             }
-        }
-    } else {
-        Err("test")
+        },
+        None => Err("no token next.")
     }
 }
 

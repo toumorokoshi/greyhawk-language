@@ -1,5 +1,6 @@
 use std::fmt;
 
+#[derive(Clone, PartialEq)]
 pub struct Token {
     pub typ: TokenType,
     pub line_num: i32

@@ -19,7 +19,7 @@ impl StatementBase for FunctionDeclaration {
     fn evaluate(&self, scope: &mut Scope, instructions: &mut Vec<Op>) {
         let mut function_scope = Scope::new();
         let mut ops = Vec::new();
-        for statement in self.statements {
+        for statement in &self.statements {
             statement.evaluate(&mut function_scope, &mut ops);
         }
         scope.add_function(self.name.clone(), Rc::new(Function::VMFunction(VMFunction {
