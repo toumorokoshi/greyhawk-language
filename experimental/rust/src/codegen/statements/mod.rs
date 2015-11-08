@@ -5,7 +5,7 @@ use vm::scope;
 use yaml_rust::Yaml;
 pub use self::function_declaration::FunctionDeclaration;
 
-pub trait Statement {
+pub trait StatementBase {
     fn evaluate(&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>);
     fn to_yaml(&self) -> Yaml;
 }

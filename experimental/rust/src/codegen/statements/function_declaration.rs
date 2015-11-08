@@ -2,7 +2,8 @@ extern crate yaml_rust;
 use yaml_rust::Yaml;
 use std::collections::BTreeMap;
 use std::rc::Rc;
-use super::Statement;
+use super::StatementBase;
+use super::super::Statement;
 use vm::function::VMFunction;
 use vm::function::Function;
 use vm::scope::Scope;
@@ -13,7 +14,7 @@ pub struct FunctionDeclaration {
     pub statements: Vec<Box<Statement>>
 }
 
-impl Statement for FunctionDeclaration {
+impl StatementBase for FunctionDeclaration {
 
     fn evaluate(&self, scope: &mut Scope, instructions: &mut Vec<Op>) {
         let mut function_scope = Scope::new();

@@ -12,7 +12,7 @@ pub fn parse_statement(tokens: &mut Peekable<Iter<lexer::Token>>) -> StatResult 
         match next_clone.typ {
             TokenType::Type(name) => parse_function_declaration(&mut tokens),
             _ => match expression::parse_expression(&mut tokens) {
-                Ok(expr) => Ok(expr as Box<codegen::Statement>),
+                Ok(expr) => Ok(expr.as_statement()),
                 Err(err) => Err(err)
             }
         }

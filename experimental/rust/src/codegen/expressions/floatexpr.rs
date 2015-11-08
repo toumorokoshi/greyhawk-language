@@ -15,13 +15,6 @@ impl Expression for FloatExpression {
         return object;
     }
 
-}
-
-impl Statement for FloatExpression {
-    fn evaluate(&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) {
-        self.generate(scope, instructions);
-    }
-
     fn to_yaml(&self) -> Yaml {
         return Yaml::Real(self.value.to_string());
     }

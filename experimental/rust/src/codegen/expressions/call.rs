@@ -21,12 +21,6 @@ impl Expression for CallExpression {
         });
         return ret_object;
     }
-}
-
-impl Statement for CallExpression {
-    fn evaluate(&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) {
-        self.generate(scope, instructions);
-    }
 
     fn to_yaml(&self) -> Yaml {
         let mut yaml = BTreeMap::new();

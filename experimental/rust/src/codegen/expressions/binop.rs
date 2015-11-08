@@ -36,20 +36,13 @@ impl Expression for BinOpExpression {
                 TokenType::Plus => instructions.push(Op::IntAdd{lhs: left.index, rhs: right.index, target: object.index}),
                 TokenType::Sub => instructions.push(Op::IntSub{lhs: left.index, rhs: right.index, target: object.index}),
                 TokenType::Mul => instructions.push(Op::IntMul{lhs: left.index, rhs: right.index, target: object.index}),
-                TokenType::Div => instructions.push(Op::IntDiv{lhs: left.index, rhs: right.index, target: object.index}),
+        TokenType::Div => instructions.push(Op::IntDiv{lhs: left.index, rhs: right.index, target: object.index}),
                 // TODO: this should be validated when creating the
                 // expression, rather that during evaluation.
                 _ => {},
             };
             object
         };
-    }
-}
-
-
-impl Statement for BinOpExpression {
-    fn evaluate(&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) {
-        self.generate(scope, instructions);
     }
 
     fn to_yaml(&self) -> Yaml {
