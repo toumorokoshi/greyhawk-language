@@ -1,5 +1,6 @@
 mod expression;
 mod statements;
+mod expect;
 
 use super::lexer;
 use super::lexer::token::TokenType;
@@ -66,13 +67,5 @@ impl<'a> Parser<'a> {
 
     pub fn cur_typ(&self) -> TokenType {
         return self.cur_token.typ.clone();
-    }
-
-    pub fn expect_next(&self, typ: TokenType, message: &'static str) -> Result<(), &'static str> {
-        if (self.cur_typ() == typ) {
-            Err(message)
-        } else {
-            Ok(())
-        }
     }
 }

@@ -4,6 +4,7 @@ use super::expression;
 use lexer::token::TokenType;
 use std::iter::Peekable;
 use std::slice::Iter;
+use super::expect;
 use super::expect_next;
 pub type StatResult = Result<codegen::Statement, &'static str>;
 use super::Parser;
@@ -19,10 +20,6 @@ pub fn parse_statement(parser: &mut Parser) -> StatResult {
 }
 
 pub fn parse_function_declaration(parser: &mut Parser) -> StatResult {
+    let typ = try!(expect::typ(parser));
     Err("expected type for function declaration.")
-    /* match tokens.next() {
-        Some(t) => match t.typ {
-        },
-        Err(e) => Err("expected type for function declaration.")
-    } */
 }

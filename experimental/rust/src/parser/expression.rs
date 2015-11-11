@@ -6,6 +6,7 @@ use lexer::token::TokenType;
 use codegen;
 use super::expect_next;
 use super::Parser;
+use super::expect;
 
 pub type ExprResult = Result<Box<codegen::Expression>, &'static str>;
 
@@ -43,9 +44,9 @@ pub fn parse_base_value(parser: &mut Parser) -> ExprResult {
 
 
 pub fn parse_call(name: String, parser: &mut Parser) -> ExprResult {
-    if let Err(m) = parser.expect_next(TokenType::ParenL, "expected ( for call") { return Err(m) }
+    try!(expect::expect(parser, TokenType::ParenL));
     let expr_result = parse_expression(parser);
-    if let Err(m) = parser.expect_next(TokenType::ParenR, "expected ) for call") { return Err(m) }
+    try!(expect::expect(parser, TokenType::ParenR));
     match expr_result {
         Ok(expr) => Ok(Box::new(codegen::CallExpression {
             name: name,
