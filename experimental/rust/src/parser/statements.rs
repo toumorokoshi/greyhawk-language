@@ -21,5 +21,11 @@ pub fn parse_statement(parser: &mut Parser) -> StatResult {
 
 pub fn parse_function_declaration(parser: &mut Parser) -> StatResult {
     let typ = try!(expect::typ(parser));
+    let symbol = try!(expect::symbol(parser));
+    try!(expect::expect(parser, TokenType::ParenL));
+    try!(expect::expect(parser, TokenType::ParenR));
+    try!(expect::expect(parser, TokenType::Colon));
+    let statements = Vec::new();
+    while (
     Err("expected type for function declaration.")
 }
