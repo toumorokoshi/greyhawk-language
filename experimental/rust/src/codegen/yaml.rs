@@ -1,5 +1,3 @@
-extern crate yaml_rust;
-use yaml_rust::{Yaml};
 use super::Statement;
 
 pub fn to_yaml(expressions: Vec<Statement>) -> Yaml {

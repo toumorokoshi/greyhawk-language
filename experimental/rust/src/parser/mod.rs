@@ -56,6 +56,7 @@ impl<'a> Parser<'a> {
             Some(ref t) => (*t).clone(),
             None => panic!("unable to find next token."),
         };
+        println!("{}", previous.typ);
         previous
     }
 

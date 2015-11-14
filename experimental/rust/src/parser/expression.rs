@@ -1,7 +1,6 @@
 use ast;
 use std::rc::Rc;
-use std::slice::Iter;
-use std::iter::Peekable;
+use std::slice::Iter; use std::iter::Peekable;
 use lexer;
 use lexer::token::TokenType;
 use codegen;
@@ -12,6 +11,7 @@ use super::expect;
 pub type ExprResult = Result<ast::Expression, &'static str>;
 
 pub fn parse_expression(parser: &mut Parser) -> ExprResult {
+    let expr = parse_base_value(parser);
     parse_binary_operation(parser)
 }
 
@@ -25,13 +25,15 @@ pub fn parse_binary_operation(parser: &mut Parser) -> ExprResult {
         _ => return left
     };
     let right = parse_base_value(parser);
-    return match left {
+    match left {
         Ok(l) => match right {
-            Ok(r) => Ok(ast::Expression::BinOp{op: token_type, left: l, right: r}),
+            Ok(r) => Ok(ast::Expression::BinOp{
+                op: token_type, left: Box::new(l), right: Box::new(r)
+            }),
             Err(e) => Err(e),
         },
         Err(e) => Err(e),
-    };
+    }
 }
 
 pub fn parse_base_value(parser: &mut Parser) -> ExprResult {
@@ -49,7 +51,7 @@ pub fn parse_call(name: String, parser: &mut Parser) -> ExprResult {
     let expr_result = parse_expression(parser);
     try!(expect::expect(parser, TokenType::ParenR));
     match expr_result {
-        Ok(expr) => Ok(ast::Expression::Call{name: name, arg: expr}),
+        Ok(expr) => Ok(ast::Expression::Call{name: name, arg: Box::new(expr)}),
         Err(m) => Err(m)
     }
 }
