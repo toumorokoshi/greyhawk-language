@@ -2,6 +2,7 @@ extern crate getopts;
 extern crate yaml_rust;
 use std::io::prelude::*;
 use std::fs::File;
+mod ast;
 mod lexer;
 mod parser;
 mod codegen;

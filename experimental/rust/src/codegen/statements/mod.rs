@@ -14,6 +14,23 @@ pub enum Statement {
     Expr(Expression),
 }
 
+impl Statement {
+    fn evaluate(&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) {
+        match self {
+            &Statement::StatementBase(ref statement) => statement.evaluate(scope, instructions),
+            &Statement::Expression(ref expr) => { expr.generate(scope, instructions); }
+        };
+    }
+
+    fn to_yaml(&self) -> Yaml {
+        match self {
+            &Statement::StatementBase(ref statement) => statement.to_yaml(),
+            &Statement::Expression(ref expr) => expr.to_yaml()
+        }
+    }
+}
+
+
 pub trait StatementBase {
     fn evaluate(&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>);
     fn to_yaml(&self) -> Yaml;
