@@ -11,27 +11,41 @@ use super::expect;
 pub type ExprResult = Result<ast::Expression, &'static str>;
 
 pub fn parse_expression(parser: &mut Parser) -> ExprResult {
-    let expr = parse_base_value(parser);
-    parse_binary_operation(parser)
+    let mut expr = parse_base_value(parser);
+    loop {
+        match parser.cur_token.typ {
+            TokenType::Plus
+                | TokenType::Sub
+                | TokenType::Mul
+                | TokenType::Div => {
+                    match expr {
+                        Ok(e) => {
+                            expr = parse_binary_operation(parser, e);
+                        },
+                        Err(err) => {return Err(err);},
+                    }
+            }
+            _ => { return expr; }
+        }
+        if (!parser.has_next()) {
+            return expr;
+        }
+    }
 }
 
-pub fn parse_binary_operation(parser: &mut Parser) -> ExprResult {
-    let left = parse_base_value(parser);
+pub fn parse_binary_operation(parser: &mut Parser, left: ast::Expression) -> ExprResult {
     let token_type = match parser.next().typ {
         TokenType::Plus => TokenType::Plus,
         TokenType::Sub => TokenType::Sub,
         TokenType::Mul => TokenType::Mul,
         TokenType::Div => TokenType::Div,
-        _ => return left
+        _ => return Ok(left)
     };
     let right = parse_base_value(parser);
-    match left {
-        Ok(l) => match right {
-            Ok(r) => Ok(ast::Expression::BinOp{
-                op: token_type, left: Box::new(l), right: Box::new(r)
-            }),
-            Err(e) => Err(e),
-        },
+    match right {
+        Ok(r) => Ok(ast::Expression::BinOp{
+            op: token_type, left: Box::new(left), right: Box::new(r)
+        }),
         Err(e) => Err(e),
     }
 }

@@ -35,26 +35,20 @@ fn expect_next(typ: TokenType, message: &'static str, tokens: &mut Peekable<Iter
     }
 }
 
-
 pub struct Parser<'a> {
-    pub cur_token: lexer::Token,
     pub tokens: Peekable<Iter<'a, lexer::Token>>,
 }
 
 impl<'a> Parser<'a> {
     pub fn new(tokens: &Vec<lexer::Token>) -> Parser {
-        let mut token_iter = tokens.iter();
-        match token_iter.next() {
-            Some(ref t) => Parser{cur_token: (*t).clone(), tokens: token_iter.peekable()},
-            None => panic!("parser doesn't have multiple tokens.")
-        }
+        Parser{tokens: tokens.iter().peekable()}
     }
 
-    pub fn next(&mut self) -> lexer::Token {
+    pub fn next(&mut self) -> Result<lexer::Token, &'static str> {
         let previous = self.cur_token.clone();
         self.cur_token = match self.tokens.next() {
             Some(ref t) => (*t).clone(),
-            None => panic!("unable to find next token."),
+            None => ("unable to find next token."),
         };
         println!("{}", previous.typ);
         previous
