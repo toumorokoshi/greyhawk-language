@@ -11,7 +11,7 @@ pub type StatResult = Result<ast::Statement, &'static str>;
 use super::Parser;
 
 pub fn parse_statement(parser: &mut Parser) -> StatResult {
-    match parser.cur_typ() {
+    match try_option!(parser.peek()).typ {
         TokenType::Type(name) => parse_function_declaration(parser),
         TokenType::Return => parse_return(parser),
         _ => match expression::parse_expression(parser) {

@@ -13,7 +13,7 @@ pub type ExprResult = Result<ast::Expression, &'static str>;
 pub fn parse_expression(parser: &mut Parser) -> ExprResult {
     let mut expr = parse_base_value(parser);
     loop {
-        match parser.cur_token.typ {
+        match try_option!(parser.peek()).typ {
             TokenType::Plus
                 | TokenType::Sub
                 | TokenType::Mul
@@ -24,22 +24,25 @@ pub fn parse_expression(parser: &mut Parser) -> ExprResult {
                         },
                         Err(err) => {return Err(err);},
                     }
-            }
+                }
             _ => { return expr; }
         }
-        if (!parser.has_next()) {
+        if let None = parser.peek() {
             return expr;
         }
     }
 }
 
 pub fn parse_binary_operation(parser: &mut Parser, left: ast::Expression) -> ExprResult {
-    let token_type = match parser.next().typ {
-        TokenType::Plus => TokenType::Plus,
-        TokenType::Sub => TokenType::Sub,
-        TokenType::Mul => TokenType::Mul,
-        TokenType::Div => TokenType::Div,
-        _ => return Ok(left)
+    let token_type = match parser.peek() {
+        Some(ref t) => match t.typ {
+            TokenType::Plus => TokenType::Plus,
+            TokenType::Sub => TokenType::Sub,
+            TokenType::Mul => TokenType::Mul,
+            TokenType::Div => TokenType::Div,
+            _ => return Ok(left)
+        },
+        None => return Err("unable to find a token.")
     };
     let right = parse_base_value(parser);
     match right {
@@ -51,7 +54,7 @@ pub fn parse_binary_operation(parser: &mut Parser, left: ast::Expression) -> Exp
 }
 
 pub fn parse_base_value(parser: &mut Parser) -> ExprResult {
-    match parser.next().typ {
+    match try_option!(parser.peek()).typ {
         TokenType::Int(i) => Ok(ast::Expression::ConstInt{value: i}),
         TokenType::Float(f) => Ok(ast::Expression::ConstFloat{value: f}),
         TokenType::Symbol(ref s) => parse_call(s.clone(), parser),
