@@ -6,13 +6,12 @@ use std::iter::Peekable;
 use std::slice::Iter;
 use codegen;
 use super::expect;
-use super::expect_next;
-pub type StatResult = Result<ast::Statement, &'static str>;
+pub type StatResult = Result<ast::Statement, String>;
 use super::Parser;
 
 pub fn parse_statement(parser: &mut Parser) -> StatResult {
-    match try_option!(parser.peek()).typ {
-        TokenType::Type(name) => parse_function_declaration(parser),
+    match try_option!(parser.peek(), "parse_statement".to_string()).typ {
+        TokenType::Type(ref name) => parse_function_declaration(parser),
         TokenType::Return => parse_return(parser),
         _ => match expression::parse_expression(parser) {
             Ok(expr) => Ok(ast::Statement::Expr(expr)),
@@ -35,5 +34,5 @@ pub fn parse_function_declaration(parser: &mut Parser) -> StatResult {
     try!(expect::expect(parser, TokenType::ParenL));
     try!(expect::expect(parser, TokenType::ParenR));
     try!(expect::expect(parser, TokenType::Colon));
-    Err("expected type for function declaration.")
+    Err("expected type for function declaration.".to_string())
 }

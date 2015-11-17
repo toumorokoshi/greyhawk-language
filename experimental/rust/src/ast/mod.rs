@@ -1,4 +1,5 @@
 use lexer::token::TokenType;
+pub mod yaml;
 
 pub enum Expression {
     ConstInt{value: i32},

@@ -1,7 +1,7 @@
 macro_rules! try_option {
-    ($expr:expr) => (match $expr {
-        Some(val) => val,
-        None => return Err("expected another token")
+    ($expr:expr, $err:expr) => (match $expr {
+        Some(val) => val.clone(),
+        None => return Err($err)
     })
 }
 
@@ -27,19 +27,6 @@ pub fn parse(tokens: &Vec<lexer::Token>) -> Vec<ast::Statement> {
         Err(err) => { println!("unable to parse! {}", err); },
     }
     return statements;
-}
-
-fn expect_next(typ: TokenType, message: &'static str, tokens: &mut Peekable<Iter<lexer::Token>>) -> Result<(), &'static str> {
-    match tokens.next() {
-        Some(t) => {
-            if typ == t.typ {
-                Ok(())
-            } else {
-                Err(message)
-            }
-        },
-        None => Err("unable to find next token")
-    }
 }
 
 pub type Parser<'a> = Peekable<Iter<'a, lexer::Token>>;

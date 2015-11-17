@@ -27,10 +27,14 @@ impl Lexer {
     pub fn read(&self, input: &String) -> Vec<Token> {
         let mut tokens = Vec::new();
         let mut tokenizer: Option<Box<tokenizer::Tokenizer>> = None;
-        let mut line_num = 0;
+        let mut line_num = 1;
         for c in input.chars() {
             let mut to_set: Option<Box<tokenizer::Tokenizer>> = None;
             let mut clear = true;
+
+            if c == '\n' {
+                line_num += 1;
+            }
 
             if let &mut Some(ref mut t) = &mut tokenizer {
                 if !t.read(c, line_num) {

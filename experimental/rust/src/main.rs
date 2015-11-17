@@ -48,7 +48,7 @@ fn lexer(path: &String) {
 
     let tokens = lexer.read(&content);
     for token in &tokens {
-        println!("{}", token.typ);
+        println!("{}: {}", token.line_num, token.typ);
     }
 }
 
@@ -60,7 +60,7 @@ fn parse(path: &String) {
     file.read_to_string(&mut content).unwrap();
     let tokens = lexer.read(&content);
     let expressions = parser::parse(&tokens);
-    let yaml = codegen::to_yaml(expressions);
+    let yaml = ast::yaml::to_yaml(expressions);
     let mut out_str = String::new();
     {
         let mut emitter = YamlEmitter::new(&mut out_str);
