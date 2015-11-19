@@ -35,6 +35,7 @@ impl VM{
         let return_value = 0 as usize;
         let mut registers = &mut scope_instance.registers;
         for op in ops.iter() {
+            println!("{}", op);
             match op {
                 &Op::Call{ref func, ref args, target} => {
                     let mut arg_objects = Vec::new();

@@ -16,3 +16,6 @@ pub trait Expression {
     fn generate(&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject;
     fn to_yaml(&self) -> Yaml;
 }
+
+
+pub fn

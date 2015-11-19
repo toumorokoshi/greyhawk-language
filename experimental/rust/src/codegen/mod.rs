@@ -14,9 +14,9 @@ use std::rc::Rc;
 pub fn generate_ops(statements: &Vec<Statement>) -> vm::Function {
     let mut ops: Vec<vm::ops::Op> = Vec::new();
     let mut scope = vm::scope::Scope::new();
-    /* for statement in statements {
+    for statement in statements {
         statement.evaluate(&mut scope, &mut ops);
-    } */
+    }
     return vm::Function::VMFunction(vm::VMFunction {
         scope: scope,
         ops: ops
