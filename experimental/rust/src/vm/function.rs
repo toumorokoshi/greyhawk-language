@@ -6,7 +6,8 @@ use std::rc::Rc;
 
 pub struct VMFunction {
     pub scope: scope::Scope,
-    pub ops: Vec<ops::Op>
+    pub ops: Vec<ops::Op>,
+    pub return_typ: super::types::TypeRef
 }
 
 pub enum Function {
@@ -31,6 +32,13 @@ impl Function {
                     typ: f.scope.types[return_register].clone()
                 }
             },
+        }
+    }
+
+    pub fn return_type(&self) -> super::types::TypeRef {
+        match self {
+            &Function::NativeFunction{function, ref typ} => typ,
+            &Function::VMFunction(ref f) => f.return_typ,
         }
     }
 }

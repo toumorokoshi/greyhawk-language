@@ -1,11 +1,10 @@
 extern crate yaml_rust;
-// pub mod statements;
-// pub mod expressions;
+mod expressions;
 use ast::Statement;
-// pub mod yaml;
 use super::vm;
 use vm::Op;
 use vm::scope;
+use vm::types;
 use yaml_rust::Yaml;
 use std::rc::Rc;
 
@@ -23,7 +22,33 @@ pub fn generate_ops(statements: &Vec<Statement>) -> vm::Function {
     });
 }
 
-pub fn to_yaml(expressions: Vec<Statement>) -> Yaml {
-    let mut yaml = Vec::new();
-    return Yaml::Array(yaml);
+pub fn evaluate_stat(statement: Statement, scope: &mut scope::Scope, ops: &mut Vec<vm::ops::Op>) {
+    match statement {
+        Statement::FunctionDecl{name, statements} => {
+        },
+        Statement::Return(expr) => ops.push(Op::Return{register: evaluate_expr(expr)}),
+        Statement::Expr(expr) => evaluate_expr(expr, scope, ops),
+    }
+}
+
+pub fn evaluate_expr(expr: Expression, scope: &mut scope::Scope, ops: &mut Vec<vm::ops::Op>) -> scope::LocalObject {
+    match expr {
+        Expression::ConstInt{value} => {
+            let obj = scope.allocate_local(types::get_int_type());
+            ops.push_back(Op::IntLoad{register: obj.index, constant: value});
+            obj
+        },
+        Expression::ConstFloat{value} => {
+            let obj = scope.allocate_local(types::get_float_type());
+            ops.push_back(Op::FloatLoad{register: obj.index, constant: value});
+            obj
+        },
+        Expression::BinOp(op) => expressions::generate_binop(op, scope, instructions),
+        Expression::Call{name, arg} => {
+            let func = scope.get_function(name);
+            let args = vec![evaluate_expr(arg)];
+            let ret_val = scope.allocate_local(func.return_type());
+            ops.push_back(Op::Call{func: func, args: args, target: ret_val});
+        }
+    }
 }

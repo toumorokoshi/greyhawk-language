@@ -1,5 +1,4 @@
 extern crate yaml_rust;
-use super::Expression;
 use super::super::Statement;
 use vm::Op;
 use vm::types;

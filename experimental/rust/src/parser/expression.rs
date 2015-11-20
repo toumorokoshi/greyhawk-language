@@ -49,9 +49,9 @@ pub fn parse_binary_operation(parser: &mut Parser, left: ast::Expression) -> Exp
     parser.next(); // consume token if we got this far.
     let right = parse_base_value(parser);
     match right {
-        Ok(r) => Ok(ast::Expression::BinOp{
+        Ok(r) => Ok(ast::Expression::BinOp(ast::BinOp{
             op: token_type, left: Box::new(left), right: Box::new(r)
-        }),
+        })),
         Err(e) => Err(e),
     }
 }
