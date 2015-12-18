@@ -2,9 +2,9 @@ use lexer::token::TokenType;
 pub mod yaml;
 
 pub struct BinOp {
-    op: TokenType,
-    left: Box<Expression>,
-    right: Box<Expression>
+    pub op: TokenType,
+    pub left: Box<Expression>,
+    pub right: Box<Expression>
 }
 
 pub enum Expression {

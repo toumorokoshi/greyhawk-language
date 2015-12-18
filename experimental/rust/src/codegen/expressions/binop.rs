@@ -1,5 +1,5 @@
 extern crate yaml_rust;
-use super::super::Statement;
+use super::super::evaluate_expr;
 use lexer::token::TokenType;
 use vm::Op;
 use vm::types;
@@ -8,9 +8,9 @@ use std::collections::BTreeMap;
 use yaml_rust::Yaml;
 use ast::BinOp;
 
-fn generate_binop(binop: BinOp, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {
-    let left = binop.left.generate(scope, instructions);
-    let right = binop.right.generate(scope, instructions);
+pub fn generate_binop(binop: &BinOp, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {
+    let left = evaluate_expr(&binop.left, scope, instructions);
+    let right = evaluate_expr(&binop.right, scope, instructions);
     return if (left.typ == types::get_float_type()) {
         let object = scope.allocate_local(types::get_float_type());
         match binop.op {

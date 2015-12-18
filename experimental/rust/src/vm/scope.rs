@@ -68,8 +68,8 @@ impl Scope {
         return ScopeInstance{registers: vec![0; self.local_count()]};
     }
 
-    pub fn get_function(&self, name: String) -> Rc<Function> {
-        if let Some(func) = self.functions.get(&name) {
+    pub fn get_function(&self, name: &String) -> Rc<Function> {
+        if let Some(func) = self.functions.get(name) {
             return func.clone();
         } else {
             return Rc::new(Function::NativeFunction {

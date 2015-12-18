@@ -1,9 +1,9 @@
 extern crate yaml_rust;
-use super::{Expression, Statement};
+use super::{BinOp, Expression, Statement};
 use std::collections::BTreeMap;
 use yaml_rust::{Yaml};
 
-pub fn to_yaml(stmts: Vec<Statement>) -> Yaml {
+pub fn to_yaml(stmts: Vec<Box<Statement>>) -> Yaml {
     let mut yaml = Vec::new();
     for stmt in stmts {
         yaml.push(stmt_to_yaml(&stmt));
@@ -31,7 +31,7 @@ pub fn expr_to_yaml(expr: &Expression) -> Yaml {
     match expr {
         &Expression::ConstInt{value} => Yaml::Integer(value as i64),
         &Expression::ConstFloat{value} => Yaml::Real(value.to_string()),
-        &Expression::BinOp{ref op, ref left, ref right} => {
+        &Expression::BinOp(BinOp{ref op, ref left, ref right}) => {
             let mut yaml = BTreeMap::new();
             yaml.insert(Yaml::String("type".to_string()), Yaml::String("binop".to_string()));
             yaml.insert(Yaml::String("op".to_string()), Yaml::String(format!("{}", op)));

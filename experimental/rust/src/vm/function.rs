@@ -37,8 +37,8 @@ impl Function {
 
     pub fn return_type(&self) -> super::types::TypeRef {
         match self {
-            &Function::NativeFunction{function, ref typ} => typ,
-            &Function::VMFunction(ref f) => f.return_typ,
+            &Function::NativeFunction{function, ref typ} => typ.clone(),
+            &Function::VMFunction(ref f) => f.return_typ.clone(),
         }
     }
 }

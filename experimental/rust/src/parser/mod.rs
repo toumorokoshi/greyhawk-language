@@ -18,12 +18,12 @@ use std::iter::Peekable;
 use self::statements::StatResult;
 use self::expression::ExprResult;
 
-pub fn parse(tokens: &Vec<lexer::Token>) -> Vec<ast::Statement> {
+pub fn parse(tokens: &Vec<lexer::Token>) -> Vec<Box<ast::Statement>> {
     let mut parser = tokens.iter().peekable();
-    let mut statements: Vec<ast::Statement> = Vec::new();
+    let mut statements: Vec<Box<ast::Statement>> = Vec::new();
     let stat = statements::parse_statement(&mut parser);
     match stat {
-        Ok(s) => statements.push(s),
+        Ok(s) => statements.push(Box::new(s)),
         Err(err) => { println!("unable to parse! {}", err); },
     }
     return statements;
