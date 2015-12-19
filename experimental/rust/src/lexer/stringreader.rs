@@ -40,10 +40,10 @@ impl Tokenizer for StringReader {
         }
     }
 
-    fn publish(&mut self) -> Option<TokenType> {
+    fn publish(&mut self) -> Vec<TokenType> {
         match self.keywords.find(&self.string) {
-            Some(t) => Some(t),
-            None => Some(TokenType::Symbol(self.string.clone())),
+            Some(t) => vec![t],
+            None => vec![TokenType::Symbol(self.string.clone())],
         }
     }
 }

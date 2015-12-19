@@ -26,7 +26,7 @@ impl Tokenizer for TypeReader {
         }
     }
 
-    fn publish(&mut self) -> Option<TokenType> {
-        Some(TokenType::Type(self.name.clone()))
+    fn publish(&mut self) -> Vec<TokenType> {
+        vec![TokenType::Type(self.name.clone())]
     }
 }

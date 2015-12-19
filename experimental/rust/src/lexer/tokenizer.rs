@@ -5,7 +5,7 @@ use std::iter::Peekable;
 pub trait Tokenizer {
     fn reset(&mut self);
     fn read(&mut self, c: char, line_num: i32) -> bool;
-    fn publish(&mut self) -> Option<TokenType>;
+    fn publish(&mut self) -> Vec<TokenType>;
 }
 
 pub enum NumReaderMode {
@@ -64,12 +64,12 @@ impl Tokenizer for NumReader {
         result
     }
 
-    fn publish(&mut self) -> Option<TokenType> {
+    fn publish(&mut self) -> Vec<TokenType> {
         let token = match self.mode {
             NumReaderMode::ReadInt{value} => TokenType::Int(value),
             NumReaderMode::ReadDecimal{value, power} => TokenType::Float(value / power),
         };
         self.reset();
-        return Some(token);
+        return vec![token];
     }
 }

@@ -1,5 +1,6 @@
 pub mod token;
 pub mod tokenizer;
+pub mod indentreader;
 pub mod symboltree;
 pub mod symbolreader;
 pub mod stringreader;
@@ -28,6 +29,14 @@ impl Lexer {
         let mut tokens = Vec::new();
         let mut tokenizer: Option<Box<tokenizer::Tokenizer>> = None;
         let mut line_num = 1;
+
+        // we create the tokenizers we need.
+        let mut indentReader = Box::new(indentreader::IndentReader::new());
+        let mut numReader = Box::new(tokenizer::NumReader::new());
+        let mut stringReader = Box::new(stringreader::StringReader::new());
+        let mut typeReader = Box::new(typereader::TypeReader::new());
+        let mut symbolReader = Box::new(symbolreader::SymbolReader::new());
+
         for c in input.chars() {
             let mut to_set: Option<Box<tokenizer::Tokenizer>> = None;
             let mut clear = true;
@@ -38,11 +47,8 @@ impl Lexer {
 
             if let &mut Some(ref mut t) = &mut tokenizer {
                 if !t.read(c, line_num) {
-                    if let Some(tok) = t.publish() {
-                        tokens.push(Token{
-                            typ: tok,
-                            line_num: line_num
-                        });
+                    for tok in t.publish() {
+                        tokens.push(Token{typ: tok, line_num: line_num});
                     }
                 } else {
                     clear = false;
@@ -50,11 +56,12 @@ impl Lexer {
             }
 
             if clear {
-                let mut new_tokenizer: Box<tokenizer::Tokenizer> = match c {
-                    '0'...'9' => Box::new(tokenizer::NumReader::new()),
-                    'a'...'z' => Box::new(stringreader::StringReader::new()),
-                    'A'...'Z' => Box::new(typereader::TypeReader::new()),
-                    _ => Box::new(symbolreader::SymbolReader::new()),
+                let mut new_tokenizer: &Box<tokenizer::Tokenizer> = match c {
+                    '0'...'9' => &numReader,
+                    'a'...'z' => &stringReader,
+                    'A'...'Z' => &typeReader,
+                    '\t' => &indentReader,
+                    _ => &symbolReader,
                 };
                 new_tokenizer.read(c, line_num);
                 tokenizer = Some(new_tokenizer);
@@ -62,8 +69,8 @@ impl Lexer {
         }
 
         if let &mut Some(ref mut t) = &mut tokenizer {
-            if let Some(tok) = t.publish() {
-                tokens.push(Token{ typ: tok, line_num: line_num});
+            for tok in t.publish() {
+                tokens.push(Token{typ: tok, line_num: line_num});
             }
         }
 

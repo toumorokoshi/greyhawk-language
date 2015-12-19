@@ -16,6 +16,7 @@ pub enum TokenType {
     Div,
     Equal,
     Increment,
+    Indent, Unindent,
     If,
     Else,
     Symbol(String),
@@ -42,6 +43,8 @@ impl TokenType {
             &TokenType::Type(ref s) => format!("Type: {}", s),
             &TokenType::ParenL => format!("("),
             &TokenType::ParenR => format!(")"),
+            &TokenType::Indent => "Indent".to_string(),
+            &TokenType::Unindent => "Unindent".to_string(),
             &TokenType::Colon => format!(":"),
             &TokenType::Return => format!("return"),
         }

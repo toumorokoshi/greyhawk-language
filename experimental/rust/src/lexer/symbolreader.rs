@@ -57,9 +57,13 @@ impl Tokenizer for SymbolReader {
         return was_read;
     }
 
-    fn publish(&mut self) -> Option<TokenType> {
+    fn publish(&mut self) -> Vec<TokenType> {
         let tok = self.current_node.token.clone();
         self.reset();
-        return tok;
+        let mut v = Vec::new();
+        if let Some(realTok) = tok {
+            v.push(realTok);
+        }
+        return v;
     }
 }
