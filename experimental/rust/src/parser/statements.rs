@@ -29,9 +29,9 @@ pub fn parse_return(parser: &mut Parser) -> StatResult {
 }
 
 pub fn parse_function_declaration(parser: &mut Parser) -> StatResult {
-    let typ = try!(expect::typ(parser));
-    let symbol = try!(expect::symbol(parser));
-    try!(expect::expect(parser, TokenType::ParenL));
+    let typ = try_compound!(expect::typ(parser), "in function declaration");
+    let symbol = try_compound!(expect::symbol(parser), "in function declaration");
+    try_compound!(expect::expect(parser, TokenType::ParenL), "in function declaration");
     try!(expect::expect(parser, TokenType::ParenR));
     try!(expect::expect(parser, TokenType::Colon));
     Err("expected type for function declaration.".to_string())

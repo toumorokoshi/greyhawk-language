@@ -5,6 +5,13 @@ macro_rules! try_option {
     })
 }
 
+macro_rules! try_compound {
+    ($expr:expr, $err:expr) => (match $expr {
+        Ok(val) => val.clone(),
+        Err(message) => return Err(format!("{}, {}", $err, message))
+    })
+}
+
 mod expression;
 mod statements;
 mod expect;

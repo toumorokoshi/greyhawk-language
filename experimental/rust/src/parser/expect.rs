@@ -4,16 +4,16 @@ use super::Parser;
 pub type ExpectResult<T> = Result<T, String>;
 
 pub fn typ(parser: &mut Parser) -> ExpectResult<String> {
-    match try_option!(parser.peek(), "type check".to_string()).typ {
+    match try_option!(parser.next(), "type check".to_string()).typ {
         TokenType::Type(ref t) => Ok(t.clone()),
         _ => Err("expected a type.".to_string())
     }
 }
 
 pub fn symbol(parser: &mut Parser) -> ExpectResult<String> {
-    match try_option!(parser.peek(), "looking for symbol".to_string()).typ {
-        TokenType::Type(ref t) => Ok(t.clone()),
-        _ => Err("expected a symbol.".to_string())
+    match try_option!(parser.next(), "looking for symbol".to_string()).typ {
+        TokenType::Symbol(ref t) => Ok(t.clone()),
+        _ => Err(format!("expected a symbol"))
     }
 }
 
