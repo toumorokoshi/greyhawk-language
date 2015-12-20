@@ -40,9 +40,11 @@ impl Tokenizer for IndentReader {
         let mut indentDiff = self.currentIndent - self.previousIndent;
         while (indentDiff > 0) {
             toks.push(TokenType::Indent);
+            indentDiff -= 1;
         }
         while (indentDiff < 0) {
             toks.push(TokenType::Unindent);
+            indentDiff += 1;
         }
         self.reset();
         toks
