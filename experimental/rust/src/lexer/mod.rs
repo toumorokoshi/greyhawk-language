@@ -45,57 +45,66 @@ impl Lexer {
         let mut symbolReader = symbolreader::SymbolReader::new();
         let mut tokenizerType: Option<TokenizerTypes> = None;
 
-        for c in input.chars() {
-            if c == '\n' {
-                line_num += 1;
-                continue;
-            }
-
-            if let None = tokenizerType {
-                tokenizerType = match c {
-                    '0'...'9' => Some(TokenizerTypes::NumReader),
-                    'a'...'z' => Some(TokenizerTypes::StringReader),
-                    'A'...'Z' => Some(TokenizerTypes::TypeReader),
-                    '\t' => Some(TokenizerTypes::IndentReader),
-                    _ => Some(TokenizerTypes::SymbolReader),
-                };
-            }
-
-            let mut clear = false;
-            if let Some(ref tType) = tokenizerType {
-                let t: &mut tokenizer::Tokenizer = match tType {
-                    &TokenizerTypes::IndentReader => &mut indentReader,
-                    &TokenizerTypes::NumReader => &mut numReader,
-                    &TokenizerTypes::StringReader => &mut stringReader,
-                    &TokenizerTypes::SymbolReader => &mut symbolReader,
-                    &TokenizerTypes::TypeReader => &mut typeReader,
-                };
-
-                if !t.read(c, line_num) {
-                    for tok in t.publish() {
-                        tokens.push(Token{typ: tok, line_num: line_num});
+        let mut chars = input.chars();
+        let mut next_char = chars.next();
+        loop {
+            match next_char {
+                Some(c) => {
+                    if let None = tokenizerType {
+                        tokenizerType = match c {
+                            '0'...'9' => Some(TokenizerTypes::NumReader),
+                            'a'...'z' => Some(TokenizerTypes::StringReader),
+                            'A'...'Z' => Some(TokenizerTypes::TypeReader),
+                            '\t' | '\n' => Some(TokenizerTypes::IndentReader),
+                            _ => Some(TokenizerTypes::SymbolReader),
+                        };
                     }
-                    clear = true;
+
+                    let mut clear = false;
+                    if let Some(ref tType) = tokenizerType {
+                        let t: &mut tokenizer::Tokenizer = match tType {
+                            &TokenizerTypes::IndentReader => &mut indentReader,
+                            &TokenizerTypes::NumReader => &mut numReader,
+                            &TokenizerTypes::StringReader => &mut stringReader,
+                            &TokenizerTypes::SymbolReader => &mut symbolReader,
+                            &TokenizerTypes::TypeReader => &mut typeReader,
+                        };
+
+                        if !t.read(c, line_num) {
+                            for tok in t.publish() {
+                                tokens.push(Token{typ: tok, line_num: line_num});
+                            }
+
+                            if c == ' ' {
+                                next_char = chars.next();
+                            }
+                            if c == '\n' {
+                                line_num += 1;
+                                next_char = chars.next();
+                            }
+                            clear = true;
+                        } else {
+                            next_char = chars.next();
+                        }
+                    }
+                    if (clear) { tokenizerType = None; }
+                },
+                None => {
+                    if let Some(ref tType) = tokenizerType {
+                        let t: &mut tokenizer::Tokenizer = match tType {
+                            &TokenizerTypes::IndentReader => &mut indentReader,
+                            &TokenizerTypes::NumReader => &mut numReader,
+                            &TokenizerTypes::StringReader => &mut stringReader,
+                            &TokenizerTypes::SymbolReader => &mut symbolReader,
+                            &TokenizerTypes::TypeReader => &mut typeReader,
+                        };
+
+                        for tok in t.publish() {
+                            tokens.push(Token{typ: tok, line_num: line_num});
+                        }
+                    }
+                    break;
                 }
-            }
-
-            if (clear) {
-                tokenizerType = None;
-            }
-        }
-
-
-        if let Some(ref tType) = tokenizerType {
-            let t: &mut tokenizer::Tokenizer = match tType {
-                &TokenizerTypes::IndentReader => &mut indentReader,
-                &TokenizerTypes::NumReader => &mut numReader,
-                &TokenizerTypes::StringReader => &mut stringReader,
-                &TokenizerTypes::SymbolReader => &mut symbolReader,
-                &TokenizerTypes::TypeReader => &mut typeReader,
-            };
-
-            for tok in t.publish() {
-                tokens.push(Token{typ: tok, line_num: line_num});
             }
         }
         return tokens;

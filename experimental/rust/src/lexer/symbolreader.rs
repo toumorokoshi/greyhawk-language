@@ -51,7 +51,9 @@ impl Tokenizer for SymbolReader {
                 next_node = n.clone();
                 was_read = true;
             },
-            None => was_read = false,
+            None => {
+                was_read = false;
+            },
         };
         self.current_node = next_node;
         return was_read;
