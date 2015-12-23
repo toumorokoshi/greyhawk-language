@@ -26,7 +26,7 @@ pub fn generate_ops(statements: &Vec<Box<Statement>>) -> vm::Function {
 
 pub fn evaluate_stat(statement: &Statement, scope: &mut scope::Scope, ops: &mut Vec<vm::ops::Op>) {
     match statement {
-        &Statement::FunctionDecl{ref name, ref statements} => {},
+        &Statement::FunctionDecl(ref func_decl) => {},
         &Statement::Return(ref expr) => {
             let op = Op::Return{register: evaluate_expr(expr, scope, ops).index};
             ops.push(op);

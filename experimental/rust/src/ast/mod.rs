@@ -7,6 +7,12 @@ pub struct BinOp {
     pub right: Box<Expression>
 }
 
+pub struct FunctionDecl {
+    pub name: String,
+    pub statements: Vec<Box<Statement>>,
+    pub typ: String,
+}
+
 pub enum Expression {
     ConstInt{value: i32},
     ConstFloat{value: f32},
@@ -15,7 +21,7 @@ pub enum Expression {
 }
 
 pub enum Statement {
-    FunctionDecl{name: String, statements: Vec<Statement>},
+    FunctionDecl(FunctionDecl),
     Return(Expression),
     Expr(Expression)
 }

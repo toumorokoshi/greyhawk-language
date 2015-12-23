@@ -27,11 +27,28 @@ use self::expression::ExprResult;
 
 pub fn parse(tokens: &Vec<lexer::Token>) -> Vec<Box<ast::Statement>> {
     let mut parser = tokens.iter().peekable();
+    parse_statements(&mut parser)
+}
+
+pub fn parse_statements(parser: &mut Parser) -> Vec<Box<ast::Statement>> {
     let mut statements: Vec<Box<ast::Statement>> = Vec::new();
-    let stat = statements::parse_statement(&mut parser);
-    match stat {
-        Ok(s) => statements.push(Box::new(s)),
-        Err(err) => { println!("unable to parse! {}", err); },
+    loop {
+        let mut next: Option<lexer::Token> = {
+            match parser.peek() {
+                Some(ref t) => Some((**t).clone()),
+                None => None,
+            }
+        };
+        match next {
+            Some(t) => {
+                let stat = statements::parse_statement(parser);
+                match stat {
+                    Ok(s) => statements.push(Box::new(s)),
+                    Err(err) => { println!("unable to parse! {}", err); },
+                }
+            },
+            None => {break;},
+        }
     }
     return statements;
 }

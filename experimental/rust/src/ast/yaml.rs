@@ -14,8 +14,9 @@ pub fn to_yaml(stmts: Vec<Box<Statement>>) -> Yaml {
 pub fn stmt_to_yaml(stmt: &Statement) -> Yaml {
     let mut yaml = BTreeMap::new();
     match stmt {
-        &Statement::FunctionDecl{ref name, ref statements} => {
-            yaml.insert(Yaml::String("type".to_string()), Yaml::String("function declaration".to_string()));
+        &Statement::FunctionDecl(ref func_decl) => {
+            yaml.insert(Yaml::String("type".to_string()),
+                        Yaml::String("function declaration".to_string()));
             Yaml::Hash(yaml)
         },
         &Statement::Return(ref expr) => {

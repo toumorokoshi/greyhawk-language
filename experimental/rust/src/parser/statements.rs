@@ -1,5 +1,6 @@
 use ast;
 use lexer;
+use super::parse_statements;
 use super::expression;
 use lexer::token::TokenType;
 use std::iter::Peekable;
@@ -34,5 +35,12 @@ pub fn parse_function_declaration(parser: &mut Parser) -> StatResult {
     try_compound!(expect::expect(parser, TokenType::ParenL), "in function declaration");
     try!(expect::expect(parser, TokenType::ParenR));
     try!(expect::expect(parser, TokenType::Colon));
-    Err("expected type for function declaration.".to_string())
+    try!(expect::expect(parser, TokenType::Indent));
+    let inner_statements = parse_statements(parser);
+    try!(expect::expect(parser, TokenType::Unindent));
+    return Ok(ast::Statement::FunctionDecl(ast::FunctionDecl{
+        name: symbol,
+        typ: typ,
+        statements: inner_statements
+    }));
 }
