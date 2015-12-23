@@ -28,6 +28,7 @@ impl StringReader {
 
 impl Tokenizer for StringReader {
     fn reset(&mut self) {
+        self.string = String::new();
     }
 
     fn read(&mut self, c: char, line_num: i32) -> bool {
@@ -41,9 +42,12 @@ impl Tokenizer for StringReader {
     }
 
     fn publish(&mut self) -> Vec<TokenType> {
-        match self.keywords.find(&self.string) {
-            Some(t) => vec![t],
-            None => vec![TokenType::Symbol(self.string.clone())],
-        }
+        let mut tokens = Vec::new();
+        tokens.push(match self.keywords.find(&self.string) {
+            Some(t) => t,
+            None => TokenType::Symbol(self.string.clone()),
+        });
+        self.reset();
+        return tokens;
     }
 }
