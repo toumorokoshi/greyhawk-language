@@ -25,3 +25,5 @@ pub enum Statement {
     Return(Expression),
     Expr(Expression)
 }
+
+pub type Statements = Vec<Box<Statement>>;

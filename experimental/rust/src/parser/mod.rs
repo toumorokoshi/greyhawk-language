@@ -12,6 +12,9 @@ macro_rules! try_compound {
     })
 }
 
+pub type Parser<'a> = Peekable<Iter<'a, lexer::Token>>;
+pub type PResult<T> = Result<T, String>;
+
 mod expression;
 mod statements;
 mod expect;
@@ -25,13 +28,13 @@ use std::iter::Peekable;
 use self::statements::StatResult;
 use self::expression::ExprResult;
 
-pub fn parse(tokens: &Vec<lexer::Token>) -> Vec<Box<ast::Statement>> {
+pub fn parse(tokens: &Vec<lexer::Token>) -> PResult<ast::Statements> {
     let mut parser = tokens.iter().peekable();
     parse_statements(&mut parser)
 }
 
-pub fn parse_statements(parser: &mut Parser) -> Vec<Box<ast::Statement>> {
-    let mut statements: Vec<Box<ast::Statement>> = Vec::new();
+pub fn parse_statements(parser: &mut Parser) -> PResult<ast::Statements> {
+    let mut statements: ast::Statements = Vec::new();
     loop {
         let mut next: Option<lexer::Token> = {
             match parser.peek() {
@@ -44,13 +47,13 @@ pub fn parse_statements(parser: &mut Parser) -> Vec<Box<ast::Statement>> {
                 let stat = statements::parse_statement(parser);
                 match stat {
                     Ok(s) => statements.push(Box::new(s)),
-                    Err(err) => { println!("unable to parse! {}", err); },
+                    Err(err) => {
+                        return Err(format!("unable to parse! line {}, {}\n", t.line_num, err));
+                    },
                 }
             },
             None => {break;},
         }
     }
-    return statements;
+    return Ok(statements);
 }
-
-pub type Parser<'a> = Peekable<Iter<'a, lexer::Token>>;

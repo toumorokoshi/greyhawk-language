@@ -19,15 +19,21 @@ fn repl(vm_instance: &mut vm::VM) {
         let mut input = String::new();
         io::stdin().read_line(&mut input).ok().expect("Failed to read line");
         let tokens = lexer.read(&input);
-        let expressions = parser::parse(&tokens);
-        let function = codegen::generate_ops(&expressions);
-        match &function {
-            &vm::function::Function::VMFunction(ref f) => {
-                println!("{}", f.scope);
+        match parser::parse(&tokens) {
+            Ok(expressions) => {
+                let function = codegen::generate_ops(&expressions);
+                match &function {
+                    &vm::function::Function::VMFunction(ref f) => {
+                        println!("{}", f.scope);
+                    },
+                    _ => {},
+                }
+                let object = vm_instance.execute_function(&function, &[]);
+                vm::print(&[object]);
             },
-            _ => {},
+            Err(err) => {
+                println!("{}", err);
+            }
         }
-        let object = vm_instance.execute_function(&function, &[]);
-        vm::print(&[object]);
     }
 }

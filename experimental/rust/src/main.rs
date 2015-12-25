@@ -59,14 +59,20 @@ fn parse(path: &String) {
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
     let tokens = lexer.read(&content);
-    let expressions = parser::parse(&tokens);
-    let yaml = ast::yaml::to_yaml(expressions);
-    let mut out_str = String::new();
-    {
-        let mut emitter = YamlEmitter::new(&mut out_str);
-        emitter.dump(&yaml).unwrap();
+    match parser::parse(&tokens) {
+        Ok(expressions) => {
+            let yaml = ast::yaml::to_yaml(expressions);
+            let mut out_str = String::new();
+            {
+                let mut emitter = YamlEmitter::new(&mut out_str);
+                emitter.dump(&yaml).unwrap();
+            }
+            println!("{}", out_str);
+        },
+        Err(msg) => {
+            println!("{}", msg);
+        }
     }
-    println!("{}", out_str);
 }
 
 fn execute_file(path: &String) {
@@ -77,13 +83,19 @@ fn execute_file(path: &String) {
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
     let tokens = lexer.read(&content);
-    let expressions = parser::parse(&tokens);
-    let function = codegen::generate_ops(&expressions);
-    match &function {
-        &vm::function::Function::VMFunction(ref f) => {
-            println!("{}", f.scope);
+    match parser::parse(&tokens) {
+        Ok(expressions) => {
+            let function = codegen::generate_ops(&expressions);
+            match &function {
+                &vm::function::Function::VMFunction(ref f) => {
+                    println!("{}", f.scope);
+                },
+                _ => {},
+            }
+            vm_instance.execute_function(&function, &[]);
         },
-        _ => {},
+        Err(msg) => {
+            println!("{}", msg);
+        }
     }
-    vm_instance.execute_function(&function, &[]);
 }
