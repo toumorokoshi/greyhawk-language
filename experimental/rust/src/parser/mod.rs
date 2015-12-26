@@ -5,6 +5,13 @@ macro_rules! try_option {
     })
 }
 
+macro_rules! try_token {
+    ($expr:expr, $err:expr) => match $expr {
+        Some(val) => val.clone(),
+        None => return Err(vec![ErrorMessage{message: $err, token: None}])
+    })
+}
+
 macro_rules! try_compound {
     ($expr:expr, $err:expr) => (match $expr {
         Ok(val) => val.clone(),
@@ -12,8 +19,37 @@ macro_rules! try_compound {
     })
 }
 
+macro_rules! try_match {
+   ($expr: expr) => (match $expr {
+       PMatchResult::Ok(val) => val.clone(),
+       PMatchResult::NoMatch => return PMatchResult::NoMatch,
+       PMatchResult::Err(err) => return PMatchResult::Err(err)
+   })
+}
+
 pub type Parser<'a> = Peekable<Iter<'a, lexer::Token>>;
-pub type PResult<T> = Result<T, String>;
+
+pub struct ErrorMessage {
+    message: String,
+    token: Option<lexer::Token>
+}
+
+pub type PResult<T> = Result<T, Vec<ErrorMessage>>;
+
+impl PResult<T> {
+    fn to_match_result(self) {
+        match self {
+            Ok(result) => PMatchResult::Ok(result),
+            Err(err) => PMatchResult::Err(err),
+        }
+    }
+}
+
+pub enum PMatchResult<T> = {
+    Ok(T),
+    NoMatch,
+    Err(Vec<ErrorMessage>)
+}
 
 mod expression;
 mod statements;
@@ -28,9 +64,28 @@ use std::iter::Peekable;
 use self::statements::StatResult;
 use self::expression::ExprResult;
 
-pub fn parse(tokens: &Vec<lexer::Token>) -> PResult<ast::Statements> {
+pub fn parse(tokens: &Vec<lexer::Token>) -> Result<ast::Statements, String> {
     let mut parser = tokens.iter().peekable();
-    parse_statements(&mut parser)
+    match parse_statements(&mut parser) {
+        Ok(statements) => statements,
+        Err(errors) => {
+            let message_strings: Vec<String> = vec::new();
+            for (err in errors) {
+                match err.token {
+                    Some(t) => {
+                        message_strings.push(format!("line {}, {}: {}",
+                                                     err.token.line_num,
+                                                     err.token.typ,
+                                                     message));
+                    },
+                    None => {
+                        message_strings.push(format!("{}", message));
+                    }
+                }
+            }
+            Err(message_strings.join("\n"))
+        }
+    }
 }
 
 pub fn parse_statements(parser: &mut Parser) -> PResult<ast::Statements> {
@@ -44,16 +99,13 @@ pub fn parse_statements(parser: &mut Parser) -> PResult<ast::Statements> {
         };
         match next {
             Some(t) => {
-                let stat = statements::parse_statement(parser);
-                match stat {
+                match statements::parse_statement(parser) {
                     Ok(s) => statements.push(Box::new(s)),
-                    Err(err) => {
-                        return Err(format!("unable to parse! line {}, {}\n", t.line_num, err));
-                    },
+                    NoMatch => return Ok(statements),
+                    Err(err) => return Err(err)
                 }
             },
-            None => {break;},
+            None => {return Ok(statements);},
         }
     }
-    return Ok(statements);
 }

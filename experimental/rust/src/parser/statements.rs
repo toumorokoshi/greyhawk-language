@@ -1,4 +1,5 @@
 use ast;
+use ast::Statement;
 use lexer;
 use super::parse_statements;
 use super::expression;
@@ -7,21 +8,21 @@ use std::iter::Peekable;
 use std::slice::Iter;
 use codegen;
 use super::expect;
-pub type StatResult = Result<ast::Statement, String>;
 use super::Parser;
+use super::{PResult, PMatchResult};
 
-pub fn parse_statement(parser: &mut Parser) -> StatResult {
-    match try_option!(parser.peek(), "parse_statement".to_string()).typ {
+pub fn parse_statement(parser: &mut Parser) -> PMatchResult<Statement> {
+    match try_token!(parser.peek(), "parse_statement".to_string()).typ {
         TokenType::Type(ref name) => parse_function_declaration(parser),
-        TokenType::Return => parse_return(parser),
+        TokenType::Return => parse_return(parser).to_match_result(),
         _ => match expression::parse_expression(parser) {
-            Ok(expr) => Ok(ast::Statement::Expr(expr)),
-            Err(err) => Err(err)
+            Ok(expr) => PMatchResult::Ok(ast::Statement::Expr(expr)),
+            Err(err) => PMatchResult::Err(err)
         }
     }
 }
 
-pub fn parse_return(parser: &mut Parser) -> StatResult {
+pub fn parse_return(parser: &mut Parser) -> PResult<Statement> {
     try!(expect::expect(parser, TokenType::Return));
     match expression::parse_expression(parser) {
         Ok(expr) => Ok(ast::Statement::Return(expr)),
@@ -29,7 +30,7 @@ pub fn parse_return(parser: &mut Parser) -> StatResult {
     }
 }
 
-pub fn parse_function_declaration(parser: &mut Parser) -> StatResult {
+pub fn parse_function_declaration(parser: &mut Parser) -> PResult<Statement> {
     let typ = try_compound!(expect::typ(parser), "in function declaration");
     let symbol = try_compound!(expect::symbol(parser), "in function declaration");
     try_compound!(expect::expect(parser, TokenType::ParenL), "in function declaration");

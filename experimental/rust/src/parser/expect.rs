@@ -1,27 +1,27 @@
 use lexer::token::TokenType;
-use super::Parser;
+use super::{Parser, PResult, ErrorMessage};
 
-pub type ExpectResult<T> = Result<T, String>;
+pub type ExpectResult<T> = Result<T, ErrorMessage>;
 
-pub fn typ(parser: &mut Parser) -> ExpectResult<String> {
-    match try_option!(parser.next(), "type check".to_string()).typ {
+pub fn typ(parser: &mut Parser) -> PResult<String> {
+    match try_token!(parser.next(), "type check".to_string()).typ {
         TokenType::Type(ref t) => Ok(t.clone()),
-        _ => Err("expected a type.".to_string())
+        ref t @ _ => vec![ErrorMessage{token: t.clone(), message: "expected a type.".to_string())]
     }
 }
 
-pub fn symbol(parser: &mut Parser) -> ExpectResult<String> {
-    match try_option!(parser.next(), "looking for symbol".to_string()).typ {
+pub fn symbol(parser: &mut Parser) -> PResult<String> {
+    match try_token!(parser.next(), "looking for symbol".to_string()).typ {
         TokenType::Symbol(ref t) => Ok(t.clone()),
-        _ => Err(format!("expected a symbol"))
+        ref t @ _ => vec![ErrorMessage{token: Some(t), message: "expected a symbol".to_string())]
     }
 }
 
-pub fn expect<'a>(parser: &mut Parser, t: TokenType) -> ExpectResult<()> {
-    let next = try_option!(parser.next(), "expected a token".to_string());
+pub fn expect<'a>(parser: &mut Parser, t: TokenType) -> PResult<()> {
+    let next = try_token!(parser.next(), format!("expected a token {}", t));
     if next.typ == t {
         Ok(())
     } else {
-        Err(format!("expected a token of {}, found {}", t, next.typ))
+        vec![ErrMessage(format!("expected a token of {}, found {}", t, next.typ))]
     }
 }
