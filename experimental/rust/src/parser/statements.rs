@@ -9,12 +9,12 @@ use std::slice::Iter;
 use codegen;
 use super::expect;
 use super::Parser;
-use super::{PResult, PMatchResult};
+use super::{PResult, PMatchResult, ErrorMessage, to_match_result};
 
 pub fn parse_statement(parser: &mut Parser) -> PMatchResult<Statement> {
     match try_token!(parser.peek(), "parse_statement".to_string()).typ {
         TokenType::Type(ref name) => parse_function_declaration(parser),
-        TokenType::Return => parse_return(parser).to_match_result(),
+        TokenType::Return => to_match_result(parse_return(parser)),
         _ => match expression::parse_expression(parser) {
             Ok(expr) => PMatchResult::Ok(ast::Statement::Expr(expr)),
             Err(err) => PMatchResult::Err(err)

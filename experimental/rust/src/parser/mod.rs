@@ -6,7 +6,7 @@ macro_rules! try_option {
 }
 
 macro_rules! try_token {
-    ($expr:expr, $err:expr) => match $expr {
+    ($expr:expr, $err:expr) => (match $expr {
         Some(val) => val.clone(),
         None => return Err(vec![ErrorMessage{message: $err, token: None}])
     })
@@ -21,7 +21,7 @@ macro_rules! try_compound {
 
 macro_rules! try_match {
    ($expr: expr) => (match $expr {
-       PMatchResult::Ok(val) => val.clone(),
+       PMatchResult::Ok(val) => val,
        PMatchResult::NoMatch => return PMatchResult::NoMatch,
        PMatchResult::Err(err) => return PMatchResult::Err(err)
    })
@@ -36,19 +36,17 @@ pub struct ErrorMessage {
 
 pub type PResult<T> = Result<T, Vec<ErrorMessage>>;
 
-impl PResult<T> {
-    fn to_match_result(self) {
-        match self {
-            Ok(result) => PMatchResult::Ok(result),
-            Err(err) => PMatchResult::Err(err),
-        }
-    }
-}
-
-pub enum PMatchResult<T> = {
+pub enum PMatchResult<T> {
     Ok(T),
     NoMatch,
     Err(Vec<ErrorMessage>)
+}
+
+pub fn to_match_result<T>(result: PResult<T>) -> PMatchResult<T> {
+    match result {
+        Ok(result) => PMatchResult::Ok(result),
+        Err(err) => PMatchResult::Err(err),
+    }
 }
 
 mod expression;
@@ -61,7 +59,6 @@ use super::lexer::token::TokenType;
 use super::codegen;
 use std::slice::Iter;
 use std::iter::Peekable;
-use self::statements::StatResult;
 use self::expression::ExprResult;
 
 pub fn parse(tokens: &Vec<lexer::Token>) -> Result<ast::Statements, String> {
@@ -69,17 +66,17 @@ pub fn parse(tokens: &Vec<lexer::Token>) -> Result<ast::Statements, String> {
     match parse_statements(&mut parser) {
         Ok(statements) => statements,
         Err(errors) => {
-            let message_strings: Vec<String> = vec::new();
-            for (err in errors) {
+            let message_strings: Vec<String> = Vec::new();
+            for err in errors {
                 match err.token {
                     Some(t) => {
                         message_strings.push(format!("line {}, {}: {}",
                                                      err.token.line_num,
                                                      err.token.typ,
-                                                     message));
+                                                     err.message));
                     },
                     None => {
-                        message_strings.push(format!("{}", message));
+                        message_strings.push(format!("{}", err.message));
                     }
                 }
             }
