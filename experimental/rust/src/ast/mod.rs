@@ -1,6 +1,7 @@
 use lexer::token::TokenType;
 pub mod yaml;
 
+#[derive(Clone)]
 pub struct BinOp {
     pub op: TokenType,
     pub left: Box<Expression>,
@@ -13,6 +14,7 @@ pub struct FunctionDecl {
     pub typ: String,
 }
 
+#[derive(Clone)]
 pub enum Expression {
     ConstInt{value: i32},
     ConstFloat{value: f32},
