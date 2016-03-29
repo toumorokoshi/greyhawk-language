@@ -9,23 +9,10 @@ Greyhawk is a highly opinionated programming language. Some of the defining feat
 
 If you're interested in the why, please read the DESIGN.md page.
 
-Building the compiler
----------------------
+Building the Interpreter
+------------------------
 
-The Compiler uses the following:
+The interpreter is written in Rust, specifically version 1.7.0. Install rust, and build the
+interpreter with:
 
-* c++11
-* llvm as the intermediary layer for the compiler
-* gtest, for unit testing
-* yaml-cpp to output the syntax tree in a human-readable format
-* boost, for:
-  * the command line parser
-
-Installation
-------------
-
-The following tools are required:
-
-* flex for lexer (apt-get flex)
-* llvm headers + libraries (apt-get llvm-3.3-dev)
-* sphinx for docs (pip install sphinx)
+    cargo build
