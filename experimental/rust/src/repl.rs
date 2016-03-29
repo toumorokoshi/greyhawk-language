@@ -4,6 +4,7 @@ use super::codegen;
 use super::vm;
 use std;
 use std::io::{self, Write};
+use std::process;
 
 pub fn start_repl() {
     println!("Greyhawk 0.0.3");
@@ -19,6 +20,10 @@ fn repl(vm_instance: &mut vm::VM) {
         let mut input = String::new();
         io::stdin().read_line(&mut input).ok().expect("Failed to read line");
         let tokens = lexer.read(&input);
+        if tokens.len() == 0 {
+            process::exit(0);
+        }
+        println!("{}", tokens.len());
         match parser::parse(&tokens) {
             Ok(expressions) => {
                 let function = codegen::generate_ops(&expressions);

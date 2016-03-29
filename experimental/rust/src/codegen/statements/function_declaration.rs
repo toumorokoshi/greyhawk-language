@@ -8,6 +8,7 @@ use vm::function::VMFunction;
 use vm::function::Function;
 use vm::scope::Scope;
 use vm::Op;
+use vm::types;
 
 pub struct FunctionDeclaration {
     pub name: String,
@@ -18,6 +19,8 @@ impl StatementBase for FunctionDeclaration {
 
     fn evaluate(&self, scope: &mut Scope, instructions: &mut Vec<Op>) {
         let mut function_scope = Scope::new();
+        // always allocate one value, for the return.
+        function_scope.allocate_local(types::get_none_type());
         let mut ops = Vec::new();
         for statement in &self.statements {
             statement.evaluate(&mut function_scope, &mut ops);

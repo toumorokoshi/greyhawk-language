@@ -14,12 +14,14 @@ pub fn get_builtin_module() -> Module {
 }
 
 pub fn print(args: &[Object]) -> Object {
-    let object = &args[0];
-    if object.typ == types::get_int_type() {
-        println!("int: {}", object.value);
-    } else if object.typ == types::get_float_type() {
-        unsafe {
-            println!("float: {}", mem::transmute::<i32, f32>(object.value));
+    if args.len() > 0 {
+        let object = &args[0];
+        if object.typ == types::get_int_type() {
+            println!("int: {}", object.value);
+        } else if object.typ == types::get_float_type() {
+            unsafe {
+                println!("float: {}", mem::transmute::<i32, f32>(object.value));
+            }
         }
     }
     return Object {
