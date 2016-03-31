@@ -32,6 +32,7 @@ pub fn expr_to_yaml(expr: &Expression) -> Yaml {
     match expr {
         &Expression::ConstInt{value} => Yaml::Integer(value as i64),
         &Expression::ConstFloat{value} => Yaml::Real(value.to_string()),
+        &Expression::ConstString{ref value} => Yaml::String(value.clone()),
         &Expression::BinOp(BinOp{ref op, ref left, ref right}) => {
             let mut yaml = BTreeMap::new();
             yaml.insert(Yaml::String("type".to_string()), Yaml::String("binop".to_string()));

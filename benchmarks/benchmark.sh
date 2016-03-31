@@ -22,7 +22,7 @@ echo
 echo "Greyhawk:"
 time {
     for run in {1..$COUNT}; do
-        ./bin/greyhawk ./benchmarks/$SCRIPT/$SCRIPT.gh > /dev/null
+        ./target/debug/greyhawk ./benchmarks/$SCRIPT/$SCRIPT.gh > /dev/null
     done
 }
 fi

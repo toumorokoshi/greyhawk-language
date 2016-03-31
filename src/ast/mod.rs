@@ -18,6 +18,7 @@ pub struct FunctionDecl {
 pub enum Expression {
     ConstInt{value: i32},
     ConstFloat{value: f32},
+    ConstString{value: String},
     BinOp(BinOp),
     Call{name: String, arg: Box<Expression>}
 }

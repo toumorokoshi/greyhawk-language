@@ -15,6 +15,7 @@ pub enum Op {
     IntMul{lhs: usize, rhs: usize, target: usize},
     IntDiv{lhs: usize, rhs: usize, target: usize},
     IntLoad{register: usize, constant: i32},
+    StringLoad{register: usize, constant: String},
     Return{register: usize},
 }
 
@@ -32,6 +33,7 @@ impl Op {
             &Op::IntMul{lhs, rhs, target} => format!("{2} <= {0} + {1} (Int)", lhs, rhs, target),
             &Op::IntDiv{lhs, rhs, target} => format!("{2} <= {0} + {1} (Int)", lhs, rhs, target),
             &Op::IntLoad{register, constant} => format!("{0} <= {1} (Int)", register, constant),
+            &Op::StringLoad{register, ref constant} => format!("{0} <= {1} (String)", register, constant.clone()),
             &Op::Return{register} => format!("return {0}", register),
         }
     }

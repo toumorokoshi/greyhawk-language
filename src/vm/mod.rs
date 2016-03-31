@@ -74,7 +74,9 @@ impl VM{
                     );
                 },
                 &Op::FloatLoad{register, constant} => unsafe { registers[register] = mem::transmute::<f32, i32>(constant) },
-                &Op::Return{register} => { return register; }
+                // TODO: incomplete. ends up as the null pointer right now.
+                &Op::StringLoad{register, ref constant} => unsafe { registers[register] = 0; },
+                &Op::Return{register} => { return register; },
             };
         }
         return return_value;

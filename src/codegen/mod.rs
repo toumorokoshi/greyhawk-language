@@ -47,6 +47,11 @@ pub fn evaluate_expr(expr: &Expression, scope: &mut scope::Scope, ops: &mut Vec<
             ops.push(Op::FloatLoad{register: obj.index, constant: value});
             obj
         },
+        &Expression::ConstString{ref value} => {
+            let obj = scope.allocate_local(types::get_int_type());
+            ops.push(Op::StringLoad{register: obj.index, constant: value.clone()});
+            obj
+        }
         &Expression::BinOp(ref op) => expressions::generate_binop(op, scope, ops),
         &Expression::Call{ref name, ref arg} => {
             let func = scope.get_function(name);

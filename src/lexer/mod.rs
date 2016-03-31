@@ -5,6 +5,7 @@ pub mod symboltree;
 pub mod symbolreader;
 pub mod stringreader;
 pub mod typereader;
+mod literalreader;
 
 #[cfg(test)]
 mod tests;
@@ -24,7 +25,8 @@ enum TokenizerTypes {
     NumReader,
     StringReader,
     SymbolReader,
-    TypeReader
+    TypeReader,
+    LiteralReader
 }
 
 impl Lexer {
@@ -43,6 +45,7 @@ impl Lexer {
         let mut stringReader = stringreader::StringReader::new();
         let mut typeReader = typereader::TypeReader::new();
         let mut symbolReader = symbolreader::SymbolReader::new();
+        let mut literalReader = literalreader::LiteralReader::new();
         let mut tokenizerType: Option<TokenizerTypes> = None;
 
         let mut chars = input.chars();
@@ -55,6 +58,7 @@ impl Lexer {
                             '0'...'9' => Some(TokenizerTypes::NumReader),
                             'a'...'z' => Some(TokenizerTypes::StringReader),
                             'A'...'Z' => Some(TokenizerTypes::TypeReader),
+                            '"' => Some(TokenizerTypes::LiteralReader),
                             '\t' | '\n' => Some(TokenizerTypes::IndentReader),
                             _ => Some(TokenizerTypes::SymbolReader),
                         };
@@ -68,6 +72,7 @@ impl Lexer {
                             &TokenizerTypes::StringReader => &mut stringReader,
                             &TokenizerTypes::SymbolReader => &mut symbolReader,
                             &TokenizerTypes::TypeReader => &mut typeReader,
+                            &TokenizerTypes::LiteralReader => &mut literalReader,
                         };
 
                         if !t.read(c, line_num) {
@@ -97,6 +102,7 @@ impl Lexer {
                             &TokenizerTypes::StringReader => &mut stringReader,
                             &TokenizerTypes::SymbolReader => &mut symbolReader,
                             &TokenizerTypes::TypeReader => &mut typeReader,
+                            &TokenizerTypes::LiteralReader => &mut literalReader,
                         };
 
                         for tok in t.publish() {
