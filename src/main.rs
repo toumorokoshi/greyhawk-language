@@ -88,7 +88,7 @@ fn execute_file(path: &String) {
             let function = codegen::generate_ops(&expressions);
             match &function {
                 &vm::function::Function::VMFunction(ref f) => {
-                    println!("{}", f.scope);
+                    // println!("{}", f.scope);
                 },
                 _ => {},
             }

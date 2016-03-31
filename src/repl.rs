@@ -23,13 +23,13 @@ fn repl(vm_instance: &mut vm::VM) {
         if tokens.len() == 0 {
             process::exit(0);
         }
-        println!("{}", tokens.len());
+        // println!("{}", tokens.len());
         match parser::parse(&tokens) {
             Ok(expressions) => {
                 let function = codegen::generate_ops(&expressions);
                 match &function {
                     &vm::function::Function::VMFunction(ref f) => {
-                        println!("{}", f.scope);
+                        // println!("{}", f.scope);
                     },
                     _ => {},
                 }

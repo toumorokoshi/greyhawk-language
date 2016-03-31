@@ -54,6 +54,7 @@ impl PartialEq<TypeRef> for TypeRef {
 pub static IntType: Type = Type {name: "Int"};
 pub static FloatType: Type = Type {name: "Float"};
 pub static NoneType: Type = Type {name: "None"};
+pub static StringType: Type = Type {name: "String"};
 
 pub fn get_int_type() -> TypeRef {
     return TypeRef::Static(&IntType);
@@ -65,4 +66,8 @@ pub fn get_float_type() -> TypeRef {
 
 pub fn get_none_type() -> TypeRef {
     return TypeRef::Static(&NoneType);
+}
+
+pub fn get_string_type() -> TypeRef {
+    return TypeRef::Static(&StringType);
 }

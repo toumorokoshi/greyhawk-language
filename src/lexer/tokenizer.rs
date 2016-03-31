@@ -9,8 +9,8 @@ pub trait Tokenizer {
 }
 
 pub enum NumReaderMode {
-    ReadInt{value: i32},
-    ReadDecimal{value: f32, power: f32},
+    ReadInt{value: i64},
+    ReadDecimal{value: f64, power: f64},
 }
 
 pub struct NumReader {
@@ -36,21 +36,21 @@ impl Tokenizer for NumReader {
             &mut NumReaderMode::ReadInt{ref mut value} => match c {
                 '.' => {
                     mode = Some(NumReaderMode::ReadDecimal{
-                        value: *value as f32, power: 1.0
+                        value: *value as f64, power: 1.0
                     });
                     true
                 },
                 '0' ... '9' => {
                     *value *= 10;
-                    *value += (c as i32) - ('0' as i32);
+                    *value += (c as i64) - ('0' as i64);
                     true
                 },
                 _ => false,
             },
             &mut NumReaderMode::ReadDecimal{ref mut value, ref mut power} => match c {
                 '0' ... '9' => {
-                    *value *= 10 as f32;
-                    *value += ((c as i32) - ('0' as i32)) as f32;
+                    *value *= 10 as f64;
+                    *value += ((c as i64) - ('0' as i64)) as f64;
                     *power *= 10.0;
                     true
                 },

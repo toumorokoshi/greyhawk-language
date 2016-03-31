@@ -30,7 +30,7 @@ pub struct Scope {
 }
 
 pub struct ScopeInstance {
-    pub registers: Vec<i32>
+    pub registers: Vec<i64>
 }
 
 impl Scope {

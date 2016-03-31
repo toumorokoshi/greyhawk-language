@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::rc::Rc;
 use std::mem;
 
 pub mod module;
@@ -22,7 +23,7 @@ pub struct VM {
 }
 
 pub struct Object {
-    pub value: i32,
+    pub value: i64,
     pub typ: types::TypeRef,
 }
 
@@ -35,7 +36,6 @@ impl VM{
         let return_value = 0 as usize;
         let mut registers = &mut scope_instance.registers;
         for op in ops.iter() {
-            println!("{}", op);
             match op {
                 &Op::Call{ref func, ref args, target} => {
                     let mut arg_objects = Vec::new();
@@ -50,32 +50,36 @@ impl VM{
                 &Op::IntDiv{lhs, rhs, target} => registers[target] = registers[lhs] / registers[rhs],
                 &Op::IntLoad{register, constant} => registers[register] = constant,
                 &Op::FloatAdd{lhs, rhs, target} => unsafe {
-                    registers[target] = mem::transmute::<f32, i32>(
-                        mem::transmute::<i32, f32>(registers[lhs]) +
-                        mem::transmute::<i32, f32>(registers[rhs]),
+                    registers[target] = mem::transmute::<f64, i64>(
+                        mem::transmute::<i64, f64>(registers[lhs]) +
+                        mem::transmute::<i64, f64>(registers[rhs]),
                     );
                 },
                 &Op::FloatSub{lhs, rhs, target} => unsafe {
-                    registers[target] = mem::transmute::<f32, i32>(
-                        mem::transmute::<i32, f32>(registers[lhs]) -
-                        mem::transmute::<i32, f32>(registers[rhs]),
+                    registers[target] = mem::transmute::<f64, i64>(
+                        mem::transmute::<i64, f64>(registers[lhs]) -
+                        mem::transmute::<i64, f64>(registers[rhs]),
                     );
                 },
                 &Op::FloatMul{lhs, rhs, target} => unsafe {
-                    registers[target] = mem::transmute::<f32, i32>(
-                        mem::transmute::<i32, f32>(registers[lhs]) *
-                        mem::transmute::<i32, f32>(registers[rhs]),
+                    registers[target] = mem::transmute::<f64, i64>(
+                        mem::transmute::<i64, f64>(registers[lhs]) *
+                        mem::transmute::<i64, f64>(registers[rhs]),
                     );
                 },
                 &Op::FloatDiv{lhs, rhs, target} => unsafe {
-                    registers[target] = mem::transmute::<f32, i32>(
-                        mem::transmute::<i32, f32>(registers[lhs]) /
-                        mem::transmute::<i32, f32>(registers[rhs]),
+                    registers[target] = mem::transmute::<f64, i64>(
+                        mem::transmute::<i64, f64>(registers[lhs]) /
+                        mem::transmute::<i64, f64>(registers[rhs]),
                     );
                 },
-                &Op::FloatLoad{register, constant} => unsafe { registers[register] = mem::transmute::<f32, i32>(constant) },
+                &Op::FloatLoad{register, constant} => unsafe {
+                    registers[register] = mem::transmute::<f64, i64>(constant)
+                },
                 // TODO: incomplete. ends up as the null pointer right now.
-                &Op::StringLoad{register, ref constant} => unsafe { registers[register] = 0; },
+                &Op::StringLoad{register, ref constant} => unsafe {
+                    registers[register] = mem::transmute::<Rc<String>, i64>(constant.clone());
+                },
                 &Op::Return{register} => { return register; },
             };
         }

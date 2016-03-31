@@ -27,7 +27,7 @@ impl Function {
             &Function::VMFunction(ref f) => {
                 let mut scopeInstance = f.scope.create_instance();
                 let return_register = vm.execute_instructions(&mut scopeInstance, &f.scope, &f.ops[..]);
-                Object{
+                Object {
                     value: scopeInstance.registers[return_register],
                     typ: f.scope.types[return_register].clone()
                 }

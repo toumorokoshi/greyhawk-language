@@ -9,13 +9,13 @@ pub enum Op {
     FloatSub{lhs: usize, rhs: usize, target: usize},
     FloatMul{lhs: usize, rhs: usize, target: usize},
     FloatDiv{lhs: usize, rhs: usize, target: usize},
-    FloatLoad{register: usize, constant: f32},
+    FloatLoad{register: usize, constant: f64},
     IntAdd{lhs: usize, rhs: usize, target: usize},
     IntSub{lhs: usize, rhs: usize, target: usize},
     IntMul{lhs: usize, rhs: usize, target: usize},
     IntDiv{lhs: usize, rhs: usize, target: usize},
-    IntLoad{register: usize, constant: i32},
-    StringLoad{register: usize, constant: String},
+    IntLoad{register: usize, constant: i64},
+    StringLoad{register: usize, constant: Rc<String>},
     Return{register: usize},
 }
 
@@ -33,7 +33,7 @@ impl Op {
             &Op::IntMul{lhs, rhs, target} => format!("{2} <= {0} + {1} (Int)", lhs, rhs, target),
             &Op::IntDiv{lhs, rhs, target} => format!("{2} <= {0} + {1} (Int)", lhs, rhs, target),
             &Op::IntLoad{register, constant} => format!("{0} <= {1} (Int)", register, constant),
-            &Op::StringLoad{register, ref constant} => format!("{0} <= {1} (String)", register, constant.clone()),
+            &Op::StringLoad{register, ref constant} => format!("{0} <= {1} (String)", register, constant),
             &Op::Return{register} => format!("return {0}", register),
         }
     }

@@ -8,8 +8,8 @@ pub struct Token {
 
 #[derive(Clone, PartialEq)]
 pub enum TokenType {
-    Int(i32),
-    Float(f32),
+    Int(i64),
+    Float(f64),
     Plus,
     Sub,
     Mul,

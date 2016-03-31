@@ -6,7 +6,7 @@ use vm::types;
 use vm::scope;
 use yaml_rust::Yaml;
 
-pub struct FloatExpression { pub value: f32 }
+pub struct FloatExpression { pub value: f64 }
 
 impl Expression for FloatExpression {
     fn generate (&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {

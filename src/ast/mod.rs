@@ -16,8 +16,8 @@ pub struct FunctionDecl {
 
 #[derive(Clone)]
 pub enum Expression {
-    ConstInt{value: i32},
-    ConstFloat{value: f32},
+    ConstInt{value: i64},
+    ConstFloat{value: f64},
     ConstString{value: String},
     BinOp(BinOp),
     Call{name: String, arg: Box<Expression>}

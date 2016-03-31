@@ -3,6 +3,7 @@ use super::scope::Scope;
 use super::Object;
 use super::types;
 use std::mem;
+use std::rc::Rc;
 
 pub fn get_builtin_module() -> Module {
     let mut scope = Scope::new();
@@ -17,10 +18,14 @@ pub fn print(args: &[Object]) -> Object {
     if args.len() > 0 {
         let object = &args[0];
         if object.typ == types::get_int_type() {
-            println!("int: {}", object.value);
+            println!("{}", object.value);
         } else if object.typ == types::get_float_type() {
             unsafe {
-                println!("float: {}", mem::transmute::<i32, f32>(object.value));
+                println!("{}", mem::transmute::<i64, f64>(object.value));
+            }
+        } else if object.typ == types::get_string_type() {
+            unsafe {
+                println!("{}", mem::transmute::<i64, Rc<String>>(object.value));
             }
         }
     }

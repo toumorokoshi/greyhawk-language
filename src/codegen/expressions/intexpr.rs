@@ -7,7 +7,7 @@ use vm::scope;
 use yaml_rust::Yaml;
 
 
-pub struct IntExpression { pub value: i32 }
+pub struct IntExpression { pub value: i64 }
 
 impl IntExpression {
     fn generate (&self, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {
