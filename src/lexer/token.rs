@@ -8,6 +8,7 @@ pub struct Token {
 
 #[derive(Clone, PartialEq)]
 pub enum TokenType {
+    Assign,
     Int(i64),
     Float(f64),
     Plus,
@@ -30,6 +31,7 @@ pub enum TokenType {
 impl TokenType {
     pub fn to_string(&self) -> String {
         match (self) {
+            &TokenType::Assign => format!(":="),
             &TokenType::Int(i) => format!("Int: {}", i),
             &TokenType::Float(fl) => format!("Float: {}", fl),
             &TokenType::Plus => format!("Plus"),
