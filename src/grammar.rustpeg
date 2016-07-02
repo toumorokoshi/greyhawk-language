@@ -1,0 +1,15 @@
+use super::ast;
+use super::lexer::token::{Token, TokenType};
+
+#[pub]
+symbol -> String =
+    [a-zA-Z0-9_]+ { match_str.to_string() }
+
+assign -> Token =
+    ":=" { Token{typ: TokenType::Assign, line_num: 1} }
+
+statement -> ast::Statement =
+    symbol assign expression {  }
+
+expression -> ast::Expression =
+    assignment:assignment { ast::Expression::Assignment(assignment) }

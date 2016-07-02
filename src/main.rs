@@ -1,3 +1,7 @@
+#![feature(plugin)]
+#![plugin(peg_syntax_ext)]
+peg_file! peg_grammar("grammar.rustpeg");
+
 extern crate getopts;
 extern crate yaml_rust;
 use std::io::prelude::*;
@@ -23,6 +27,7 @@ fn main () {
             match matches.free[0].as_ref() {
                 "lexer" => lexer(&matches.free[1]),
                 "parser" => parse(&matches.free[1]),
+                "peg" => peg(&matches.free[1]),
                 _ => panic!("no such command"),
             }
         },
@@ -49,6 +54,13 @@ fn lexer(path: &String) {
     let tokens = lexer.read(&content);
     for token in &tokens {
         println!("{}: {}", token.line_num, token.typ);
+    }
+}
+
+fn peg(path: &String) {
+    match peg_grammar::symbol("foo") {
+        Ok(v) => {println!("{}", v)},
+        _ => {println!("An error ocurred!")}
     }
 }
 

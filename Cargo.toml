@@ -6,3 +6,4 @@ authors = ["Yusuke Tsutsumi <yusuke@tsutsumi.io>"]
 [dependencies]
 getopts = "0.2"
 yaml-rust = "0.2.2"
+peg = "0.3.0"

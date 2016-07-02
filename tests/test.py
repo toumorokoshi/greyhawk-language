@@ -43,15 +43,18 @@ def main(args=sys.argv[1:]):
             skipped += 1
         else:
             passed += 1
-    print(red(
-        "failed : {0:02d} / {0:02d}".format(failed, total)
-    ))
-    print(yellow(
-        "skipped: {0:02d} / {0:02d}".format(skipped, total)
-    ))
-    print(green(
-        "passed : {0:02d} / {0:02d}".format(passed, total)
-    ))
+    if failed:
+        print(red(
+            "failed : {0:02d} / {0:02d}".format(failed, total)
+        ))
+    if skipped:
+        print(yellow(
+            "skipped: {0:02d} / {0:02d}".format(skipped, total)
+        ))
+    if passed:
+        print(green(
+            "passed : {0:02d} / {0:02d}".format(passed, total)
+        ))
 
 
 def _parse_arguments(args):

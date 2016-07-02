@@ -14,6 +14,11 @@ pub struct FunctionDecl {
     pub typ: String,
 }
 
+pub struct Assignment {
+    pub target: String,
+    pub expression: Box<Expression>:
+}
+
 #[derive(Clone)]
 pub enum Expression {
     ConstInt{value: i64},
@@ -26,7 +31,8 @@ pub enum Expression {
 pub enum Statement {
     FunctionDecl(FunctionDecl),
     Return(Expression),
-    Expr(Expression)
+    Expr(Expression),
+    Assignment(Assignment)
 }
 
 pub type Statements = Vec<Box<Statement>>;
