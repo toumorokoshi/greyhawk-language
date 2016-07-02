@@ -11,7 +11,7 @@ use ast::BinOp;
 pub fn generate_binop(binop: &BinOp, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {
     let left = evaluate_expr(&binop.left, scope, instructions);
     let right = evaluate_expr(&binop.right, scope, instructions);
-    return if (left.typ == types::get_float_type()) {
+    return if left.typ == types::get_float_type() {
         let object = scope.allocate_local(types::get_float_type());
         match binop.op {
             TokenType::Plus => instructions.push(Op::FloatAdd{lhs: left.index, rhs: right.index, target: object.index}),

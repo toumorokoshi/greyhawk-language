@@ -1,7 +1,9 @@
 use lexer::token::TokenType;
 pub mod yaml;
+mod assignment;
+pub use self::assignment::Assignment;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct BinOp {
     pub op: TokenType,
     pub left: Box<Expression>,
@@ -14,17 +16,13 @@ pub struct FunctionDecl {
     pub typ: String,
 }
 
-pub struct Assignment {
-    pub target: String,
-    pub expression: Box<Expression>:
-}
-
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum Expression {
     ConstInt{value: i64},
     ConstFloat{value: f64},
     ConstString{value: String},
     BinOp(BinOp),
+    Symbol(String),
     Call{name: String, arg: Box<Expression>}
 }
 

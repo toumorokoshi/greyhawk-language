@@ -6,6 +6,12 @@ pub struct Token {
     pub line_num: i32
 }
 
+impl Token {
+    pub fn to_string(&self) -> String {
+        format!("{} on line {}", self.typ, self.line_num)
+    }
+}
+
 #[derive(Clone, PartialEq)]
 pub enum TokenType {
     Assign,
@@ -30,7 +36,7 @@ pub enum TokenType {
 
 impl TokenType {
     pub fn to_string(&self) -> String {
-        match (self) {
+        match self {
             &TokenType::Assign => format!(":="),
             &TokenType::Int(i) => format!("Int: {}", i),
             &TokenType::Float(fl) => format!("Float: {}", fl),
@@ -62,6 +68,12 @@ impl fmt::Debug for TokenType {
 }
 
 impl fmt::Display for TokenType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str(&self.to_string())
+    }
+}
+
+impl fmt::Debug for Token {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(&self.to_string())
     }

@@ -53,7 +53,7 @@ pub fn parse_base_value(parser: &mut Parser) -> PResult<Option<Expression>> {
         TokenType::Int(i) => Ok(Some(ast::Expression::ConstInt{value: i})),
         TokenType::Float(f) => Ok(Some(ast::Expression::ConstFloat{value: f})),
         TokenType::String(ref s) => Ok(Some(ast::Expression::ConstString{value: s.clone()})),
-        TokenType::Symbol(ref s) => match (parse_call(s.clone(), parser)) {
+        TokenType::Symbol(ref s) => match parse_call(s.clone(), parser) {
             Ok(result) => Ok(Some(result)),
             Err(err) => Err(err)
         },

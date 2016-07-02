@@ -25,6 +25,12 @@ pub fn stmt_to_yaml(stmt: &Statement) -> Yaml {
             Yaml::Hash(yaml)
         },
         &Statement::Expr(ref expr) => expr_to_yaml(&expr),
+        &Statement::Assignment(ref a) =>  {
+            yaml.insert(Yaml::String("type".to_string()), Yaml::String("expression".to_string()));
+            yaml.insert(Yaml::String("target".to_string()), Yaml::String(a.target.clone()));
+            yaml.insert(Yaml::String("expression".to_string()), expr_to_yaml(&a.expression));
+            Yaml::Hash(yaml)
+        }
     }
 }
 
@@ -33,6 +39,7 @@ pub fn expr_to_yaml(expr: &Expression) -> Yaml {
         &Expression::ConstInt{value} => Yaml::Integer(value as i64),
         &Expression::ConstFloat{value} => Yaml::Real(value.to_string()),
         &Expression::ConstString{ref value} => Yaml::String(value.clone()),
+        &Expression::Symbol(ref s) => Yaml::String(format!("symbol: {}", s)),
         &Expression::BinOp(BinOp{ref op, ref left, ref right}) => {
             let mut yaml = BTreeMap::new();
             yaml.insert(Yaml::String("type".to_string()), Yaml::String("binop".to_string()));

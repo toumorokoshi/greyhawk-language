@@ -92,7 +92,7 @@ impl Lexer {
                             next_char = chars.next();
                         }
                     }
-                    if (clear) { tokenizerType = None; }
+                    if clear { tokenizerType = None; }
                 },
                 None => {
                     if let Some(ref tType) = tokenizerType {

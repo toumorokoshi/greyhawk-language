@@ -38,11 +38,11 @@ impl Tokenizer for IndentReader {
     fn publish(&mut self) -> Vec<TokenType> {
         let mut toks = Vec::new();
         let mut indentDiff = self.currentIndent - self.previousIndent;
-        while (indentDiff > 0) {
+        while indentDiff > 0 {
             toks.push(TokenType::Indent);
             indentDiff -= 1;
         }
-        while (indentDiff < 0) {
+        while indentDiff < 0 {
             toks.push(TokenType::Unindent);
             indentDiff += 1;
         }

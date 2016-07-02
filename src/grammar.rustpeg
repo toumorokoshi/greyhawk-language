@@ -1,15 +1,26 @@
 use super::ast;
 use super::lexer::token::{Token, TokenType};
 
+// #[pub]
+// module -> ast::Statements =
+//        statement:s { vec!(s) }
+
+spaces -> usize = s:" "+ { s.len() }
+
 #[pub]
-symbol -> String =
-    [a-zA-Z0-9_]+ { match_str.to_string() }
+symbol -> String = [a-zA-Z0-9_]+ { match_str.to_string() }
 
-assign -> Token =
-    ":=" { Token{typ: TokenType::Assign, line_num: 1} }
+#[pub]
+assign -> Token = ":=" { Token{typ: TokenType::Assign, line_num: 1} }
 
-statement -> ast::Statement =
-    symbol assign expression {  }
+#[pub]
+assignment -> ast::Assignment = s:symbol spaces assign spaces e:expression
+              { ast::Assignment{target: s, expression: Box::new(e)} }
 
-expression -> ast::Expression =
-    assignment:assignment { ast::Expression::Assignment(assignment) }
+#[pub]
+expression -> ast::Expression = s:symbol
+           { ast::Expression::Symbol(s) }
+
+// statement -> ast::Statement =
+//     assignment:assignment { ast::Statement::Assignment(assignment) }
+//

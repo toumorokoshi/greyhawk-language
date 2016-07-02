@@ -21,7 +21,7 @@ pub enum Op {
 
 impl Op {
     pub fn to_string(&self) -> String {
-        match (self) {
+        match self {
             &Op::Call{ref func, ref args, target} => format!("{0} <= Call()", target),
             &Op::FloatAdd{lhs, rhs, target} => format!("{2} <= {0} + {1} (float)", lhs, rhs, target),
             &Op::FloatSub{lhs, rhs, target} => format!("{2} <= {0} - {1} (float)", lhs, rhs, target),

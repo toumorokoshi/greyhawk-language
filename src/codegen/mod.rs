@@ -32,6 +32,7 @@ pub fn evaluate_stat(statement: &Statement, scope: &mut scope::Scope, ops: &mut 
             ops.push(op);
         },
         &Statement::Expr(ref expr) => {evaluate_expr(expr, scope, ops);},
+        &Statement::Assignment(ref a) => {}
     };
 }
 
@@ -48,6 +49,11 @@ pub fn evaluate_expr(expr: &Expression, scope: &mut scope::Scope, ops: &mut Vec<
             obj
         },
         &Expression::ConstString{ref value} => {
+            let obj = scope.allocate_local(types::get_string_type());
+            ops.push(Op::StringLoad{register: obj.index, constant: Rc::new(value.clone())});
+            obj
+        }
+        &Expression::Symbol(ref value) => {
             let obj = scope.allocate_local(types::get_string_type());
             ops.push(Op::StringLoad{register: obj.index, constant: Rc::new(value.clone())});
             obj

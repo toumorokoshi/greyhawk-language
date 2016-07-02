@@ -12,6 +12,7 @@ mod parser;
 mod codegen;
 mod vm;
 mod repl;
+mod grammar_tests;
 
 use yaml_rust::emitter::YamlEmitter;
 use std::env;
@@ -58,10 +59,13 @@ fn lexer(path: &String) {
 }
 
 fn peg(path: &String) {
-    match peg_grammar::symbol("foo") {
-        Ok(v) => {println!("{}", v)},
-        _ => {println!("An error ocurred!")}
-    }
+    let mut file = File::open(path).unwrap();
+    let mut content = String::new();
+    file.read_to_string(&mut content).unwrap();
+    // match peg_grammar::module(&content) {
+    //     Ok(v) => {println!("{}", v)},
+    //     _ => {println!("An error ocurred!")}
+    // }
 }
 
 fn parse(path: &String) {
