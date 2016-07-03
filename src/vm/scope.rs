@@ -42,6 +42,9 @@ impl Scope {
         };
     }
 
+    pub fn get_local(&mut self, name: &'static str) -> LocalObject {
+    }
+
     pub fn add_local(&mut self, name: &'static str, typ: TypeRef) -> LocalObject {
         let object = self.allocate_local(typ);
         self.locals.insert(name, object.index);

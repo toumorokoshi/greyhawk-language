@@ -13,6 +13,7 @@ mod codegen;
 mod vm;
 mod repl;
 mod grammar_tests;
+use yaml_rust::{Yaml};
 
 use yaml_rust::emitter::YamlEmitter;
 use std::env;
@@ -62,10 +63,13 @@ fn peg(path: &String) {
     let mut file = File::open(path).unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
-    // match peg_grammar::module(&content) {
-    //     Ok(v) => {println!("{}", v)},
-    //     _ => {println!("An error ocurred!")}
-    // }
+    match peg_grammar::module(&content) {
+        Ok(statement_list) => {
+            let yaml = ast::yaml::to_yaml(statement_list);
+            print_yaml(yaml);
+        },
+        Err(err) => {println!("{}", err)}
+    }
 }
 
 fn parse(path: &String) {
@@ -78,17 +82,21 @@ fn parse(path: &String) {
     match parser::parse(&tokens) {
         Ok(expressions) => {
             let yaml = ast::yaml::to_yaml(expressions);
-            let mut out_str = String::new();
-            {
-                let mut emitter = YamlEmitter::new(&mut out_str);
-                emitter.dump(&yaml).unwrap();
-            }
-            println!("{}", out_str);
-        },
+            print_yaml(yaml);
+       },
         Err(msg) => {
             println!("{}", msg);
         }
     }
+}
+
+fn print_yaml(yaml: Yaml) {
+    let mut out_str = String::new();
+    {
+        let mut emitter = YamlEmitter::new(&mut out_str);
+        emitter.dump(&yaml).unwrap();
+    }
+    println!("{}", out_str);
 }
 
 fn execute_file(path: &String) {

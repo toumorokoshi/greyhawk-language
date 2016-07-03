@@ -6,21 +6,49 @@ use super::lexer::token::{Token, TokenType};
 //        statement:s { vec!(s) }
 
 spaces -> usize = s:" "+ { s.len() }
+newline -> bool = [\n] { true }
 
 #[pub]
 symbol -> String = [a-zA-Z0-9_]+ { match_str.to_string() }
 
 #[pub]
-assign -> Token = ":=" { Token{typ: TokenType::Assign, line_num: 1} }
+integer -> i64 = [0-9_]+ { match_str.parse().unwrap() }
 
 #[pub]
-assignment -> ast::Assignment = s:symbol spaces assign spaces e:expression
-              { ast::Assignment{target: s, expression: Box::new(e)} }
+declare_token -> Token = ":=" { Token{typ: TokenType::Assign, line_num: 1} }
 
 #[pub]
-expression -> ast::Expression = s:symbol
-           { ast::Expression::Symbol(s) }
+declare -> ast::Declaration = s:symbol spaces declare_token spaces e:expression
+                              { ast::Declaration{name: s, expression: Box::new(e)} }
 
-// statement -> ast::Statement =
-//     assignment:assignment { ast::Statement::Assignment(assignment) }
-//
+#[pub]
+call -> ast::Expression =
+     s:symbol "(" e:expression ")" { ast::Expression::Call{name: s, arg: Box::new(e)} }
+
+#[pub]
+expression -> ast::Expression =
+             f:call { f }
+           / i:integer { ast::Expression::ConstInt{value: i} }
+           / s:symbol { ast::Expression::Symbol(s) }
+
+#[pub]
+statement -> ast::Statement =
+       d:declare { ast::Statement::Declaration(d) }
+     / e:expression { ast::Statement::Expr(e) }
+
+#[pub]
+statement_list -> ast::Statements =
+           s:statement newline stmts:statement_list {
+               let mut new_stmts = Vec::new();
+               new_stmts.push(Box::new(s));
+               new_stmts.extend_from_slice(&stmts);
+               new_stmts
+           }
+           / s:statement {
+               let mut new_stmts = Vec::new();
+               new_stmts.push(Box::new(s));
+               new_stmts
+           }
+
+#[pub]
+module -> ast::Statements = statement_list

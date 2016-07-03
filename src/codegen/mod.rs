@@ -32,7 +32,11 @@ pub fn evaluate_stat(statement: &Statement, scope: &mut scope::Scope, ops: &mut 
             ops.push(op);
         },
         &Statement::Expr(ref expr) => {evaluate_expr(expr, scope, ops);},
-        &Statement::Assignment(ref a) => {}
+        &Statement::Assignment(ref a) => {},
+        &Statement::Declaration(ref d) => {
+            let result = evaluate_expr(d.expression, scope, ops);
+            scope.add_local(d.name, result.typ);
+        }
     };
 }
 
