@@ -37,6 +37,9 @@ impl VM{
         let mut registers = &mut scope_instance.registers;
         for op in ops.iter() {
             match op {
+                &Op::Assign{source, target} => {
+                    registers[target] = registers[source];
+                },
                 &Op::Call{ref func, ref args, target} => {
                     let mut arg_objects = Vec::new();
                     for arg in args {

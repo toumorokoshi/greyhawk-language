@@ -4,6 +4,7 @@ use std::rc::Rc;
 use std::fmt;
 
 pub enum Op {
+    Assign{target: usize, source: usize},
     Call{func: Rc<function::Function>, args: Vec<LocalObject>, target: usize},
     FloatAdd{lhs: usize, rhs: usize, target: usize},
     FloatSub{lhs: usize, rhs: usize, target: usize},
@@ -22,6 +23,7 @@ pub enum Op {
 impl Op {
     pub fn to_string(&self) -> String {
         match self {
+            &Op::Assign{target, source} => format!("{0} <= {1}", target, source),
             &Op::Call{ref func, ref args, target} => format!("{0} <= Call()", target),
             &Op::FloatAdd{lhs, rhs, target} => format!("{2} <= {0} + {1} (float)", lhs, rhs, target),
             &Op::FloatSub{lhs, rhs, target} => format!("{2} <= {0} - {1} (float)", lhs, rhs, target),

@@ -33,7 +33,7 @@ pub fn stmt_to_yaml(stmt: &Statement) -> Yaml {
         },
         &Statement::Declaration(ref d) =>  {
             yaml.insert(Yaml::String("type".to_string()), Yaml::String("declaration".to_string()));
-            yaml.insert(Yaml::String("target".to_string()), Yaml::String(d.target.clone()));
+            yaml.insert(Yaml::String("name".to_string()), Yaml::String(d.name.clone()));
             yaml.insert(Yaml::String("expression".to_string()), expr_to_yaml(&d.expression));
             Yaml::Hash(yaml)
         }

@@ -27,15 +27,13 @@ fn main () {
     match matches.free.len() {
         l if l > 1 => {
             match matches.free[0].as_ref() {
-                "lexer" => lexer(&matches.free[1]),
                 "parser" => parse(&matches.free[1]),
-                "peg" => peg(&matches.free[1]),
-                _ => panic!("no such command"),
+                _ => println!("no such subcommand"),
             }
         },
         1 => execute_file(&matches.free[0]),
         0 => repl::start_repl(),
-        _ => panic!("Invalid Args"),
+        _ => println!("Invalid Args"),
     }
 }
 
@@ -44,6 +42,10 @@ fn setup_opts() -> getopts::Options {
     opts.optflag("h", "help", "print this help menu");
     return opts;
 }
+
+/*
+Currently, lexing and parsing using the
+native parser is deprecated in favor of using rust-peg.
 
 fn lexer(path: &String) {
     println!("{}", path);
@@ -58,8 +60,9 @@ fn lexer(path: &String) {
         println!("{}: {}", token.line_num, token.typ);
     }
 }
+*/
 
-fn peg(path: &String) {
+fn parse(path: &String) {
     let mut file = File::open(path).unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
@@ -69,24 +72,6 @@ fn peg(path: &String) {
             print_yaml(yaml);
         },
         Err(err) => {println!("{}", err)}
-    }
-}
-
-fn parse(path: &String) {
-    let lexer = lexer::Lexer::new();
-
-    let mut file = File::open(path).unwrap();
-    let mut content = String::new();
-    file.read_to_string(&mut content).unwrap();
-    let tokens = lexer.read(&content);
-    match parser::parse(&tokens) {
-        Ok(expressions) => {
-            let yaml = ast::yaml::to_yaml(expressions);
-            print_yaml(yaml);
-       },
-        Err(msg) => {
-            println!("{}", msg);
-        }
     }
 }
 
@@ -106,10 +91,9 @@ fn execute_file(path: &String) {
     let mut file = File::open(path).unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
-    let tokens = lexer.read(&content);
-    match parser::parse(&tokens) {
-        Ok(expressions) => {
-            let function = codegen::generate_ops(&expressions);
+    match peg_grammar::module(&content) {
+        Ok(statement_list) => {
+            let function = codegen::generate_ops(&statement_list);
             match &function {
                 &vm::function::Function::VMFunction(ref f) => {
                     // println!("{}", f.scope);
