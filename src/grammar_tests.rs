@@ -1,16 +1,28 @@
-use super::peg_grammar::{declare_token,
-                         declare,
-                         expression,
-                         integer,
-                         statement,
-                         statement_list,
-                         symbol};
+use super::peg_grammar::{
+    binop,
+    constant_string,
+    declare_token,
+    declare,
+    expression,
+    integer,
+    statement,
+    statement_list,
+    symbol
+};
 use super::ast;
 use lexer::token::{Token, TokenType};
 
 #[test]
 fn test_symbol() {
     assert_eq!(symbol("foo"), Ok(String::from("foo")));
+}
+
+#[test]
+fn test_constant_string() {
+    assert_eq!(
+        constant_string("\"this is a string\""),
+        Ok(String::from("this is a string"))
+    );
 }
 
 #[test]
@@ -38,10 +50,21 @@ fn test_integer() {
 }
 
 #[test]
+fn test_addition() {
+    assert_eq!(binop("1 + 1"), Ok(
+        ast::BinOp{
+            left: Box::new(ast::Expression::ConstInt{value: 1}),
+            right: Box::new(ast::Expression::ConstInt{value: 1}),
+            op: TokenType::Plus
+        }
+    ));
+}
+
+#[test]
 fn test_declare() {
     assert_eq!(declare("x := y"), Ok(
-        ast::Assignment{target: String::from("x"),
-                        expression: Box::new(ast::Expression::Symbol(String::from("y")))}
+        ast::Declaration{name: String::from("x"),
+                         expression: Box::new(ast::Expression::Symbol(String::from("y")))}
     ));
 }
 

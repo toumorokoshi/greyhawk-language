@@ -1,18 +1,22 @@
 use super::ast;
 use super::lexer::token::{Token, TokenType};
 
-// #[pub]
-// module -> ast::Statements =
-//        statement:s { vec!(s) }
-
 spaces -> usize = s:" "+ { s.len() }
 newline -> bool = [\n] { true }
 
 #[pub]
-symbol -> String = [a-zA-Z0-9_]+ { match_str.to_string() }
+symbol -> String = [a-zA-Z_][a-zA-Z0-9_]* { match_str.to_string() }
+
+string_body -> String = [^"]+ { match_str.to_string() }
 
 #[pub]
-integer -> i64 = [0-9_]+ { match_str.parse().unwrap() }
+constant_string -> String = "\"" s:string_body "\"" { s }
+
+#[pub]
+integer -> i64 = [0-9]+ { match_str.parse().unwrap() }
+
+#[pub]
+float -> f64 = [0-9]+ "." [0-9]+ { match_str.parse().unwrap() }
 
 #[pub]
 declare_token -> Token = ":=" { Token{typ: TokenType::Assign, line_num: 1} }
@@ -26,10 +30,28 @@ call -> ast::Expression =
      s:symbol "(" e:expression ")" { ast::Expression::Call{name: s, arg: Box::new(e)} }
 
 #[pub]
-expression -> ast::Expression =
-             f:call { f }
+base_types -> ast::Expression =
+             s:constant_string { ast::Expression::ConstString{value: s} }
+           / f:float { ast::Expression::ConstFloat{value: f} }
            / i:integer { ast::Expression::ConstInt{value: i} }
            / s:symbol { ast::Expression::Symbol(s) }
+
+#[pub]
+binop -> ast::BinOp =
+      left:base_types spaces op:binop_token spaces right:expression
+      { ast::BinOp{left: Box::new(left), right: Box::new(right), op: op} }
+
+
+#[pub]
+binop_token -> TokenType =
+        "+" { TokenType::Plus }
+      / "*" { TokenType::Mul }
+
+#[pub]
+expression -> ast::Expression =
+             f:call { f }
+           / binop:binop { ast::Expression::BinOp(binop) }
+           / bt:base_types { bt }
 
 #[pub]
 statement -> ast::Statement =
@@ -44,7 +66,7 @@ statement_list -> ast::Statements =
                new_stmts.extend_from_slice(&stmts);
                new_stmts
            }
-           / s:statement {
+           / s:statement newline? {
                let mut new_stmts = Vec::new();
                new_stmts.push(Box::new(s));
                new_stmts
