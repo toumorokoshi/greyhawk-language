@@ -1,4 +1,4 @@
-#![feature(plugin)]
+#![feature(plugin, box_syntax, box_patterns)]
 #![plugin(peg_syntax_ext)]
 peg_file! peg_grammar("grammar.rustpeg");
 

@@ -46,6 +46,8 @@ binop -> ast::BinOp =
 binop_token -> TokenType =
         "+" { TokenType::Plus }
       / "*" { TokenType::Mul }
+      / "/" { TokenType::Div}
+      / "-" { TokenType::Sub}
 
 #[pub]
 expression -> ast::Expression =

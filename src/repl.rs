@@ -2,6 +2,7 @@ use super::lexer;
 use super::parser;
 use super::codegen;
 use super::vm;
+use super::ast;
 use std;
 use std::io::{self, Write};
 use std::process;
@@ -21,20 +22,24 @@ fn repl(vm_instance: &mut vm::VM) {
         let mut input = String::new();
         io::stdin().read_line(&mut input).ok().expect("Failed to read line");
         match peg_grammar::module(&input) {
-            Ok(expressions) => {
-                let function = codegen::generate_ops(&expressions);
-                match &function {
-                    &vm::function::Function::VMFunction(ref f) => {
-                        // println!("{}", f.scope);
-                    },
-                    _ => {},
-                }
+            Ok(mut statement_list) => {
+                convert_last_expression_to_return(&mut statement_list);
+                let function = codegen::generate_ops(&statement_list);
                 let object = vm_instance.execute_function(&function, &[]);
                 vm::print(&[object]);
             },
             Err(err) => {
                 println!("{}", err);
             }
+        }
+    }
+}
+
+fn convert_last_expression_to_return(statements: &mut ast::Statements) {
+    let mut last = statements.pop();
+    if let Some(s) = last {
+        if let box ast::Statement::Expr(e) = s {
+            statements.push(Box::new(ast::Statement::Return(e)));
         }
     }
 }
