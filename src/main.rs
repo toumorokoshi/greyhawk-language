@@ -68,7 +68,7 @@ fn parse(path: &String) {
     file.read_to_string(&mut content).unwrap();
     match peg_grammar::module(&content) {
         Ok(statement_list) => {
-            let yaml = ast::yaml::to_yaml(statement_list);
+            let yaml = ast::yaml::to_yaml(&statement_list);
             print_yaml(yaml);
         },
         Err(err) => {println!("{}", err)}

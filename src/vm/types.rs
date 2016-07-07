@@ -71,3 +71,13 @@ pub fn get_none_type() -> TypeRef {
 pub fn get_string_type() -> TypeRef {
     return TypeRef::Static(&StringType);
 }
+
+pub fn get_type_ref_from_string(symbol: &str) -> TypeRef {
+    match symbol {
+        "String" => get_string_type(),
+        "Float" => get_float_type(),
+        "Int" => get_int_type(),
+        "None" => get_none_type(),
+        _ => get_none_type(),
+    }
+}

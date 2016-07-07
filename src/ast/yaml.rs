@@ -3,7 +3,7 @@ use super::{BinOp, Expression, Statement};
 use std::collections::BTreeMap;
 use yaml_rust::{Yaml};
 
-pub fn to_yaml(stmts: Vec<Box<Statement>>) -> Yaml {
+pub fn to_yaml(stmts: &Vec<Box<Statement>>) -> Yaml {
     let mut yaml = Vec::new();
     for stmt in stmts {
         yaml.push(stmt_to_yaml(&stmt));
@@ -17,6 +17,10 @@ pub fn stmt_to_yaml(stmt: &Statement) -> Yaml {
         &Statement::FunctionDecl(ref func_decl) => {
             yaml.insert(Yaml::String("type".to_string()),
                         Yaml::String("function declaration".to_string()));
+            yaml.insert(Yaml::String("name".to_string()),
+                        Yaml::String(func_decl.name.clone()));
+            yaml.insert(Yaml::String("statements".to_string()),
+                        to_yaml(&func_decl.statements));
             Yaml::Hash(yaml)
         },
         &Statement::Return(ref expr) => {

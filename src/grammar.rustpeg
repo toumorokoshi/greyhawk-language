@@ -2,10 +2,14 @@ use super::ast;
 use super::lexer::token::{Token, TokenType};
 
 spaces -> usize = s:" "+ { s.len() }
+spaces_or_newline -> usize = s:[ \n]* { s.len() }
 newline -> bool = [\n] { true }
 
 #[pub]
 symbol -> String = [a-zA-Z_][a-zA-Z0-9_]* { match_str.to_string() }
+
+#[pub]
+type_symbol -> String = [A-Z][a-zA-Z0-9]* { match_str.to_string() }
 
 string_body -> String = [^"]+ { match_str.to_string() }
 
@@ -26,8 +30,14 @@ declare -> ast::Declaration = s:symbol spaces declare_token spaces e:expression
                               { ast::Declaration{name: s, expression: Box::new(e)} }
 
 #[pub]
+function -> ast::FunctionDecl =
+         typ:type_symbol spaces name:symbol "(" spaces? ")" spaces? "{" spaces_or_newline statements:statement_list spaces_or_newline? "}"
+         { ast::FunctionDecl{typ: typ, name: name, statements:statements} }
+
+#[pub]
 call -> ast::Expression =
-     s:symbol "(" e:expression ")" { ast::Expression::Call{name: s, arg: Box::new(e)} }
+       s:symbol "(" e:expression ")" { ast::Expression::Call{name: s, arg: Box::new(e)} }
+     / s:symbol "(" ")" { ast::Expression::Call{name: s, arg: Box::new(ast::Expression::ConstInt{value: 0})} }
 
 #[pub]
 base_types -> ast::Expression =
@@ -58,6 +68,7 @@ expression -> ast::Expression =
 #[pub]
 statement -> ast::Statement =
        d:declare { ast::Statement::Declaration(d) }
+     / f:function { ast::Statement::FunctionDecl(f) }
      / e:expression { ast::Statement::Expr(e) }
 
 #[pub]

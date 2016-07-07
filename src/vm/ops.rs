@@ -5,6 +5,9 @@ use std::fmt;
 
 pub enum Op {
     Assign{target: usize, source: usize},
+    // if the condition is true, continue down the registry.
+    // if the condition is false, jump n instructions to the registry.
+    Branch{condition: usize, if_false: usize},
     Call{func: Rc<function::Function>, args: Vec<LocalObject>, target: usize},
     FloatAdd{lhs: usize, rhs: usize, target: usize},
     FloatSub{lhs: usize, rhs: usize, target: usize},
@@ -24,6 +27,7 @@ impl Op {
     pub fn to_string(&self) -> String {
         match self {
             &Op::Assign{target, source} => format!("{0} <= {1}", target, source),
+            &Op::Branch{condition, if_false} => format!("branch to {0} if {1} is false", condition, if_false),
             &Op::Call{ref func, ref args, target} => format!("{0} <= Call()", target),
             &Op::FloatAdd{lhs, rhs, target} => format!("{2} <= {0} + {1} (float)", lhs, rhs, target),
             &Op::FloatSub{lhs, rhs, target} => format!("{2} <= {0} - {1} (float)", lhs, rhs, target),

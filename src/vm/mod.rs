@@ -6,6 +6,7 @@ pub mod module;
 pub mod function;
 pub mod ops;
 pub mod types;
+
 pub mod scope;
 pub mod builtins;
 
@@ -35,10 +36,19 @@ impl VM{
     pub fn execute_instructions(&mut self, scope_instance: &mut ScopeInstance, scope: &Scope, ops: &[Op]) -> usize {
         let return_value = 0 as usize;
         let mut registers = &mut scope_instance.registers;
-        for op in ops.iter() {
+        let mut i = 0;
+        while i < ops.len() {
+            let ref op = ops[i];
             match op {
                 &Op::Assign{source, target} => {
                     registers[target] = registers[source];
+                },
+                &Op::Branch{condition, if_false} => {
+                    if registers[condition] != 0 {
+                        // -1 to allow an increment at the end of the
+                        // function.
+                        i = if_false - 1;
+                    }
                 },
                 &Op::Call{ref func, ref args, target} => {
                     let mut arg_objects = Vec::new();
@@ -85,6 +95,7 @@ impl VM{
                 },
                 &Op::Return{register} => { return register; },
             };
+            i +=1;
         }
         return return_value;
     }

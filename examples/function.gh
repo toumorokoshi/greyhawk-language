@@ -1,8 +1,4 @@
-message := "foo"
-
-None printHelloWorld():
-
-	print("hello world")
-	print(message)
-
+None printHelloWorld() {
+  print("hello world again")
+}
 printHelloWorld()

@@ -2,6 +2,7 @@ use super::VM;
 use super::Object;
 use super::ops;
 use super::scope;
+use super::types;
 use std::rc::Rc;
 
 pub struct VMFunction {
@@ -27,9 +28,16 @@ impl Function {
             &Function::VMFunction(ref f) => {
                 let mut scopeInstance = f.scope.create_instance();
                 let return_register = vm.execute_instructions(&mut scopeInstance, &f.scope, &f.ops[..]);
-                Object {
-                    value: scopeInstance.registers[return_register],
-                    typ: f.scope.types[return_register].clone()
+                if scopeInstance.registers.len() == 0 {
+                    Object {
+                        value: 0,
+                        typ: types::get_none_type().clone()
+                    }
+                } else {
+                    Object {
+                        value: scopeInstance.registers[return_register],
+                        typ: f.scope.types[return_register].clone()
+                    }
                 }
             },
         }

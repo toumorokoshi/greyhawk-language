@@ -25,7 +25,7 @@ impl StatementBase for FunctionDeclaration {
         for statement in &self.statements {
             statement.evaluate(&mut function_scope, &mut ops);
         }
-        scope.add_function(self.name.clone(), Rc::new(Function::VMFunction(VMFunction {
+        scope.add_function(self.name.clone(), Rc::new(Function::VMFunction(VMFunction{
             scope: function_scope,
             ops: ops
         })));
