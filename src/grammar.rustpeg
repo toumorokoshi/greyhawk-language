@@ -3,7 +3,7 @@ use super::lexer::token::{Token, TokenType};
 
 spaces -> usize = s:" "+ { s.len() }
 spaces_or_newline -> usize = s:[ \n]* { s.len() }
-newline -> bool = [\n] { true }
+newline -> bool = [\n]+ { true }
 
 #[pub]
 symbol -> String = [a-zA-Z_][a-zA-Z0-9_]* { match_str.to_string() }
@@ -28,6 +28,10 @@ declare_token -> Token = ":=" { Token{typ: TokenType::Assign, line_num: 1} }
 #[pub]
 declare -> ast::Declaration = s:symbol spaces declare_token spaces e:expression
                               { ast::Declaration{name: s, expression: Box::new(e)} }
+
+#[pub]
+return_statement -> ast::Statement = "return" spaces e:expression
+                 { ast::Statement::Return(e) }
 
 #[pub]
 function -> ast::FunctionDecl =
@@ -69,6 +73,7 @@ expression -> ast::Expression =
 statement -> ast::Statement =
        d:declare { ast::Statement::Declaration(d) }
      / f:function { ast::Statement::FunctionDecl(f) }
+     / r:return_statement { r }
      / e:expression { ast::Statement::Expr(e) }
 
 #[pub]

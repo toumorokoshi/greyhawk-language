@@ -1,9 +1,9 @@
-None foo():
-	bar()
+None foo() {
+     bar()
+}
 
-
-None bar():
-	print("foo-bar")
-
+None bar() {
+     print("foo-bar")
+}
 
 foo()

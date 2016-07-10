@@ -1,5 +1,6 @@
-Int getHelloFunction():
-	return 1 + 11
+Int getHelloFunction() {
+    return 1 + 11
+}
 
 print(getHelloFunction())
 print(1)
