@@ -8,7 +8,6 @@ use vm::scope;
 use vm::types;
 use vm::function::Function;
 use vm::function::VMFunction;
-use yaml_rust::Yaml;
 use std::rc::Rc;
 
 // pub use self::yaml::to_yaml;
@@ -20,6 +19,7 @@ pub fn generate_ops(statements: &Vec<Box<Statement>>) -> vm::Function {
         evaluate_stat(statement, &mut scope, &mut ops);
     }
     return vm::Function::VMFunction(vm::VMFunction {
+        name: String::from("__main__"),
         scope: scope,
         ops: ops,
         return_typ: types::get_none_type(),
@@ -36,6 +36,7 @@ pub fn evaluate_stat(statement: &Statement, scope: &mut scope::Scope, ops: &mut 
                 evaluate_stat(s, &mut func_scope, &mut func_ops);
             }
             scope.add_function(func_decl.name.clone(), Rc::new(Function::VMFunction(VMFunction{
+                name: func_decl.name.clone(),
                 return_typ: types::get_type_ref_from_string(&func_decl.typ),
                 scope: func_scope,
                 ops: func_ops
@@ -46,7 +47,6 @@ pub fn evaluate_stat(statement: &Statement, scope: &mut scope::Scope, ops: &mut 
             ops.push(op);
         },
         &Statement::Expr(ref expr) => {evaluate_expr(expr, scope, ops);},
-        &Statement::Assignment(ref a) => {},
         &Statement::Declaration(ref d) => {
             let result = evaluate_expr(&(d.expression), scope, ops);
             let object = scope.add_local(&(d.name.clone()), result.typ);

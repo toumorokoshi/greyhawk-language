@@ -1,10 +1,8 @@
 use super::token::*;
-use std::str::Chars;
-use std::iter::Peekable;
 
 pub trait Tokenizer {
     fn reset(&mut self);
-    fn read(&mut self, c: char, line_num: i32) -> bool;
+    fn read(&mut self, c: char) -> bool;
     fn publish(&mut self) -> Vec<TokenType>;
 }
 
@@ -30,7 +28,7 @@ impl Tokenizer for NumReader {
 
     /// reads the char provided, returns false
     /// if not a valid character.
-    fn read(&mut self, c: char, line_num: i32) -> bool {
+    fn read(&mut self, c: char) -> bool {
         let mut mode = None;
         let result = match &mut self.mode {
             &mut NumReaderMode::ReadInt{ref mut value} => match c {

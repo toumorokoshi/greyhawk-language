@@ -1,34 +1,30 @@
 use super::tokenizer::Tokenizer;
 use super::token::TokenType;
-use super::symboltree::TokenDef;
-use super::symboltree::FinalNode;
-use super::symboltree;
-use std::rc::Rc;
 
 pub struct IndentReader {
-    previousIndent: i8,
-    currentIndent: i8,
+    previous_indent: i8,
+    current_indent: i8,
 }
 
 impl IndentReader {
     pub fn new() -> IndentReader {
         return IndentReader {
-            previousIndent: 0,
-            currentIndent: 0,
+            previous_indent: 0,
+            current_indent: 0,
         };
     }
 }
 
 impl Tokenizer for IndentReader {
     fn reset(&mut self) {
-        self.previousIndent = self.currentIndent;
-        self.currentIndent = 0;
+        self.previous_indent = self.current_indent;
+        self.current_indent = 0;
     }
 
-    fn read(&mut self, c: char, line_num: i32) -> bool {
+    fn read(&mut self, c: char) -> bool {
         match c {
             '\t' => {
-                self.currentIndent += 1;
+                self.current_indent += 1;
                 true
             }
             _ => false,
@@ -37,14 +33,14 @@ impl Tokenizer for IndentReader {
 
     fn publish(&mut self) -> Vec<TokenType> {
         let mut toks = Vec::new();
-        let mut indentDiff = self.currentIndent - self.previousIndent;
-        while indentDiff > 0 {
+        let mut indent_diff = self.current_indent - self.previous_indent;
+        while indent_diff > 0 {
             toks.push(TokenType::Indent);
-            indentDiff -= 1;
+            indent_diff -= 1;
         }
-        while indentDiff < 0 {
+        while indent_diff < 0 {
             toks.push(TokenType::Unindent);
-            indentDiff += 1;
+            indent_diff += 1;
         }
         self.reset();
         toks

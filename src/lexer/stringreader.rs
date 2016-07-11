@@ -3,7 +3,6 @@ use super::token::TokenType;
 use super::symboltree::TokenDef;
 use super::symboltree::FinalNode;
 use super::symboltree;
-use std::rc::Rc;
 
 pub const SYMBOLS: &'static [TokenDef] = &[
     TokenDef{path: "if", token: TokenType::If},
@@ -31,7 +30,7 @@ impl Tokenizer for StringReader {
         self.string = String::new();
     }
 
-    fn read(&mut self, c: char, line_num: i32) -> bool {
+    fn read(&mut self, c: char) -> bool {
         match c {
             'a'...'z' | 'A'...'Z' | '0'...'9' | '_' => {
                 self.string.push(c);

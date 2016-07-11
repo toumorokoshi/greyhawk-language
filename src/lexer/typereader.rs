@@ -1,6 +1,5 @@
 use super::tokenizer::Tokenizer;
 use super::token::TokenType;
-use std::rc::Rc;
 
 pub struct TypeReader {
     name: String
@@ -16,7 +15,7 @@ impl Tokenizer for TypeReader {
 
     fn reset(&mut self) {}
 
-    fn read(&mut self, c: char, line_num: i32) -> bool {
+    fn read(&mut self, c: char) -> bool {
         match c {
             'a'...'z' | 'A'...'Z' | '0'...'9' | '_' => {
                 self.name.push(c);

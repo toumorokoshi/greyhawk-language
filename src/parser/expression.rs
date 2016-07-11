@@ -1,10 +1,6 @@
 use ast;
 use ast::Expression;
-use std::rc::Rc;
-use std::slice::Iter; use std::iter::Peekable;
-use lexer;
 use lexer::token::TokenType;
-use codegen;
 use super::{Parser, PResult, ErrorMessage};
 use super::expect;
 

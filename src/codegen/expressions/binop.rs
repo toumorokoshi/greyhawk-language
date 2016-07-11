@@ -4,8 +4,6 @@ use lexer::token::TokenType;
 use vm::Op;
 use vm::types;
 use vm::scope;
-use std::collections::BTreeMap;
-use yaml_rust::Yaml;
 use ast::BinOp;
 
 pub fn generate_binop(binop: &BinOp, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {

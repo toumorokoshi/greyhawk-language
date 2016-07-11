@@ -1,4 +1,4 @@
-use std::sync::Arc;
+// use std::sync::Arc;
 use std::fmt;
 
 pub struct Type {
@@ -9,14 +9,14 @@ pub enum TypeRef {
     // we use Arcs because it's thread-safe,
     // and type references are shared across
     // processes.
-    Heap(Arc<Type>),
+    // Heap(Arc<Type>),
     Static(&'static Type),
 }
 
 impl TypeRef {
     fn name(&self) -> &str {
         return match self {
-            &TypeRef::Heap(ref t) => t.name,
+            // &TypeRef::Heap(ref t) => t.name,
             &TypeRef::Static(ref t) => t.name
         }
     }
@@ -25,7 +25,7 @@ impl TypeRef {
 impl Clone for TypeRef {
     fn clone(&self) -> TypeRef {
         return match self {
-            &TypeRef::Heap(ref a) => TypeRef::Heap(a.clone()),
+            // &TypeRef::Heap(ref a) => TypeRef::Heap(a.clone()),
             &TypeRef::Static(t) => TypeRef::Static(t),
         };
     }
@@ -36,7 +36,7 @@ impl Clone for TypeRef {
 impl fmt::Display for TypeRef {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", match self {
-            &TypeRef::Heap(ref t) => t.name,
+            // &TypeRef::Heap(ref t) => t.name,
             &TypeRef::Static(t) => t.name
         })
     }
@@ -51,25 +51,25 @@ impl PartialEq<TypeRef> for TypeRef {
     }
 }
 
-pub static IntType: Type = Type {name: "Int"};
-pub static FloatType: Type = Type {name: "Float"};
-pub static NoneType: Type = Type {name: "None"};
-pub static StringType: Type = Type {name: "String"};
+pub static INT_TYPE: Type = Type {name: "Int"};
+pub static FLOAT_TYPE: Type = Type {name: "Float"};
+pub static NONE_TYPE: Type = Type {name: "None"};
+pub static STRING_TYPE: Type = Type {name: "String"};
 
 pub fn get_int_type() -> TypeRef {
-    return TypeRef::Static(&IntType);
+    return TypeRef::Static(&INT_TYPE);
 }
 
 pub fn get_float_type() -> TypeRef {
-    return TypeRef::Static(&FloatType);
+    return TypeRef::Static(&FLOAT_TYPE);
 }
 
 pub fn get_none_type() -> TypeRef {
-    return TypeRef::Static(&NoneType);
+    return TypeRef::Static(&NONE_TYPE);
 }
 
 pub fn get_string_type() -> TypeRef {
-    return TypeRef::Static(&StringType);
+    return TypeRef::Static(&STRING_TYPE);
 }
 
 pub fn get_type_ref_from_string(symbol: &str) -> TypeRef {

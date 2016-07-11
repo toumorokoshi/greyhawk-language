@@ -16,7 +16,7 @@ impl Clone for LocalObject {
         return LocalObject {
             index: self.index,
             typ: match self.typ {
-                TypeRef::Heap(ref a) => TypeRef::Heap(a.clone()),
+                // TypeRef::Heap(ref a) => TypeRef::Heap(a.clone()),
                 TypeRef::Static(t) => TypeRef::Static(t),
             }
         };
@@ -82,6 +82,7 @@ impl Scope {
             return func.clone();
         } else {
             return Rc::new(Function::NativeFunction {
+                name: String::from("print"),
                 function: print,
                 typ: types::get_none_type()
             });
@@ -91,13 +92,13 @@ impl Scope {
 
 impl fmt::Display for Scope {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Locals:\n");
+        try!(write!(f, "Locals:\n"));
         for (key, value) in &self.locals {
-            write!(f, "  {}: {}\n", key, value);
+            try!(write!(f, "  {}: {}\n", key, value));
         }
-        write!(f, "Types:\n");
+        try!(write!(f, "Types:\n"));
         for typ in &self.types {
-            write!(f, "  {}\n", typ);
+            try!(write!(f, "  {}\n", typ));
         }
         return write!(f, "");
     }

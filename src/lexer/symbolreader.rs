@@ -1,6 +1,5 @@
 use super::tokenizer::*;
 use super::token::TokenType;
-use super::token::Token;
 use super::symboltree::TokenDef;
 use super::symboltree::FinalNode;
 use super::symboltree;
@@ -44,9 +43,9 @@ impl Tokenizer for SymbolReader {
 
     /// reads the char provided, returns false
     /// if not a valid character.
-    fn read(&mut self, c: char, line_num: i32) -> bool {
+    fn read(&mut self, c: char) -> bool {
         let mut next_node = self.current_node.clone();
-        let mut was_read = false;
+        let was_read: bool;
         match self.current_node.children.get(&c) {
             Some(n) => {
                 next_node = n.clone();
@@ -64,8 +63,8 @@ impl Tokenizer for SymbolReader {
         let tok = self.current_node.token.clone();
         self.reset();
         let mut v = Vec::new();
-        if let Some(realTok) = tok {
-            v.push(realTok);
+        if let Some(real_tok) = tok {
+            v.push(real_tok);
         }
         return v;
     }

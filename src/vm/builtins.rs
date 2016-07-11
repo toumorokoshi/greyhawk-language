@@ -1,10 +1,9 @@
-use super::module::Module;
-use super::scope::Scope;
 use super::Object;
 use super::types;
 use std::mem;
 use std::rc::Rc;
 
+/*
 pub fn get_builtin_module() -> Module {
     let mut scope = Scope::new();
     let instance = scope.create_instance();
@@ -13,6 +12,7 @@ pub fn get_builtin_module() -> Module {
         scope_instance: instance
     };
 }
+*/
 
 pub fn print(args: &[Object]) -> Object {
     if args.len() > 0 {

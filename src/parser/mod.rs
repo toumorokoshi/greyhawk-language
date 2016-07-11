@@ -69,7 +69,7 @@ pub fn parse(tokens: &Vec<lexer::Token>) -> Result<ast::Statements, String> {
 pub fn parse_statements(parser: &mut Parser) -> PResult<ast::Statements> {
     let mut statements: ast::Statements = Vec::new();
     loop {
-        let mut next: Option<lexer::Token> = {
+        let next: Option<lexer::Token> = {
             match parser.peek() {
                 Some(ref t) => Some((**t).clone()),
                 None => None,

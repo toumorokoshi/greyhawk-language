@@ -34,7 +34,6 @@ pub enum Statement {
     FunctionDecl(FunctionDecl),
     Return(Expression),
     Expr(Expression),
-    Assignment(Assignment),
     Declaration(Declaration),
 }
 

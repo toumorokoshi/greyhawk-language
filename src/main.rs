@@ -8,7 +8,7 @@ use std::io::prelude::*;
 use std::fs::File;
 mod ast;
 mod lexer;
-mod parser;
+// mod parser;
 mod codegen;
 mod vm;
 mod repl;
@@ -32,7 +32,7 @@ fn main () {
             }
         },
         1 => execute_file(&matches.free[0]),
-        0 => repl::start_repl(),
+        0 => {repl::start_repl();},
         _ => println!("Invalid Args"),
     }
 }
@@ -85,9 +85,7 @@ fn print_yaml(yaml: Yaml) {
 }
 
 fn execute_file(path: &String) {
-    let lexer = lexer::Lexer::new();
     let mut vm_instance = vm::VM::new();
-
     let mut file = File::open(path).unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
@@ -96,7 +94,7 @@ fn execute_file(path: &String) {
             let function = codegen::generate_ops(&statement_list);
             match &function {
                 &vm::function::Function::VMFunction(ref f) => {
-                    // println!("{}", f.scope);
+                    println!("{}", f.scope);
                 },
                 _ => {},
             }
