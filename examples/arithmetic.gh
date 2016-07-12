@@ -1,5 +1,0 @@
-Int doMath(a Int, b Int):
-	return a + b + 5
-
-print("Final number: ")
-print(doMath(5 + 7, 6))

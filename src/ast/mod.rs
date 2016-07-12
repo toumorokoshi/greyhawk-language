@@ -1,16 +1,10 @@
-use lexer::token::TokenType;
 pub mod yaml;
 mod assignment;
 mod declaration;
+mod binop;
 pub use self::assignment::Assignment;
 pub use self::declaration::Declaration;
-
-#[derive(Clone, PartialEq, Debug)]
-pub struct BinOp {
-    pub op: TokenType,
-    pub left: Box<Expression>,
-    pub right: Box<Expression>
-}
+pub use self::binop::{BinOp, BinaryOperator};
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct FunctionDecl {

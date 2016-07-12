@@ -1,3 +1,5 @@
+#[cfg(test)]
+
 use super::peg_grammar::{
     binop,
     constant_string,
@@ -10,7 +12,7 @@ use super::peg_grammar::{
     symbol
 };
 use super::ast;
-use lexer::token::{Token, TokenType};
+use super::ast::{BinOp, BinaryOperator};
 
 #[test]
 fn test_symbol() {
@@ -39,12 +41,6 @@ fn test_expression_symbol() {
 }
 
 #[test]
-fn test_declare_token() {
-    assert_eq!(declare_token(":="), Ok(Token{typ: TokenType::Assign,  line_num: 1}));
-    assert!(declare_token("!=").is_err());
-}
-
-#[test]
 fn test_integer() {
     assert_eq!(integer("12345"), Ok(12345));
 }
@@ -55,7 +51,7 @@ fn test_addition() {
         ast::BinOp{
             left: Box::new(ast::Expression::ConstInt{value: 1}),
             right: Box::new(ast::Expression::ConstInt{value: 1}),
-            op: TokenType::Plus
+            op: BinaryOperation::Plus
         }
     ));
 }

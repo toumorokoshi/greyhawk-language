@@ -1,5 +1,5 @@
 use super::ast;
-use super::lexer::token::{Token, TokenType};
+use super::ast::{BinOp, BinaryOperator};
 
 spaces -> usize = s:" "+ { s.len() }
 spaces_or_newline -> usize = s:[ \n]* { s.len() }
@@ -23,10 +23,7 @@ integer -> i64 = [0-9]+ { match_str.parse().unwrap() }
 float -> f64 = [0-9]+ "." [0-9]+ { match_str.parse().unwrap() }
 
 #[pub]
-declare_token -> Token = ":=" { Token{typ: TokenType::Assign, line_num: 1} }
-
-#[pub]
-declare -> ast::Declaration = s:symbol spaces declare_token spaces e:expression
+declare -> ast::Declaration = s:symbol spaces ":=" spaces e:expression
                               { ast::Declaration{name: s, expression: Box::new(e)} }
 
 #[pub]
@@ -57,11 +54,11 @@ binop -> ast::BinOp =
 
 
 #[pub]
-binop_token -> TokenType =
-        "+" { TokenType::Plus }
-      / "*" { TokenType::Mul }
-      / "/" { TokenType::Div}
-      / "-" { TokenType::Sub}
+binop_token -> BinaryOperator =
+        "+" { BinaryOperator::Plus }
+      / "*" { BinaryOperator::Mul }
+      / "/" { BinaryOperator::Div}
+      / "-" { BinaryOperator::Sub}
 
 #[pub]
 expression -> ast::Expression =
