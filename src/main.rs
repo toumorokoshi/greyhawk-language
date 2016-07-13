@@ -13,6 +13,7 @@ mod ast;
 mod codegen;
 mod vm;
 mod repl;
+#[cfg(test)]
 mod grammar_tests;
 use yaml_rust::{Yaml};
 
@@ -93,12 +94,12 @@ fn execute_file(path: &String) {
     match peg_grammar::module(&content) {
         Ok(statement_list) => {
             let function = codegen::generate_ops(&statement_list);
-            match &function {
+            /* match &function {
                 &vm::function::Function::VMFunction(ref f) => {
-                    // println!("{}", f.scope);
+                    println!("{}", f.scope);
                 },
                 _ => {},
-            }
+            } */
             vm_instance.execute_function(&function, &[]);
         },
         Err(msg) => {

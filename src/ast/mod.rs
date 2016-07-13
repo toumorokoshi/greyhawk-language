@@ -2,9 +2,11 @@ pub mod yaml;
 mod assignment;
 mod declaration;
 mod binop;
+mod condition;
 pub use self::assignment::Assignment;
 pub use self::declaration::Declaration;
 pub use self::binop::{BinOp, BinaryOperator};
+pub use self::condition::Condition;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct FunctionDecl {

@@ -1,5 +1,3 @@
-#[cfg(test)]
-
 use super::peg_grammar::{
     binop,
     constant_string,
@@ -11,7 +9,6 @@ use super::peg_grammar::{
     statement_list,
     symbol
 };
-use super::ast;
 use super::ast::{BinOp, BinaryOperator};
 
 #[test]
@@ -51,7 +48,7 @@ fn test_addition() {
         ast::BinOp{
             left: Box::new(ast::Expression::ConstInt{value: 1}),
             right: Box::new(ast::Expression::ConstInt{value: 1}),
-            op: BinaryOperation::Plus
+            op: BinaryOperator::Plus
         }
     ));
 }

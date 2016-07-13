@@ -27,12 +27,17 @@ declare -> ast::Declaration = s:symbol spaces ":=" spaces e:expression
                               { ast::Declaration{name: s, expression: Box::new(e)} }
 
 #[pub]
+block -> ast::Statements =
+      "{" spaces_or_newline? s:statement_list spaces_or_newline? "}"
+      { s }
+
+#[pub]
 return_statement -> ast::Statement = "return" spaces e:expression
                  { ast::Statement::Return(e) }
 
 #[pub]
 function -> ast::FunctionDecl =
-         typ:type_symbol spaces name:symbol "(" spaces? ")" spaces? "{" spaces_or_newline statements:statement_list spaces_or_newline? "}"
+         typ:type_symbol spaces name:symbol "(" spaces? ")" spaces? statements:block
          { ast::FunctionDecl{typ: typ, name: name, statements:statements} }
 
 #[pub]
@@ -86,6 +91,12 @@ statement_list -> ast::Statements =
                new_stmts.push(Box::new(s));
                new_stmts
            }
+
+#[pub]
+condition -> ast::Condition =
+          "if" spaces c:expression spaces t_block:block "else" f_block:block
+          { ast::Condition{true_block: t_block, false_block: f_block, condition: c} }
+
 
 #[pub]
 module -> ast::Statements = statement_list
