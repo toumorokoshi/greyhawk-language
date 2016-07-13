@@ -22,7 +22,8 @@ pub enum Expression {
     ConstString{value: String},
     BinOp(BinOp),
     Symbol(String),
-    Call{name: String, arg: Box<Expression>}
+    Call{name: String, arg: Box<Expression>},
+    Condition(Condition)
 }
 
 #[derive(Clone, Debug, PartialEq)]

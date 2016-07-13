@@ -1,4 +1,5 @@
-if true:
+if true {
 	print("true")
-else:
+} else {
 	print("not so true")
+}

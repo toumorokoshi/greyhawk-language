@@ -5,5 +5,5 @@ use super::{Statements, Expression};
 pub struct Condition {
     pub true_block: Statements,
     pub false_block: Statements,
-    pub condition: Expression
+    pub expression: Box<Expression>
 }

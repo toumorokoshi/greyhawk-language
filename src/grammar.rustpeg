@@ -68,6 +68,7 @@ binop_token -> BinaryOperator =
 #[pub]
 expression -> ast::Expression =
              f:call { f }
+           / c:condition { ast::Expression::Condition(c) }
            / binop:binop { ast::Expression::BinOp(binop) }
            / bt:base_types { bt }
 
@@ -94,8 +95,8 @@ statement_list -> ast::Statements =
 
 #[pub]
 condition -> ast::Condition =
-          "if" spaces c:expression spaces t_block:block "else" f_block:block
-          { ast::Condition{true_block: t_block, false_block: f_block, condition: c} }
+          "if" spaces e:expression spaces t_block:block "else" f_block:block
+          { ast::Condition{true_block: t_block, false_block: f_block, expression: Box::new(e)} }
 
 
 #[pub]

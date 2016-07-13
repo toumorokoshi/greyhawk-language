@@ -1,22 +1,20 @@
 extern crate yaml_rust;
 mod expressions;
+mod statements;
 use ast::Statement;
 use ast::Expression;
 use super::vm;
 use vm::Op;
 use vm::scope;
 use vm::types;
-use vm::function::Function;
-use vm::function::VMFunction;
 use std::rc::Rc;
-
-// pub use self::yaml::to_yaml;
+pub use self::statements::eval_statement;
 
 pub fn generate_ops(statements: &Vec<Box<Statement>>) -> vm::Function {
     let mut ops: Vec<vm::ops::Op> = Vec::new();
     let mut scope = vm::scope::Scope::new();
     for statement in statements {
-        evaluate_stat(statement, &mut scope, &mut ops);
+        eval_statement(statement, &mut scope, &mut ops);
     }
     return vm::Function::VMFunction(vm::VMFunction {
         name: String::from("__main__"),
@@ -26,37 +24,12 @@ pub fn generate_ops(statements: &Vec<Box<Statement>>) -> vm::Function {
     });
 }
 
-pub fn evaluate_stat(statement: &Statement, scope: &mut scope::Scope, ops: &mut Vec<vm::ops::Op>) {
-    match statement {
-        &Statement::FunctionDecl(ref func_decl) => {
-            let mut func_scope = scope::Scope::new();
-            func_scope.allocate_local(types::get_none_type());
-            let mut func_ops = Vec::new();
-            for s in &func_decl.statements {
-                evaluate_stat(s, &mut func_scope, &mut func_ops);
-            }
-            scope.add_function(func_decl.name.clone(), Rc::new(Function::VMFunction(VMFunction{
-                name: func_decl.name.clone(),
-                return_typ: types::get_type_ref_from_string(&func_decl.typ),
-                scope: func_scope,
-                ops: func_ops
-            })));
-        },
-        &Statement::Return(ref expr) => {
-            let op = Op::Return{register: evaluate_expr(expr, scope, ops).index};
-            ops.push(op);
-        },
-        &Statement::Expr(ref expr) => {evaluate_expr(expr, scope, ops);},
-        &Statement::Declaration(ref d) => {
-            let result = evaluate_expr(&(d.expression), scope, ops);
-            let object = scope.add_local(&(d.name.clone()), result.typ);
-            ops.push(Op::Assign{source: result.index, target: object.index});
-        }
-    };
-}
-
 pub fn evaluate_expr(expr: &Expression, scope: &mut scope::Scope, ops: &mut Vec<vm::ops::Op>) -> scope::LocalObject {
     match expr {
+        &Expression::Condition(ref c) => {
+            let obj = evaluate_expr(&(c.condition), scope, ops);
+            obj
+        },
         &Expression::ConstInt{value} => {
             let obj = scope.allocate_local(types::get_int_type());
             ops.push(Op::IntLoad{register: obj.index, constant: value});

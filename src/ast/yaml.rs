@@ -58,6 +58,14 @@ pub fn expr_to_yaml(expr: &Expression) -> Yaml {
             yaml.insert(Yaml::String("name".to_string()), Yaml::String(name.clone()));
             yaml.insert(Yaml::String("arg".to_string()), expr_to_yaml(&arg));
             Yaml::Hash(yaml)
-        }
+        },
+        &Expression::Condition(ref c) => {
+            let mut yaml = BTreeMap::new();
+            yaml.insert(Yaml::String("type".to_string()), Yaml::String("condition".to_string()));
+            yaml.insert(Yaml::String("condition".to_string()), expr_to_yaml(&(c.condition)));
+            yaml.insert(Yaml::String("true_block".to_string()), to_yaml(&c.true_block));
+            yaml.insert(Yaml::String("false_block".to_string()), to_yaml(&c.false_block));
+            Yaml::Hash(yaml)
+        },
     }
 }
