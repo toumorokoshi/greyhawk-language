@@ -17,6 +17,7 @@ pub use self::function::VMFunction;
 pub use self::ops::Op;
 pub use self::scope::ScopeInstance;
 pub use self::scope::Scope;
+pub use self::scope::LocalObject;
 pub use self::builtins::print;
 
 pub struct VM {
@@ -89,6 +90,10 @@ impl VM{
                 &Op::FloatLoad{register, constant} => unsafe {
                     registers[register] = mem::transmute::<f64, i64>(constant)
                 },
+                &Op::Goto{position} => {
+                    i = position - 1;
+                },
+                &Op::Noop{} => {},
                 // TODO: incomplete. ends up as the null pointer right now.
                 &Op::StringLoad{register, ref constant} => unsafe {
                     registers[register] = mem::transmute::<Rc<String>, i64>(constant.clone());

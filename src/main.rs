@@ -29,7 +29,7 @@ fn main () {
     match matches.free.len() {
         l if l > 1 => {
             match matches.free[0].as_ref() {
-                "parser" => parse(&matches.free[1]),
+                "ast" => parse(&matches.free[1]),
                 _ => println!("no such subcommand"),
             }
         },

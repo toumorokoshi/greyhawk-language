@@ -1,17 +1,17 @@
 use std::rc::Rc;
-use ast::{Statement};
+use ast::{Statement, Statements};
 use vm::{scope, types, Op};
 use vm::function::{Function, VMFunction};
 use super::evaluate_expr;
 
-pub fn eval_statement(s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>) {
+pub fn gen_statement(s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>) {
     match s {
         &Statement::FunctionDecl(ref func_decl) => {
             let mut func_scope = scope::Scope::new();
             func_scope.allocate_local(types::get_none_type());
             let mut func_ops = Vec::new();
             for s in &func_decl.statements {
-                eval_statement(s, &mut func_scope, &mut func_ops);
+                gen_statement(s, &mut func_scope, &mut func_ops);
             }
             scope.add_function(func_decl.name.clone(), Rc::new(Function::VMFunction(VMFunction{
                 name: func_decl.name.clone(),
@@ -31,4 +31,10 @@ pub fn eval_statement(s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>
             ops.push(Op::Assign{source: result.index, target: object.index});
         }
     };
+}
+
+pub fn gen_statement_list(statements: &Statements, scope: &mut scope::Scope, ops: &mut Vec<Op>) {
+    for s in statements {
+        gen_statement(s, scope, ops);
+    }
 }

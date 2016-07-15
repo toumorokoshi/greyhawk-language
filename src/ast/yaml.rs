@@ -62,7 +62,7 @@ pub fn expr_to_yaml(expr: &Expression) -> Yaml {
         &Expression::Condition(ref c) => {
             let mut yaml = BTreeMap::new();
             yaml.insert(Yaml::String("type".to_string()), Yaml::String("condition".to_string()));
-            yaml.insert(Yaml::String("condition".to_string()), expr_to_yaml(&(c.condition)));
+            yaml.insert(Yaml::String("expression".to_string()), expr_to_yaml(&(c.expression)));
             yaml.insert(Yaml::String("true_block".to_string()), to_yaml(&c.true_block));
             yaml.insert(Yaml::String("false_block".to_string()), to_yaml(&c.false_block));
             Yaml::Hash(yaml)

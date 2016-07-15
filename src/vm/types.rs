@@ -51,10 +51,15 @@ impl PartialEq<TypeRef> for TypeRef {
     }
 }
 
+pub static BOOL_TYPE: Type = Type {name: "Bool"};
 pub static INT_TYPE: Type = Type {name: "Int"};
 pub static FLOAT_TYPE: Type = Type {name: "Float"};
 pub static NONE_TYPE: Type = Type {name: "None"};
 pub static STRING_TYPE: Type = Type {name: "String"};
+
+pub fn get_bool_type() -> TypeRef {
+    return TypeRef::Static(&BOOL_TYPE);
+}
 
 pub fn get_int_type() -> TypeRef {
     return TypeRef::Static(&INT_TYPE);

@@ -1,6 +1,7 @@
 extern crate yaml_rust;
 mod expressions;
 mod statements;
+mod block;
 use ast::Statement;
 use ast::Expression;
 use super::vm;
@@ -8,28 +9,26 @@ use vm::Op;
 use vm::scope;
 use vm::types;
 use std::rc::Rc;
-pub use self::statements::eval_statement;
+pub use self::statements::{
+    gen_statement,
+    gen_statement_list
+};
+pub use self::block::gen_block;
 
 pub fn generate_ops(statements: &Vec<Box<Statement>>) -> vm::Function {
-    let mut ops: Vec<vm::ops::Op> = Vec::new();
-    let mut scope = vm::scope::Scope::new();
-    for statement in statements {
-        eval_statement(statement, &mut scope, &mut ops);
-    }
+    let block = gen_block(statements);
     return vm::Function::VMFunction(vm::VMFunction {
         name: String::from("__main__"),
-        scope: scope,
-        ops: ops,
+        scope: block.scope,
+        ops: block.ops,
         return_typ: types::get_none_type(),
     });
 }
 
 pub fn evaluate_expr(expr: &Expression, scope: &mut scope::Scope, ops: &mut Vec<vm::ops::Op>) -> scope::LocalObject {
     match expr {
-        &Expression::Condition(ref c) => {
-            let obj = evaluate_expr(&(c.condition), scope, ops);
-            obj
-        },
+        &Expression::Condition(ref c) =>
+            expressions::gen_condition(&c, scope, ops),
         &Expression::ConstInt{value} => {
             let obj = scope.allocate_local(types::get_int_type());
             ops.push(Op::IntLoad{register: obj.index, constant: value});
