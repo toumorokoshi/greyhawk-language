@@ -9,8 +9,15 @@ pub use self::binop::{BinOp, BinaryOperator};
 pub use self::condition::Condition;
 
 #[derive(Clone, PartialEq, Debug)]
+pub struct ArgumentDecl {
+    pub name: String,
+    pub typ: String
+}
+
+#[derive(Clone, PartialEq, Debug)]
 pub struct FunctionDecl {
     pub name: String,
+    pub arguments: Vec<ArgumentDecl>,
     pub statements: Vec<Box<Statement>>,
     pub typ: String,
 }
@@ -22,9 +29,11 @@ pub enum Expression {
     ConstString{value: String},
     BinOp(BinOp),
     Symbol(String),
-    Call{name: String, arg: Box<Expression>},
+    Call{name: String, args: ExpressionList},
     Condition(Condition)
 }
+
+pub type ExpressionList = Vec<Box<Expression>>;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Statement {

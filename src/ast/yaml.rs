@@ -52,11 +52,11 @@ pub fn expr_to_yaml(expr: &Expression) -> Yaml {
             yaml.insert(Yaml::String("right".to_string()), expr_to_yaml(&right));
             Yaml::Hash(yaml)
         },
-        &Expression::Call{ref name, ref arg} => {
+        &Expression::Call{ref name, ref args} => {
             let mut yaml = BTreeMap::new();
             yaml.insert(Yaml::String("type".to_string()), Yaml::String("call".to_string()));
             yaml.insert(Yaml::String("name".to_string()), Yaml::String(name.clone()));
-            yaml.insert(Yaml::String("arg".to_string()), expr_to_yaml(&arg));
+            // yaml.insert(Yaml::String("arg".to_string()), expr_to_yaml(&arg));
             Yaml::Hash(yaml)
         },
         &Expression::Condition(ref c) => {

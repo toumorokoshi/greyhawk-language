@@ -36,14 +36,46 @@ return_statement -> ast::Statement = "return" spaces e:expression
                  { ast::Statement::Return(e) }
 
 #[pub]
+argument_declarations -> Vec<ast::ArgumentDecl> =
+           name:symbol spaces typ:type_symbol spaces? "," spaces an:argument_declarations {
+               let mut new_stmts = Vec::new();
+               new_stmts.push(ast::ArgumentDecl{name: name, typ: typ});
+               new_stmts.extend_from_slice(&an);
+               new_stmts
+           }
+         / name:symbol spaces typ:type_symbol {vec![ast::ArgumentDecl{name: name, typ: typ}]}
+         / spaces? { Vec::new() }
+
+#[pub]
 function -> ast::FunctionDecl =
-         typ:type_symbol spaces name:symbol "(" spaces? ")" spaces? statements:block
-         { ast::FunctionDecl{typ: typ, name: name, statements:statements} }
+         typ:type_symbol spaces name:symbol "(" an:argument_declarations ")" spaces? statements:block
+         {
+           ast::FunctionDecl{
+             typ: typ,
+             name: name,
+             arguments: an,
+             statements:statements
+           }
+         }
+
+#[pub]
+arguments -> ast::ExpressionList =
+             e:expression spaces? "," spaces? a:arguments {
+               let mut new_stmts = Vec::new();
+               new_stmts.push(Box::new(e));
+               new_stmts.extend_from_slice(&a);
+               new_stmts
+             }
+           / e:expression {
+               let mut new_stmts = Vec::new();
+               new_stmts.push(Box::new(e));
+               new_stmts
+             }
+          / "" { Vec::new() }
 
 #[pub]
 call -> ast::Expression =
-       s:symbol "(" e:expression ")" { ast::Expression::Call{name: s, arg: Box::new(e)} }
-     / s:symbol "(" ")" { ast::Expression::Call{name: s, arg: Box::new(ast::Expression::ConstInt{value: 0})} }
+        s:symbol "(" a:arguments ")" { ast::Expression::Call{name: s, args: a}}
 
 #[pub]
 base_types -> ast::Expression =

@@ -6,6 +6,7 @@ use super::types;
 
 pub struct VMFunction {
     pub name: String,
+    pub argument_names: Vec<String>,
     pub scope: scope::Scope,
     pub ops: Vec<ops::Op>,
     pub return_typ: super::types::TypeRef
@@ -36,6 +37,14 @@ impl Function {
             },
             &Function::VMFunction(ref f) => {
                 let mut scope_instance = f.scope.create_instance();
+                for i in 0..(f.argument_names.len()) {
+                    match f.scope.get_local(&f.argument_names[i]) {
+                        Some(o) => {
+                            scope_instance.registers[o.index] = args[i].value;
+                        },
+                        _ => {}
+                    }
+                }
                 let return_register = vm.execute_instructions(&mut scope_instance, &f.scope, &f.ops[..]);
                 if scope_instance.registers.len() == 0 {
                     Object {

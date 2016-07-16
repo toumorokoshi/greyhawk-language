@@ -42,7 +42,7 @@ impl Scope {
         };
     }
 
-    pub fn get_local(&mut self, name: &String) -> Option<LocalObject> {
+    pub fn get_local(&self, name: &String) -> Option<LocalObject> {
         match self.locals.get(name) {
             None => None,
             Some(index) => {

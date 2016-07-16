@@ -19,6 +19,7 @@ pub fn generate_ops(statements: &Vec<Box<Statement>>) -> vm::Function {
     let block = gen_block(statements);
     return vm::Function::VMFunction(vm::VMFunction {
         name: String::from("__main__"),
+        argument_names: vec![],
         scope: block.scope,
         ops: block.ops,
         return_typ: types::get_none_type(),
@@ -51,9 +52,12 @@ pub fn evaluate_expr(expr: &Expression, scope: &mut scope::Scope, ops: &mut Vec<
             }
         },
         &Expression::BinOp(ref op) => expressions::generate_binop(op, scope, ops),
-        &Expression::Call{ref name, ref arg} => {
+        &Expression::Call{ref name, args: ref arg_expressions} => {
             let func = scope.get_function(name);
-            let args = vec![evaluate_expr(&arg, scope, ops)];
+            let mut args = Vec::new();
+            for e in arg_expressions {
+                args.push(evaluate_expr(&e, scope, ops));
+            }
             let ret_val = scope.allocate_local(func.return_type());
             ops.push(Op::Call{func: func, args: args, target: ret_val.index});
             ret_val
