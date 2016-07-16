@@ -45,7 +45,7 @@ impl VM{
                     registers[target] = registers[source];
                 },
                 &Op::Branch{condition, if_false} => {
-                    if registers[condition] != 0 {
+                    if registers[condition] == 0 {
                         // -1 to allow an increment at the end of the
                         // function.
                         i = if_false - 1;

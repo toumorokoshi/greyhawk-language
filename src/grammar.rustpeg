@@ -48,6 +48,8 @@ call -> ast::Expression =
 #[pub]
 base_types -> ast::Expression =
              s:constant_string { ast::Expression::ConstString{value: s} }
+           / "true" { ast::Expression::ConstInt{value: 1} }
+           / "false" { ast::Expression::ConstInt{value: 0} }
            / f:float { ast::Expression::ConstFloat{value: f} }
            / i:integer { ast::Expression::ConstInt{value: i} }
            / s:symbol { ast::Expression::Symbol(s) }
@@ -95,7 +97,7 @@ statement_list -> ast::Statements =
 
 #[pub]
 condition -> ast::Condition =
-          "if" spaces e:expression spaces t_block:block "else" f_block:block
+          "if" spaces e:expression spaces t_block:block spaces? "else" spaces? f_block:block
           { ast::Condition{true_block: t_block, false_block: f_block, expression: Box::new(e)} }
 
 
