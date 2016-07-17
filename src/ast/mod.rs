@@ -37,10 +37,11 @@ pub type ExpressionList = Vec<Box<Expression>>;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Statement {
+    Assignment(Assignment),
+    Declaration(Declaration),
+    Expr(Expression),
     FunctionDecl(FunctionDecl),
     Return(Expression),
-    Expr(Expression),
-    Declaration(Declaration),
 }
 
 pub type Statements = Vec<Box<Statement>>;

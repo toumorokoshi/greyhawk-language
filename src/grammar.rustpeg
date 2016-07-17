@@ -27,6 +27,10 @@ declare -> ast::Declaration = s:symbol spaces ":=" spaces e:expression
                               { ast::Declaration{name: s, expression: Box::new(e)} }
 
 #[pub]
+assignment -> ast::Assignment = s:symbol spaces "=" spaces e:expression
+                              { ast::Assignment{name: s, expression: Box::new(e)} }
+
+#[pub]
 block -> ast::Statements =
       "{" spaces_or_newline? s:statement_list spaces_or_newline? "}"
       { s }
@@ -108,7 +112,8 @@ expression -> ast::Expression =
 
 #[pub]
 statement -> ast::Statement =
-       d:declare { ast::Statement::Declaration(d) }
+       a:assignment { ast::Statement::Assignment(a) }
+     / d:declare { ast::Statement::Declaration(d) }
      / f:function { ast::Statement::FunctionDecl(f) }
      / r:return_statement { r }
      / e:expression { ast::Statement::Expr(e) }

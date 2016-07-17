@@ -36,6 +36,21 @@ pub fn gen_statement(s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>)
             let result = evaluate_expr(&(d.expression), scope, ops);
             let object = scope.add_local(&(d.name.clone()), result.typ);
             ops.push(Op::Assign{source: result.index, target: object.index});
+        },
+        &Statement::Assignment(ref d) => {
+            match scope.get_local(&(d.name)) {
+                Some(object) => {
+                    let result = evaluate_expr(&(d.expression), scope, ops);
+                    if object.typ == result.typ {
+                        ops.push(Op::Assign{source: result.index, target: object.index});
+                    } else {
+                        panic!(format!("mismatched types for assignment to {0}. Expected {1}, got {2}", d.name, object.typ, result.typ));
+                    }
+                }
+                _ => {
+                    panic!(format!("unable to assign to undeclared variable {0}", d.name));
+                }
+            }
         }
     };
 }

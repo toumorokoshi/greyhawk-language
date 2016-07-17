@@ -1,20 +1,9 @@
-Int testIfElse(x Bool):
-	if x:
-		i := 5
-		return i
-	else:
-		return 2
-	return 0
-
-None printHelloWorld():
-	print("hello world")
-
-None main():
-
-	print(testIfElse(true))
-	print(testIfElse(false))
-	printHelloWorld()
-	print(1)
-
-print("Running main..")
-main()
+Int testIfElse(x Bool) {
+    if x {
+       return 5
+    } else {
+       return 2
+    }
+}
+print(testIfElse(true))
+print(testIfElse(false))
