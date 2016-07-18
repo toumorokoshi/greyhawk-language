@@ -52,7 +52,7 @@ impl Scope {
     }
 
     pub fn add_local(&mut self, name: &String, typ: TypeRef) -> LocalObject {
-        if let Some(i) = self.locals.get(name) {
+        if let Some(_) = self.locals.get(name) {
             panic!(format!("cannot redeclare previously declared local {0}", name));
         }
         let object = self.allocate_local(typ);

@@ -40,6 +40,12 @@ pub fn stmt_to_yaml(stmt: &Statement) -> Yaml {
             yaml.insert(Yaml::String("name".to_string()), Yaml::String(a.name.clone()));
             yaml.insert(Yaml::String("expression".to_string()), expr_to_yaml(&a.expression));
             Yaml::Hash(yaml)
+        },
+        &Statement::While(ref w) =>  {
+            yaml.insert(Yaml::String("type".to_string()), Yaml::String("while".to_string()));
+            yaml.insert(Yaml::String("condition".to_string()), expr_to_yaml(&w.condition));
+            yaml.insert(Yaml::String("block".to_string()), to_yaml(&w.block));
+            Yaml::Hash(yaml)
         }
     }
 }
@@ -62,7 +68,11 @@ pub fn expr_to_yaml(expr: &Expression) -> Yaml {
             let mut yaml = BTreeMap::new();
             yaml.insert(Yaml::String("type".to_string()), Yaml::String("call".to_string()));
             yaml.insert(Yaml::String("name".to_string()), Yaml::String(name.clone()));
-            // yaml.insert(Yaml::String("arg".to_string()), expr_to_yaml(&arg));
+            let mut arg_yaml = Vec::new();
+            for arg in args {
+                arg_yaml.push(expr_to_yaml(arg));
+            }
+            yaml.insert(Yaml::String("args".to_string()), Yaml::Array(arg_yaml));
             Yaml::Hash(yaml)
         },
         &Expression::Condition(ref c) => {

@@ -114,19 +114,20 @@ expression -> ast::Expression =
 statement -> ast::Statement =
        a:assignment { ast::Statement::Assignment(a) }
      / d:declare { ast::Statement::Declaration(d) }
+     / w:while_statement { ast::Statement::While(w) }
      / f:function { ast::Statement::FunctionDecl(f) }
      / r:return_statement { r }
      / e:expression { ast::Statement::Expr(e) }
 
 #[pub]
 statement_list -> ast::Statements =
-           s:statement newline stmts:statement_list {
+           s:statement newline spaces? stmts:statement_list {
                let mut new_stmts = Vec::new();
                new_stmts.push(Box::new(s));
                new_stmts.extend_from_slice(&stmts);
                new_stmts
            }
-           / s:statement newline? {
+           / spaces? s:statement newline? {
                let mut new_stmts = Vec::new();
                new_stmts.push(Box::new(s));
                new_stmts
@@ -136,6 +137,11 @@ statement_list -> ast::Statements =
 condition -> ast::Condition =
           "if" spaces e:expression spaces t_block:block spaces? "else" spaces? f_block:block
           { ast::Condition{true_block: t_block, false_block: f_block, expression: Box::new(e)} }
+
+#[pub]
+while_statement -> ast::While =
+      "while" spaces condition:expression spaces? block:block
+      { ast::While{condition: Box::new(condition), block: block} }
 
 
 #[pub]

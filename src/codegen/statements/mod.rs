@@ -2,7 +2,7 @@ use std::rc::Rc;
 use ast::{Statement, Statements};
 use vm::{scope, types, Op, get_type_ref_from_string};
 use vm::function::{Function, VMFunction};
-use super::evaluate_expr;
+use super::{evaluate_expr};
 
 pub fn gen_statement(s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>) {
     match s {
@@ -51,6 +51,18 @@ pub fn gen_statement(s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>)
                     panic!(format!("unable to assign to undeclared variable {0}", d.name));
                 }
             }
+        },
+        &Statement::While(ref w) => {
+            let start_index = ops.len();
+            let result_obj = evaluate_expr(&(w.condition), scope, ops);
+            let cond_index = ops.len();
+            ops.push(Op::Noop{});
+            gen_statement_list(&(w.block), scope, ops);
+            // go back to the condition statement, to
+            // see if we should loop again.
+            ops.push(Op::Goto{position: start_index});
+            let end_of_while_position = ops.len();
+            ops[cond_index] = Op::Branch{condition: result_obj.index, if_false: end_of_while_position};
         }
     };
 }

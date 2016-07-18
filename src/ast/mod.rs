@@ -3,10 +3,12 @@ mod assignment;
 mod declaration;
 mod binop;
 mod condition;
+mod while_struct;
 pub use self::assignment::Assignment;
 pub use self::declaration::Declaration;
 pub use self::binop::{BinOp, BinaryOperator};
 pub use self::condition::Condition;
+pub use self::while_struct::While;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct ArgumentDecl {
@@ -42,6 +44,7 @@ pub enum Statement {
     Expr(Expression),
     FunctionDecl(FunctionDecl),
     Return(Expression),
+    While(While)
 }
 
 pub type Statements = Vec<Box<Statement>>;
