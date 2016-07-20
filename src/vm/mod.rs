@@ -45,6 +45,9 @@ impl VM{
                 &Op::Assign{source, target} => {
                     registers[target] = registers[source];
                 },
+                &Op::BoolNot{source, target} => {
+                    registers[target] = registers[source] != 1 ? 0 : 1;
+                },
                 &Op::Branch{condition, if_false} => {
                     if registers[condition] == 0 {
                         // -1 to allow an increment at the end of the
