@@ -46,7 +46,7 @@ impl VM{
                     registers[target] = registers[source];
                 },
                 &Op::BoolNot{source, target} => {
-                    registers[target] = registers[source] != 1 ? 0 : 1;
+                    registers[target] = if registers[source] != 1 { 0 } else { 1 };
                 },
                 &Op::Branch{condition, if_false} => {
                     if registers[condition] == 0 {
@@ -63,15 +63,24 @@ impl VM{
                     registers[target] = self.execute_function(func, &arg_objects).value
                 },
                 &Op::IntAdd{lhs, rhs, target} => registers[target] = registers[lhs] + registers[rhs],
+                &Op::IntCmp{lhs, rhs, target} => registers[target] = if registers[lhs] == registers[rhs] {1} else {0},
                 &Op::IntSub{lhs, rhs, target} => registers[target] = registers[lhs] - registers[rhs],
                 &Op::IntMul{lhs, rhs, target} => registers[target] = registers[lhs] * registers[rhs],
                 &Op::IntDiv{lhs, rhs, target} => registers[target] = registers[lhs] / registers[rhs],
                 &Op::IntLoad{register, constant} => registers[register] = constant,
+                &Op::IntLessEqual{lhs, rhs, target} => registers[target] = if registers[lhs] <= registers[rhs] {1} else {0},
+                &Op::IntLessThan{lhs, rhs, target} => registers[target] = if registers[lhs] < registers[rhs] {1} else {0},
                 &Op::FloatAdd{lhs, rhs, target} => unsafe {
                     registers[target] = mem::transmute::<f64, i64>(
                         mem::transmute::<i64, f64>(registers[lhs]) +
                         mem::transmute::<i64, f64>(registers[rhs]),
                     );
+                },
+                &Op::FloatCmp{lhs, rhs, target} => unsafe {
+                    registers[target] = if
+                        mem::transmute::<i64, f64>(registers[lhs]) ==
+                        mem::transmute::<i64, f64>(registers[lhs])
+                    { 1 } else { 0 };
                 },
                 &Op::FloatSub{lhs, rhs, target} => unsafe {
                     registers[target] = mem::transmute::<f64, i64>(
@@ -93,6 +102,18 @@ impl VM{
                 },
                 &Op::FloatLoad{register, constant} => unsafe {
                     registers[register] = mem::transmute::<f64, i64>(constant)
+                },
+                &Op::FloatLessEqual{lhs, rhs, target} => unsafe {
+                    registers[target] = if
+                        mem::transmute::<i64, f64>(registers[lhs]) <=
+                        mem::transmute::<i64, f64>(registers[lhs])
+                    { 1 } else { 0 };
+                },
+                &Op::FloatLessThan{lhs, rhs, target} => unsafe {
+                    registers[target] = if
+                        mem::transmute::<i64, f64>(registers[lhs]) <
+                        mem::transmute::<i64, f64>(registers[lhs])
+                    { 1 } else { 0 };
                 },
                 &Op::Goto{position} => {
                     i = position - 1;
