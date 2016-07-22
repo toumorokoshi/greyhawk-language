@@ -1,0 +1,23 @@
+if 1 == 1 {
+  print("1eq1")
+} else {
+  print("failed")
+}
+
+if 1 != 0 {
+  print("1neq1")
+} else {
+  print("failed")
+}
+
+if 1.0 == 1.0 {
+  print("1.0eq1.0")
+} else {
+  print("failed")
+}
+
+if 1.0 != 1.1 {
+  print("1.0neq1.1")
+} else {
+  print("failed")
+}

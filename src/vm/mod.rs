@@ -46,7 +46,7 @@ impl VM{
                     registers[target] = registers[source];
                 },
                 &Op::BoolNot{source, target} => {
-                    registers[target] = if registers[source] != 1 { 0 } else { 1 };
+                    registers[target] = if registers[source] != 1 { 1 } else { 0 };
                 },
                 &Op::Branch{condition, if_false} => {
                     if registers[condition] == 0 {
@@ -79,7 +79,7 @@ impl VM{
                 &Op::FloatCmp{lhs, rhs, target} => unsafe {
                     registers[target] = if
                         mem::transmute::<i64, f64>(registers[lhs]) ==
-                        mem::transmute::<i64, f64>(registers[lhs])
+                        mem::transmute::<i64, f64>(registers[rhs])
                     { 1 } else { 0 };
                 },
                 &Op::FloatSub{lhs, rhs, target} => unsafe {

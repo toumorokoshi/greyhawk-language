@@ -102,6 +102,8 @@ binop_token -> BinaryOperator =
       / "*" { BinaryOperator::Mul }
       / "/" { BinaryOperator::Div}
       / "-" { BinaryOperator::Sub}
+      / "!=" { BinaryOperator::Neq}
+      / "==" { BinaryOperator::Eq}
 
 #[pub]
 expression -> ast::Expression =

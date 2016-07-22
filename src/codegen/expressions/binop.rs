@@ -15,6 +15,18 @@ pub fn generate_binop(binop: &BinOp, scope: &mut scope::Scope, instructions: &mu
             BinaryOperator::Sub => instructions.push(Op::FloatSub{lhs: left.index, rhs: right.index, target: object.index}),
             BinaryOperator::Mul => instructions.push(Op::FloatMul{lhs: left.index, rhs: right.index, target: object.index}),
             BinaryOperator::Div => instructions.push(Op::FloatDiv{lhs: left.index, rhs: right.index, target: object.index}),
+            BinaryOperator::Neq => {
+                let cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::FloatCmp{lhs: left.index, rhs: right.index, target: cmp.index});
+                let second_cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::BoolNot{source: cmp.index, target: second_cmp.index});
+                return second_cmp;
+            },
+            BinaryOperator::Eq => {
+                let cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::FloatCmp{lhs: left.index, rhs: right.index, target: cmp.index});
+                return cmp;
+            },
             // TODO: this should be validated when creating the
             // expression, rather that during evaluation.
         };
@@ -26,6 +38,18 @@ pub fn generate_binop(binop: &BinOp, scope: &mut scope::Scope, instructions: &mu
             BinaryOperator::Sub => instructions.push(Op::IntSub{lhs: left.index, rhs: right.index, target: object.index}),
             BinaryOperator::Mul => instructions.push(Op::IntMul{lhs: left.index, rhs: right.index, target: object.index}),
             BinaryOperator::Div => instructions.push(Op::IntDiv{lhs: left.index, rhs: right.index, target: object.index}),
+            BinaryOperator::Neq => {
+                let cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::IntCmp{lhs: left.index, rhs: right.index, target: cmp.index});
+                let second_cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::BoolNot{source: cmp.index, target: second_cmp.index});
+                return second_cmp;
+            },
+            BinaryOperator::Eq => {
+                let cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::IntCmp{lhs: left.index, rhs: right.index, target: cmp.index});
+                return cmp;
+            },
             // TODO: this should be validated when creating the
             // expression, rather that during evaluation.
         };

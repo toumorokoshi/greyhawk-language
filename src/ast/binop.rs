@@ -6,7 +6,9 @@ pub enum BinaryOperator {
     Plus,
     Sub,
     Mul,
-    Div
+    Div,
+    Neq,
+    Eq,
 }
 
 impl fmt::Display for BinaryOperator {
@@ -16,6 +18,8 @@ impl fmt::Display for BinaryOperator {
             &BinaryOperator::Sub  => f.write_str("-"),
             &BinaryOperator::Mul  => f.write_str("/"),
             &BinaryOperator::Div  => f.write_str("*"),
+            &BinaryOperator::Neq => f.write_str("!="),
+            &BinaryOperator::Eq => f.write_str("=="),
         }
     }
 }
