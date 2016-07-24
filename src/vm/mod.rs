@@ -106,13 +106,13 @@ impl VM{
                 &Op::FloatLessEqual{lhs, rhs, target} => unsafe {
                     registers[target] = if
                         mem::transmute::<i64, f64>(registers[lhs]) <=
-                        mem::transmute::<i64, f64>(registers[lhs])
+                        mem::transmute::<i64, f64>(registers[rhs])
                     { 1 } else { 0 };
                 },
                 &Op::FloatLessThan{lhs, rhs, target} => unsafe {
                     registers[target] = if
                         mem::transmute::<i64, f64>(registers[lhs]) <
-                        mem::transmute::<i64, f64>(registers[lhs])
+                        mem::transmute::<i64, f64>(registers[rhs])
                     { 1 } else { 0 };
                 },
                 &Op::Goto{position} => {

@@ -100,10 +100,14 @@ binop -> ast::BinOp =
 binop_token -> BinaryOperator =
         "+" { BinaryOperator::Plus }
       / "*" { BinaryOperator::Mul }
-      / "/" { BinaryOperator::Div}
-      / "-" { BinaryOperator::Sub}
-      / "!=" { BinaryOperator::Neq}
-      / "==" { BinaryOperator::Eq}
+      / "/" { BinaryOperator::Div }
+      / "-" { BinaryOperator::Sub }
+      / "!=" { BinaryOperator::Neq }
+      / "==" { BinaryOperator::Eq }
+      / "<=" { BinaryOperator::Leq }
+      / "<" { BinaryOperator::Le }
+      / ">=" { BinaryOperator::Geq }
+      / ">" { BinaryOperator::Ge }
 
 #[pub]
 expression -> ast::Expression =

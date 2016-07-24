@@ -9,6 +9,10 @@ pub enum BinaryOperator {
     Div,
     Neq,
     Eq,
+    Leq,
+    Le,
+    Ge,
+    Geq
 }
 
 impl fmt::Display for BinaryOperator {
@@ -20,6 +24,10 @@ impl fmt::Display for BinaryOperator {
             &BinaryOperator::Div  => f.write_str("*"),
             &BinaryOperator::Neq => f.write_str("!="),
             &BinaryOperator::Eq => f.write_str("=="),
+            &BinaryOperator::Le => f.write_str("<"),
+            &BinaryOperator::Leq => f.write_str("<="),
+            &BinaryOperator::Ge => f.write_str(">"),
+            &BinaryOperator::Geq => f.write_str(">="),
         }
     }
 }

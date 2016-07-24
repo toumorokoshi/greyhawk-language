@@ -1,0 +1,23 @@
+if 1 < 2 {
+  print("pass")
+} else {
+  print("failed")
+}
+
+if 1.1 > 1 {
+  print("pass")
+} else {
+  print("failed")
+}
+
+if 1.0 <= 1.0 {
+  print("pass")
+} else {
+  print("failed")
+}
+
+if 1.1 >= 1.1 {
+  print("pass")
+} else {
+  print("failed")
+}

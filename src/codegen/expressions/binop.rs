@@ -27,6 +27,26 @@ pub fn generate_binop(binop: &BinOp, scope: &mut scope::Scope, instructions: &mu
                 instructions.push(Op::FloatCmp{lhs: left.index, rhs: right.index, target: cmp.index});
                 return cmp;
             },
+            BinaryOperator::Le => {
+                let cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::FloatLessThan{lhs: left.index, rhs: right.index, target: cmp.index});
+                return cmp;
+            },
+            BinaryOperator::Leq => {
+                let cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::FloatLessEqual{lhs: left.index, rhs: right.index, target: cmp.index});
+                return cmp;
+            },
+            BinaryOperator::Ge => {
+                let cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::FloatLessThan{rhs: left.index, lhs: right.index, target: cmp.index});
+                return cmp;
+            },
+            BinaryOperator::Geq => {
+                let cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::FloatLessEqual{rhs: left.index, lhs: right.index, target: cmp.index});
+                return cmp;
+            },
             // TODO: this should be validated when creating the
             // expression, rather that during evaluation.
         };
@@ -50,6 +70,26 @@ pub fn generate_binop(binop: &BinOp, scope: &mut scope::Scope, instructions: &mu
                 instructions.push(Op::IntCmp{lhs: left.index, rhs: right.index, target: cmp.index});
                 return cmp;
             },
+            BinaryOperator::Le => {
+                let cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::IntLessThan{lhs: left.index, rhs: right.index, target: cmp.index});
+                return cmp;
+            },
+            BinaryOperator::Leq => {
+                let cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::IntLessEqual{lhs: left.index, rhs: right.index, target: cmp.index});
+                return cmp;
+            },
+            BinaryOperator::Ge => {
+                let cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::IntLessThan{rhs: left.index, lhs: right.index, target: cmp.index});
+                return cmp;
+            },
+            BinaryOperator::Geq => {
+                let cmp = scope.allocate_local(types::get_bool_type());
+                instructions.push(Op::IntLessEqual{rhs: left.index, lhs: right.index, target: cmp.index});
+                return cmp;
+            }
             // TODO: this should be validated when creating the
             // expression, rather that during evaluation.
         };
