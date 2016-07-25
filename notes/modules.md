@@ -1,3 +1,13 @@
+# Modules
+
+GreyHawk supports modules: units of code that can export values and functions,
+and can be imported into other libraries as well.
+
+modules can be executed
+
+- pre-execution: the module has not been executed yet.
+
+
 # LOAD_MODULE = map access on module heap
 # LOAD_MODULE_VALUE = map access on module
 

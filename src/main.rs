@@ -11,6 +11,7 @@ mod ast;
 // mod lexer;
 // mod parser;
 mod codegen;
+mod interpreter;
 mod vm;
 mod repl;
 #[cfg(test)]

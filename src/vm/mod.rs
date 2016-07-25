@@ -30,7 +30,7 @@ pub struct Object {
     pub typ: types::TypeRef,
 }
 
-impl VM{
+impl VM {
     pub fn new() -> VM {
         return VM {modules: HashMap::new()};
     }
