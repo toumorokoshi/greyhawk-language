@@ -2,23 +2,20 @@ use std::fmt;
 use std::collections::HashMap;
 use std::rc::Rc;
 use super::types;
-use super::types::TypeRef;
+use super::types::Type;
 use super::Function;
 use super::builtins::print;
 
 pub struct LocalObject {
     pub index: usize,
-    pub typ: TypeRef
+    pub typ: Rc<Type>
 }
 
 impl Clone for LocalObject {
     fn clone(&self) -> LocalObject {
         return LocalObject {
             index: self.index,
-            typ: match self.typ {
-                // TypeRef::Heap(ref a) => TypeRef::Heap(a.clone()),
-                TypeRef::Static(t) => TypeRef::Static(t),
-            }
+            typ: self.typ.clone(),
         };
     }
 }
@@ -26,7 +23,7 @@ impl Clone for LocalObject {
 pub struct Scope {
     pub locals: HashMap<String, usize>,
     pub functions: HashMap<String, Rc<Function>>,
-    pub types: Vec<types::TypeRef>
+    pub types: Vec<Rc<Type>>
 }
 
 pub struct ScopeInstance {
@@ -51,7 +48,7 @@ impl Scope {
         }
     }
 
-    pub fn add_local(&mut self, name: &String, typ: TypeRef) -> LocalObject {
+    pub fn add_local(&mut self, name: &String, typ: Type) -> LocalObject {
         if let Some(_) = self.locals.get(name) {
             panic!(format!("cannot redeclare previously declared local {0}", name));
         }
@@ -64,7 +61,7 @@ impl Scope {
         self.functions.insert(name, function);
     }
 
-    pub fn allocate_local(&mut self, typ: TypeRef) -> LocalObject {
+    pub fn allocate_local(&mut self, typ: Type) -> LocalObject {
         self.types.push(typ.clone());
         return LocalObject {
             index: self.types.len() - 1,

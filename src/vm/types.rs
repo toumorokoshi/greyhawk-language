@@ -1,93 +1,33 @@
 // use std::sync::Arc;
 use std::fmt;
+use std::rc::Rc;
 
+#[derive(Clone, PartialEq)]
 pub struct Type {
-    name: &'static str
+    name: String
 }
 
-pub enum TypeRef {
-    // we use Arcs because it's thread-safe,
-    // and type references are shared across
-    // processes.
-    // Heap(Arc<Type>),
-    Static(&'static Type),
-}
-
-impl TypeRef {
-    fn name(&self) -> &str {
-        return match self {
-            // &TypeRef::Heap(ref t) => t.name,
-            &TypeRef::Static(ref t) => t.name
-        }
-    }
-}
-
-impl Clone for TypeRef {
-    fn clone(&self) -> TypeRef {
-        return match self {
-            // &TypeRef::Heap(ref a) => TypeRef::Heap(a.clone()),
-            &TypeRef::Static(t) => TypeRef::Static(t),
-        };
-    }
-
-}
-
-
-impl fmt::Display for TypeRef {
+impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", match self {
-            // &TypeRef::Heap(ref t) => t.name,
-            &TypeRef::Static(t) => t.name
-        })
+        write!(f, "{}", self.name);
     }
 }
 
-impl PartialEq<TypeRef> for TypeRef {
-    fn eq(&self, other: &TypeRef) -> bool {
-        return self.name() == other.name();
-    }
-    fn ne(&self, other: &TypeRef) -> bool {
-        return self.name() != other.name();
-    }
+lazy_static! {
+    pub static ref ARRAY_TYPE: Rc<Type> = Rc::new(Type{name: String::from("Array")});
+    pub static ref BOOL_TYPE: Rc<Type> = Rc::new(Type{name: String::from("Bool")});
+    pub static ref INT_TYPE: Rc<Type> = Rc::new(Type{name: String::from("Int")});
+    pub static ref FLOAT_TYPE: Rc<Type> = Rc::new(Type{name: String::from("Float")});
+    pub static ref NONE_TYPE: Rc<Type> = Rc::new(Type{name: String::from("None")});
+    pub static ref STRING_TYPE: Rc<Type> = Rc::new(Type{name: String::from("String")});
 }
 
-pub static ARRAY_TYPE: Type = Type {name: "Array"};
-pub static BOOL_TYPE: Type = Type {name: "Bool"};
-pub static INT_TYPE: Type = Type {name: "Int"};
-pub static FLOAT_TYPE: Type = Type {name: "Float"};
-pub static NONE_TYPE: Type = Type {name: "None"};
-pub static STRING_TYPE: Type = Type {name: "String"};
-
-pub fn get_array_type() -> TypeRef {
-    return TypeRef::Static(&ARRAY_TYPE);
-}
-
-pub fn get_bool_type() -> TypeRef {
-    return TypeRef::Static(&BOOL_TYPE);
-}
-
-pub fn get_int_type() -> TypeRef {
-    return TypeRef::Static(&INT_TYPE);
-}
-
-pub fn get_float_type() -> TypeRef {
-    return TypeRef::Static(&FLOAT_TYPE);
-}
-
-pub fn get_none_type() -> TypeRef {
-    return TypeRef::Static(&NONE_TYPE);
-}
-
-pub fn get_string_type() -> TypeRef {
-    return TypeRef::Static(&STRING_TYPE);
-}
-
-pub fn get_type_ref_from_string(symbol: &str) -> TypeRef {
+pub fn get_type_ref_from_string(symbol: &str) -> Rc<Type> {
     match symbol {
-        "String" => get_string_type(),
-        "Float" => get_float_type(),
-        "Int" => get_int_type(),
-        "None" => get_none_type(),
-        _ => get_none_type(),
+        "String" => STRING_TYPE.clone(),
+        "Float" => FLOAT_TYPE.clone(),
+        "Int" => INT_TYPE.clone(),
+        "None" => NONE_TYPE.clone(),
+        _ => NONE_TYPE.clone()
     }
 }

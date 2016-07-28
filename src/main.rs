@@ -2,6 +2,8 @@
 #![plugin(peg_syntax_ext)]
 peg_file! peg_grammar("grammar.rustpeg");
 
+#[macro_use]
+extern crate lazy_static;
 extern crate getopts;
 extern crate yaml_rust;
 use std::io::prelude::*;
@@ -11,7 +13,6 @@ mod ast;
 // mod lexer;
 // mod parser;
 mod codegen;
-mod interpreter;
 mod vm;
 mod repl;
 #[cfg(test)]

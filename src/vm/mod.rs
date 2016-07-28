@@ -45,6 +45,9 @@ impl VM {
                 &Op::Assign{source, target} => {
                     registers[target] = registers[source];
                 },
+                &Op::ArrayCreate{target, length} => {},
+                &Op::ArraySet{source, target, index} => {},
+                &Op::ArrayLoad{source, target, index} => {},
                 &Op::BoolNot{source, target} => {
                     registers[target] = if registers[source] != 1 { 1 } else { 0 };
                 },

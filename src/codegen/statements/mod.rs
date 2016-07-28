@@ -8,7 +8,7 @@ pub fn gen_statement(s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>)
     match s {
         &Statement::FunctionDecl(ref func_decl) => {
             let mut func_scope = scope::Scope::new();
-            func_scope.allocate_local(types::get_none_type());
+            func_scope.allocate_local(types::NONE_TYPE.clone());
             let mut argument_names = Vec::new();
             for ref a in &(func_decl.arguments) {
                 let typ = get_type_ref_from_string(&a.typ);

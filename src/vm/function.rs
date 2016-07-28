@@ -3,20 +3,21 @@ use super::Object;
 use super::ops;
 use super::scope;
 use super::types;
+use super::types::Type;
 
 pub struct VMFunction {
     pub name: String,
     pub argument_names: Vec<String>,
     pub scope: scope::Scope,
     pub ops: Vec<ops::Op>,
-    pub return_typ: super::types::TypeRef
+    pub return_typ: Rc<Type>
 }
 
 pub enum Function {
     NativeFunction{
         name: String,
         function: fn(&[Object]) -> Object,
-        typ: super::types::TypeRef
+        typ: Rc<Type>
     },
     VMFunction(VMFunction)
 }
@@ -49,7 +50,7 @@ impl Function {
                 if scope_instance.registers.len() == 0 {
                     Object {
                         value: 0,
-                        typ: types::get_none_type().clone()
+                        typ: types::NONE_TYPE.clone()
                     }
                 } else {
                     Object {
@@ -61,7 +62,7 @@ impl Function {
         }
     }
 
-    pub fn return_type(&self) -> super::types::TypeRef {
+    pub fn return_type(&self) -> Rc<Type> {
         match self {
             &Function::NativeFunction{name: _, function: _, ref typ} => typ.clone(),
             &Function::VMFunction(ref f) => f.return_typ.clone(),
