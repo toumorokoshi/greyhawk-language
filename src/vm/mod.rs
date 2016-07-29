@@ -19,7 +19,7 @@ pub use self::scope::ScopeInstance;
 pub use self::scope::Scope;
 pub use self::scope::LocalObject;
 pub use self::builtins::print;
-pub use self::types::get_type_ref_from_string;
+pub use self::types::{get_type_ref_from_string, Type};
 
 pub struct VM {
     pub modules: HashMap<&'static str, Module>,
@@ -27,7 +27,7 @@ pub struct VM {
 
 pub struct Object {
     pub value: i64,
-    pub typ: types::TypeRef,
+    pub typ: Type
 }
 
 impl VM {

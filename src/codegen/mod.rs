@@ -22,7 +22,7 @@ pub fn generate_ops(statements: &Vec<Box<Statement>>) -> vm::Function {
         argument_names: vec![],
         scope: block.scope,
         ops: block.ops,
-        return_typ: types::get_none_type(),
+        return_typ: types::NONE_TYPE.clone(),
     });
 }
 
@@ -31,17 +31,17 @@ pub fn evaluate_expr(expr: &Expression, scope: &mut scope::Scope, ops: &mut Vec<
         &Expression::Condition(ref c) =>
             expressions::gen_condition(&c, scope, ops),
         &Expression::ConstInt{value} => {
-            let obj = scope.allocate_local(types::get_int_type());
+            let obj = scope.allocate_local(types::INT_TYPE.clone());
             ops.push(Op::IntLoad{register: obj.index, constant: value});
             obj
         },
         &Expression::ConstFloat{value} => {
-            let obj = scope.allocate_local(types::get_float_type());
+            let obj = scope.allocate_local(types::FLOAT_TYPE.clone());
             ops.push(Op::FloatLoad{register: obj.index, constant: value});
             obj
         },
         &Expression::ConstString{ref value} => {
-            let obj = scope.allocate_local(types::get_string_type());
+            let obj = scope.allocate_local(types::STRING_TYPE.clone());
             ops.push(Op::StringLoad{register: obj.index, constant: Rc::new(value.clone())});
             obj
         },

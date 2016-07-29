@@ -4,20 +4,21 @@ use super::ops;
 use super::scope;
 use super::types;
 use super::types::Type;
+use std::rc::Rc;
 
 pub struct VMFunction {
     pub name: String,
     pub argument_names: Vec<String>,
     pub scope: scope::Scope,
     pub ops: Vec<ops::Op>,
-    pub return_typ: Rc<Type>
+    pub return_typ: Type
 }
 
 pub enum Function {
     NativeFunction{
         name: String,
         function: fn(&[Object]) -> Object,
-        typ: Rc<Type>
+        typ: Type
     },
     VMFunction(VMFunction)
 }
@@ -62,7 +63,7 @@ impl Function {
         }
     }
 
-    pub fn return_type(&self) -> Rc<Type> {
+    pub fn return_type(&self) -> Type {
         match self {
             &Function::NativeFunction{name: _, function: _, ref typ} => typ.clone(),
             &Function::VMFunction(ref f) => f.return_typ.clone(),

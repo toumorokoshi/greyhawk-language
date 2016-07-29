@@ -8,7 +8,7 @@ use super::builtins::print;
 
 pub struct LocalObject {
     pub index: usize,
-    pub typ: Rc<Type>
+    pub typ: Type
 }
 
 impl Clone for LocalObject {
@@ -23,7 +23,7 @@ impl Clone for LocalObject {
 pub struct Scope {
     pub locals: HashMap<String, usize>,
     pub functions: HashMap<String, Rc<Function>>,
-    pub types: Vec<Rc<Type>>
+    pub types: Vec<Type>
 }
 
 pub struct ScopeInstance {
@@ -84,7 +84,7 @@ impl Scope {
             return Rc::new(Function::NativeFunction {
                 name: String::from("print"),
                 function: print,
-                typ: types::get_none_type()
+                typ: types::NONE_TYPE.clone(),
             });
         }
     }

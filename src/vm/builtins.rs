@@ -17,13 +17,13 @@ pub fn get_builtin_module() -> Module {
 pub fn print(args: &[Object]) -> Object {
     if args.len() > 0 {
         let object = &args[0];
-        if object.typ == types::get_int_type() {
+        if object.typ == *types::INT_TYPE {
             println!("{}", object.value);
-        } else if object.typ == types::get_float_type() {
+        } else if object.typ == *types::FLOAT_TYPE {
             unsafe {
                 println!("{}", mem::transmute::<i64, f64>(object.value));
             }
-        } else if object.typ == types::get_string_type() {
+        } else if object.typ == *types::STRING_TYPE {
             unsafe {
                 println!("{}", mem::transmute::<i64, Rc<String>>(object.value));
             }
@@ -31,6 +31,6 @@ pub fn print(args: &[Object]) -> Object {
     }
     return Object {
         value: 0,
-        typ: types::get_none_type()
+        typ: types::NONE_TYPE.clone()
     };
 }
