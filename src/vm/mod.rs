@@ -45,9 +45,18 @@ impl VM {
                 &Op::Assign{source, target} => {
                     registers[target] = registers[source];
                 },
-                &Op::ArrayCreate{target, length} => {},
-                &Op::ArraySet{source, target, index} => {},
-                &Op::ArrayLoad{source, target, index} => {},
+                &Op::ArrayCreate{target, length} => unsafe {
+                    let created_array = vec![0; length];
+                    registers[target] = mem::transmute::<&Vec<i64>,i64>(&created_array);
+                },
+                &Op::ArraySet{source, target, index} => unsafe {
+                    let arr = mem::transmute::<i64, &mut Vec<i64>>(registers[source]);
+                    arr[index] = registers[source];
+                },
+                &Op::ArrayLoad{source, target, index} => unsafe {
+                    let arr = mem::transmute::<i64, &Vec<i64>>(registers[source]);
+                    registers[target] = arr[index];
+                },
                 &Op::BoolNot{source, target} => {
                     registers[target] = if registers[source] != 1 { 1 } else { 0 };
                 },

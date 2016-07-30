@@ -5,8 +5,8 @@ use std::fmt;
 
 pub enum Op {
     ArrayCreate{target: usize, length: usize},
-    ArraySet{source: usize, target: usize, index: u64},
-    ArrayLoad{source: usize, target: usize, index: u64},
+    ArraySet{source: usize, target: usize, index: usize},
+    ArrayLoad{source: usize, target: usize, index: usize},
     Assign{target: usize, source: usize},
     BoolNot{source: usize, target: usize},
     // if the condition is true, continue down the registry.

@@ -4,7 +4,6 @@ use super::ops;
 use super::scope;
 use super::types;
 use super::types::Type;
-use std::rc::Rc;
 
 pub struct VMFunction {
     pub name: String,
