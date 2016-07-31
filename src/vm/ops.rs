@@ -4,9 +4,9 @@ use std::rc::Rc;
 use std::fmt;
 
 pub enum Op {
-    ArrayCreate{target: usize, length: usize},
-    ArraySet{source: usize, target: usize, index: usize},
-    ArrayLoad{source: usize, target: usize, index: usize},
+    ArrayCreate{target: usize, length_source: usize},
+    ArraySet{source: usize, target: usize, index_source: usize},
+    ArrayLoad{source: usize, target: usize, index_source: usize},
     Assign{target: usize, source: usize},
     BoolNot{source: usize, target: usize},
     // if the condition is true, continue down the registry.
@@ -39,9 +39,9 @@ impl Op {
     pub fn to_string(&self) -> String {
         match self {
             &Op::Assign{target, source} => format!("{0} <= {1}", target, source),
-            &Op::ArrayCreate{target, length} => format!("{0} <= [{1}]", target, length),
-            &Op::ArraySet{source, target, index} => format!("{1}[{2}] <= {0}", source, target, index),
-            &Op::ArrayLoad{source, target, index} => format!("{0} <= {1}[{2}]", source, target, index),
+            &Op::ArrayCreate{target, length_source} => format!("{0} <= [{1}]", target, length_source),
+            &Op::ArraySet{source, target, index_source} => format!("{1}[{2}] <= {0}", source, target, index_source),
+            &Op::ArrayLoad{source, target, index_source} => format!("{0} <= {1}[{2}]", source, target, index_source),
             &Op::BoolNot{source, target} => format!("{1} = !{0}", source, target),
             &Op::Branch{condition, if_false} => format!("branch to {0} if {1} is false", condition, if_false),
             &Op::Call{ref func, args: _, target} => format!("{0} <= {1}()", target, func.name()),

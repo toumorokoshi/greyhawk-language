@@ -5,8 +5,8 @@ use std::collections::HashMap;
 
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub struct _Type {
-    name: String,
-    sub_types: Vec<Type>,
+    pub name: String,
+    pub sub_types: Vec<Type>,
 }
 
 pub type Type = Arc<_Type>;
@@ -18,7 +18,6 @@ impl fmt::Display for _Type {
 }
 
 lazy_static! {
-    pub static ref ARRAY_TYPE: Type = Type::new(_Type{name: String::from("Array"), sub_types: Vec::new()});
     pub static ref BOOL_TYPE: Type = Type::new(_Type{name: String::from("Bool"), sub_types: Vec::new()});
     pub static ref INT_TYPE: Type = Type::new(_Type{name: String::from("Int"), sub_types: Vec::new()});
     pub static ref FLOAT_TYPE: Type = Type::new(_Type{name: String::from("Float"), sub_types: Vec::new()});

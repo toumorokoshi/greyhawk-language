@@ -14,6 +14,12 @@ pub fn to_yaml(stmts: &Vec<Box<Statement>>) -> Yaml {
 pub fn stmt_to_yaml(stmt: &Statement) -> Yaml {
     let mut yaml = BTreeMap::new();
     match stmt {
+        &Statement::Assignment(ref a) =>  {
+            yaml.insert(Yaml::String("type".to_string()), Yaml::String("assignment".to_string()));
+            yaml.insert(Yaml::String("name".to_string()), Yaml::String(a.name.clone()));
+            yaml.insert(Yaml::String("expression".to_string()), expr_to_yaml(&a.expression));
+            Yaml::Hash(yaml)
+        },
         &Statement::FunctionDecl(ref func_decl) => {
             yaml.insert(Yaml::String("type".to_string()),
                         Yaml::String("function declaration".to_string()));
@@ -35,12 +41,6 @@ pub fn stmt_to_yaml(stmt: &Statement) -> Yaml {
             yaml.insert(Yaml::String("expression".to_string()), expr_to_yaml(&d.expression));
             Yaml::Hash(yaml)
         },
-        &Statement::Assignment(ref a) =>  {
-            yaml.insert(Yaml::String("type".to_string()), Yaml::String("assignment".to_string()));
-            yaml.insert(Yaml::String("name".to_string()), Yaml::String(a.name.clone()));
-            yaml.insert(Yaml::String("expression".to_string()), expr_to_yaml(&a.expression));
-            Yaml::Hash(yaml)
-        },
         &Statement::While(ref w) =>  {
             yaml.insert(Yaml::String("type".to_string()), Yaml::String("while".to_string()));
             yaml.insert(Yaml::String("condition".to_string()), expr_to_yaml(&w.condition));
@@ -52,10 +52,20 @@ pub fn stmt_to_yaml(stmt: &Statement) -> Yaml {
 
 pub fn expr_to_yaml(expr: &Expression) -> Yaml {
     match expr {
+        &Expression::ArrayCreate(ref ac) => {
+            let mut yaml = BTreeMap::new();
+            yaml.insert(Yaml::String("type".to_string()), Yaml::String("array".to_string()));
+            yaml.insert(Yaml::String("length".to_string()), expr_to_yaml(&ac.size));
+            let mut values = Vec::new();
+            for ref v in &(ac.values) {
+                values.push(expr_to_yaml(v));
+            }
+            yaml.insert(Yaml::String("values".to_string()), Yaml::Array(values));
+            Yaml::Hash(yaml)
+        },
         &Expression::ConstInt{value} => Yaml::Integer(value as i64),
         &Expression::ConstFloat{value} => Yaml::Real(value.to_string()),
         &Expression::ConstString{ref value} => Yaml::String(value.clone()),
-        &Expression::Symbol(ref s) => Yaml::String(format!("symbol: {}", s)),
         &Expression::BinOp(BinOp{ref op, ref left, ref right}) => {
             let mut yaml = BTreeMap::new();
             yaml.insert(Yaml::String("type".to_string()), Yaml::String("binop".to_string()));
@@ -83,5 +93,21 @@ pub fn expr_to_yaml(expr: &Expression) -> Yaml {
             yaml.insert(Yaml::String("false_block".to_string()), to_yaml(&c.false_block));
             Yaml::Hash(yaml)
         },
+        &Expression::IndexGet(ref ig) => {
+            let mut yaml = BTreeMap::new();
+            yaml.insert(Yaml::String("type".to_string()), Yaml::String("index_get".to_string()));
+            yaml.insert(Yaml::String("source".to_string()), expr_to_yaml(&(ig.source)));
+            yaml.insert(Yaml::String("index".to_string()), expr_to_yaml(&ig.index));
+            Yaml::Hash(yaml)
+        },
+        &Expression::IndexSet(ref is) => {
+            let mut yaml = BTreeMap::new();
+            yaml.insert(Yaml::String("type".to_string()), Yaml::String("index_set".to_string()));
+            yaml.insert(Yaml::String("target".to_string()), expr_to_yaml(&(is.target)));
+            yaml.insert(Yaml::String("index".to_string()), expr_to_yaml(&is.index));
+            yaml.insert(Yaml::String("value".to_string()), expr_to_yaml(&(is.value)));
+            Yaml::Hash(yaml)
+        },
+        &Expression::Symbol(ref s) => Yaml::String(format!("symbol: {}", s)),
     }
 }

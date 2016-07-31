@@ -28,6 +28,8 @@ pub fn generate_ops(statements: &Vec<Box<Statement>>) -> vm::Function {
 
 pub fn evaluate_expr(expr: &Expression, scope: &mut scope::Scope, ops: &mut Vec<vm::ops::Op>) -> scope::LocalObject {
     match expr {
+        &Expression::ArrayCreate(ref ac) =>
+            expressions::gen_array(&ac, scope, ops),
         &Expression::Condition(ref c) =>
             expressions::gen_condition(&c, scope, ops),
         &Expression::ConstInt{value} => {
@@ -45,6 +47,10 @@ pub fn evaluate_expr(expr: &Expression, scope: &mut scope::Scope, ops: &mut Vec<
             ops.push(Op::StringLoad{register: obj.index, constant: Rc::new(value.clone())});
             obj
         },
+        &Expression::IndexGet(ref ig) =>
+            expressions::gen_index_get(&ig, scope, ops),
+        &Expression::IndexSet(ref is) =>
+            expressions::gen_index_set(&is, scope, ops),
         &Expression::Symbol(ref value) => {
             match scope.get_local(&(value.clone())) {
                 Some(obj) => obj,

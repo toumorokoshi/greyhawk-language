@@ -4,6 +4,8 @@ mod declaration;
 mod binop;
 mod condition;
 mod while_struct;
+mod array;
+pub use self::array::{ArrayCreate, IndexGet, IndexSet};
 pub use self::assignment::Assignment;
 pub use self::declaration::Declaration;
 pub use self::binop::{BinOp, BinaryOperator};
@@ -26,13 +28,16 @@ pub struct FunctionDecl {
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum Expression {
+    ArrayCreate(ArrayCreate),
+    BinOp(BinOp),
+    Call{name: String, args: ExpressionList},
     ConstInt{value: i64},
     ConstFloat{value: f64},
     ConstString{value: String},
-    BinOp(BinOp),
+    Condition(Condition),
+    IndexGet(IndexGet),
+    IndexSet(IndexSet),
     Symbol(String),
-    Call{name: String, args: ExpressionList},
-    Condition(Condition)
 }
 
 pub type ExpressionList = Vec<Box<Expression>>;
@@ -44,7 +49,7 @@ pub enum Statement {
     Expr(Expression),
     FunctionDecl(FunctionDecl),
     Return(Expression),
-    While(While)
+    While(While),
 }
 
 pub type Statements = Vec<Box<Statement>>;
