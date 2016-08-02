@@ -3,9 +3,13 @@
 GreyHawk supports modules: units of code that can export values and functions,
 and can be imported into other libraries as well.
 
-modules can be executed
+source code is compiled into bytecode, which represents an unloaded module.
 
-- pre-execution: the module has not been executed yet.
+on import, the bytecode is executed, and the final module is then available.
+
+in the future, there will be options that be set at the top of the file to
+save the module fully executed, and to load that instead.
+
 
 
 # LOAD_MODULE = map access on module heap

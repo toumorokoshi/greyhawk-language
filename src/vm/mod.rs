@@ -41,6 +41,7 @@ impl VM {
         let mut i = 0;
         while i < ops.len() {
             let ref op = ops[i];
+            println!("{}", op);
             match op {
                 &Op::Assign{source, target} => {
                     registers[target] = registers[source];
@@ -58,6 +59,8 @@ impl VM {
                 &Op::ArrayLoad{source, target, index_source} => unsafe {
                     let index = mem::transmute::<i64, usize>(registers[index_source]);
                     let arr = mem::transmute::<i64, &Vec<i64>>(registers[source]);
+                    println!("DBG: {:p}", arr);
+                    println!("DBG: {}", index);
                     registers[target] = arr[index];
                 },
                 &Op::BoolNot{source, target} => {

@@ -69,7 +69,7 @@ impl Function {
         }
     }
 
-    /* pub fn print_ops(&self) {
+    pub fn print_ops(&self) {
         match self {
             &Function::NativeFunction{name: _, function: _, typ: _} => println!("  native function"),
             &Function::VMFunction(ref f) => {
@@ -78,5 +78,5 @@ impl Function {
                 }
             }
         }
-    } */
+    }
 }

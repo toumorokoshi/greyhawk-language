@@ -1,5 +1,5 @@
 use super::super::evaluate_expr;
-use ast::{ArrayCreate, IndexGet, IndexSet};
+use ast::{ArrayCreate, ItemGet, ItemSet};
 use vm::{Op, scope, types};
 
 pub fn gen_array(array_create: &ArrayCreate, scope: &mut scope::Scope,
@@ -15,7 +15,7 @@ pub fn gen_array(array_create: &ArrayCreate, scope: &mut scope::Scope,
     let one = scope.allocate_local(types::INT_TYPE.clone());
     ops.push(Op::IntLoad{register: one.index, constant: 1});
     let index = scope.allocate_local(types::INT_TYPE.clone());
-    let i = 0;
+    let mut i = 0;
     while i < array_create.values.len() {
         let ref e = array_create.values[i];
         let value = evaluate_expr(e, scope, ops);
@@ -24,11 +24,12 @@ pub fn gen_array(array_create: &ArrayCreate, scope: &mut scope::Scope,
         });
         // increment our counter.
         ops.push(Op::IntAdd{lhs: index.index, rhs: one.index, target: index.index});
+        i += 1;
     }
     arr
 }
 
-pub fn gen_index_set(index_set: &IndexSet, scope: &mut scope::Scope,
+pub fn gen_index_set(index_set: &ItemSet, scope: &mut scope::Scope,
                      ops: &mut Vec<Op>) -> scope::LocalObject {
     let target = evaluate_expr(&index_set.target, scope, ops);
     let value = evaluate_expr(&index_set.value, scope, ops);
@@ -42,7 +43,7 @@ pub fn gen_index_set(index_set: &IndexSet, scope: &mut scope::Scope,
     result
 }
 
-pub fn gen_index_get(index_get: &IndexGet, scope: &mut scope::Scope,
+pub fn gen_index_get(index_get: &ItemGet, scope: &mut scope::Scope,
                      ops: &mut Vec<Op>) -> scope::LocalObject {
     let source = evaluate_expr(&index_get.source, scope, ops);
     let index = evaluate_expr(&index_get.index, scope, ops);

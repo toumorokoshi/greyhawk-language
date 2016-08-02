@@ -27,15 +27,18 @@ lazy_static! {
 }
 
 pub fn get_array_type(array_type: Type) -> Type {
-    match ARRAY_CACHE.lock().unwrap().get(&array_type) {
+    let mut array_cache = ARRAY_CACHE.lock().unwrap();
+    if let None = array_cache.get(&array_type) {
+        let new_type = Type::new(_Type{name: String::from("Array"), sub_types: vec![array_type.clone()]});
+        array_cache.insert(array_type.clone(), new_type.clone());
+        return new_type;
+    }
+    match array_cache.get(&array_type) {
         Some(t) => t.clone(),
-        None => {
-            let new_type = Type::new(_Type{name: String::from("Array"), sub_types: vec![array_type.clone()]});
-            ARRAY_CACHE.lock().unwrap().insert(
-                array_type.clone(), new_type.clone()
-            );
-            new_type
-        }
+        // this should never be reached, but
+        // I'm having trouble getting the borrow
+        // checker to acknowledge this.
+        None => array_type,
     }
 }
 

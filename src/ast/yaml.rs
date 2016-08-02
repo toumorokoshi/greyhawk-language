@@ -93,14 +93,14 @@ pub fn expr_to_yaml(expr: &Expression) -> Yaml {
             yaml.insert(Yaml::String("false_block".to_string()), to_yaml(&c.false_block));
             Yaml::Hash(yaml)
         },
-        &Expression::IndexGet(ref ig) => {
+        &Expression::ItemGet(ref ig) => {
             let mut yaml = BTreeMap::new();
             yaml.insert(Yaml::String("type".to_string()), Yaml::String("index_get".to_string()));
             yaml.insert(Yaml::String("source".to_string()), expr_to_yaml(&(ig.source)));
             yaml.insert(Yaml::String("index".to_string()), expr_to_yaml(&ig.index));
             Yaml::Hash(yaml)
         },
-        &Expression::IndexSet(ref is) => {
+        &Expression::ItemSet(ref is) => {
             let mut yaml = BTreeMap::new();
             yaml.insert(Yaml::String("type".to_string()), Yaml::String("index_set".to_string()));
             yaml.insert(Yaml::String("target".to_string()), expr_to_yaml(&(is.target)));

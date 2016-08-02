@@ -40,6 +40,18 @@ return_statement -> ast::Statement = "return" spaces e:expression
                  { ast::Statement::Return(e) }
 
 #[pub]
+array -> ast::ArrayCreate =
+      t:type_symbol "[" a:arguments "]" {
+          let size = Box::new(ast::Expression::ConstInt{value: a.len() as i64});
+          ast::ArrayCreate{
+              size: size,
+              typ: t,
+              values: a
+          }
+      }
+
+
+#[pub]
 argument_declarations -> Vec<ast::ArgumentDecl> =
            name:symbol spaces typ:type_symbol spaces? "," spaces an:argument_declarations {
                let mut new_stmts = Vec::new();
@@ -49,6 +61,16 @@ argument_declarations -> Vec<ast::ArgumentDecl> =
            }
          / name:symbol spaces typ:type_symbol {vec![ast::ArgumentDecl{name: name, typ: typ}]}
          / spaces? { Vec::new() }
+
+#[pub]
+item_get -> ast::ItemGet =
+            s:expression_sans_array "[" i:expression "]" { ast::ItemGet{source: Box::new(s), index: Box::new(i)} }
+
+#[pub]
+item_set -> ast::ItemSet =
+            gi:item_get spaces? "=" spaces? v:expression {
+                ast::ItemSet {target: gi.source, value: Box::new(v), index: gi.index}
+            }
 
 #[pub]
 function -> ast::FunctionDecl =
@@ -111,10 +133,19 @@ binop_token -> BinaryOperator =
 
 #[pub]
 expression -> ast::Expression =
+             is:item_set { ast::Expression::ItemSet(is) }
+           / ig:item_get { ast::Expression::ItemGet(ig) }
+           / e:expression_sans_array { e }
+
+#[pub]
+expression_sans_array -> ast::Expression =
              f:call { f }
+           / a:array { ast::Expression::ArrayCreate(a) }
            / c:condition { ast::Expression::Condition(c) }
            / binop:binop { ast::Expression::BinOp(binop) }
            / bt:base_types { bt }
+
+
 
 #[pub]
 statement -> ast::Statement =

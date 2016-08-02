@@ -1,11 +1,11 @@
 pub mod yaml;
+mod array;
 mod assignment;
 mod declaration;
 mod binop;
 mod condition;
 mod while_struct;
-mod array;
-pub use self::array::{ArrayCreate, IndexGet, IndexSet};
+pub use self::array::{ArrayCreate, ItemGet, ItemSet};
 pub use self::assignment::Assignment;
 pub use self::declaration::Declaration;
 pub use self::binop::{BinOp, BinaryOperator};
@@ -35,8 +35,8 @@ pub enum Expression {
     ConstFloat{value: f64},
     ConstString{value: String},
     Condition(Condition),
-    IndexGet(IndexGet),
-    IndexSet(IndexSet),
+    ItemGet(ItemGet),
+    ItemSet(ItemSet),
     Symbol(String),
 }
 

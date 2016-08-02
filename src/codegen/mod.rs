@@ -47,9 +47,9 @@ pub fn evaluate_expr(expr: &Expression, scope: &mut scope::Scope, ops: &mut Vec<
             ops.push(Op::StringLoad{register: obj.index, constant: Rc::new(value.clone())});
             obj
         },
-        &Expression::IndexGet(ref ig) =>
+        &Expression::ItemGet(ref ig) =>
             expressions::gen_index_get(&ig, scope, ops),
-        &Expression::IndexSet(ref is) =>
+        &Expression::ItemSet(ref is) =>
             expressions::gen_index_set(&is, scope, ops),
         &Expression::Symbol(ref value) => {
             match scope.get_local(&(value.clone())) {
