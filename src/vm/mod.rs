@@ -38,29 +38,28 @@ impl VM {
     pub fn execute_instructions(&mut self, scope_instance: &mut ScopeInstance, scope: &Scope, ops: &[Op]) -> usize {
         let return_value = 0 as usize;
         let mut registers = &mut scope_instance.registers;
+        let mut arrays = &mut scope_instance.arrays;
         let mut i = 0;
         while i < ops.len() {
             let ref op = ops[i];
-            println!("{}", op);
             match op {
                 &Op::Assign{source, target} => {
                     registers[target] = registers[source];
                 },
                 &Op::ArrayCreate{target, length_source} => unsafe {
                     let length = mem::transmute::<i64, usize>(registers[length_source]);
-                    let created_array = vec![0; length];
-                    registers[target] = mem::transmute::<&Vec<i64>,i64>(&created_array);
+                    let index = arrays.len();
+                    arrays.push(vec![0; length]);
+                    registers[target] = index as i64;
                 },
                 &Op::ArraySet{source, target, index_source} => unsafe {
                     let index = mem::transmute::<i64, usize>(registers[index_source]);
-                    let arr = mem::transmute::<i64, &mut Vec<i64>>(registers[target]);
+                    let ref mut arr = arrays[registers[target] as usize];
                     arr[index] = registers[source];
                 },
                 &Op::ArrayLoad{source, target, index_source} => unsafe {
                     let index = mem::transmute::<i64, usize>(registers[index_source]);
-                    let arr = mem::transmute::<i64, &Vec<i64>>(registers[source]);
-                    println!("DBG: {:p}", arr);
-                    println!("DBG: {}", index);
+                    let ref arr = arrays[registers[source] as usize];
                     registers[target] = arr[index];
                 },
                 &Op::BoolNot{source, target} => {

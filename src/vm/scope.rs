@@ -26,10 +26,6 @@ pub struct Scope {
     pub types: Vec<Type>
 }
 
-pub struct ScopeInstance {
-    pub registers: Vec<i64>
-}
-
 impl Scope {
     pub fn new() -> Scope {
         return Scope{
@@ -74,7 +70,10 @@ impl Scope {
     }
 
     pub fn create_instance(&self) -> ScopeInstance {
-        return ScopeInstance{registers: vec![0; self.local_count()]};
+        return ScopeInstance{
+            registers: vec![0; self.local_count()],
+            arrays: Vec::new()
+        };
     }
 
     pub fn get_function(&self, name: &String) -> Rc<Function> {
@@ -101,5 +100,21 @@ impl fmt::Display for Scope {
             try!(write!(f, "  {}\n", typ));
         }
         return write!(f, "");
+    }
+}
+
+pub struct ScopeInstance {
+    pub registers: Vec<i64>,
+    // arrays are stored within the
+    // scope instance, to allow the
+    // vector to continue to exist
+    // even when a reference to it is removed
+    // from unsafe memory casts.
+    pub arrays: Vec<Vec<i64>>
+}
+
+impl ScopeInstance {
+    pub fn add_array(&mut self, arr: Vec<i64>) {
+        self.arrays.push(arr);
     }
 }
