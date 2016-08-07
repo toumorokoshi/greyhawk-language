@@ -24,10 +24,7 @@ use std::env;
 
 fn main () {
     let args: Vec<String> = env::args().collect();
-    let matches = match setup_opts().parse(&args[1..]) {
-        Ok(m) => {m},
-        Err(f) => {panic!(f.to_string())},
-    };
+    let matches = setup_opts().parse(&args[1..]).unwrap();
     match matches.free.len() {
         l if l > 1 => {
             match matches.free[0].as_ref() {
@@ -50,7 +47,7 @@ fn setup_opts() -> getopts::Options {
 
 /*
 Currently, lexing and parsing using the
-native parser is deprecated in favor of using rust-peg.
+native parser is removed in favor of using rust-peg.
 
 fn lexer(path: &String) {
     println!("{}", path);
@@ -94,8 +91,8 @@ fn print_ops(path: &String) {
     let mut file = File::open(path).unwrap();
     file.read_to_string(&mut content).unwrap();
     let statement_list = peg_grammar::module(&content).unwrap();
-    let function = codegen::generate_ops(&statement_list);
-    function.print_ops();
+    let module = codegen::gen_module_builder(&statement_list);
+    module.print_ops();
 }
 
 fn execute_file(path: &String) {
@@ -103,19 +100,7 @@ fn execute_file(path: &String) {
     let mut file = File::open(path).unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
-    match peg_grammar::module(&content) {
-        Ok(statement_list) => {
-            let function = codegen::generate_ops(&statement_list);
-            /* match &function {
-                &vm::function::Function::VMFunction(ref f) => {
-                    println!("{}", f.scope);
-                },
-                _ => {},
-            } */
-            vm_instance.execute_function(&function, &[]);
-        },
-        Err(msg) => {
-            println!("{}", msg);
-        }
-    }
+    let statements = peg_grammar::module(&content).unwrap();
+    let module = codegen::gen_module_builder(&statements);
+    vm_instance.load_module("main".to_string(), &module);
 }

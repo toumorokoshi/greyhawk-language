@@ -53,3 +53,4 @@ pub enum Statement {
 }
 
 pub type Statements = Vec<Box<Statement>>;
+pub type Module = Statements;

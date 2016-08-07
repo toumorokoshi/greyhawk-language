@@ -11,7 +11,7 @@ pub mod scope;
 pub mod builtins;
 
 // for some reason, wildcards (*) don't work.
-pub use self::module::Module;
+pub use self::module::{Module, ModuleBuilder};
 pub use self::function::Function;
 pub use self::function::VMFunction;
 pub use self::ops::Op;
@@ -22,7 +22,7 @@ pub use self::builtins::print;
 pub use self::types::{get_type_ref_from_string, Type};
 
 pub struct VM {
-    pub modules: HashMap<&'static str, Module>,
+    pub modules: HashMap<String, Module>,
 }
 
 pub struct Object {
@@ -149,5 +149,11 @@ impl VM {
 
     pub fn execute_function(&mut self, func: &function::Function, args: &[Object]) -> Object {
         func.call(self, args)
+    }
+
+    pub fn load_module(&mut self, name: String, mb: &ModuleBuilder) {
+        let mut scope_instance = mb.scope.create_instance();
+        self.execute_instructions(&mut scope_instance, &mb.scope, &mb.ops[..]);
+        self.modules.insert(name, Module{scope_instance: scope_instance});
     }
 }

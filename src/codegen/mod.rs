@@ -15,6 +15,13 @@ pub use self::statements::{
 };
 pub use self::block::gen_block;
 
+// we don't build modules directly, as they are sometimes evaluated on load instead.
+// thus, a module builder is created instead.
+pub fn gen_module_builder(statements: &Vec<Box<Statement>>) -> vm::ModuleBuilder {
+    let block = gen_block(statements);
+    vm::ModuleBuilder{scope: block.scope, ops: block.ops}
+}
+
 pub fn generate_ops(statements: &Vec<Box<Statement>>) -> vm::Function {
     let block = gen_block(statements);
     return vm::Function::VMFunction(vm::VMFunction {

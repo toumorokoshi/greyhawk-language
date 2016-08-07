@@ -182,4 +182,4 @@ while_statement -> ast::While =
 
 
 #[pub]
-module -> ast::Statements = statement_list
+module -> ast::Module = statement_list

@@ -44,7 +44,7 @@ impl Op {
             &Op::ArrayLoad{source, target, index_source} => format!("{{{0}}} <= {{{1}}}[{{{2}}}]", target, source, index_source),
             &Op::BoolNot{source, target} => format!("{{{1}}} = !{{{0}}}", source, target),
             &Op::Branch{condition, if_false} => format!("branch to {{{0}}} if {{{1}}} is false", condition, if_false),
-            &Op::Call{ref func, args: _, target} => format!("{{{0}}} <= {{{1}}}()", target, func.name()),
+            &Op::Call{ref func, args: _, target} => format!("{{{0}}} <= {1}()", target, func.name()),
             &Op::Goto{position} => format!("goto {{{0}}}", position),
             &Op::FloatAdd{lhs, rhs, target} => format!("{{{2}}} <= {{{0}}} + {{{1}}} as Float", lhs, rhs, target),
             &Op::FloatCmp{lhs, rhs, target} => format!("{{{2}}} <= {{{0}}} == {{{1}}} as Float", lhs, rhs, target),
@@ -63,7 +63,7 @@ impl Op {
             &Op::IntLessEqual{lhs, rhs, target} => format!("{{{2}}} <= {{{0}}} < {{{1}}} as Int", lhs, rhs, target),
             &Op::IntLessThan{lhs, rhs, target} => format!("{{{2}}} <= {{{0}}} <= {{{1}}} as Int", lhs, rhs, target),
             &Op::Noop{} => format!("noop"),
-            &Op::StringLoad{register, ref constant} => format!("{{{0}}} <= {{{1}}} as string", register, constant),
+            &Op::StringLoad{register, ref constant} => format!("{{{0}}} <= \"{1}\"", register, constant),
             &Op::Return{register} => format!("return {{{0}}}", register),
         }
     }
