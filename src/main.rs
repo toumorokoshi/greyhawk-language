@@ -32,12 +32,13 @@ fn main () {
         l if l > 1 => {
             match matches.free[0].as_ref() {
                 "ast" => parse(&matches.free[1]),
+                "ops" => print_ops(&matches.free[1]),
                 _ => println!("no such subcommand"),
             }
         },
         1 => execute_file(&matches.free[0]),
         0 => {repl::start_repl();},
-        _ => println!("Invalid Args"),
+        _ => println!("Invalid Arg Count"),
     }
 }
 
@@ -86,6 +87,15 @@ fn print_yaml(yaml: Yaml) {
         emitter.dump(&yaml).unwrap();
     }
     println!("{}", out_str);
+}
+
+fn print_ops(path: &String) {
+    let mut content = String::new();
+    let mut file = File::open(path).unwrap();
+    file.read_to_string(&mut content).unwrap();
+    let statement_list = peg_grammar::module(&content).unwrap();
+    let function = codegen::generate_ops(&statement_list);
+    function.print_ops();
 }
 
 fn execute_file(path: &String) {

@@ -112,9 +112,3 @@ pub struct ScopeInstance {
     // from unsafe memory casts.
     pub arrays: Vec<Vec<i64>>
 }
-
-impl ScopeInstance {
-    pub fn add_array(&mut self, arr: Vec<i64>) {
-        self.arrays.push(arr);
-    }
-}

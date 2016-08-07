@@ -5,11 +5,10 @@ use std;
 use std::io::{self, Write};
 use super::peg_grammar;
 
-pub fn start_repl() -> Result<(), std::io::Error> {
+pub fn start_repl() {
     println!("Greyhawk 0.0.3");
     let mut vm_instance = vm::VM::new();
-    try!(repl(&mut vm_instance));
-    Ok(())
+    repl(&mut vm_instance).unwrap();
 }
 
 fn repl(vm_instance: &mut vm::VM) -> Result<(), std::io::Error> {
