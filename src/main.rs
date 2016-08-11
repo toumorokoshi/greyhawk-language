@@ -102,5 +102,5 @@ fn execute_file(path: &String) {
     file.read_to_string(&mut content).unwrap();
     let statements = peg_grammar::module(&content).unwrap();
     let module = codegen::gen_module_builder(&statements);
-    vm_instance.load_module("main".to_string(), &module);
+    vm_instance.build_module(&("main".to_string()), &module);
 }

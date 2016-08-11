@@ -1,9 +1,10 @@
 // use super::scope;
 // use std::collections::HashMap;
+use std::rc::Rc;
 use super::{ops, scope};
 
 pub struct ModuleBuilder {
-    pub scope: scope::Scope,
+    pub scope: Rc<scope::Scope>,
     pub ops: Vec<ops::Op>
 }
 
@@ -21,5 +22,6 @@ impl ModuleBuilder {
 }
 
 pub struct Module {
+    pub scope: Rc<scope::Scope>,
     pub scope_instance: scope::ScopeInstance
 }

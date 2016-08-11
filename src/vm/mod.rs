@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::mem;
+use std::sync::Arc;
 
 pub mod module;
 pub mod function;
@@ -22,7 +23,8 @@ pub use self::builtins::print;
 pub use self::types::{get_type_ref_from_string, Type};
 
 pub struct VM {
-    pub modules: HashMap<String, Module>,
+    pub module_builders: HashMap<String, Rc<ModuleBuilder>>,
+    pub modules: HashMap<String, Arc<Module>>,
 }
 
 pub struct Object {
@@ -32,7 +34,8 @@ pub struct Object {
 
 impl VM {
     pub fn new() -> VM {
-        return VM {modules: HashMap::new()};
+        return VM {modules: HashMap::new(),
+                   module_builders: HashMap::new()};
     }
 
     pub fn execute_instructions(&mut self, scope_instance: &mut ScopeInstance, scope: &Scope, ops: &[Op]) -> usize {
@@ -132,8 +135,17 @@ impl VM {
                         mem::transmute::<i64, f64>(registers[rhs])
                     { 1 } else { 0 };
                 },
-                &Op::Goto{position} => {
-                    i = position - 1;
+                &Op::Goto{position} => {i = position - 1;},
+                &Op::ModuleLoadValue{ref module_name, ref name, target} => {
+                    let module = self.load_module(module_name);
+                    let ref scope = module.scope;
+                    let ref instance = module.scope_instance;
+                    match scope.locals.get::<String>(name) {
+                        Some(u) => {
+                            registers[target] = instance.registers[*u];
+                        },
+                        None => panic!(format!("unable to retrieve variable {0} from module {1}", name, module_name))
+                    }
                 },
                 &Op::Noop{} => {},
                 // TODO: incomplete. ends up as the null pointer right now.
@@ -151,9 +163,30 @@ impl VM {
         func.call(self, args)
     }
 
-    pub fn load_module(&mut self, name: String, mb: &ModuleBuilder) {
+    pub fn build_module(&mut self, name: &String, mb: &ModuleBuilder) -> Arc<Module> {
         let mut scope_instance = mb.scope.create_instance();
         self.execute_instructions(&mut scope_instance, &mb.scope, &mb.ops[..]);
-        self.modules.insert(name, Module{scope_instance: scope_instance});
+        let module = Arc::new(Module{
+            scope: mb.scope.clone(),
+            scope_instance: scope_instance
+        });
+        self.modules.insert(name.clone(), module.clone());
+        module
+    }
+
+    pub fn load_module(&mut self, name: &String) -> Arc<Module> {
+        if let Some(ref m) = self.modules.get(name) {
+            return (*m).clone();
+        }
+        let mut module_builder: Option<Rc<ModuleBuilder>> = None;
+        if let Some(ref mb) = self.module_builders.get(name) {
+            module_builder = Some((*mb).clone());
+        }
+        match module_builder {
+            Some(mb) => {
+                return self.build_module(name, &mb);
+            },
+            None => panic!(format!("module {0} not found", name))
+        }
     }
 }

@@ -19,7 +19,7 @@ pub use self::block::gen_block;
 // thus, a module builder is created instead.
 pub fn gen_module_builder(statements: &Vec<Box<Statement>>) -> vm::ModuleBuilder {
     let block = gen_block(statements);
-    vm::ModuleBuilder{scope: block.scope, ops: block.ops}
+    vm::ModuleBuilder{scope: Rc::new(block.scope), ops: block.ops}
 }
 
 pub fn generate_ops(statements: &Vec<Box<Statement>>) -> vm::Function {
