@@ -2,6 +2,9 @@
 // use std::collections::HashMap;
 use std::rc::Rc;
 use super::{ops, scope};
+mod serializer;
+
+pub self::serializer::dump_module;
 
 pub struct ModuleBuilder {
     pub scope: Rc<scope::Scope>,

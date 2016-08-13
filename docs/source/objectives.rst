@@ -12,9 +12,7 @@ to their complex nature or the methodology by which it was written.
 
 It is a goal of Greyhawk that anyone with a decent amount of
 experience with the language can understand what another person's code
-is doing. This is not always possible, it can be made more likely with
-taking advantages of symbols and syntax that is more standard and
-expressive.
+is doing.
 
 One idiomatic way of doing things
 ---------------------------------
@@ -22,7 +20,7 @@ One idiomatic way of doing things
 With readability in mind comes standardization. Humans are good at
 recognizing patterns, and Greyhawk relies on that strength by ensuring
 that there is only one idiomatic way of performing a particular
-function, and making tha idiomatic way easier than any other method.
+function, and making the idiomatic way simple.
 
 Everything follows convention
 -----------------------------
@@ -31,7 +29,7 @@ Special keywords and syntax can cause confusion and ambiguity to
 someone not familiar with these deviations (Such as python2's 'print'
 and 'assert' being effectively methods that do not need arguments
 passed in parentheses). Greyhawk attempts to minimize that by ensuring
-that all methods follow a standard.
+that all features of the code follow a standard.
 
 'Style' does not exist
 ----------------------

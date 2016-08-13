@@ -2,7 +2,7 @@
 Eventing Framework
 ==================
 
-Murasaki should have a core library to handle eventing.
+Greyhawk should have a core library to handle eventing.
 
 I'm not sure what that looks like yet, but it should do the following:
 

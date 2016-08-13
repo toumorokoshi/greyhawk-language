@@ -30,6 +30,7 @@ fn main () {
             match matches.free[0].as_ref() {
                 "ast" => parse(&matches.free[1]),
                 "ops" => print_ops(&matches.free[1]),
+                "compile" => print_module(&matches.free[1]),
                 _ => println!("no such subcommand"),
             }
         },
@@ -93,6 +94,17 @@ fn print_ops(path: &String) {
     let statement_list = peg_grammar::module(&content).unwrap();
     let module = codegen::gen_module_builder(&statement_list);
     module.print_ops();
+}
+
+fn print_module(path: &String) {
+    let mut content = String::new();
+    let mut file = File::open(path).unwrap();
+    file.read_to_string(&mut content).unwrap();
+    let statements = peg_grammar::module(&content).unwrap();
+    let module_builder = codegen::gen_module_builder(&statements);
+    let module = vm_instance.build_module(&("main".to_string()), &module_builder);
+    let module_yaml = vm::dump_module(module);
+    print_yaml(module_yaml);
 }
 
 fn execute_file(path: &String) {

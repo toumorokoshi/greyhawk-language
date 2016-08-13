@@ -46,6 +46,12 @@ pub fn stmt_to_yaml(stmt: &Statement) -> Yaml {
             yaml.insert(Yaml::String("condition".to_string()), expr_to_yaml(&w.condition));
             yaml.insert(Yaml::String("block".to_string()), to_yaml(&w.block));
             Yaml::Hash(yaml)
+        },
+        &Statement::Import(ref i) => {
+            yaml.insert(Yaml::String("type".to_string()), Yaml::String("import".to_string()));
+            yaml.insert(Yaml::String("module_name".to_string()), Yaml::String(i.module_name.clone()));
+            yaml.insert(Yaml::String("block".to_string()), Yaml::String(i.name.clone()));
+            Yaml::Hash(yaml)
         }
     }
 }

@@ -6,9 +6,8 @@
 Welcome to Greyhawk's documentation!
 ====================================
 
-Greyhawk is a programming language spec. Currently there are no realistic plans
-to implement Greyhawk as a real language, and it is a work in
-progress.
+Greyhawk is a programming language. Nothing in this documentation is final,
+and comments and questions are welcome on the `issues page <https://github.com/toumorokoshi/greyhawk-language/issues>`_ :
 
 
 The Basics:

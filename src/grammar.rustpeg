@@ -183,3 +183,7 @@ while_statement -> ast::While =
 
 #[pub]
 module -> ast::Module = statement_list
+
+#[pub]
+import_statement -> ast::Import =
+        "from" m:symbol "import" n:symbol { ast::Import{module_name: m, name: n} }

@@ -12,7 +12,7 @@ pub mod scope;
 pub mod builtins;
 
 // for some reason, wildcards (*) don't work.
-pub use self::module::{Module, ModuleBuilder};
+pub use self::module::{Module, ModuleBuilder, dump_module};
 pub use self::function::Function;
 pub use self::function::VMFunction;
 pub use self::ops::Op;

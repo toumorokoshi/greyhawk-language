@@ -52,6 +52,9 @@ pub fn gen_statement(s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>)
                 }
             }
         },
+        &Statement::Import(ref i) {
+            ops.push(Op::ModuleLoadValue{module_name: Rc::new(i.module_name), name: Rc::new(name)});
+        },
         &Statement::While(ref w) => {
             let start_index = ops.len();
             let result_obj = evaluate_expr(&(w.condition), scope, ops);

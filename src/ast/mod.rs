@@ -5,12 +5,14 @@ mod declaration;
 mod binop;
 mod condition;
 mod while_struct;
+mod import;
 pub use self::array::{ArrayCreate, ItemGet, ItemSet};
 pub use self::assignment::Assignment;
 pub use self::declaration::Declaration;
 pub use self::binop::{BinOp, BinaryOperator};
 pub use self::condition::Condition;
 pub use self::while_struct::While;
+pub use self::import::Import;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct ArgumentDecl {
@@ -50,6 +52,7 @@ pub enum Statement {
     FunctionDecl(FunctionDecl),
     Return(Expression),
     While(While),
+    Import(Import),
 }
 
 pub type Statements = Vec<Box<Statement>>;
