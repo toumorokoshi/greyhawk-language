@@ -97,13 +97,14 @@ fn print_ops(path: &String) {
 }
 
 fn print_module(path: &String) {
+    let mut vm_instance = vm::VM::new();
     let mut content = String::new();
     let mut file = File::open(path).unwrap();
     file.read_to_string(&mut content).unwrap();
     let statements = peg_grammar::module(&content).unwrap();
     let module_builder = codegen::gen_module_builder(&statements);
     let module = vm_instance.build_module(&("main".to_string()), &module_builder);
-    let module_yaml = vm::dump_module(module);
+    let module_yaml = vm::dump_module(&module);
     print_yaml(module_yaml);
 }
 
