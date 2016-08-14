@@ -22,7 +22,7 @@ fn repl(vm_instance: &mut vm::VM) -> Result<(), std::io::Error> {
                 convert_last_expression_to_return(&mut statement_list);
                 let function = codegen::generate_ops(&statement_list);
                 let object = vm_instance.execute_function(&function, &[]);
-                vm::print(&[object]);
+                vm::print(&vm_instance, &[object]);
             },
             Err(err) => {
                 println!("{}", err);

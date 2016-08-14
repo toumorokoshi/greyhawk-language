@@ -16,7 +16,7 @@ pub struct VMFunction {
 pub enum Function {
     NativeFunction{
         name: String,
-        function: fn(&[Object]) -> Object,
+        function: fn(&VM, &[Object]) -> Object,
         typ: Type
     },
     VMFunction(VMFunction)
@@ -34,7 +34,7 @@ impl Function {
     pub fn call(&self, vm: &mut VM, args: &[Object]) -> Object {
         match self {
             &Function::NativeFunction{name: _, function, typ: _} => {
-                function(args)
+                function(vm, args)
             },
             &Function::VMFunction(ref f) => {
                 let mut scope_instance = f.scope.create_instance();

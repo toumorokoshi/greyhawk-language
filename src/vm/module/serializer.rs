@@ -1,21 +1,30 @@
 use super::{Module};
-use super::super::scope;
+use super::super::{scope, VM, types};
 use std::collections::BTreeMap;
 use yaml_rust::{Yaml};
 
-pub fn dump_module(m: &Module) -> Yaml {
+pub fn dump_module(vm: &VM, m: &Module) -> Yaml {
     let mut root = BTreeMap::new();
-    root.insert(Yaml::String("scope_instance".to_string()), dump_scope_instance(&m.scope_instance));
+    root.insert(Yaml::String("scope_instance".to_string()), dump_scope_instance(&vm, &m.scope, &m.scope_instance));
     root.insert(Yaml::String("scope".to_string()), dump_scope(&m.scope));
     Yaml::Hash(root)
 }
 
-fn dump_scope_instance(si: &scope::ScopeInstance) -> Yaml {
+fn dump_scope_instance(vm: &VM, s: &scope::Scope, si: &scope::ScopeInstance) -> Yaml {
     let mut root = BTreeMap::new();
 
     let mut registers = Vec::new();
-    for r in &(si.registers) {
-        registers.push(Yaml::Integer(r.clone() as i64));
+    for i in 0..si.registers.len() {
+        let ref typ = s.types[i];
+        let obj = si.registers[i];
+        let result =
+            if *typ == *types::STRING_TYPE {
+                let value = vm.get_string(obj as usize);
+                Yaml::String((*value).clone())
+            } else {
+                Yaml::Integer(obj.clone())
+            };
+        registers.push(result);
     }
     root.insert(Yaml::String("registers".to_string()), Yaml::Array(registers));
 

@@ -25,6 +25,7 @@ pub use self::types::{get_type_ref_from_string, Type};
 pub struct VM {
     pub module_builders: HashMap<String, Rc<ModuleBuilder>>,
     pub modules: HashMap<String, Arc<Module>>,
+    strings: Vec<Rc<String>>
 }
 
 pub struct Object {
@@ -35,7 +36,18 @@ pub struct Object {
 impl VM {
     pub fn new() -> VM {
         return VM {modules: HashMap::new(),
-                   module_builders: HashMap::new()};
+                   module_builders: HashMap::new(),
+                   strings: Vec::new()};
+    }
+
+    pub fn add_string(&mut self, s: &String) -> usize {
+        let index = self.strings.len();
+        self.strings.push(Rc::new(s.clone()));
+        index
+    }
+
+    pub fn get_string(&self, index: usize) -> Rc<String> {
+        self.strings[index].clone()
     }
 
     pub fn execute_instructions(&mut self, scope_instance: &mut ScopeInstance, scope: &Scope, ops: &[Op]) -> usize {
@@ -150,7 +162,8 @@ impl VM {
                 &Op::Noop{} => {},
                 // TODO: incomplete. ends up as the null pointer right now.
                 &Op::StringLoad{register, ref constant} => unsafe {
-                    registers[register] = mem::transmute::<Rc<String>, i64>(constant.clone());
+                    let index = self.add_string(constant);
+                    registers[register] = index as i64;
                 },
                 &Op::Return{register} => { return register; },
             };

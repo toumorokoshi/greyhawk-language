@@ -104,7 +104,7 @@ fn print_module(path: &String) {
     let statements = peg_grammar::module(&content).unwrap();
     let module_builder = codegen::gen_module_builder(&statements);
     let module = vm_instance.build_module(&("main".to_string()), &module_builder);
-    let module_yaml = vm::dump_module(&module);
+    let module_yaml = vm::dump_module(&vm_instance, &module);
     print_yaml(module_yaml);
 }
 

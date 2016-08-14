@@ -1,4 +1,4 @@
-use super::Object;
+use super::{Object, VM};
 use super::types;
 use std::mem;
 use std::rc::Rc;
@@ -14,7 +14,7 @@ pub fn get_builtin_module() -> Module {
 }
 */
 
-pub fn print(args: &[Object]) -> Object {
+pub fn print(vm: &VM, args: &[Object]) -> Object {
     if args.len() > 0 {
         let object = &args[0];
         if object.typ == *types::INT_TYPE {
@@ -24,9 +24,8 @@ pub fn print(args: &[Object]) -> Object {
                 println!("{}", mem::transmute::<i64, f64>(object.value));
             }
         } else if object.typ == *types::STRING_TYPE {
-            unsafe {
-                println!("{}", mem::transmute::<i64, Rc<String>>(object.value));
-            }
+            let value = vm.get_string(object.value as usize);
+            println!("{}", value);
         }
     }
     return Object {
