@@ -30,9 +30,9 @@ pub enum Op {
     IntLoad{register: usize, constant: i64},
     IntMul{lhs: usize, rhs: usize, target: usize},
     IntSub{lhs: usize, rhs: usize, target: usize},
-    ModuleLoadValue{module_name: Rc<String>, name: Rc<String>, target: usize},
+    ModuleLoadValue{module_name: String, name: String, target: usize},
     Noop{},
-    StringLoad{register: usize, constant: Rc<String>},
+    StringLoad{register: usize, constant: String},
     Return{register: usize},
 }
 

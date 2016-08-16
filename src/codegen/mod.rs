@@ -51,7 +51,7 @@ pub fn evaluate_expr(expr: &Expression, scope: &mut scope::Scope, ops: &mut Vec<
         },
         &Expression::ConstString{ref value} => {
             let obj = scope.allocate_local(types::STRING_TYPE.clone());
-            ops.push(Op::StringLoad{register: obj.index, constant: Rc::new(value.clone())});
+            ops.push(Op::StringLoad{register: obj.index, constant: value.clone()});
             obj
         },
         &Expression::ItemGet(ref ig) =>

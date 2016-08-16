@@ -161,7 +161,7 @@ impl VM {
                 },
                 &Op::Noop{} => {},
                 // TODO: incomplete. ends up as the null pointer right now.
-                &Op::StringLoad{register, ref constant} => unsafe {
+                &Op::StringLoad{register, ref constant} => {
                     let index = self.add_string(constant);
                     registers[register] = index as i64;
                 },

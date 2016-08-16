@@ -2,7 +2,7 @@
 // use std::collections::HashMap;
 use std::rc::Rc;
 use super::{ops, scope};
-mod serializer;
+mod dump;
 
 pub use self::serializer::dump_module;
 
