@@ -4,7 +4,7 @@ use std::rc::Rc;
 use super::{ops, scope};
 mod dump;
 
-pub use self::serializer::dump_module;
+pub use self::dump::dump_module;
 
 pub struct ModuleBuilder {
     pub scope: Rc<scope::Scope>,

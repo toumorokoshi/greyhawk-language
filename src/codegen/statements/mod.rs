@@ -1,10 +1,10 @@
 use std::rc::Rc;
 use ast::{Statement, Statements};
-use vm::{scope, types, Op, get_type_ref_from_string};
+use vm::{scope, types, Op, get_type_ref_from_string, VM};
 use vm::function::{Function, VMFunction};
 use super::{evaluate_expr};
 
-pub fn gen_statement(s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>) {
+pub fn gen_statement(vm: &mut VM, s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>) {
     match s {
         &Statement::FunctionDecl(ref func_decl) => {
             let mut func_scope = scope::Scope::new();
@@ -17,7 +17,7 @@ pub fn gen_statement(s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>)
             }
             let mut func_ops = Vec::new();
             for s in &func_decl.statements {
-                gen_statement(s, &mut func_scope, &mut func_ops);
+                gen_statement(vm, s, &mut func_scope, &mut func_ops);
             }
             scope.add_function(func_decl.name.clone(), Rc::new(Function::VMFunction(VMFunction{
                 name: func_decl.name.clone(),
@@ -28,19 +28,19 @@ pub fn gen_statement(s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>)
             })));
         },
         &Statement::Return(ref expr) => {
-            let op = Op::Return{register: evaluate_expr(expr, scope, ops).index};
+            let op = Op::Return{register: evaluate_expr(vm, expr, scope, ops).index};
             ops.push(op);
         },
-        &Statement::Expr(ref expr) => {evaluate_expr(expr, scope, ops);},
+        &Statement::Expr(ref expr) => {evaluate_expr(vm, expr, scope, ops);},
         &Statement::Declaration(ref d) => {
-            let result = evaluate_expr(&(d.expression), scope, ops);
+            let result = evaluate_expr(vm, &(d.expression), scope, ops);
             let object = scope.add_local(&(d.name.clone()), result.typ);
             ops.push(Op::Assign{source: result.index, target: object.index});
         },
         &Statement::Assignment(ref d) => {
             match scope.get_local(&(d.name)) {
                 Some(object) => {
-                    let result = evaluate_expr(&(d.expression), scope, ops);
+                    let result = evaluate_expr(vm, &(d.expression), scope, ops);
                     if object.typ == result.typ {
                         ops.push(Op::Assign{source: result.index, target: object.index});
                     } else {
@@ -57,10 +57,10 @@ pub fn gen_statement(s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>)
         },
         &Statement::While(ref w) => {
             let start_index = ops.len();
-            let result_obj = evaluate_expr(&(w.condition), scope, ops);
+            let result_obj = evaluate_expr(vm, &(w.condition), scope, ops);
             let cond_index = ops.len();
             ops.push(Op::Noop{});
-            gen_statement_list(&(w.block), scope, ops);
+            gen_statement_list(vm, &(w.block), scope, ops);
             // go back to the condition statement, to
             // see if we should loop again.
             ops.push(Op::Goto{position: start_index});
@@ -70,8 +70,8 @@ pub fn gen_statement(s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>)
     };
 }
 
-pub fn gen_statement_list(statements: &Statements, scope: &mut scope::Scope, ops: &mut Vec<Op>) {
+pub fn gen_statement_list(vm: &mut VM, statements: &Statements, scope: &mut scope::Scope, ops: &mut Vec<Op>) {
     for s in statements {
-        gen_statement(s, scope, ops);
+        gen_statement(vm, s, scope, ops);
     }
 }

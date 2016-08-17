@@ -88,11 +88,12 @@ fn print_yaml(yaml: Yaml) {
 }
 
 fn print_ops(path: &String) {
+    let mut vm_instance = vm::VM::new();
     let mut content = String::new();
     let mut file = File::open(path).unwrap();
     file.read_to_string(&mut content).unwrap();
     let statement_list = peg_grammar::module(&content).unwrap();
-    let module = codegen::gen_module_builder(&statement_list);
+    let module = codegen::gen_module_builder(&mut vm_instance, &statement_list);
     module.print_ops();
 }
 
@@ -102,7 +103,7 @@ fn print_module(path: &String) {
     let mut file = File::open(path).unwrap();
     file.read_to_string(&mut content).unwrap();
     let statements = peg_grammar::module(&content).unwrap();
-    let module_builder = codegen::gen_module_builder(&statements);
+    let module_builder = codegen::gen_module_builder(&mut vm_instance, &statements);
     let module = vm_instance.build_module(&("main".to_string()), &module_builder);
     let module_yaml = vm::dump_module(&vm_instance, &module);
     print_yaml(module_yaml);
@@ -114,6 +115,6 @@ fn execute_file(path: &String) {
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
     let statements = peg_grammar::module(&content).unwrap();
-    let module = codegen::gen_module_builder(&statements);
+    let module = codegen::gen_module_builder(&mut vm_instance, &statements);
     vm_instance.build_module(&("main".to_string()), &module);
 }

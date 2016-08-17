@@ -1,5 +1,5 @@
 use ast::{Statements};
-use vm::{Op, Scope};
+use vm::{VM, Op, Scope};
 use super::gen_statement;
 
 pub struct Block {
@@ -7,11 +7,11 @@ pub struct Block {
     pub scope: Scope
 }
 
-pub fn gen_block(statements: &Statements) -> Block {
+pub fn gen_block(vm: &mut VM, statements: &Statements) -> Block {
     let mut ops: Vec<Op> = Vec::new();
     let mut scope = Scope::new();
-    for s in statements {
-        gen_statement(s, &mut scope, &mut ops);
+    for ref s in statements {
+        gen_statement(vm, s, &mut scope, &mut ops);
     }
     return Block {ops: ops, scope: scope};
 }

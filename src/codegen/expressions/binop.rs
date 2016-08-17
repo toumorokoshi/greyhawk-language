@@ -1,13 +1,11 @@
 extern crate yaml_rust;
 use super::super::evaluate_expr;
-use vm::Op;
-use vm::types;
-use vm::scope;
+use vm::{types, scope, Op, VM};
 use ast::{BinOp, BinaryOperator};
 
-pub fn generate_binop(binop: &BinOp, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {
-    let left = evaluate_expr(&binop.left, scope, instructions);
-    let right = evaluate_expr(&binop.right, scope, instructions);
+pub fn generate_binop(vm: &mut VM, binop: &BinOp, scope: &mut scope::Scope, instructions: &mut Vec<Op>) -> scope::LocalObject {
+    let left = evaluate_expr(vm, &binop.left, scope, instructions);
+    let right = evaluate_expr(vm, &binop.right, scope, instructions);
     return if left.typ == types::FLOAT_TYPE.clone() {
         let object = scope.allocate_local(types::FLOAT_TYPE.clone());
         match binop.op {
