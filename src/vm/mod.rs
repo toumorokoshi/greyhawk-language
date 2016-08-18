@@ -10,6 +10,7 @@ pub mod types;
 
 pub mod scope;
 pub mod builtins;
+mod error;
 
 // for some reason, wildcards (*) don't work.
 pub use self::module::{Module, ModuleBuilder, dump_module};
@@ -21,6 +22,7 @@ pub use self::scope::Scope;
 pub use self::scope::LocalObject;
 pub use self::builtins::print;
 pub use self::types::{get_type_ref_from_string, Type};
+pub use self::error::VMError;
 
 pub struct VM {
     pub module_builders: HashMap<String, Rc<ModuleBuilder>>,

@@ -1,16 +1,44 @@
 use super::{Module};
-use super::super::{scope, VM, types};
+use super::super::{scope, VM, types, VMError};
 use std::collections::BTreeMap;
 use yaml_rust::{Yaml};
 
-pub fn load_module(vm: &VM, yaml: &Yaml) -> Result<Module> {
-    let mut root = BTreeMap::new();
-    root.insert(Yaml::String("scope_instance".to_string()), dump_scope_instance(&vm, &m.scope, &m.scope_instance));
-    root.insert(Yaml::String("scope".to_string()), dump_scope(&m.scope));
-    Yaml::Hash(root)
+pub fn load_module(vm: &mut VM, root: &Yaml) -> VMResult<Module> {
 }
 
-fn load_scope_instance(vm: &VM, s: &scope::Scope, si: &scope::ScopeInstance) -> Yaml {
+pub fn load_module(vm: &mut VM, root: &Yaml) -> Result<Module, String> {
+    match root {
+        Hash(hash) => {
+            if let Some(scope_instance_yaml) = hash.get("scope_instance".to_string()) {
+                if let Some(scope_yaml) = hash.get("scope".to_string()) {
+                    let scope = load_scope(vm, scope_yaml);
+                    let scope_instance = load_scope_instance(vm, scope_instance_yaml);
+                } else {
+                    Err("unable to find scope".to_string())
+                }
+            } else {
+                Err("unable to find scope_instance".to_string())
+            }
+        },
+        _ => Err("expected a hash for module root.")
+    }
+}
+
+fn load_scope(vm: &mut VM, scope_yaml: &Yaml) -> Result<Scope, String> {
+    match scope_yaml {
+        Hash(hash) => {
+            if let Some(locals_yaml) => match hash.get() {
+                if let Some(functions) => {
+                }
+            } else {
+                Err("unable")
+            }
+        },
+        _ => Err("expected a hash ")
+    }
+}
+
+fn load_scope_instance(vm: &mut VM, s: &scope::Scope, si: &scope::ScopeInstance) -> Yaml {
     let mut root = BTreeMap::new();
 
     let mut registers = Vec::new();

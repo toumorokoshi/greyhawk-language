@@ -11,10 +11,13 @@
 use std::env;
 use glob::glob;
 use super::load;
+use super::super::{VM, VMError, VMResult};
+use yaml_rust::{Yaml, YamlLoader};
+use std::fs::File;
 
 static ref CLASSPATH_VAR: &'str = "GH_PATH";
 
-pub fn find_module_from_classpath(name: &String) -> Option<Module> {
+pub fn find_module_from_classpath(vm: &mut VM, name: &String) -> VMResult<Option<Module>> {
     let path = match env::var(CLASSPATH_VAR) {
         Ok(val) => val.split(":").collect::<Vec<String>>(),
         Err(_) => vec![String::from("./std")]
@@ -24,15 +27,20 @@ pub fn find_module_from_classpath(name: &String) -> Option<Module> {
             return module;
         }
     }
-    return None
+    None
 }
 
-pub fn find_module_in_dir(dir: &String, name: &String) {
+pub fn find_module_in_dir(vm: &mut VM, dir: &String, name: &String) -> VMResult<Option<Module>> {
     let path = dir + "/*.ghc"
     for entry in glob(path) {
+        let mut file = File::open(path).unwrap();
+        let mut content = String::new();
+        file.read_to_string(&mut content).unwrap();
         let module_name = entry[..(entry.len() - 4)];
         if module_name == name {
-            load::load_module();
+            let yaml = YamlLoader::load_from_str(s).unwrap();
+            return try!(load::load_module(vm, yaml));
         }
     }
+    None
 }
