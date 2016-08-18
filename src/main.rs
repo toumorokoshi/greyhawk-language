@@ -11,7 +11,7 @@ use std::fs::File;
 mod ast;
 
 // mod lexer;
-// mod parser;
+mod parser;
 mod codegen;
 mod vm;
 mod repl;
