@@ -22,7 +22,7 @@ pub use self::scope::Scope;
 pub use self::scope::LocalObject;
 pub use self::builtins::print;
 pub use self::types::{get_type_ref_from_string, Type};
-pub use self::error::VMError;
+pub use self::error::{VMError, VMResult};
 
 pub struct VM {
     pub module_builders: HashMap<String, Rc<ModuleBuilder>>,

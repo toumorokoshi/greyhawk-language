@@ -1,12 +1,48 @@
+/* macro_rules! unpack_yaml {
+    ($expr:expr, $expected:path , $err:expr) => (if let $expected(cast_expr) = $expr {
+        cast_expr.clone()
+    } else {
+        return Err(VMError::new($expr))
+    })
+} */
+
+macro_rules! unpack_yaml {
+    ($expr:expr, $expected:path , $err:expr) => (match $expr {
+        $expected(cast_expr) => {cast_expr},
+        _ => {return Err(VMError::new($err))}
+    })
+}
+
+macro_rules! extract_from_key {
+    ($yaml_hash:expr, $string:expr) => (match $yaml_hash.get($string) {
+        Some(e) => e.clone(),
+        // None => {return Err(VMError::new(format!("expected key {}", $string)))}
+        None => {return Err(VMError::new(""))}
+    })
+}
+
+macro_rules! extract_and_unpack {
+    ($yaml_hash:expr, $key:expr, $expected:path, $err:expr) => (
+        unpack_yaml!(extract_from_key!($yaml_hash, $key), $expected, $err)
+    )
+}
+
 use super::{Module};
-use super::super::{scope, VM, types, VMError};
+use super::super::{scope, VM, types, VMError, VMResult};
 use std::collections::BTreeMap;
 use yaml_rust::{Yaml};
 
 pub fn load_module(vm: &mut VM, root: &Yaml) -> VMResult<Module> {
+    let hash = unpack_yaml!(root.clone(), Yaml::Hash, "yaml object is not a hash.");
+    let scope_yaml = extract_and_unpack!(hash, &Yaml::String(String::from("scope")), Yaml::Hash, "yaml object is not a hash.");
+    let scope_instance_yaml = extract_and_unpack!(hash, &Yaml::String(String::from("scope_instance")), Yaml::Hash, "yaml object is not a hash.");
+    // let scope_yaml = extract_and_unpack!(hash, String::from("scope"), Yaml::Hash, "yaml object is not a hash.");
+    // let unpacked = extract_from_key!(hash, &Yaml::String(String::from("scope_instance")));
+    // let scope_instance_yaml = extract_and_unpack!(hash, "scope_instance", Yaml::Hash, "yaml object is not a hash.");
+    Err(VMError::new("foo"))
 }
 
-pub fn load_module(vm: &mut VM, root: &Yaml) -> Result<Module, String> {
+/* pub fn load_module(vm: &mut VM, root: &Yaml) -> VMResult<Module> {
     match root {
         Hash(hash) => {
             if let Some(scope_instance_yaml) = hash.get("scope_instance".to_string()) {
@@ -14,27 +50,27 @@ pub fn load_module(vm: &mut VM, root: &Yaml) -> Result<Module, String> {
                     let scope = load_scope(vm, scope_yaml);
                     let scope_instance = load_scope_instance(vm, scope_instance_yaml);
                 } else {
-                    Err("unable to find scope".to_string())
+                    VMError::wrapped("unable to find scope")
                 }
             } else {
-                Err("unable to find scope_instance".to_string())
+                VMError::wrapped("unable to find scope_instance")
             }
         },
-        _ => Err("expected a hash for module root.")
+        _ => VMError::wrapped("expected a hash for module root.")
     }
-}
+} */
 
-fn load_scope(vm: &mut VM, scope_yaml: &Yaml) -> Result<Scope, String> {
+/* fn load_scope(vm: &mut VM, scope_yaml: &Yaml) -> VMResult<Scope> {
     match scope_yaml {
         Hash(hash) => {
-            if let Some(locals_yaml) => match hash.get() {
+            if let Some(locals_yaml) => match hash.get("locals") {
                 if let Some(functions) => {
                 }
             } else {
-                Err("unable")
+                VMError::wrapped("unable to find variable locals")
             }
         },
-        _ => Err("expected a hash ")
+        _ => VMError::wrapped("expected a hash ")
     }
 }
 
@@ -85,4 +121,4 @@ fn load_scope(s: &scope::Scope) -> Yaml {
     root.insert(Yaml::String("types".to_string()), Yaml::Array(types));
 
     Yaml::Hash(root)
-}
+} */

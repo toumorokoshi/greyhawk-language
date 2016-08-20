@@ -17,7 +17,7 @@ use std::fs::File;
 
 static ref CLASSPATH_VAR: &'str = "GH_PATH";
 
-pub fn find_module_from_classpath(vm: &mut VM, name: &String) -> VMResult<Option<Module>> {
+pub fn find_module_from_classpath(vm: &mut VM, name: &String) -> VMResult<Module> {
     let path = match env::var(CLASSPATH_VAR) {
         Ok(val) => val.split(":").collect::<Vec<String>>(),
         Err(_) => vec![String::from("./std")]
@@ -30,7 +30,7 @@ pub fn find_module_from_classpath(vm: &mut VM, name: &String) -> VMResult<Option
     None
 }
 
-pub fn find_module_in_dir(vm: &mut VM, dir: &String, name: &String) -> VMResult<Option<Module>> {
+pub fn find_module_in_dir(vm: &mut VM, dir: &String, name: &String) -> VMResult<Module> {
     let path = dir + "/*.ghc"
     for entry in glob(path) {
         let mut file = File::open(path).unwrap();

@@ -3,6 +3,7 @@
 use std::rc::Rc;
 use super::{ops, scope};
 mod dump;
+mod load;
 
 pub use self::dump::dump_module;
 
