@@ -1,11 +1,3 @@
-/* macro_rules! unpack_yaml {
-    ($expr:expr, $expected:path , $err:expr) => (if let $expected(cast_expr) = $expr {
-        cast_expr.clone()
-    } else {
-        return Err(VMError::new($expr))
-    })
-} */
-
 macro_rules! unpack_yaml {
     ($expr:expr, $expected:path , $err:expr) => (match $expr {
         $expected(cast_expr) => {cast_expr},
@@ -14,7 +6,7 @@ macro_rules! unpack_yaml {
 }
 
 macro_rules! extract_from_key {
-    ($yaml_hash:expr, $string:expr) => (match $yaml_hash.get($string) {
+    ($yaml_hash:expr, $string:expr) => (match $yaml_hash.get(&Yaml::String(String::from($string))) {
         Some(e) => e.clone(),
         // None => {return Err(VMError::new(format!("expected key {}", $string)))}
         None => {return Err(VMError::new(""))}
@@ -30,95 +22,76 @@ macro_rules! extract_and_unpack {
 use super::{Module};
 use super::super::{scope, VM, types, VMError, VMResult};
 use std::collections::BTreeMap;
+use std::rc::Rc;
 use yaml_rust::{Yaml};
 
 pub fn load_module(vm: &mut VM, root: &Yaml) -> VMResult<Module> {
     let hash = unpack_yaml!(root.clone(), Yaml::Hash, "yaml object is not a hash.");
-    let scope_yaml = extract_and_unpack!(hash, &Yaml::String(String::from("scope")), Yaml::Hash, "yaml object is not a hash.");
-    let scope_instance_yaml = extract_and_unpack!(hash, &Yaml::String(String::from("scope_instance")), Yaml::Hash, "yaml object is not a hash.");
-    // let scope_yaml = extract_and_unpack!(hash, String::from("scope"), Yaml::Hash, "yaml object is not a hash.");
-    // let unpacked = extract_from_key!(hash, &Yaml::String(String::from("scope_instance")));
-    // let scope_instance_yaml = extract_and_unpack!(hash, "scope_instance", Yaml::Hash, "yaml object is not a hash.");
-    Err(VMError::new("foo"))
+
+    let scope_yaml = extract_and_unpack!(hash, "scope", Yaml::Hash, "yaml object is not a hash.");
+    let scope = try!(load_scope(vm, &scope_yaml));
+
+    let scope_instance_yaml = extract_and_unpack!(hash, "scope_instance", Yaml::Hash, "yaml object is not a hash.");
+    let scope_instance = try!(load_scope_instance(vm, &scope, &scope_instance_yaml));
+
+    Ok(Module{scope: Rc::new(scope), scope_instance: scope_instance})
 }
 
-/* pub fn load_module(vm: &mut VM, root: &Yaml) -> VMResult<Module> {
-    match root {
-        Hash(hash) => {
-            if let Some(scope_instance_yaml) = hash.get("scope_instance".to_string()) {
-                if let Some(scope_yaml) = hash.get("scope".to_string()) {
-                    let scope = load_scope(vm, scope_yaml);
-                    let scope_instance = load_scope_instance(vm, scope_instance_yaml);
-                } else {
-                    VMError::wrapped("unable to find scope")
-                }
-            } else {
-                VMError::wrapped("unable to find scope_instance")
-            }
-        },
-        _ => VMError::wrapped("expected a hash for module root.")
-    }
-} */
-
-/* fn load_scope(vm: &mut VM, scope_yaml: &Yaml) -> VMResult<Scope> {
-    match scope_yaml {
-        Hash(hash) => {
-            if let Some(locals_yaml) => match hash.get("locals") {
-                if let Some(functions) => {
-                }
-            } else {
-                VMError::wrapped("unable to find variable locals")
-            }
-        },
-        _ => VMError::wrapped("expected a hash ")
-    }
-}
-
-fn load_scope_instance(vm: &mut VM, s: &scope::Scope, si: &scope::ScopeInstance) -> Yaml {
-    let mut root = BTreeMap::new();
-
-    let mut registers = Vec::new();
-    for i in 0..si.registers.len() {
-        let ref typ = s.types[i];
-        let obj = si.registers[i];
-        let result =
-            if *typ == *types::STRING_TYPE {
-                let value = vm.get_string(obj as usize);
-                Yaml::String((*value).clone())
-            } else {
-                Yaml::Integer(obj.clone())
-            };
-        registers.push(result);
-    }
-    root.insert(Yaml::String("registers".to_string()), Yaml::Array(registers));
-
-    let mut arrays = Vec::new();
-    for ar in &(si.arrays) {
-        let mut dumped_array = Vec::new();
-        for e in ar {
-            dumped_array.push(Yaml::Integer(e.clone() as i64));
+fn load_scope(vm: &mut VM, scope_yaml: &BTreeMap<Yaml, Yaml>) -> VMResult<scope::Scope> {
+    let mut scope = scope::Scope::new();
+    let locals_yaml = extract_and_unpack!(scope_yaml.clone(), "locals", Yaml::Hash, "yaml object is not a hash.");
+    for (name, value) in locals_yaml {
+        match (name, value) {
+            (Yaml::String(s), Yaml::Integer(i)) => {
+                scope.locals.insert(s, i as usize);
+            },
+            _ => { return Err(VMError::new("unable to parse locals.")); }
         }
-        arrays.push(Yaml::Array(dumped_array));
     }
-    root.insert(Yaml::String("arrays".to_string()), Yaml::Array(arrays));
-
-    Yaml::Hash(root)
+    let types_yaml = extract_and_unpack!(scope_yaml.clone(), "types", Yaml::Array, "yaml object is not an array.");
+    for t_string in types_yaml {
+        match t_string {
+            Yaml::String(s) => {
+                let t = types::get_type_ref_from_string(&s);
+                scope.types.push(t);
+            },
+            _ => { return Err(VMError::new("unable to parse types")) }
+        }
+    }
+    Ok(scope)
 }
 
-fn load_scope(s: &scope::Scope) -> Yaml {
-    let mut root = BTreeMap::new();
-
-    let mut locals = BTreeMap::new();
-    for (k, v) in &(s.locals) {
-        locals.insert(Yaml::String(k.clone()), Yaml::Integer(v.clone() as i64));
+fn load_scope_instance(vm: &mut VM, s: &scope::Scope, si_yaml: &BTreeMap<Yaml, Yaml>) -> VMResult<scope::ScopeInstance> {
+    let mut scope_instance = s.create_instance();
+    let registers = extract_and_unpack!(si_yaml.clone(), "registers", Yaml::Array, "registers is not an array");
+    for r in registers {
+        match r {
+            Yaml::Integer(i) => {
+                scope_instance.registers.push(i);
+            },
+            Yaml::String(s) => {
+                let value = vm.add_string(&s);
+                scope_instance.registers.push(value as i64);
+            },
+            _ => { return Err(VMError::new("unable to parse scope instance")); }
+        }
     }
-    root.insert(Yaml::String("locals".to_string()), Yaml::Hash(locals));
-
-    let mut types = Vec::new();
-    for ref t in &(s.types) {
-        types.push(Yaml::String(t.name.clone()));
+    let arrays = extract_and_unpack!(si_yaml.clone(), "registers", Yaml::Array, "arrays is not an array");
+    for r in arrays {
+        match r {
+            Yaml::Array(r_arr) => {
+                let mut new_arr = vec![];
+                for r_arr_elem in r_arr {
+                    match r_arr_elem {
+                        Yaml::Integer(i) => {
+                            new_arr.push(i as usize);
+                        }
+                        _ => { return Err(VMError::new("unable to parse registers.")); }
+                    }
+                }
+            },
+            _ => { return Err(VMError::new("unable to parse scope instance")); }
+        }
     }
-    root.insert(Yaml::String("types".to_string()), Yaml::Array(types));
-
-    Yaml::Hash(root)
-} */
+    Ok(scope_instance)
+}

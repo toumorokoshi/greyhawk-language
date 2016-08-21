@@ -6,8 +6,7 @@ use yaml_rust::{Yaml};
 pub fn dump_module(vm: &VM, m: &Module) -> Yaml {
     let mut root = BTreeMap::new();
     root.insert(Yaml::String("scope_instance".to_string()), dump_scope_instance(&vm, &m.scope, &m.scope_instance));
-    root.insert(Yaml::String("scope".to_string()), dump_scope(&m.scope));
-    Yaml::Hash(root)
+    root.insert(Yaml::String("scope".to_string()), dump_scope(&m.scope)); Yaml::Hash(root)
 }
 
 fn dump_scope_instance(vm: &VM, s: &scope::Scope, si: &scope::ScopeInstance) -> Yaml {
