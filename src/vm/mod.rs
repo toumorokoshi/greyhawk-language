@@ -193,15 +193,21 @@ impl VM {
         if let Some(ref m) = self.modules.get(name) {
             return (*m).clone();
         }
+
         let mut module_builder: Option<Rc<ModuleBuilder>> = None;
         if let Some(ref mb) = self.module_builders.get(name) {
             module_builder = Some((*mb).clone());
         }
-        match module_builder {
-            Some(mb) => {
-                return self.build_module(name, &mb);
+        if let Some(mb) = module_builder {
+            return self.build_module(name, &mb);
+        }
+        match module::find_module_from_classpath(self, name) {
+            Ok(module) => {
+                let module_wrapped = Arc::new(module);
+                self.modules.insert(name.clone(), module_wrapped.clone());
+                return module_wrapped;
             },
-            None => panic!(format!("module {0} not found", name))
+            Err(msg) => { panic!("unable to find module."); }
         }
     }
 }

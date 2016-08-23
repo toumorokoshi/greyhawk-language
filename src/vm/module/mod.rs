@@ -2,10 +2,12 @@
 // use std::collections::HashMap;
 use std::rc::Rc;
 use super::{ops, scope};
+mod classpath_loader;
 mod dump;
 mod load;
 
 pub use self::dump::dump_module;
+pub use self::classpath_loader::find_module_from_classpath;
 
 pub struct ModuleBuilder {
     pub scope: Rc<scope::Scope>,

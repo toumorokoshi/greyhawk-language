@@ -6,6 +6,7 @@ peg_file! peg_grammar("grammar.rustpeg");
 extern crate lazy_static;
 extern crate getopts;
 extern crate yaml_rust;
+extern crate glob;
 use std::io::prelude::*;
 use std::fs::File;
 mod ast;
