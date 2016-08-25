@@ -53,6 +53,9 @@ pub fn gen_statement(vm: &mut VM, s: &Statement, scope: &mut scope::Scope, ops: 
             }
         },
         &Statement::Import(ref i) => {
+            /* if Some(m) => vm.modules.get(i.module_name) {
+            }
+            match vm.modules.get() */
             // ops.push(Op::ModuleLoadValue{module_name: Rc::new(i.module_name), name: Rc::new(i.name)});
         },
         &Statement::While(ref w) => {
