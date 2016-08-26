@@ -1,7 +1,6 @@
 use super::{Object, VM};
 use super::types;
 use std::mem;
-use std::rc::Rc;
 
 /*
 pub fn get_builtin_module() -> Module {

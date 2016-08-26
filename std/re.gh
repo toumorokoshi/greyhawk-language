@@ -1,3 +1,5 @@
 Int returnTen() {
     return 10
 }
+
+x := 10

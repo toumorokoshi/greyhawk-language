@@ -207,7 +207,7 @@ impl VM {
                 self.modules.insert(name.clone(), module_wrapped.clone());
                 return module_wrapped;
             },
-            Err(msg) => { panic!("unable to find module."); }
+            Err(_) => { panic!("unable to find module."); }
         }
     }
 }

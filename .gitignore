@@ -20,3 +20,4 @@ compiler/gtest
 *.dSYM
 .idea
 CMakeLists.txt
+*.ghc

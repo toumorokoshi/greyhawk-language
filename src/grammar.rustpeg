@@ -155,6 +155,7 @@ statement -> ast::Statement =
      / f:function { ast::Statement::FunctionDecl(f) }
      / r:return_statement { r }
      / e:expression { ast::Statement::Expr(e) }
+     / i:import_statement { ast::Statement::Import(i) }
 
 #[pub]
 statement_list -> ast::Statements =

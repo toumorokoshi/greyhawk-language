@@ -53,10 +53,18 @@ pub fn gen_statement(vm: &mut VM, s: &Statement, scope: &mut scope::Scope, ops: 
             }
         },
         &Statement::Import(ref i) => {
-            /* if Some(m) => vm.modules.get(i.module_name) {
+            let module = vm.load_module(&i.module_name);
+            match module.scope.get_local(&i.name) {
+                Some(module_obj) => {
+                    let obj = scope.add_local(&i.name, module_obj.typ);
+                    ops.push(Op::ModuleLoadValue{
+                        module_name: i.module_name.clone(),
+                        name: i.name.clone(),
+                        target: obj.index
+                    });
+                },
+                None => panic!(format!("module {} does not have local {}", i.module_name, i.name))
             }
-            match vm.modules.get() */
-            // ops.push(Op::ModuleLoadValue{module_name: Rc::new(i.module_name), name: Rc::new(i.name)});
         },
         &Statement::While(ref w) => {
             let start_index = ops.len();

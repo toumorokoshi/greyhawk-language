@@ -1,5 +1,4 @@
 use std::env;
-use glob::glob;
 use std::path::PathBuf;
 
 static CLASSPATH_VAR: &'static str = "GH_PATH";
