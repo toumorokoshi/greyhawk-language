@@ -64,19 +64,19 @@ fn load_scope(vm: &mut VM, scope_yaml: &BTreeMap<Yaml, Yaml>) -> VMResult<scope:
 fn load_scope_instance(vm: &mut VM, s: &scope::Scope, si_yaml: &BTreeMap<Yaml, Yaml>) -> VMResult<scope::ScopeInstance> {
     let mut scope_instance = s.create_instance();
     let registers = extract_and_unpack!(si_yaml.clone(), "registers", Yaml::Array, "registers is not an array");
-    for r in registers {
-        match r {
-            Yaml::Integer(i) => {
-                scope_instance.registers.push(i);
+    for i in 0..registers.len() {
+        match registers[i] {
+            Yaml::Integer(value) => {
+                scope_instance.registers[i] = value;
             },
-            Yaml::String(s) => {
+            Yaml::String(ref s) => {
                 let value = vm.add_string(&s);
                 scope_instance.registers.push(value as i64);
             },
             _ => { return Err(VMError::new("unable to parse scope instance")); }
         }
     }
-    let arrays = extract_and_unpack!(si_yaml.clone(), "registers", Yaml::Array, "arrays is not an array");
+    let arrays = extract_and_unpack!(si_yaml.clone(), "arrays", Yaml::Array, "arrays is not an array");
     for r in arrays {
         match r {
             Yaml::Array(r_arr) => {

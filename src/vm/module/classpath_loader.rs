@@ -16,7 +16,7 @@ use std::fs::File;
 use std::io::prelude::*;
 
 pub fn find_module_from_classpath(vm: &mut VM, name: &String) -> VMResult<Module> {
-    match find_file_in_classpath(name, ".ghc") {
+    match find_file_in_classpath(name, "ghc") {
         Some(path) => {
             let mut file = File::open(path).unwrap();
             let mut content = String::new();

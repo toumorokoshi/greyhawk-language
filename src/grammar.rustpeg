@@ -154,8 +154,8 @@ statement -> ast::Statement =
      / w:while_statement { ast::Statement::While(w) }
      / f:function { ast::Statement::FunctionDecl(f) }
      / r:return_statement { r }
-     / e:expression { ast::Statement::Expr(e) }
      / i:import_statement { ast::Statement::Import(i) }
+     / e:expression { ast::Statement::Expr(e) }
 
 #[pub]
 statement_list -> ast::Statements =
@@ -187,4 +187,4 @@ module -> ast::Module = statement_list
 
 #[pub]
 import_statement -> ast::Import =
-        "from" m:symbol "import" n:symbol { ast::Import{module_name: m, name: n} }
+        "from" spaces? m:symbol spaces? "import" spaces? n:symbol { ast::Import{module_name: m, name: n} }
