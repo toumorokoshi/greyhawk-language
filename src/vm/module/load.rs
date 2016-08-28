@@ -73,7 +73,7 @@ fn load_scope_instance(vm: &mut VM, s: &scope::Scope, si_yaml: &BTreeMap<Yaml, Y
                 let value = vm.add_string(&s);
                 scope_instance.registers.push(value as i64);
             },
-            _ => { return Err(VMError::new("unable to parse scope instance")); }
+            _ => { return Err(VMError::new("unable to parse registers in scope instance")); }
         }
     }
     let arrays = extract_and_unpack!(si_yaml.clone(), "arrays", Yaml::Array, "arrays is not an array");
@@ -86,11 +86,11 @@ fn load_scope_instance(vm: &mut VM, s: &scope::Scope, si_yaml: &BTreeMap<Yaml, Y
                         Yaml::Integer(i) => {
                             new_arr.push(i as usize);
                         }
-                        _ => { return Err(VMError::new("unable to parse registers.")); }
+                        _ => { return Err(VMError::new("unable to parse arrays.")); }
                     }
                 }
             },
-            _ => { return Err(VMError::new("unable to parse scope instance")); }
+            _ => { return Err(VMError::new("unable to parse arrays in scope instance")); }
         }
     }
     Ok(scope_instance)
