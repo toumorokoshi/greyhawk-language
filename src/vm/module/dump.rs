@@ -1,6 +1,5 @@
 use super::{Module};
 use super::super::{scope, VM, types, Function};
-use std::rc::Rc;
 use std::collections::BTreeMap;
 use yaml_rust::{Yaml};
 
@@ -66,12 +65,11 @@ fn dump_scope(s: &scope::Scope) -> Yaml {
 
 
 fn dump_function(f: &Function) -> Yaml {
-    let mut root = BTreeMap::new();
     match f {
-        &Function::NativeFunction{ref name, function: _, ref typ} => {
+        &Function::NativeFunction{name: _, function: _, typ: _} => {
         },
-        &Function::VMFunction(ref vmf) => {
+        &Function::VMFunction(_) => {
         }
     }
-    Yaml::Hash(root)
+    Yaml::Hash(BTreeMap::new())
 }

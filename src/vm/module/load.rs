@@ -37,7 +37,7 @@ pub fn load_module(vm: &mut VM, root: &Yaml) -> VMResult<Module> {
     Ok(Module{scope: Rc::new(scope), scope_instance: scope_instance})
 }
 
-fn load_scope(vm: &mut VM, scope_yaml: &BTreeMap<Yaml, Yaml>) -> VMResult<scope::Scope> {
+fn load_scope(_: &mut VM, scope_yaml: &BTreeMap<Yaml, Yaml>) -> VMResult<scope::Scope> {
     let mut scope = scope::Scope::new();
     let locals_yaml = extract_and_unpack!(scope_yaml.clone(), "locals", Yaml::Hash, "yaml object is not a hash.");
     for (name, value) in locals_yaml {

@@ -1,5 +1,6 @@
 use std::fmt;
 use std::collections::HashMap;
+use std::sync::Arc;
 use std::rc::Rc;
 use super::types;
 use super::types::Type;
@@ -21,6 +22,7 @@ impl Clone for LocalObject {
 }
 
 pub struct Scope {
+    pub parent: Option<Arc<Scope>>,
     pub locals: HashMap<String, usize>,
     pub functions: HashMap<String, Rc<Function>>,
     pub types: Vec<Type>
@@ -29,6 +31,7 @@ pub struct Scope {
 impl Scope {
     pub fn new() -> Scope {
         return Scope{
+            parent: None,
             functions: HashMap::new(),
             locals: HashMap::new(),
             types: Vec::new()

@@ -52,7 +52,7 @@ impl VM {
         self.strings[index].clone()
     }
 
-    pub fn execute_instructions(&mut self, scope_instance: &mut ScopeInstance, scope: &Scope, ops: &[Op]) -> usize {
+    pub fn execute_instructions(&mut self, scope_instance: &mut ScopeInstance, _: &Scope, ops: &[Op]) -> usize {
         let return_value = 0 as usize;
         let mut registers = &mut scope_instance.registers;
         let mut arrays = &mut scope_instance.arrays;
