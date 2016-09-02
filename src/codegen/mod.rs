@@ -1,19 +1,19 @@
 extern crate yaml_rust;
-mod expressions;
-mod statements;
-mod block;
-use ast::Statement;
-use ast::Expression;
 use super::vm;
-use vm::Op;
-use vm::scope;
-use vm::types;
+mod block;
+mod context;
+mod expressions;
+mod gen;
+mod statements;
+use ast::{Statement, Expression};
+use vm::{scope, types, Op};
 use std::rc::Rc;
 pub use self::statements::{
     gen_statement,
     gen_statement_list
 };
-pub use self::block::gen_block;
+pub use self::context::{Context};
+pub use self::block::{gen_block, Block};
 
 // we don't build modules directly, as they are sometimes evaluated on load instead.
 // thus, a module builder is created instead.
@@ -24,6 +24,7 @@ pub fn gen_module_builder(vm: &mut vm::VM, statements: &Vec<Box<Statement>>) -> 
 
 pub fn generate_ops(vm: &mut vm::VM, statements: &Vec<Box<Statement>>) -> vm::Function {
     let block = gen_block(vm, statements);
+    vm::ModuleBuilder{scope: Rc::new(block.scope), ops: block.ops}
     return vm::Function::VMFunction(vm::VMFunction {
         name: String::from("__main__"),
         argument_names: vec![],

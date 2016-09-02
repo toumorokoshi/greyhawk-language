@@ -2,9 +2,9 @@ use std::rc::Rc;
 use ast::{Statement, Statements};
 use vm::{scope, types, Op, get_type_ref_from_string, VM};
 use vm::function::{Function, VMFunction};
-use super::{evaluate_expr, Block};
+use super::{evaluate_expr, Block, Context};
 
-pub fn gen_statement(vm: &mut VM, s: &Statement, scope: &mut scope::Scope, ops: &mut Vec<Op>) {
+pub fn gen_statement(c: &mut Context, s: &Statement) {
     match s {
         &Statement::FunctionDecl(ref func_decl) => {
             let mut func_scope = scope::Scope::new();

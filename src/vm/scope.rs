@@ -29,9 +29,9 @@ pub struct Scope {
 }
 
 impl Scope {
-    pub fn new() -> Scope {
+    pub fn new(scope: Option<Arc<Scope>>) -> Scope {
         return Scope{
-            parent: None,
+            parent: scope.clone(),
             functions: HashMap::new(),
             locals: HashMap::new(),
             types: Vec::new()
