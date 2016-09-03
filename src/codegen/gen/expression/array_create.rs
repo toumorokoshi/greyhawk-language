@@ -1,12 +1,14 @@
-use super::super::evaluate_expr;
+use super::gen_expression;
 use ast::{ArrayCreate, ItemGet, ItemSet};
-use vm::{Op, scope, types, VM};
+use vm::{Op, scope, types, VM, LocalObject};
+use codegen::{CGError, CGResult};
 
-pub fn gen_array(vm: &mut VM, array_create: &ArrayCreate, scope: &mut scope::Scope,
-                    ops: &mut Vec<Op>) -> scope::LocalObject {
-    let size = evaluate_expr(vm, &array_create.size, scope, ops);
+pub fn gen_array(c: &mut Context, array_create: &ArrayCreate) -> CGResult<LocalObject> {
+    let size = try!(gen_expression(c, &array_create.size));
     if size.typ != types::INT_TYPE.clone() {
-        panic!(format!("expected int for array argument, got {0}", size.typ));
+        return Err(
+            CGError::new(format!("expected int for array argument, got {0}", size.typ))
+        );
     }
     let typ = types::get_type_ref_from_string(&array_create.typ);
     let arr = scope.allocate_local(types::get_array_type(typ));
@@ -18,7 +20,7 @@ pub fn gen_array(vm: &mut VM, array_create: &ArrayCreate, scope: &mut scope::Sco
     let mut i = 0;
     while i < array_create.values.len() {
         let ref e = array_create.values[i];
-        let value = evaluate_expr(vm, e, scope, ops);
+        let value = try!(gen_expression(c, e));
         ops.push(Op::ArraySet{
             source: value.index, target: arr.index, index_source: index.index
         });
@@ -26,30 +28,28 @@ pub fn gen_array(vm: &mut VM, array_create: &ArrayCreate, scope: &mut scope::Sco
         ops.push(Op::IntAdd{lhs: index.index, rhs: one.index, target: index.index});
         i += 1;
     }
-    arr
+    Ok(arr)
 }
 
-pub fn gen_index_set(vm: &mut VM, index_set: &ItemSet, scope: &mut scope::Scope,
-                     ops: &mut Vec<Op>) -> scope::LocalObject {
-    let target = evaluate_expr(vm, &index_set.target, scope, ops);
-    let value = evaluate_expr(vm, &index_set.value, scope, ops);
-    let index = evaluate_expr(vm, &index_set.index, scope, ops);
+pub fn gen_index_set(c: &mut Context, index_set: &ItemSet) -> CGResult<LocalObject> {
+    let target = try!(gen_expression(vm, &index_set.target, scope, ops));
+    let value = try!(gen_expression(vm, &index_set.value, scope, ops));
+    let index = try!(gen_expression(vm, &index_set.index, scope, ops));
     // TODO: type mismatch.
-    // TODO: index is not int.
+    // TODO: index is not int check.
     ops.push(Op::ArraySet{source: value.index, target: target.index,
                           index_source: index.index});
     let result = scope.allocate_local(types::BOOL_TYPE.clone());
     ops.push(Op::IntLoad{register: result.index, constant: 1});
-    result
+    Ok(result)
 }
 
-pub fn gen_index_get(vm: &mut VM, index_get: &ItemGet, scope: &mut scope::Scope,
-                     ops: &mut Vec<Op>) -> scope::LocalObject {
-    let source = evaluate_expr(vm, &index_get.source, scope, ops);
-    let index = evaluate_expr(vm, &index_get.index, scope, ops);
-    // TODO: index is not int.
+pub fn gen_index_get(c: &mut Context, index_get: &ItemGet) -> CGResult<LocalObject> {
+    let source = try!(gen_expression(vm, &index_get.source, scope, ops));
+    let index = try!(gen_expression(vm, &index_get.index, scope, ops));
+    // TODO: index is not int check.
     let result = scope.allocate_local(source.typ.sub_types[0].clone());
     ops.push(Op::ArrayLoad{source: source.index, target: result.index,
                            index_source: index.index});
-    result
+    Ok(result)
 }

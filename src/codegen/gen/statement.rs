@@ -2,9 +2,10 @@ use std::rc::Rc;
 use ast::{Statement, Statements};
 use vm::{scope, types, Op, get_type_ref_from_string, VM};
 use vm::function::{Function, VMFunction};
-use super::{evaluate_expr, Block, Context};
+use super::{gen_expression, Block, Context};
+use super::super::{CGError, CGResult};
 
-pub fn gen_statement(c: &mut Context, s: &Statement) {
+pub fn gen_statement(c: &mut Context, s: &Statement) -> CGRresult<()> {
     match s {
         &Statement::FunctionDecl(ref func_decl) => {
             let mut func_scope = scope::Scope::new();
@@ -17,7 +18,7 @@ pub fn gen_statement(c: &mut Context, s: &Statement) {
             }
             let mut func_ops = Vec::new();
             for s in &func_decl.statements {
-                gen_statement(vm, s, &mut func_scope, &mut func_ops);
+                try!(gen_statement(vm, s, &mut func_scope, &mut func_ops));
             }
             scope.add_function(func_decl.name.clone(), Rc::new(Function::VMFunction(VMFunction{
                 name: func_decl.name.clone(),
@@ -28,27 +29,31 @@ pub fn gen_statement(c: &mut Context, s: &Statement) {
             })));
         },
         &Statement::Return(ref expr) => {
-            let op = Op::Return{register: evaluate_expr(vm, expr, scope, ops).index};
-            ops.push(op);
+            let op = Op::Return{register: try!(gen_expression(c, expr)).index};
+            c.block.ops.push(op);
         },
-        &Statement::Expr(ref expr) => {evaluate_expr(vm, expr, scope, ops);},
+        &Statement::Expr(ref expr) => {gen_expression(c, expr);},
         &Statement::Declaration(ref d) => {
-            let result = evaluate_expr(vm, &(d.expression), scope, ops);
+            let result = try!(gen_expression(c, &(d.expression)));
             let object = scope.add_local(&(d.name.clone()), result.typ);
             ops.push(Op::Assign{source: result.index, target: object.index});
         },
         &Statement::Assignment(ref d) => {
             match scope.get_local(&(d.name)) {
                 Some(object) => {
-                    let result = evaluate_expr(vm, &(d.expression), scope, ops);
+                    let result = try!(gen_expression((c, &(d.expression))));
                     if object.typ == result.typ {
                         ops.push(Op::Assign{source: result.index, target: object.index});
                     } else {
-                        panic!(format!("mismatched types for assignment to {0}. Expected {1}, got {2}", d.name, object.typ, result.typ));
+                        return Err(CGError::new(
+                            format!("mismatched types for assignment to {0}. Expected {1}, got {2}", d.name, object.typ, result.typ)
+                        ));
                     }
                 }
                 _ => {
-                    panic!(format!("unable to assign to undeclared variable {0}", d.name));
+                    return Err(CGError::new(
+                        format!("unable to assign to undeclared variable {0}", d.name)
+                    ));
                 }
             }
         },
@@ -63,15 +68,18 @@ pub fn gen_statement(c: &mut Context, s: &Statement) {
                         target: obj.index
                     });
                 },
-                None => panic!(format!("module {} does not have local {}", i.module_name, i.name))
+                None => {return Err(CGError::new(
+                    format!("module {} does not have local {}", i.module_name, i.name)
+                        ));
+                }
             }
         },
         &Statement::While(ref w) => {
             let start_index = ops.len();
-            let result_obj = evaluate_expr(vm, &(w.condition), scope, ops);
+            let result_obj = try!(gen_expression(c, &(w.condition)));
             let cond_index = ops.len();
             ops.push(Op::Noop{});
-            gen_statement_list(vm, &(w.block), scope, ops);
+            try!(gen_statement_list(c, &(w.block)));
             // go back to the condition statement, to
             // see if we should loop again.
             ops.push(Op::Goto{position: start_index});
@@ -79,10 +87,12 @@ pub fn gen_statement(c: &mut Context, s: &Statement) {
             ops[cond_index] = Op::Branch{condition: result_obj.index, if_false: end_of_while_position};
         }
     };
+    Ok()
 }
 
-pub fn gen_statement_list(vm: &mut VM, statements: &Statements, scope: &mut scope::Scope, ops: &mut Vec<Op>) {
+pub fn gen_statement_list(c: &mut Context, statements: &Statements) -> CGResult<()> {
     for s in statements {
-        gen_statement(vm, s, scope, ops);
+        try!(gen_statement(c, s));
     }
+    Ok()
 }
