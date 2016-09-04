@@ -1,10 +1,8 @@
 use super::vm;
 mod block;
 mod context;
-mod expressions;
 mod error;
 mod gen;
-mod statements;
 use ast::{Statement, Expression};
 use vm::{scope, types, Op};
 use std::rc::Rc;
@@ -20,17 +18,16 @@ pub use self::error::{CGError, CGResult};
 // thus, a module builder is created instead.
 pub fn gen_module_builder(vm: &mut vm::VM, statements: &Vec<Box<Statement>>) -> CGResult<vm::ModuleBuilder> {
     let block = try!(gen_block(vm, statements));
-    vm::ModuleBuilder{scope: Rc::new(block.scope), ops: block.ops}
+    Ok(vm::ModuleBuilder{scope: Rc::new(block.scope), ops: block.ops})
 }
 
 pub fn generate_ops(vm: &mut vm::VM, statements: &Vec<Box<Statement>>) -> CGResult<vm::Function> {
     let block = try!(gen_block(vm, statements));
-    vm::ModuleBuilder{scope: Rc::new(block.scope), ops: block.ops}
-    return vm::Function::VMFunction(vm::VMFunction {
+    Ok(vm::Function::VMFunction(vm::VMFunction {
         name: String::from("__main__"),
         argument_names: vec![],
         scope: block.scope,
         ops: block.ops,
         return_typ: types::NONE_TYPE.clone(),
-    });
+    }))
 }

@@ -20,7 +20,7 @@ fn repl(vm_instance: &mut vm::VM) -> Result<(), std::io::Error> {
         match peg_grammar::module(&input) {
             Ok(mut statement_list) => {
                 convert_last_expression_to_return(&mut statement_list);
-                let function = codegen::generate_ops(vm_instance, &statement_list);
+                let function = codegen::generate_ops(vm_instance, &statement_list).unwrap();
                 let object = vm_instance.execute_function(&function, &[]);
                 vm::print(&vm_instance, &[object]);
             },

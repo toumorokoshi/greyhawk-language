@@ -2,13 +2,13 @@ use std::rc::Rc;
 use ast::{Statement, Statements};
 use vm::{scope, types, Op, get_type_ref_from_string, VM};
 use vm::function::{Function, VMFunction};
-use super::{gen_expression, Block, Context};
-use super::super::{CGError, CGResult};
+use super::{gen_expression};
+use super::super::{CGError, CGResult, Block, Context};
 
 pub fn gen_statement(c: &mut Context, s: &Statement) -> CGRresult<()> {
     match s {
         &Statement::FunctionDecl(ref func_decl) => {
-            let mut func_scope = scope::Scope::new();
+            let mut func_scope = scope::Scope::new(None);
             func_scope.allocate_local(types::NONE_TYPE.clone());
             let mut argument_names = Vec::new();
             for ref a in &(func_decl.arguments) {
@@ -18,7 +18,7 @@ pub fn gen_statement(c: &mut Context, s: &Statement) -> CGRresult<()> {
             }
             let mut func_ops = Vec::new();
             for s in &func_decl.statements {
-                try!(gen_statement(vm, s, &mut func_scope, &mut func_ops));
+                try!(gen_statement(c, s));
             }
             scope.add_function(func_decl.name.clone(), Rc::new(Function::VMFunction(VMFunction{
                 name: func_decl.name.clone(),
@@ -46,19 +46,19 @@ pub fn gen_statement(c: &mut Context, s: &Statement) -> CGRresult<()> {
                         ops.push(Op::Assign{source: result.index, target: object.index});
                     } else {
                         return Err(CGError::new(
-                            format!("mismatched types for assignment to {0}. Expected {1}, got {2}", d.name, object.typ, result.typ)
+                            &format!("mismatched types for assignment to {0}. Expected {1}, got {2}", d.name, object.typ, result.typ)
                         ));
                     }
                 }
                 _ => {
                     return Err(CGError::new(
-                        format!("unable to assign to undeclared variable {0}", d.name)
+                        &format!("unable to assign to undeclared variable {0}", d.name)
                     ));
                 }
             }
         },
         &Statement::Import(ref i) => {
-            let module = vm.load_module(&i.module_name);
+            let module = vm.load_module(&(i.module_name));
             match module.scope.get_local(&i.name) {
                 Some(module_obj) => {
                     let obj = scope.add_local(&i.name, module_obj.typ);
@@ -68,9 +68,10 @@ pub fn gen_statement(c: &mut Context, s: &Statement) -> CGRresult<()> {
                         target: obj.index
                     });
                 },
-                None => {return Err(CGError::new(
-                    format!("module {} does not have local {}", i.module_name, i.name)
-                        ));
+                None => {
+                    return Err(CGError::new(
+                        &format!("module {} does not have local {}", i.module_name, i.name)
+                    ));
                 }
             }
         },
@@ -87,12 +88,12 @@ pub fn gen_statement(c: &mut Context, s: &Statement) -> CGRresult<()> {
             ops[cond_index] = Op::Branch{condition: result_obj.index, if_false: end_of_while_position};
         }
     };
-    Ok()
+    Ok(())
 }
 
 pub fn gen_statement_list(c: &mut Context, statements: &Statements) -> CGResult<()> {
     for s in statements {
         try!(gen_statement(c, s));
     }
-    Ok()
+    Ok(())
 }
