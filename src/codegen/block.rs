@@ -2,7 +2,7 @@ use ast::{Statements};
 use vm::{VM, Op, Scope, VMFunction};
 use codegen::{CGError, CGResult};
 use super::gen_statement;
-use std::hashmap::HashMap;
+use std::collections::HashMap;
 
 pub struct Block {
     pub ops: Vec<Op>,
@@ -14,12 +14,12 @@ pub struct Block {
 }
 
 impl Block {
-    pub fn new(&mut self) -> Block {
+    pub fn new() -> Block {
         Block {
             ops: vec![],
             scope: Scope::new(None),
             functions: HashMap::new()
-        };
+        }
     }
 
     /// finalize the construction of

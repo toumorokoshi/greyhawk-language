@@ -1,14 +1,14 @@
 mod array_create;
 mod binop;
 mod condition;
-use super::Context;
+use codegen::Context;
 use self::array_create::{
     gen_array, gen_index_set, gen_index_get
 };
 use ast::{Expression};
 use self::binop::generate_binop;
 use self::condition::gen_condition;
-use vm::{LocalObject, Scope, Op};
+use vm::{LocalObject, Scope, Op, types};
 use codegen::{CGError, CGResult};
 
 pub fn gen_expression(c: &mut Context, e: &Expression) -> CGResult<LocalObject> {
@@ -35,7 +35,7 @@ pub fn gen_expression(c: &mut Context, e: &Expression) -> CGResult<LocalObject> 
         &Expression::Symbol(ref value) => {
             match c.block.scope.get_local(&(value.clone())) {
                 Some(obj) => obj,
-                None => { return Err(CGError::new(format!("unable to find symbol {}", value)));}
+                None => { return Err(CGError::new(&format!("unable to find symbol {}", value)));}
             }
         },
         &Expression::BinOp(ref op) => try!(generate_binop(c, op)),

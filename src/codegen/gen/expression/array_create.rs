@@ -7,7 +7,7 @@ pub fn gen_array(c: &mut Context, array_create: &ArrayCreate) -> CGResult<LocalO
     let size = try!(gen_expression(c, &array_create.size));
     if size.typ != types::INT_TYPE.clone() {
         return Err(
-            CGError::new(format!("expected int for array argument, got {0}", size.typ))
+            CGError::new(&format!("expected int for array argument, got {0}", size.typ))
         );
     }
     let typ = types::get_type_ref_from_string(&array_create.typ);

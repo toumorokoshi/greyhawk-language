@@ -6,12 +6,13 @@ mod gen;
 use ast::{Statement, Expression};
 use vm::{scope, types, Op};
 use std::rc::Rc;
-pub use self::statements::{
+pub use self::gen::{
     gen_statement,
-    gen_statement_list
+    gen_statement_list,
+    gen_block
 };
 pub use self::context::{Context};
-pub use self::block::{gen_block, Block};
+pub use self::block::Block;
 pub use self::error::{CGError, CGResult};
 
 // we don't build modules directly, as they are sometimes evaluated on load instead.
