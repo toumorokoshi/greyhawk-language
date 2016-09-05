@@ -1,8 +1,20 @@
 use ast::{Statements};
 use vm::{VM, Op, Scope, VMFunction};
-use codegen::{CGError, CGResult};
-use super::gen_statement;
+use super::{
+    Context,
+    gen_statement,
+    CGResult
+};
 use std::collections::HashMap;
+
+pub fn gen_block(vm: &mut VM, statements: &Statements) -> CGResult<Block> {
+    let mut c = Context::new(vm);
+    for ref s in statements {
+        try!(gen_statement(&mut c, s));
+    }
+    c.block.finalize();
+    Ok(c.block)
+}
 
 pub struct Block {
     pub ops: Vec<Op>,

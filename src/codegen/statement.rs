@@ -1,6 +1,7 @@
+use std::collections::HashMap;
 use std::rc::Rc;
 use ast::{Statement, Statements};
-use vm::{scope, types, Op, get_type_ref_from_string, VM};
+use vm::{Scope, types, Op, get_type_ref_from_string};
 use vm::function::{Function, VMFunction};
 use super::{gen_expression};
 use codegen::{CGError, CGResult, Block, Context};
@@ -8,7 +9,7 @@ use codegen::{CGError, CGResult, Block, Context};
 pub fn gen_statement(c: &mut Context, s: &Statement) -> CGResult<()> {
     match s {
         &Statement::FunctionDecl(ref func_decl) => {
-            let mut func_scope = scope::Scope::new(None);
+            let mut func_scope = Scope::new(None);
             func_scope.allocate_local(types::NONE_TYPE.clone());
             let mut argument_names = Vec::new();
             for ref a in &(func_decl.arguments) {
@@ -16,23 +17,30 @@ pub fn gen_statement(c: &mut Context, s: &Statement) -> CGResult<()> {
                 func_scope.add_local(&a.name, typ);
                 argument_names.push(a.name.clone());
             }
-            let mut func_ops = Vec::new();
+            let mut func_context = Context{
+                block: Block {
+                    ops: vec![],
+                    scope: func_scope,
+                    functions: HashMap::new(),
+                },
+                vm: c.vm
+            };
             for s in &func_decl.statements {
-                try!(gen_statement(c, s));
+                try!(gen_statement(&mut func_context, s));
             }
             c.block.scope.add_function(func_decl.name.clone(), Rc::new(Function::VMFunction(VMFunction{
                 name: func_decl.name.clone(),
                 argument_names: argument_names,
                 return_typ: types::get_type_ref_from_string(&func_decl.typ),
-                scope: func_scope,
-                ops: func_ops
+                scope: func_context.block.scope,
+                ops: func_context.block.ops
             })));
         },
         &Statement::Return(ref expr) => {
             let op = Op::Return{register: try!(gen_expression(c, expr)).index};
             c.block.ops.push(op);
         },
-        &Statement::Expr(ref expr) => {gen_expression(c, expr);},
+        &Statement::Expr(ref expr) => {try!(gen_expression(c, expr));},
         &Statement::Declaration(ref d) => {
             let result = try!(gen_expression(c, &(d.expression)));
             let object = c.block.scope.add_local(&(d.name.clone()), result.typ);

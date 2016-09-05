@@ -8,7 +8,7 @@ use self::array_create::{
 use ast::{Expression};
 use self::binop::generate_binop;
 use self::condition::gen_condition;
-use vm::{LocalObject, Scope, Op, types};
+use vm::{LocalObject, Op, types};
 use codegen::{CGError, CGResult};
 
 pub fn gen_expression(c: &mut Context, e: &Expression) -> CGResult<LocalObject> {

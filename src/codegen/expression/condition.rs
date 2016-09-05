@@ -1,7 +1,7 @@
 use ast::{Condition};
-use vm::{Scope, LocalObject, Op, VM};
+use vm::{LocalObject, Op};
 use super::super::{gen_statement_list};
-use codegen::{Context, CGError, CGResult};
+use codegen::{Context, CGResult};
 use super::{gen_expression};
 
 pub fn gen_condition(c: &mut Context, cond: &Condition) -> CGResult<LocalObject> {

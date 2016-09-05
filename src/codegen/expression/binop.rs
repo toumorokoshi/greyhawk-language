@@ -1,7 +1,7 @@
 extern crate yaml_rust;
-use vm::{types, scope, Op, VM, LocalObject};
+use vm::{types, Op, LocalObject};
 use ast::{BinOp, BinaryOperator};
-use codegen::{Context, CGError, CGResult};
+use codegen::{Context, CGResult};
 use super::gen_expression;
 
 pub fn generate_binop(c: &mut Context, binop: &BinOp) -> CGResult<LocalObject> {

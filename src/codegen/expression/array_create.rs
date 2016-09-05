@@ -1,6 +1,6 @@
 use super::gen_expression;
 use ast::{ArrayCreate, ItemGet, ItemSet};
-use vm::{Op, scope, types, VM, LocalObject};
+use vm::{Op, types, LocalObject};
 use codegen::{Context, CGError, CGResult};
 
 pub fn gen_array(c: &mut Context, array_create: &ArrayCreate) -> CGResult<LocalObject> {
