@@ -1,8 +1,9 @@
-use ast::{Statements};
+use ast::{Statements, FunctionDecl};
 use vm::{VM, Op, Scope, VMFunction};
 use super::{
     Context,
     gen_statement,
+    gen_function
     CGResult
 };
 use std::collections::HashMap;
@@ -22,14 +23,14 @@ pub struct Block {
     // functions have to be compiled at the end,
     // to ensure variables in the outer scope
     // are resolved.
-    pub functions: HashMap<String, VMFunction>,
+    pub functions: HashMap<String, FunctionDecl>,
 }
 
 impl Block {
-    pub fn new() -> Block {
+    pub fn new(parent_scope: Option<Arc<Scope>>) -> Block {
         Block {
             ops: vec![],
-            scope: Scope::new(None),
+            scope: Scope::new(parent_scope),
             functions: HashMap::new()
         }
     }
@@ -38,6 +39,8 @@ impl Block {
     /// the functions that were collected
     /// by the block.
     pub fn build_functions(&mut self) {
+        for name, func_decl in self.functions {
+        }
     }
 
     pub fn finalize(&mut self) {

@@ -7,7 +7,7 @@ mod function;
 mod statement;
 use ast::{Statement};
 use std::rc::Rc;
-pub use self::function::{generate_function};
+pub use self::function::{gen_function};
 pub use self::statement::{
     gen_statement,
     gen_statement_list,
