@@ -5,7 +5,7 @@ authors = ["Yusuke Tsutsumi <yusuke@tsutsumi.io>"]
 
 [dependencies]
 getopts = "0.2"
-yaml-rust = "0.2.2"
+yaml-rust = "0.4.1"
 peg = "0.3"
 glob = "*"
 lazy_static = "0.1.*"
